@@ -42,5 +42,11 @@ urlpatterns = [
     # Listing - Jobs, rooms, events, businesses
     path('api/listings/', include('listings.urls')),
 
+    # Jobs
+    path('api/jobs/', include('jobs.urls')),
+
+    # Rooms
+    path('api/rooms/', include('rooms.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

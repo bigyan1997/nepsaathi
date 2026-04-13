@@ -5,14 +5,29 @@ from .models import Job
 class JobSerializer(serializers.ModelSerializer):
     """
     Serializer for job-specific listing details.
-    salary_display is a read-only formatted string e.g. $23.50/hr
+
+    salary_display — read only formatted string e.g. $23.50/hr
+    listing_title  — read only, shows the parent listing title
+    listing_location — read only, shows where the job is
+    listing_state  — read only, shows the state
     """
     salary_display = serializers.ReadOnlyField()
+    listing_title = serializers.CharField(source='listing.title', read_only=True)
+    listing_location = serializers.CharField(source='listing.location', read_only=True)
+    listing_state = serializers.CharField(source='listing.state', read_only=True)
+    listing_id = serializers.IntegerField(source='listing.id', read_only=True)
+    posted_by = serializers.CharField(source='listing.user.full_name', read_only=True)
+    created_at = serializers.DateTimeField(source='listing.created_at', read_only=True)
 
     class Meta:
         model = Job
         fields = (
             'id',
+            'listing_id',
+            'listing_title',
+            'listing_location',
+            'listing_state',
+            'posted_by',
             'company_name',
             'job_type',
             'salary',
@@ -21,5 +36,15 @@ class JobSerializer(serializers.ModelSerializer):
             'experience_required',
             'qualifications',
             'is_urgent',
+            'created_at',
         )
-        read_only_fields = ('id', 'salary_display')
+        read_only_fields = (
+            'id',
+            'salary_display',
+            'listing_title',
+            'listing_location',
+            'listing_state',
+            'listing_id',
+            'posted_by',
+            'created_at',
+        )
