@@ -30,6 +30,7 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount.providers.google',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 LOCAL_APPS = [
@@ -147,6 +148,11 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # ─── Google OAuth ─────────────────────────────────────────────────────────────
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'APP': {
+            'client_id': config('GOOGLE_CLIENT_ID'),
+            'secret': config('GOOGLE_CLIENT_SECRET'),
+            'key': '',
+        },
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'OAUTH_PKCE_ENABLED': True,
@@ -171,3 +177,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ─── Default primary key ─────────────────────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ─── Email ───────────────────────────────────────────────────────────────────
+# In development, print emails to the terminal instead of sending them.
+# We will configure a real email server (Gmail/SendGrid) before launch.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'NepSaathi <noreply@nepsaathi.com>'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[NepSaathi] '
