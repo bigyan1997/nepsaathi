@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 from decouple import config
 
 # ─── Base ────────────────────────────────────────────────────────────────────
@@ -23,6 +24,12 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 ]
 
 LOCAL_APPS = [
@@ -48,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -83,9 +91,16 @@ DATABASES = {
     }
 }
 
-# ─── Auth ────────────────────────────────────────────────────────────────────
+# ─── Custom user model ───────────────────────────────────────────────────────
 AUTH_USER_MODEL = 'users.User'
 
+# ─── Authentication backends ─────────────────────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# ─── Password validators ─────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -103,6 +118,39 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+}
+
+# ─── JWT ─────────────────────────────────────────────────────────────────────
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# ─── dj-rest-auth ────────────────────────────────────────────────────────────
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'nepsaathi-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'nepsaathi-refresh',
+    'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
+}
+
+# ─── Allauth ─────────────────────────────────────────────────────────────────
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+# ─── Google OAuth ─────────────────────────────────────────────────────────────
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
+    }
 }
 
 # ─── CORS ────────────────────────────────────────────────────────────────────
