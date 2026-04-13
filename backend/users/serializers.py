@@ -6,17 +6,21 @@ from .models import User
 class RegisterSerializer(BaseRegisterSerializer):
     """
     Custom registration serializer for NepSaathi.
-    Uses email as the primary identifier — no username required.
+    Email only — username completely removed.
     """
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
+
+    # Remove username field completely
     username = None
 
     def get_cleaned_data(self):
-        data = super().get_cleaned_data()
-        data['first_name'] = self.validated_data.get('first_name', '')
-        data['last_name'] = self.validated_data.get('last_name', '')
-        return data
+        return {
+            'email': self.validated_data.get('email', ''),
+            'password1': self.validated_data.get('password1', ''),
+            'first_name': self.validated_data.get('first_name', ''),
+            'last_name': self.validated_data.get('last_name', ''),
+        }
 
     def save(self, request):
         user = super().save(request)
@@ -29,7 +33,6 @@ class RegisterSerializer(BaseRegisterSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for reading and updating NepSaathi user profiles.
-    Email and verification status are read-only.
     """
     full_name = serializers.ReadOnlyField()
 

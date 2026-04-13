@@ -5,8 +5,11 @@ from django.db import models
 class User(AbstractUser):
     """
     Custom user model for NepSaathi.
-    Extends Django's AbstractUser to add community-specific fields.
+    Email is the only identifier — username is removed completely.
     """
+    # Remove username field entirely
+    username = None
+
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True)
@@ -17,7 +20,7 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name']  # removed username from here too
 
     class Meta:
         db_table = 'users'

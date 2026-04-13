@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
+import { useNavigate } from "react-router-dom";
 
 const ROOM_TYPES = [
   { value: "", label: "All types" },
@@ -11,6 +12,7 @@ const ROOM_TYPES = [
 ];
 
 export default function RoomsPage() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     room_type: "",
     search: "",
@@ -170,6 +172,7 @@ export default function RoomsPage() {
 
       {/* Room cards */}
       <div
+        onClick={() => navigate(`/rooms/${room.id}`)}
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",

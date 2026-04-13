@@ -16,6 +16,9 @@ class JobSerializer(serializers.ModelSerializer):
     listing_location = serializers.CharField(source='listing.location', read_only=True)
     listing_state = serializers.CharField(source='listing.state', read_only=True)
     listing_id = serializers.IntegerField(source='listing.id', read_only=True)
+    contact_phone = serializers.CharField(source='listing.contact_phone', read_only=True)
+    contact_whatsapp = serializers.CharField(source='listing.contact_whatsapp', read_only=True)
+    contact_email = serializers.EmailField(source='listing.contact_email', read_only=True)
     posted_by = serializers.CharField(source='listing.user.full_name', read_only=True)
     created_at = serializers.DateTimeField(source='listing.created_at', read_only=True)
 
@@ -28,6 +31,9 @@ class JobSerializer(serializers.ModelSerializer):
             'listing_location',
             'listing_state',
             'posted_by',
+            'contact_phone',    
+            'contact_whatsapp',   
+            'contact_email', 
             'company_name',
             'job_type',
             'salary',
@@ -46,5 +52,8 @@ class JobSerializer(serializers.ModelSerializer):
             'listing_state',
             'listing_id',
             'posted_by',
+            'contact_phone',     
+            'contact_whatsapp',   
+            'contact_email', 
             'created_at',
         )

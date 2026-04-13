@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setAuth } = useAuthStore();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Where were they trying to go before login?
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +21,7 @@ export default function LoginPage() {
     try {
       const data = await login(form.email, form.password);
       setAuth(data.user, data.access, data.refresh);
-      navigate("/");
+      navigate(from, { replace: true }); // ← send them back where they came from
     } catch (err) {
       setError("Invalid email or password. Please try again.");
     } finally {

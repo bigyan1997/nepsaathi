@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
+import { useNavigate } from "react-router-dom";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -11,6 +12,7 @@ const JOB_TYPES = [
 ];
 
 export default function JobsPage() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({ job_type: "", search: "" });
 
   const { data, isLoading, error } = useQuery({
@@ -120,6 +122,7 @@ export default function JobsPage() {
         {data?.results?.map((job) => (
           <div
             key={job.id}
+            onClick={() => navigate(`/jobs/${job.id}`)}
             style={{
               background: "#fff",
               border: "0.5px solid #e5e5e5",
