@@ -98,6 +98,18 @@ export default function Navbar() {
             <span style={{ fontSize: "13px", color: "#555" }}>
               Hi, {user?.first_name}
             </span>
+
+            <Link
+              to="/my-listings"
+              style={{
+                fontSize: "13px",
+                color: "#555",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              My listings
+            </Link>
             <Link
               to="/register-business"
               style={{
