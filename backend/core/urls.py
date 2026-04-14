@@ -57,5 +57,8 @@ urlpatterns = [
     # Events
     path('api/events/', include('events.urls')),
 
+    # Businesses
+    path('api/businesses/', include('businesses.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

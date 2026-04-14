@@ -74,6 +74,7 @@ export default function Navbar() {
           { to: "/rooms", label: "Rooms" },
           { to: "/events", label: "Events" },
           { to: "/announcements", label: "Announcements" },
+          { to: "/businesses", label: "Businesses" },
         ].map(({ to, label }) => (
           <Link
             key={to}
@@ -97,6 +98,21 @@ export default function Navbar() {
             <span style={{ fontSize: "13px", color: "#555" }}>
               Hi, {user?.first_name}
             </span>
+            <Link
+              to="/register-business"
+              style={{
+                background: "#E87722",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "8px 18px",
+                fontSize: "13px",
+                fontWeight: 500,
+                textDecoration: "none",
+              }}
+            >
+              + Register business
+            </Link>
             <Link
               to="/post-ad"
               style={{

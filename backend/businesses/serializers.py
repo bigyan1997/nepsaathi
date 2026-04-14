@@ -1,0 +1,75 @@
+from rest_framework import serializers
+from .models import Business
+
+
+class BusinessSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Business listings.
+
+    Security:
+    - abn is write-only — never returned in API responses
+    - is_verified is read-only — only admin can set this
+    - owner_name is read-only — shows who registered it
+    - is_owner tells React whether to show edit/delete buttons
+    """
+    owner_name = serializers.CharField(
+        source='owner.full_name', read_only=True)
+    owner_email = serializers.EmailField(
+        source='owner.email', read_only=True)
+    is_owner = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Business
+        fields = (
+            'id',
+            'owner_name',
+            'owner_email',
+            'is_owner',
+            'business_name',
+            'category',
+            'description',
+            'is_nepalese_owned',
+            'address',
+            'suburb',
+            'state',
+            'postcode',
+            'phone',
+            'whatsapp',
+            'email',
+            'website',
+            'abn',
+            'established_year',
+            'operating_hours',
+            'is_verified',
+            'is_active',
+            'created_at',
+            'updated_at',
+        )
+        read_only_fields = (
+            'id',
+            'is_verified',
+            'owner_name',
+            'owner_email',
+            'is_owner',
+            'created_at',
+            'updated_at',
+        )
+        extra_kwargs = {
+            # ABN is write-only — never exposed in API response
+            'abn': {'write_only': True},
+        }
+
+    def get_is_owner(self, obj):
+        """
+        Returns True if the logged in user owns this business.
+        React uses this to show/hide edit and delete buttons.
+        """
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.owner == request.user
+        return False
+
+    def create(self, validated_data):
+        """Automatically assign the logged in user as owner."""
+        owner = self.context['request'].user
+        return Business.objects.create(owner=owner, **validated_data)

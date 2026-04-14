@@ -19,6 +19,9 @@ import AnnouncementsPage from "./pages/listings/AnnouncementsPage";
 import AnnouncementDetailPage from "./pages/listings/AnnouncementsPage";
 import EventsPage from "./pages/listings/EventsPage";
 import EventDetailPage from "./pages/listings/EventDetailPage";
+import BusinessesPage from "./pages/listings/BusinessesPage";
+import BusinessDetailPage from "./pages/listings/BusinessDetailPage";
+import RegisterBusinessPage from "./pages/listings/RegisterBusinessPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Public Listing Pages
@@ -67,6 +70,9 @@ function App() {
               <Route path="/events/:id" element={<EventDetailPage />} />
               <Route path="/events/listing/:id" element={<EventDetailPage />} />
 
+              <Route path="/businesses" element={<BusinessesPage />} />
+              <Route path="/businesses/:id" element={<BusinessDetailPage />} />
+
               {/* Guest only routes */}
               <Route
                 path="/login"
@@ -90,6 +96,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <PostAdPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/register-business"
+                element={
+                  <ProtectedRoute>
+                    <RegisterBusinessPage />
                   </ProtectedRoute>
                 }
               />
