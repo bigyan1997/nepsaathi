@@ -27,6 +27,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 // Public Listing Pages
 import PostAdPage from "./pages/listings/PostAdPage";
 import MyListingsPage from "./pages/listings/MyListingsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 // Auth pages (guest only)
 import LoginPage from "./pages/auth/LoginPage";
@@ -118,12 +119,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* Protected routes — uncomment as we build each page */}
-              {/*
-              <Route path="/profile" element={
-                <ProtectedRoute><ProfilePage /></ProtectedRoute>
-              }/>
-              */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* 404 — catches everything else */}
               <Route path="*" element={<NotFoundPage />} />
