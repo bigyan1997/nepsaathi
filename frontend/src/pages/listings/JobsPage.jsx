@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
 import { useNavigate } from "react-router-dom";
+import { SkeletonCard } from "../../components/ui/Skeleton";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -91,8 +92,10 @@ export default function JobsPage() {
 
       {/* Results */}
       {isLoading && (
-        <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-          Loading jobs...
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       )}
 

@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusiness } from "../../api/businesses";
 import useAuthStore from "../../store/authStore";
+import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -51,12 +52,7 @@ export default function BusinessDetailPage() {
     queryFn: () => getBusiness(id),
   });
 
-  if (isLoading)
-    return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#888" }}>
-        Loading business...
-      </div>
-    );
+  if (isLoading) return <SkeletonDetailPage />;
 
   if (error)
     return (

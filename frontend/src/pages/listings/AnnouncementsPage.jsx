@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAnnouncements } from "../../api/announcements";
+import { SkeletonCard } from "../../components/ui/Skeleton";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -153,8 +154,10 @@ export default function AnnouncementsPage() {
 
       {/* Results */}
       {isLoading && (
-        <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-          Loading announcements...
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       )}
 

@@ -2,6 +2,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvent, getEventByListing } from "../../api/events";
 import useAuthStore from "../../store/authStore";
+import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489" },
@@ -30,12 +31,7 @@ export default function EventDetailPage() {
     queryFn: () => (isListingRoute ? getEventByListing(id) : getEvent(id)),
   });
 
-  if (isLoading)
-    return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#888" }}>
-        Loading event...
-      </div>
-    );
+  if (isLoading) return <SkeletonDetailPage />;
 
   if (error)
     return (

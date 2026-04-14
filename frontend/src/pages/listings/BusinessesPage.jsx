@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
+import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -219,8 +220,16 @@ export default function BusinessesPage() {
 
       {/* Results */}
       {isLoading && (
-        <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-          Loading businesses...
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: "14px",
+          }}
+        >
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <SkeletonRoomCard key={i} />
+          ))}
         </div>
       )}
 

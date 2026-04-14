@@ -5,6 +5,7 @@ import {
   getAnnouncementByListing,
 } from "../../api/announcements";
 import useAuthStore from "../../store/authStore";
+import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 
 const CATEGORY_COLORS = {
   news: { bg: "#EEEDFE", color: "#3C3489" },
@@ -32,12 +33,7 @@ export default function AnnouncementDetailPage() {
       isListingRoute ? getAnnouncementByListing(id) : getAnnouncement(id),
   });
 
-  if (isLoading)
-    return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#888" }}>
-        Loading announcement...
-      </div>
-    );
+  if (isLoading) return <SkeletonDetailPage />;
 
   if (error)
     return (

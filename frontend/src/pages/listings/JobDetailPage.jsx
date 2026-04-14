@@ -2,6 +2,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJob, getJobByListing } from "../../api/jobs";
 import useAuthStore from "../../store/authStore";
+import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -20,12 +21,7 @@ export default function JobDetailPage() {
     queryFn: () => (isListingRoute ? getJobByListing(id) : getJob(id)),
   });
 
-  if (isLoading)
-    return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#888" }}>
-        Loading job...
-      </div>
-    );
+  if (isLoading) return <SkeletonDetailPage />;
 
   if (error)
     return (

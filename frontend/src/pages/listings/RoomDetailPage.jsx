@@ -2,6 +2,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getRoom, getRoomByListing } from "../../api/rooms";
 import useAuthStore from "../../store/authStore";
+import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
@@ -19,12 +20,7 @@ export default function RoomDetailPage() {
     queryFn: () => (isListingRoute ? getRoomByListing(id) : getRoom(id)),
   });
 
-  if (isLoading)
-    return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#888" }}>
-        Loading room...
-      </div>
-    );
+  if (isLoading) return <SkeletonDetailPage />;
 
   if (error)
     return (

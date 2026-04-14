@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
 import { useNavigate } from "react-router-dom";
+import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 
 const ROOM_TYPES = [
   { value: "", label: "All types" },
@@ -144,8 +145,16 @@ export default function RoomsPage() {
 
       {/* Results */}
       {isLoading && (
-        <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-          Loading rooms...
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: "14px",
+          }}
+        >
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <SkeletonRoomCard key={i} />
+          ))}
         </div>
       )}
 
