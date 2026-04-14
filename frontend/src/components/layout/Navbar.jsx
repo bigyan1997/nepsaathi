@@ -72,6 +72,7 @@ export default function Navbar() {
         {[
           { to: "/jobs", label: "Jobs" },
           { to: "/rooms", label: "Rooms" },
+          { to: "/announcements", label: "Announcements" },
         ].map(({ to, label }) => (
           <Link
             key={to}

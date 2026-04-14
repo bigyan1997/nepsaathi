@@ -51,5 +51,8 @@ urlpatterns = [
     # Rooms
     path('api/rooms/', include('rooms.urls')),
 
+    # Announcements
+    path('api/announcements/', include('announcements.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

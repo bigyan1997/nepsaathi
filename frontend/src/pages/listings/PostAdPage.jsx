@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createListing } from "../../api/listings";
 import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
+import { createAnnouncement } from "../../api/announcements";
 
 const LISTING_TYPES = [
   { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
@@ -122,6 +123,15 @@ export default function PostAdPage() {
     parking_available: false,
   });
 
+  //   Step 4 - announcement specific fields
+  const [announcementForm, setAnnouncementForm] = useState({
+    category: "general",
+    price: "",
+    condition: "na",
+    is_free: false,
+    is_urgent: false,
+  });
+
   // Handle final submission
   const handleSubmit = async () => {
     setLoading(true);
@@ -133,8 +143,6 @@ export default function PostAdPage() {
         ...baseForm,
         listing_type: listingType,
       });
-
-      console.log("Listing created:", listing); // ← add this
 
       if (!listing.id) {
         setError("Failed to create listing. Please try again.");
@@ -151,7 +159,6 @@ export default function PostAdPage() {
           ...jobForm,
           salary: jobForm.salary || null,
         };
-        console.log("Creating job with:", jobData); // ← add this
         await createJob(jobData);
         navigate(`/jobs/listing/${listing.id}`);
       } else if (listingType === "room") {
@@ -160,14 +167,22 @@ export default function PostAdPage() {
           ...roomForm,
           price: roomForm.price,
         };
-        console.log("Creating room with:", roomData); // ← add this
         await createRoom(roomData);
         navigate(`/rooms/listing/${listing.id}`);
+      } else if (listingType === "announcement") {
+        await createAnnouncement({
+          listing: listing.id,
+          category: announcementForm.category,
+          price: announcementForm.price || null,
+          condition: announcementForm.condition,
+          is_free: announcementForm.is_free,
+          is_urgent: announcementForm.is_urgent,
+        });
+        navigate(`/announcements/listing/${listing.id}`);
       } else {
         navigate("/");
       }
     } catch (err) {
-      console.error("Full error:", err.response); // ← add this
       const errors = err.response?.data;
       if (errors) {
         const firstError = Object.values(errors)[0];
@@ -522,8 +537,6 @@ export default function PostAdPage() {
                   setError("");
                   // If announcement — submit directly, no step 3 needed
                   if (listingType === "announcement") {
-                    handleSubmit();
-                  } else {
                     setStep(3);
                   }
                 }}
@@ -539,9 +552,7 @@ export default function PostAdPage() {
                   cursor: "pointer",
                 }}
               >
-                {listingType === "announcement"
-                  ? "Post announcement"
-                  : "Continue →"}
+                Continue →
               </button>
             </div>
           </div>
@@ -904,6 +915,178 @@ export default function PostAdPage() {
                 }}
               >
                 {loading ? "Posting..." : "Post room →"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 3 — Announcement specific details ── */}
+        {step === 3 && listingType === "announcement" && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          >
+            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
+              Announcement details
+            </h2>
+
+            <div>
+              <label style={labelStyle}>Category *</label>
+              <select
+                style={inputStyle}
+                value={announcementForm.category}
+                onChange={(e) =>
+                  setAnnouncementForm({
+                    ...announcementForm,
+                    category: e.target.value,
+                  })
+                }
+              >
+                {[
+                  { value: "news", label: "Community news" },
+                  { value: "sale", label: "Item for sale" },
+                  { value: "service", label: "Service offered" },
+                  { value: "lost_found", label: "Lost & found" },
+                  { value: "education", label: "Education" },
+                  { value: "general", label: "General" },
+                ].map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+              }}
+            >
+              <div>
+                <label style={labelStyle}>Price (AUD)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  placeholder="e.g. 50"
+                  value={announcementForm.price}
+                  onChange={(e) =>
+                    setAnnouncementForm({
+                      ...announcementForm,
+                      price: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Condition</label>
+                <select
+                  style={inputStyle}
+                  value={announcementForm.condition}
+                  onChange={(e) =>
+                    setAnnouncementForm({
+                      ...announcementForm,
+                      condition: e.target.value,
+                    })
+                  }
+                >
+                  {[
+                    { value: "na", label: "Not applicable" },
+                    { value: "new", label: "Brand new" },
+                    { value: "like_new", label: "Like new" },
+                    { value: "good", label: "Good" },
+                    { value: "fair", label: "Fair" },
+                    { value: "poor", label: "Poor" },
+                  ].map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  color: "#444",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={announcementForm.is_free}
+                  onChange={(e) =>
+                    setAnnouncementForm({
+                      ...announcementForm,
+                      is_free: e.target.checked,
+                    })
+                  }
+                />
+                This is free
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  color: "#444",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={announcementForm.is_urgent}
+                  onChange={(e) =>
+                    setAnnouncementForm({
+                      ...announcementForm,
+                      is_urgent: e.target.checked,
+                    })
+                  }
+                />
+                Mark as urgent
+              </label>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+              <button
+                onClick={() => setStep(2)}
+                style={{
+                  flex: 1,
+                  background: "#fff",
+                  color: "#555",
+                  border: "0.5px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                ← Back
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                style={{
+                  flex: 2,
+                  background: loading ? "#ccc" : "#E87722",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  cursor: loading ? "not-allowed" : "pointer",
+                }}
+              >
+                {loading ? "Posting..." : "Post announcement →"}
               </button>
             </div>
           </div>
