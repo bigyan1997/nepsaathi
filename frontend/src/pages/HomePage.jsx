@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import ExchangeRates from "../components/ui/ExchangeRates";
 
 export default function HomePage() {
   return (
@@ -49,7 +50,14 @@ export default function HomePage() {
         </p>
 
         {/* CTA buttons */}
-        <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            justifyContent: "center",
+            marginBottom: "28px",
+          }}
+        >
           <Link
             to="/jobs"
             style={{
@@ -79,6 +87,9 @@ export default function HomePage() {
             Find rooms
           </Link>
         </div>
+
+        {/* Exchange rates */}
+        <ExchangeRates />
       </div>
 
       {/* Stats */}

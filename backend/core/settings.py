@@ -41,6 +41,7 @@ LOCAL_APPS = [
     'events',
     'businesses',
     'announcements',
+    'exchange',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -195,3 +196,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'NepSaathi <noreply@nepsaathi.com>'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[NepSaathi] '
+
+# ─── Cache (Redis) ────────────────────────────────────────────────────────────
+# In development we use local memory cache
+# In production we'll switch to Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'nepsaathi-cache',
+    }
+}

@@ -60,5 +60,8 @@ urlpatterns = [
     # Businesses
     path('api/businesses/', include('businesses.urls')),
 
+    # Exchange Rates
+    path('api/exchange/', include('exchange.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
