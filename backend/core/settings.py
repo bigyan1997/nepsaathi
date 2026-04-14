@@ -128,6 +128,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',    # anonymous users: 100 requests per day
         'user': '1000/day',   # logged in users: 1000 requests per day
+        'listing_create': '10/hour',   # max 10 new listings per hour
+        'business_create': '3/hour',   # max 3 new businesses per hour
     },
 }
 

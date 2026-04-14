@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Listing, ListingImage
 from .serializers import ListingSerializer, ListingCreateSerializer, ListingImageSerializer
+from .throttles import ListingCreateThrottle
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -49,13 +50,63 @@ class ListingCreateView(generics.CreateAPIView):
     """
     POST /api/listings/create/
     Creates a new listing.
-    Must be logged in — user is set automatically.
+
+    Security:
+    - Must be authenticated
+    - Max 10 active listings per user
+    - 5 minute cooldown between posts
+    - Duplicate title detection within 24 hours
     """
     serializer_class = ListingCreateSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (ListingCreateThrottle,)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        from django.utils import timezone
+        from datetime import timedelta
+        from rest_framework.exceptions import ValidationError
+
+        # Check max active listings per user
+        active_count = Listing.objects.filter(
+            user=user,
+            status='active'
+        ).count()
+
+        if active_count >= 20:
+            raise ValidationError(
+                'You have reached the maximum of 20 active listings. '
+                'Please delete some listings before posting new ones.'
+            )
+
+        # Check 5 minute cooldown between posts
+        five_mins_ago = timezone.now() - timedelta(minutes=5)
+        recent_post = Listing.objects.filter(
+            user=user,
+            created_at__gte=five_mins_ago
+        ).exists()
+
+        if recent_post:
+            raise ValidationError(
+                'Please wait 5 minutes before posting again.'
+            )
+
+        # Check for duplicate title in last 24 hours
+        yesterday = timezone.now() - timedelta(hours=24)
+        title = self.request.data.get('title', '').strip().lower()
+
+        duplicate = Listing.objects.filter(
+            user=user,
+            title__iexact=title,
+            created_at__gte=yesterday,
+        ).exists()
+
+        if duplicate:
+            raise ValidationError(
+                'You already posted a listing with this title in the last 24 hours.'
+            )
+
+        serializer.save(user=user)
 
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):

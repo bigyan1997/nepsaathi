@@ -62,15 +62,43 @@ class BusinessCreateView(generics.CreateAPIView):
     """
     POST /api/businesses/create/
     Register a new business.
-    Must be logged in — owner set automatically.
 
     Security:
     - Must be authenticated
-    - Owner assigned from request.user automatically
-    - is_verified always starts as False
+    - Max 5 businesses per user
+    - Duplicate business name detection
     """
     serializer_class = BusinessSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        from rest_framework.exceptions import ValidationError
+        user = self.request.user
+
+        # Max 5 businesses per user
+        business_count = Business.objects.filter(
+            owner=user,
+            is_active=True
+        ).count()
+
+        if business_count >= 5:
+            raise ValidationError(
+                'You can register a maximum of 5 businesses.'
+            )
+
+        # Check for duplicate business name
+        business_name = self.request.data.get('business_name', '').strip()
+        duplicate = Business.objects.filter(
+            business_name__iexact=business_name,
+            is_active=True,
+        ).exists()
+
+        if duplicate:
+            raise ValidationError(
+                f'A business named "{business_name}" is already registered on NepSaathi.'
+            )
+
+        serializer.save(owner=user)
 
 
 class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
