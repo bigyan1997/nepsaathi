@@ -10,14 +10,37 @@ from .serializers import UserSerializer
 
 class GoogleLoginView(SocialLoginView):
     """
-    POST /api/auth/google/
-    Accepts a Google OAuth2 access token from the React frontend.
-    Verifies it with Google, creates or retrieves the user,
-    and returns a NepSaathi JWT token pair.
+    POST /api/users/auth/google/
+    Accepts Google access token, verifies with Google,
+    creates or retrieves user, saves profile picture,
+    returns NepSaathi JWT token pair.
     """
     adapter_class = GoogleOAuth2Adapter
     callback_url = 'http://localhost:5173'
     client_class = OAuth2Client
+
+    def get_response(self):
+        response = super().get_response()
+
+        # After Google login save the profile picture URL
+        try:
+            user = self.user
+            social_account = user.socialaccount_set.filter(
+                provider='google'
+            ).first()
+
+            if social_account:
+                extra_data = social_account.extra_data
+                picture_url = extra_data.get('picture', '')
+
+                # Save Google avatar URL to user profile
+                if picture_url and not user.avatar:
+                    user.google_avatar = picture_url
+                    user.save()
+        except Exception:
+            pass
+
+        return response
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):

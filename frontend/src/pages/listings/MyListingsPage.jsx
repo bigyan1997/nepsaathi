@@ -89,7 +89,7 @@ export default function MyListingsPage() {
   const getDetailPath = (listing) => {
     switch (listing.listing_type) {
       case "job":
-        return `/jobs/${listing.id}`;
+        return `/jobs/listing/${listing.id}`;
       case "room":
         return `/rooms/listing/${listing.id}`;
       case "event":

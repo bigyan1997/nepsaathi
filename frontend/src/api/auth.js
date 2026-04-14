@@ -45,5 +45,19 @@ export const googleLogin = async (accessToken) => {
   const response = await api.post("/api/users/auth/google/", {
     access_token: accessToken,
   });
-  return response.data;
+  const data = response.data;
+
+  // Fetch full profile to get google_avatar and all fields
+  if (data.access) {
+    try {
+      const profileResponse = await api.get("/api/users/profile/", {
+        headers: { Authorization: `Bearer ${data.access}` },
+      });
+      data.user = profileResponse.data;
+    } catch (e) {
+      // Use basic user data if profile fetch fails
+    }
+  }
+
+  return data;
 };

@@ -139,10 +139,19 @@ export default function ProfilePage() {
             fontSize: "28px",
             fontWeight: 600,
             flexShrink: 0,
+            overflow: "hidden",
           }}
         >
-          {form.first_name?.[0]?.toUpperCase() ||
-            user?.first_name?.[0]?.toUpperCase()}
+          {profile?.google_avatar ? (
+            <img
+              src={profile.google_avatar}
+              alt={profile.first_name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            form.first_name?.[0]?.toUpperCase() ||
+            user?.first_name?.[0]?.toUpperCase()
+          )}
         </div>
         <div>
           <div

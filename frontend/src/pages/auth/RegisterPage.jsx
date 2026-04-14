@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import { register } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 
@@ -207,6 +208,22 @@ export default function RegisterPage() {
             {loading ? "Creating account..." : "Create free account"}
           </button>
         </form>
+
+        {/* Divider */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            margin: "16px 0",
+          }}
+        >
+          <div style={{ flex: 1, height: "0.5px", background: "#e5e5e5" }} />
+          <span style={{ fontSize: "12px", color: "#aaa" }}>or</span>
+          <div style={{ flex: 1, height: "0.5px", background: "#e5e5e5" }} />
+        </div>
+
+        <GoogleLoginButton redirectTo="/" />
 
         <p
           style={{

@@ -188,20 +188,33 @@ export default function Navbar() {
                   {/* Avatar */}
                   <div
                     style={{
-                      width: "22px",
-                      height: "22px",
+                      width: "32px",
+                      height: "32px",
                       borderRadius: "50%",
                       background: "#534AB7",
                       color: "#fff",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "10px",
+                      fontSize: "13px",
                       fontWeight: 600,
                       flexShrink: 0,
+                      overflow: "hidden",
                     }}
                   >
-                    {user?.first_name?.[0]?.toUpperCase()}
+                    {user?.google_avatar ? (
+                      <img
+                        src={user.google_avatar}
+                        alt={user.first_name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      user?.first_name?.[0]?.toUpperCase()
+                    )}
                   </div>
                   {user?.first_name}
                   <span style={{ fontSize: "10px", color: "#888" }}>▼</span>
@@ -472,9 +485,22 @@ export default function Navbar() {
                     fontSize: "13px",
                     fontWeight: 600,
                     flexShrink: 0,
+                    overflow: "hidden",
                   }}
                 >
-                  {user?.first_name?.[0]?.toUpperCase()}
+                  {user?.google_avatar ? (
+                    <img
+                      src={user.google_avatar}
+                      alt={user.first_name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    user?.first_name?.[0]?.toUpperCase()
+                  )}
                 </div>
                 <div>
                   <div

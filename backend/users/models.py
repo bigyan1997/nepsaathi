@@ -12,6 +12,10 @@ class User(AbstractUser):
 
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    google_avatar = models.URLField(
+    blank=True,
+    help_text='Google profile picture URL'
+    )
     phone = models.CharField(max_length=20, blank=True)
     location = models.CharField(max_length=100, blank=True)
     bio = models.TextField(max_length=500, blank=True)
