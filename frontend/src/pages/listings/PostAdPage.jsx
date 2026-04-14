@@ -4,10 +4,17 @@ import { createListing } from "../../api/listings";
 import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
 import { createAnnouncement } from "../../api/announcements";
+import { createEvent } from "../../api/events";
 
 const LISTING_TYPES = [
   { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
   { value: "room", label: "Room", emoji: "🏠", desc: "List a room for rent" },
+  {
+    value: "event",
+    label: "Event",
+    emoji: "🎉",
+    desc: "Share a community event",
+  },
   {
     value: "announcement",
     label: "Announcement",
@@ -132,6 +139,20 @@ export default function PostAdPage() {
     is_urgent: false,
   });
 
+  //   Step 5 - event specific fields
+  const [eventForm, setEventForm] = useState({
+    category: "community",
+    event_date: "",
+    event_end_date: "",
+    venue: "",
+    organiser: "",
+    is_free: true,
+    ticket_price: "",
+    max_attendees: "",
+    is_online: false,
+    event_url: "",
+  });
+
   // Handle final submission
   const handleSubmit = async () => {
     setLoading(true);
@@ -179,8 +200,21 @@ export default function PostAdPage() {
           is_urgent: announcementForm.is_urgent,
         });
         navigate(`/announcements/listing/${listing.id}`);
-      } else {
-        navigate("/");
+      } else if (listingType === "event") {
+        await createEvent({
+          listing: listing.id,
+          category: eventForm.category,
+          event_date: eventForm.event_date,
+          event_end_date: eventForm.event_end_date || null,
+          venue: eventForm.venue,
+          organiser: eventForm.organiser,
+          is_free: eventForm.is_free,
+          ticket_price: eventForm.ticket_price || null,
+          max_attendees: eventForm.max_attendees || null,
+          is_online: eventForm.is_online,
+          event_url: eventForm.event_url,
+        });
+        navigate(`/events/listing/${listing.id}`);
       }
     } catch (err) {
       const errors = err.response?.data;
@@ -535,10 +569,7 @@ export default function PostAdPage() {
                     return;
                   }
                   setError("");
-                  // If announcement — submit directly, no step 3 needed
-                  if (listingType === "announcement") {
-                    setStep(3);
-                  }
+                  setStep(3);
                 }}
                 style={{
                   flex: 2,
@@ -1087,6 +1118,231 @@ export default function PostAdPage() {
                 }}
               >
                 {loading ? "Posting..." : "Post announcement →"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 3 — Event specific details ── */}
+        {step === 3 && listingType === "event" && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          >
+            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
+              Event details
+            </h2>
+
+            <div>
+              <label style={labelStyle}>Category *</label>
+              <select
+                style={inputStyle}
+                value={eventForm.category}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, category: e.target.value })
+                }
+              >
+                {[
+                  { value: "cultural", label: "Cultural" },
+                  { value: "sports", label: "Sports" },
+                  { value: "food", label: "Food & Dining" },
+                  { value: "music", label: "Music & Entertainment" },
+                  { value: "religious", label: "Religious" },
+                  { value: "community", label: "Community Meetup" },
+                  { value: "education", label: "Education & Workshop" },
+                  { value: "other", label: "Other" },
+                ].map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+              }}
+            >
+              <div>
+                <label style={labelStyle}>Event date & time *</label>
+                <input
+                  type="datetime-local"
+                  style={inputStyle}
+                  value={eventForm.event_date}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, event_date: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>End date & time</label>
+                <input
+                  type="datetime-local"
+                  style={inputStyle}
+                  value={eventForm.event_end_date}
+                  onChange={(e) =>
+                    setEventForm({
+                      ...eventForm,
+                      event_end_date: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Venue / Address</label>
+              <input
+                style={inputStyle}
+                placeholder="e.g. Parramatta Town Hall, 182 Church St"
+                value={eventForm.venue}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, venue: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Organiser</label>
+              <input
+                style={inputStyle}
+                placeholder="e.g. Nepalese Community Association"
+                value={eventForm.organiser}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, organiser: e.target.value })
+                }
+              />
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+              }}
+            >
+              <div>
+                <label style={labelStyle}>Ticket price (AUD)</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  placeholder="e.g. 20"
+                  value={eventForm.ticket_price}
+                  disabled={eventForm.is_free}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, ticket_price: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Max attendees</label>
+                <input
+                  type="number"
+                  style={inputStyle}
+                  placeholder="e.g. 100"
+                  value={eventForm.max_attendees}
+                  onChange={(e) =>
+                    setEventForm({
+                      ...eventForm,
+                      max_attendees: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>
+                Event URL (registration / tickets)
+              </label>
+              <input
+                type="url"
+                style={inputStyle}
+                placeholder="e.g. https://eventbrite.com/..."
+                value={eventForm.event_url}
+                onChange={(e) =>
+                  setEventForm({ ...eventForm, event_url: e.target.value })
+                }
+              />
+            </div>
+
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  color: "#444",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={eventForm.is_free}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, is_free: e.target.checked })
+                  }
+                />
+                Free event
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  color: "#444",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={eventForm.is_online}
+                  onChange={(e) =>
+                    setEventForm({ ...eventForm, is_online: e.target.checked })
+                  }
+                />
+                Online / virtual event
+              </label>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+              <button
+                onClick={() => setStep(2)}
+                style={{
+                  flex: 1,
+                  background: "#fff",
+                  color: "#555",
+                  border: "0.5px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                ← Back
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                style={{
+                  flex: 2,
+                  background: loading ? "#ccc" : "#E87722",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  cursor: loading ? "not-allowed" : "pointer",
+                }}
+              >
+                {loading ? "Posting..." : "Post event →"}
               </button>
             </div>
           </div>

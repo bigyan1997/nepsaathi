@@ -16,7 +16,9 @@ import RoomsPage from "./pages/listings/RoomsPage";
 import JobDetailPage from "./pages/listings/JobDetailPage";
 import RoomDetailPage from "./pages/listings/RoomDetailPage";
 import AnnouncementsPage from "./pages/listings/AnnouncementsPage";
-import AnnouncementDetailPage from "./pages/listings/AnnouncementDetailPage";
+import AnnouncementDetailPage from "./pages/listings/AnnouncementsPage";
+import EventsPage from "./pages/listings/EventsPage";
+import EventDetailPage from "./pages/listings/EventDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Public Listing Pages
@@ -60,6 +62,10 @@ function App() {
                 path="/announcements/listing/:id"
                 element={<AnnouncementDetailPage />}
               />
+
+              <Route path="/events" element={<EventsPage />} />
+              <Route path="/events/:id" element={<EventDetailPage />} />
+              <Route path="/events/listing/:id" element={<EventDetailPage />} />
 
               {/* Guest only routes */}
               <Route
