@@ -172,7 +172,6 @@ export default function RoomsPage() {
 
       {/* Room cards */}
       <div
-        onClick={() => navigate(`/rooms/${room.id}`)}
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
@@ -182,6 +181,7 @@ export default function RoomsPage() {
         {data?.results?.map((room) => (
           <div
             key={room.id}
+            onClick={() => navigate(`/rooms/${room.id}`)}
             style={{
               background: "#fff",
               border: "0.5px solid #e5e5e5",

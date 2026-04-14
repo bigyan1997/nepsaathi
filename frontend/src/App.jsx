@@ -17,6 +17,9 @@ import JobDetailPage from "./pages/listings/JobDetailPage";
 import RoomDetailPage from "./pages/listings/RoomDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
+// Public Listing Pages
+import PostAdPage from "./pages/listings/PostAdPage";
+
 // Auth pages (guest only)
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
@@ -44,6 +47,8 @@ function App() {
               <Route path="/jobs/:id" element={<JobDetailPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/rooms/:id" element={<RoomDetailPage />} />
+              <Route path="/jobs/listing/:id" element={<JobDetailPage />} />
+              <Route path="/rooms/listing/:id" element={<RoomDetailPage />} />
 
               {/* Guest only routes */}
               <Route
@@ -63,11 +68,16 @@ function App() {
                 }
               />
 
+              <Route
+                path="/post-ad"
+                element={
+                  <ProtectedRoute>
+                    <PostAdPage />
+                  </ProtectedRoute>
+                }
+              />
               {/* Protected routes — uncomment as we build each page */}
               {/*
-              <Route path="/post-ad" element={
-                <ProtectedRoute><PostAdPage /></ProtectedRoute>
-              }/>
               <Route path="/my-listings" element={
                 <ProtectedRoute><MyListingsPage /></ProtectedRoute>
               }/>

@@ -95,3 +95,23 @@ class JobDetailView(generics.RetrieveUpdateDestroyAPIView):
             if obj.listing.user != request.user:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied('You do not own this listing.')
+            
+
+class JobDetailByListingView(generics.RetrieveAPIView):
+    """
+    GET /api/jobs/listing/<listing_id>/
+    Fetches job detail by the parent listing ID.
+    React uses this after creating a listing to show the detail page.
+    """
+    serializer_class = JobSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self):
+        listing_id = self.kwargs['listing_id']
+        try:
+            return Job.objects.select_related(
+                'listing', 'listing__user'
+            ).get(listing__id=listing_id)
+        except Job.DoesNotExist:
+            from rest_framework.exceptions import NotFound
+            raise NotFound('Job not found.')

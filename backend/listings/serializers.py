@@ -77,6 +77,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listing
         fields = (
+            'id',
             'listing_type',
             'title',
             'description',
@@ -87,9 +88,3 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_whatsapp',
             'expires_at',
         )
-
-    def create(self, validated_data):
-        # Automatically assign the logged in user as the owner
-        user = self.context['request'].user
-        listing = Listing.objects.create(user=user, **validated_data)
-        return listing

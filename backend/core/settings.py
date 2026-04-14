@@ -136,6 +136,7 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'nepsaathi-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'nepsaathi-refresh',
     'JWT_AUTH_RETURN_EXPIRATION': True,
+    'JWT_AUTH_HTTPONLY': False,
     'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
 }
 

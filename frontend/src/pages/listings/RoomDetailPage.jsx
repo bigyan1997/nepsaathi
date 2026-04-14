@@ -1,20 +1,22 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getRoom } from "../../api/rooms";
+import { getRoom, getRoomByListing } from "../../api/rooms";
 import useAuthStore from "../../store/authStore";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuthStore();
 
+  const isListingRoute = location.pathname.includes("/listing/");
   const {
     data: room,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["room", id],
-    queryFn: () => getRoom(id),
+    queryKey: ["room", id, isListingRoute],
+    queryFn: () => (isListingRoute ? getRoomByListing(id) : getRoom(id)),
   });
 
   if (isLoading)

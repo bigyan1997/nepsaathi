@@ -118,3 +118,22 @@ class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
             if obj.listing.user != request.user:
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied('You do not own this listing.')
+
+class RoomDetailByListingView(generics.RetrieveAPIView):
+    """
+    GET /api/rooms/listing/<listing_id>/
+    Fetches room detail by the parent listing ID.
+    React uses this after creating a listing to show the detail page.
+    """
+    serializer_class = RoomSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_object(self):
+        listing_id = self.kwargs['listing_id']
+        try:
+            return Room.objects.select_related(
+                'listing', 'listing__user'
+            ).get(listing__id=listing_id)
+        except Room.DoesNotExist:
+            from rest_framework.exceptions import NotFound
+            raise NotFound('Room not found.')

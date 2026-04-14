@@ -1,7 +1,6 @@
 import api from "../utils/axios";
 
 // Fetch all active room listings with optional filters
-// Example: getRooms({ room_type: 'private', bills_included: true })
 export const getRooms = async (params = {}) => {
   const response = await api.get("/api/rooms/", { params });
   return response.data;
@@ -10,6 +9,13 @@ export const getRooms = async (params = {}) => {
 // Get a single room by ID
 export const getRoom = async (id) => {
   const response = await api.get(`/api/rooms/${id}/`);
+  return response.data;
+};
+
+// Get a room by its parent listing ID
+// Used after creating a listing to redirect to detail page
+export const getRoomByListing = async (listingId) => {
+  const response = await api.get(`/api/rooms/listing/${listingId}/`);
   return response.data;
 };
 

@@ -95,6 +95,21 @@ export default function Navbar() {
             <span style={{ fontSize: "13px", color: "#555" }}>
               Hi, {user?.first_name}
             </span>
+            <Link
+              to="/post-ad"
+              style={{
+                background: "#E87722",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "8px 18px",
+                fontSize: "13px",
+                fontWeight: 500,
+                textDecoration: "none",
+              }}
+            >
+              + Post free ad
+            </Link>
             <button
               onClick={handleLogout}
               style={{
@@ -135,7 +150,7 @@ export default function Navbar() {
                 textDecoration: "none",
               }}
             >
-              Post free ad
+              + Post free ad
             </Link>
           </>
         )}

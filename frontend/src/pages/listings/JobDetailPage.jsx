@@ -1,20 +1,23 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getJob } from "../../api/jobs";
+import { getJob, getJobByListing } from "../../api/jobs";
 import useAuthStore from "../../store/authStore";
 
 export default function JobDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuthStore();
+
+  const isListingRoute = location.pathname.includes("/listing/");
 
   const {
     data: job,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["job", id],
-    queryFn: () => getJob(id),
+    queryKey: ["job", id, isListingRoute],
+    queryFn: () => (isListingRoute ? getJobByListing(id) : getJob(id)),
   });
 
   if (isLoading)
