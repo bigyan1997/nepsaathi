@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getJob, getJobByListing } from "../../api/jobs";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
+import ShareButton from "../../components/ui/ShareButton";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -31,24 +32,33 @@ export default function JobDetailPage() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button */}
-      <button
-        onClick={() => navigate("/jobs")}
+      {/* Back button and share */}
+      <div
         style={{
-          background: "transparent",
-          border: "none",
-          color: "#534AB7",
-          fontSize: "13px",
-          cursor: "pointer",
-          marginBottom: "20px",
-          padding: 0,
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          gap: "4px",
+          marginBottom: "20px",
         }}
       >
-        ← Back to jobs
-      </button>
+        <button
+          onClick={() => navigate("/jobs")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#534AB7",
+            fontSize: "13px",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+          }}
+        >
+          ← Back to jobs
+        </button>
+        <ShareButton title={job?.listing_title} />
+      </div>
 
       {/* Hero section */}
       <div

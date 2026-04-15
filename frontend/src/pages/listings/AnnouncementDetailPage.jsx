@@ -6,6 +6,7 @@ import {
 } from "../../api/announcements";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
+import ShareButton from "../../components/ui/ShareButton";
 
 const CATEGORY_COLORS = {
   news: { bg: "#EEEDFE", color: "#3C3489" },
@@ -47,21 +48,33 @@ export default function AnnouncementDetailPage() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button */}
-      <button
-        onClick={() => navigate("/announcements")}
+      {/* Back button and share */}
+      <div
         style={{
-          background: "transparent",
-          border: "none",
-          color: "#E87722",
-          fontSize: "13px",
-          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "20px",
-          padding: 0,
         }}
       >
-        ← Back to announcements
-      </button>
+        <button
+          onClick={() => navigate("/jobs")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#534AB7",
+            fontSize: "13px",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+          }}
+        >
+          ← Back to jobs
+        </button>
+        <ShareButton title={job?.listing_title} />
+      </div>
 
       {/* Main card */}
       <div
