@@ -7,6 +7,7 @@ import { createAnnouncement } from "../../api/announcements";
 import { createEvent } from "../../api/events";
 import ImageUpload from "../../components/ui/ImageUpload";
 import usePageTitle from "../../hooks/usePageTitle";
+import { useQueryClient } from "@tanstack/react-query";
 
 const LISTING_TYPES = [
   { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
@@ -91,6 +92,7 @@ export default function PostAdPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const queryClient = useQueryClient();
 
   // Step 1 — listing type
   const [listingType, setListingType] = useState("");
@@ -185,12 +187,20 @@ export default function PostAdPage() {
           ...jobForm,
           salary: jobForm.salary || null,
         });
+        // Invalidate cache so new listing shows immediately
+        queryClient.invalidateQueries(["jobs"]);
+        queryClient.invalidateQueries(["home-jobs"]);
+        queryClient.invalidateQueries(["my-listings"]);
       } else if (listingType === "room") {
         await createRoom({
           listing: listing.id,
           ...roomForm,
           price: roomForm.price,
         });
+        // Invalidate cache so new listing shows immediately
+        queryClient.invalidateQueries(["rooms"]);
+        queryClient.invalidateQueries(["home-rooms"]);
+        queryClient.invalidateQueries(["my-listings"]);
       } else if (listingType === "announcement") {
         await createAnnouncement({
           listing: listing.id,
@@ -200,6 +210,8 @@ export default function PostAdPage() {
           is_free: announcementForm.is_free,
           is_urgent: announcementForm.is_urgent,
         });
+        queryClient.invalidateQueries(["announcements"]);
+        queryClient.invalidateQueries(["my-listings"]);
       } else if (listingType === "event") {
         await createEvent({
           listing: listing.id,
@@ -214,7 +226,12 @@ export default function PostAdPage() {
           is_online: eventForm.is_online,
           event_url: eventForm.event_url,
         });
+        queryClient.invalidateQueries(["events"]);
+        queryClient.invalidateQueries(["home-events"]);
+        queryClient.invalidateQueries(["my-listings"]);
       }
+      queryClient.invalidateQueries(["listings"]);
+      queryClient.invalidateQueries(["my-listings"]);
       setCreatedListingId(listing.id);
       setStep(4);
     } catch (err) {
