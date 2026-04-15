@@ -30,4 +30,4 @@ RUN SECRET_KEY=dummy-build-key \
 RUN chmod +x start.sh
 
 # Start server
-CMD ["./start.sh"]
+CMD ["bash", "start.sh"]

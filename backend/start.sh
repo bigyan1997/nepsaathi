@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Starting on port $PORT"
-python manage.py migrate
-exec gunicorn core.wsgi:application --bind "0.0.0.0:${PORT}"
-
+echo "Running migrations..."
+python3 manage.py migrate
+echo "Starting gunicorn on port $PORT..."
+exec gunicorn core.wsgi --bind 0.0.0.0:${PORT:-8000} --workers 2 --timeout 120
