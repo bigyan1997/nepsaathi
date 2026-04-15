@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfile, updateProfile } from "../api/auth";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
+import { useToast } from "../components/ui/Toast";
 
 const inputStyle = {
   width: "100%",
@@ -29,6 +30,7 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const { addToast } = useToast();
 
   const [form, setForm] = useState({
     first_name: "",
@@ -63,19 +65,19 @@ export default function ProfilePage() {
     onSuccess: (data) => {
       queryClient.invalidateQueries(["profile"]);
       updateUser(data);
-      setSuccess("Profile updated successfully!");
-      setError("");
-      setTimeout(() => setSuccess(""), 3000);
+      addToast("Profile updated successfully!", "success");
     },
     onError: (err) => {
       const errors = err.response?.data;
       if (errors) {
         const firstError = Object.values(errors)[0];
-        setError(Array.isArray(firstError) ? firstError[0] : firstError);
+        addToast(
+          Array.isArray(firstError) ? firstError[0] : firstError,
+          "error",
+        );
       } else {
-        setError("Something went wrong. Please try again.");
+        addToast("Something went wrong. Please try again.", "error");
       }
-      setSuccess("");
     },
   });
 

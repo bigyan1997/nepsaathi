@@ -6,6 +6,7 @@ import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import useAuthStore from "../../store/authStore";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { useToast } from "../../components/ui/Toast";
 
 const STATUS_COLORS = {
   active: { bg: "#E1F5EE", color: "#085041" },
@@ -31,6 +32,7 @@ const TYPE_EMOJIS = {
 export default function MyListingsPage() {
   usePageTitle("My Listings");
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("listings");
@@ -52,13 +54,20 @@ export default function MyListingsPage() {
   const deleteListingMutation = useMutation({
     mutationFn: deleteListing,
     onSuccess: () => {
-      // Refetch fresh data from server
       queryClient.invalidateQueries(["my-listings"]);
+      queryClient.invalidateQueries(["jobs"]);
+      queryClient.invalidateQueries(["rooms"]);
+      queryClient.invalidateQueries(["events"]);
+      queryClient.invalidateQueries(["announcements"]);
+      queryClient.invalidateQueries(["home-jobs"]);
+      queryClient.invalidateQueries(["home-rooms"]);
+      queryClient.invalidateQueries(["home-events"]);
       setDeletingId(null);
+      addToast("Listing deleted successfully!", "success");
     },
     onError: () => {
       setDeletingId(null);
-      alert("Failed to delete listing. Please try again.");
+      addToast("Failed to delete listing. Please try again.", "error");
     },
   });
 
@@ -67,11 +76,13 @@ export default function MyListingsPage() {
     mutationFn: deleteBusiness,
     onSuccess: () => {
       queryClient.invalidateQueries(["my-businesses"]);
+      queryClient.invalidateQueries(["businesses"]);
       setDeletingId(null);
+      addToast("Business removed successfully!", "success");
     },
     onError: () => {
       setDeletingId(null);
-      alert("Failed to remove business. Please try again.");
+      addToast("Failed to remove business. Please try again.", "error");
     },
   });
 

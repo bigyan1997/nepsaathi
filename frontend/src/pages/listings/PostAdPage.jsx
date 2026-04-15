@@ -8,6 +8,7 @@ import { createEvent } from "../../api/events";
 import ImageUpload from "../../components/ui/ImageUpload";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "../../components/ui/Toast";
 
 const LISTING_TYPES = [
   { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
@@ -89,6 +90,7 @@ const labelStyle = {
 export default function PostAdPage() {
   usePageTitle("Post a Free Ad");
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -234,6 +236,7 @@ export default function PostAdPage() {
       queryClient.invalidateQueries(["my-listings"]);
       setCreatedListingId(listing.id);
       setStep(4);
+      addToast("Listing created successfully! Now add some photos.", "success");
     } catch (err) {
       const errors = err.response?.data;
       if (errors) {
