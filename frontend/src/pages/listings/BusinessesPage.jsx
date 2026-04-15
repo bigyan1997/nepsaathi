@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
@@ -72,6 +72,7 @@ const CATEGORY_COLORS = {
 export default function BusinessesPage() {
   usePageTitle("Nepalese Businesses");
   const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState({
     category: "",
     state: "",
@@ -91,6 +92,19 @@ export default function BusinessesPage() {
         is_verified: filters.is_verified || undefined,
       }),
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get("search");
+    const stateParam = params.get("state");
+    if (searchParam || stateParam) {
+      setFilters((prev) => ({
+        ...prev,
+        search: searchParam || "",
+        state: stateParam || "",
+      }));
+    }
+  }, [location.search]);
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>

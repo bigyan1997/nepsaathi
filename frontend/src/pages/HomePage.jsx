@@ -50,21 +50,39 @@ const CATEGORIES = [
   },
 ];
 
+const STATES = [
+  { value: "", label: "All states" },
+  { value: "NSW", label: "NSW" },
+  { value: "VIC", label: "VIC" },
+  { value: "QLD", label: "QLD" },
+  { value: "WA", label: "WA" },
+  { value: "SA", label: "SA" },
+  { value: "TAS", label: "TAS" },
+  { value: "ACT", label: "ACT" },
+  { value: "NT", label: "NT" },
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [search, setSearch] = useState("");
   const [searchType, setSearchType] = useState("all");
+  const [state, setState] = useState("");
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!search.trim()) return;
+    if (!search.trim() && !state) return;
+
+    const params = new URLSearchParams();
+    if (search.trim()) params.set("search", search);
+    if (state) params.set("state", state);
+
     if (searchType === "jobs" || searchType === "all")
-      navigate(`/jobs?search=${search}`);
-    else if (searchType === "rooms") navigate(`/rooms?search=${search}`);
-    else if (searchType === "events") navigate(`/events?search=${search}`);
+      navigate(`/jobs?${params.toString()}`);
+    else if (searchType === "rooms") navigate(`/rooms?${params.toString()}`);
+    else if (searchType === "events") navigate(`/events?${params.toString()}`);
     else if (searchType === "businesses")
-      navigate(`/businesses?search=${search}`);
+      navigate(`/businesses?${params.toString()}`);
   };
 
   const { data: jobsData } = useQuery({
@@ -162,62 +180,103 @@ export default function HomePage() {
               maxWidth: "600px",
               margin: "0 auto 24px",
               display: "flex",
-              border: "1.5px solid #AFA9EC",
-              borderRadius: "12px",
-              overflow: "hidden",
-              background: "#fff",
+              flexDirection: "column",
+              gap: "8px",
             }}
           >
-            <select
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
+            {/* Top row — type + search + button */}
+            <div
               style={{
-                border: "none",
-                outline: "none",
-                background: "transparent",
-                fontSize: "13px",
-                padding: "0 14px",
-                color: "#555",
-                borderRight: "0.5px solid #e5e5e5",
-                minWidth: "100px",
-                cursor: "pointer",
+                display: "flex",
+                border: "1.5px solid #AFA9EC",
+                borderRadius: "12px",
+                overflow: "hidden",
+                background: "#fff",
               }}
             >
-              <option value="all">All</option>
-              <option value="jobs">Jobs</option>
-              <option value="rooms">Rooms</option>
-              <option value="events">Events</option>
-              <option value="businesses">Businesses</option>
-            </select>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search jobs, rooms, events..."
+              <select
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+                style={{
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  fontSize: "13px",
+                  padding: "0 14px",
+                  color: "#555",
+                  borderRight: "0.5px solid #e5e5e5",
+                  minWidth: "100px",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="all">All</option>
+                <option value="jobs">Jobs</option>
+                <option value="rooms">Rooms</option>
+                <option value="events">Events</option>
+                <option value="businesses">Businesses</option>
+              </select>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search jobs, rooms, events..."
+                style={{
+                  flex: 1,
+                  border: "none",
+                  outline: "none",
+                  fontSize: "14px",
+                  padding: "14px 16px",
+                  color: "#333",
+                  background: "transparent",
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  background: "#534AB7",
+                  color: "#fff",
+                  border: "none",
+                  padding: "0 28px",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                Search
+              </button>
+            </div>
+
+            {/* Bottom row — state filter */}
+            <div
               style={{
-                flex: 1,
-                border: "none",
-                outline: "none",
-                fontSize: "14px",
-                padding: "14px 16px",
-                color: "#333",
-                background: "transparent",
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                background: "#534AB7",
-                color: "#fff",
-                border: "none",
-                padding: "0 28px",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
+                display: "flex",
+                gap: "8px",
+                justifyContent: "center",
+                flexWrap: "wrap",
               }}
             >
-              Search
-            </button>
+              {STATES.filter((s) => s.value).map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setState(state === value ? "" : value)}
+                  style={{
+                    background:
+                      state === value ? "#534AB7" : "rgba(255,255,255,0.8)",
+                    color: state === value ? "#fff" : "#534AB7",
+                    border: "0.5px solid #AFA9EC",
+                    borderRadius: "20px",
+                    padding: "4px 14px",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </form>
 
           <ExchangeRates />

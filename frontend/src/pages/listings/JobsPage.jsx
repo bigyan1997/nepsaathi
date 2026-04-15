@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 
@@ -27,6 +27,7 @@ const STATES = [
 export default function JobsPage() {
   usePageTitle("Jobs in Australia");
   const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState({
     job_type: "",
     search: "",
@@ -39,9 +40,22 @@ export default function JobsPage() {
       getJobs({
         job_type: filters.job_type || undefined,
         search: filters.search || undefined,
-        listing__stat: filters.state || undefined,
+        listing__state: filters.state || undefined,
       }),
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get("search");
+    const stateParam = params.get("state");
+    if (searchParam || stateParam) {
+      setFilters((prev) => ({
+        ...prev,
+        search: searchParam || "",
+        state: stateParam || "",
+      }));
+    }
+  }, [location.search]);
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>

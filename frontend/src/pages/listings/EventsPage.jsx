@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../../api/events";
 import { SkeletonCard } from "../../components/ui/Skeleton";
@@ -54,6 +54,7 @@ const STATES = [
 export default function EventsPage() {
   usePageTitle("Community Events");
   const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState({
     category: "",
     search: "",
@@ -92,6 +93,19 @@ export default function EventsPage() {
       minute: "2-digit",
     });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get("search");
+    const stateParam = params.get("state");
+    if (searchParam || stateParam) {
+      setFilters((prev) => ({
+        ...prev,
+        search: searchParam || "",
+        state: stateParam || "",
+      }));
+    }
+  }, [location.search]);
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>

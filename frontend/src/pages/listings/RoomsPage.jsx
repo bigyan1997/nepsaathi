@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 
@@ -28,6 +28,7 @@ const STATES = [
 export default function RoomsPage() {
   usePageTitle("Rooms for Rent");
   const navigate = useNavigate();
+  const location = useLocation();
   const [filters, setFilters] = useState({
     room_type: "",
     search: "",
@@ -44,9 +45,22 @@ export default function RoomsPage() {
         room_type: filters.room_type || undefined,
         bills_included: filters.bills_included || undefined,
         nepalese_household: filters.nepalese_household || undefined,
-        listing__state: filters.state || undefined, // ← add this
+        listing__state: filters.state || undefined,
       }),
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get("search");
+    const stateParam = params.get("state");
+    if (searchParam || stateParam) {
+      setFilters((prev) => ({
+        ...prev,
+        search: searchParam || "",
+        state: stateParam || "",
+      }));
+    }
+  }, [location.search]);
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>
