@@ -46,9 +46,9 @@ export default function RegisterPage() {
       key: "firstName",
       label: "First name",
       type: "text",
-      placeholder: "Bigyan",
+      placeholder: "John",
     },
-    { key: "lastName", label: "Last name", type: "text", placeholder: "Karki" },
+    { key: "lastName", label: "Last name", type: "text", placeholder: "Doe" },
     {
       key: "email",
       label: "Email",

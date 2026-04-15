@@ -13,6 +13,18 @@ const ROOM_TYPES = [
   { value: "studio", label: "Studio" },
 ];
 
+const STATES = [
+  { value: "", label: "All states" },
+  { value: "NSW", label: "NSW" },
+  { value: "VIC", label: "VIC" },
+  { value: "QLD", label: "QLD" },
+  { value: "WA", label: "WA" },
+  { value: "SA", label: "SA" },
+  { value: "TAS", label: "TAS" },
+  { value: "ACT", label: "ACT" },
+  { value: "NT", label: "NT" },
+];
+
 export default function RoomsPage() {
   usePageTitle("Rooms for Rent");
   const navigate = useNavigate();
@@ -21,16 +33,18 @@ export default function RoomsPage() {
     search: "",
     bills_included: "",
     nepalese_household: "",
+    state: "",
   });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["rooms", filters],
     queryFn: () =>
       getRooms({
-        room_type: filters.room_type || undefined,
         search: filters.search || undefined,
+        room_type: filters.room_type || undefined,
         bills_included: filters.bills_included || undefined,
         nepalese_household: filters.nepalese_household || undefined,
+        state: filters.state || undefined, // ← add this
       }),
   });
 
@@ -94,6 +108,25 @@ export default function RoomsPage() {
           }}
         >
           {ROOM_TYPES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filters.state}
+          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          {STATES.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
             </option>
