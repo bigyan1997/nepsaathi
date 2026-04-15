@@ -26,5 +26,8 @@ RUN SECRET_KEY=dummy-build-key \
     CLOUDINARY_API_SECRET=dummy \
     python manage.py collectstatic --noinput
 
+# Expose a default port
+EXPOSE 8000
+
 # Start server
-CMD ["sh", "-c", "python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
