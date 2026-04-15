@@ -304,7 +304,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div
-        className="footer-grid"
+        className="footer-bottom"
         style={{
           maxWidth: "1000px",
           margin: "0 auto",
@@ -343,18 +343,28 @@ export default function Footer() {
       </div>
 
       {/* Responsive styles */}
-      <style>{`
-        @media (max-width: 768px) {
-          .footer-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .footer-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
+      <style>
+        {`
+            @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 24px !important;
+                padding: 32px 16px 24px !important;
+            }
+            }
+            @media (max-width: 480px) {
+            .footer-grid {
+                grid-template-columns: 1fr !important;
+                padding: 28px 16px 20px !important;
+            }
+            .footer-bottom {
+                padding: 16px !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            }
+        `}
+      </style>
     </footer>
   );
 }
