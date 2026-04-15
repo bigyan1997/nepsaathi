@@ -4,6 +4,7 @@ cffi==2.0.0
 charset-normalizer==3.4.7
 cloudinary==1.44.1
 cryptography==46.0.7
+dj-database-url==3.1.2
 dj-rest-auth==7.2.0
 Django==6.0.4
 django-allauth==65.15.1
@@ -12,8 +13,10 @@ django-cors-headers==4.9.0
 django-filter==25.2
 djangorestframework==3.17.1
 djangorestframework_simplejwt==5.5.1
+gunicorn==25.3.0
 idna==3.11
 oauthlib==3.3.1
+packaging==26.1
 pillow==12.2.0
 psycopg2-binary==2.9.11
 pycparser==3.0
@@ -23,3 +26,4 @@ requests==2.33.1
 six==1.17.0
 sqlparse==0.5.5
 urllib3==2.6.3
+whitenoise==6.12.0
