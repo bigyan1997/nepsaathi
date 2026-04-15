@@ -13,6 +13,7 @@ export default function Footer() {
     >
       {/* Main footer content */}
       <div
+        className="footer-grid"
         style={{
           maxWidth: "1000px",
           margin: "0 auto",
@@ -303,6 +304,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div
+        className="footer-grid"
         style={{
           maxWidth: "1000px",
           margin: "0 auto",
