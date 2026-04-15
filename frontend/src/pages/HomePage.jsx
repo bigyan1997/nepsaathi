@@ -94,6 +94,7 @@ export default function HomePage() {
             .home-section { padding-left: 16px !important; padding-right: 16px !important; }
             .cta-inner { padding: 24px 20px !important; }
             .stats-grid { gap: 8px !important; }
+            .stat-num { font-size: 18px !important; }
         }
       `}</style>
 
@@ -303,7 +304,10 @@ export default function HomePage() {
                 border: "0.5px solid #e5e5e5",
               }}
             >
-              <div style={{ fontSize: "28px", fontWeight: 700, color }}>
+              <div
+                className="stat-num"
+                style={{ fontSize: "28px", fontWeight: 700, color }}
+              >
                 {num}
               </div>
               <div
