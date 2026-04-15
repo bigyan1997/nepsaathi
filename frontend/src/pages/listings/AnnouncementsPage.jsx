@@ -24,6 +24,18 @@ const CATEGORY_COLORS = {
   general: { bg: "#F1EFE8", color: "#444441" },
 };
 
+const STATES = [
+  { value: "", label: "All states" },
+  { value: "NSW", label: "NSW" },
+  { value: "VIC", label: "VIC" },
+  { value: "QLD", label: "QLD" },
+  { value: "WA", label: "WA" },
+  { value: "SA", label: "SA" },
+  { value: "TAS", label: "TAS" },
+  { value: "ACT", label: "ACT" },
+  { value: "NT", label: "NT" },
+];
+
 export default function AnnouncementsPage() {
   usePageTitle("Announcements");
   const navigate = useNavigate();
@@ -40,6 +52,7 @@ export default function AnnouncementsPage() {
       getAnnouncements({
         category: filters.category || undefined,
         search: filters.search || undefined,
+        listing__state: filters.state || undefined,
         is_free: filters.is_free || undefined,
         is_urgent: filters.is_urgent || undefined,
       }),
@@ -103,6 +116,26 @@ export default function AnnouncementsPage() {
           }}
         >
           {CATEGORIES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={filters.state}
+          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          {STATES.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
             </option>

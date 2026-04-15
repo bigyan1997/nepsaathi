@@ -44,7 +44,7 @@ export default function RoomsPage() {
         room_type: filters.room_type || undefined,
         bills_included: filters.bills_included || undefined,
         nepalese_household: filters.nepalese_household || undefined,
-        state: filters.state || undefined, // ← add this
+        listing__state: filters.state || undefined, // ← add this
       }),
   });
 

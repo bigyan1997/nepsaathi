@@ -13,10 +13,25 @@ const JOB_TYPES = [
   { value: "contract", label: "Contract" },
 ];
 
+const STATES = [
+  { value: "", label: "All states" },
+  { value: "NSW", label: "NSW" },
+  { value: "VIC", label: "VIC" },
+  { value: "QLD", label: "QLD" },
+  { value: "WA", label: "WA" },
+  { value: "SA", label: "SA" },
+  { value: "TAS", label: "TAS" },
+  { value: "ACT", label: "ACT" },
+  { value: "NT", label: "NT" },
+];
 export default function JobsPage() {
   usePageTitle("Jobs in Australia");
   const navigate = useNavigate();
-  const [filters, setFilters] = useState({ job_type: "", search: "" });
+  const [filters, setFilters] = useState({
+    job_type: "",
+    search: "",
+    state: "",
+  });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["jobs", filters],
@@ -24,6 +39,7 @@ export default function JobsPage() {
       getJobs({
         job_type: filters.job_type || undefined,
         search: filters.search || undefined,
+        listing__stat: filters.state || undefined,
       }),
   });
 
@@ -85,6 +101,25 @@ export default function JobsPage() {
           }}
         >
           {JOB_TYPES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filters.state}
+          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          {STATES.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
             </option>

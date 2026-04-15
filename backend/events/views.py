@@ -28,6 +28,7 @@ class EventListView(generics.ListAPIView):
         'listing__title',
         'listing__description',
         'listing__location',
+        'listing__state',
         'venue',
         'organiser',
     )

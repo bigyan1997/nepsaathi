@@ -21,7 +21,7 @@ class JobListView(generics.ListAPIView):
     serializer_class = JobSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filterset_fields = ('job_type', 'salary_type', 'is_urgent')
+    filterset_fields = ('job_type', 'salary_type', 'is_urgent', 'listing__state')
     search_fields = ('listing__title', 'listing__description', 'listing__location', 'company_name')
     ordering_fields = ('listing__created_at', 'salary')
     ordering = ('-listing__created_at',)

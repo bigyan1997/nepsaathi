@@ -27,6 +27,7 @@ class RoomListView(generics.ListAPIView):
         'nepalese_household',
         'pets_allowed',
         'parking_available',
+        'listing__state',
     )
     search_fields = (
         'listing__title',

@@ -38,6 +38,7 @@ class AnnouncementListView(generics.ListAPIView):
         'listing__title',
         'listing__description',
         'listing__location',
+        'listing__state',
     )
     ordering_fields = ('listing__created_at',)
     ordering = ('-listing__created_at',)
