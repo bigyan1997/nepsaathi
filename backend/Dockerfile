@@ -27,4 +27,4 @@ RUN SECRET_KEY=dummy-build-key \
     python manage.py collectstatic --noinput
 
 # Start server
-CMD python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+CMD ["sh", "-c", "python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"]
