@@ -41,3 +41,18 @@ body {
 .page-transition {
   animation: fadeIn 0.2s ease-out;
 }
+
+@media (max-width: 480px) {
+  .home-section {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .hero-title {
+    font-size: 28px !important;
+  }
+
+  .hero-search {
+    flex-direction: column !important;
+  }
+}
