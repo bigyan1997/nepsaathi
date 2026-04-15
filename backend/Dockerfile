@@ -15,11 +15,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Collect static files with dummy secret key for build only
-RUN SECRET_KEY=dummy-build-key-not-used-in-production \
+# Collect static files with dummy values for build only
+RUN SECRET_KEY=dummy-build-key \
     DEBUG=False \
     DATABASE_URL=sqlite:///dummy.db \
+    GOOGLE_CLIENT_ID=dummy \
+    GOOGLE_CLIENT_SECRET=dummy \
+    CLOUDINARY_CLOUD_NAME=dummy \
+    CLOUDINARY_API_KEY=dummy \
+    CLOUDINARY_API_SECRET=dummy \
     python manage.py collectstatic --noinput
 
-# Run migrations and start server
+# Start server
 CMD python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
