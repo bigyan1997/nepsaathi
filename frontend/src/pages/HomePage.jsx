@@ -88,11 +88,12 @@ export default function HomePage() {
   return (
     <>
       <style>{`
-        @media (max-width: 480px) {
-          .hero-section { padding: 40px 16px 32px !important; }
-          .hero-title { font-size: 28px !important; letter-spacing: -0.3px !important; }
-          .home-section { padding-left: 16px !important; padding-right: 16px !important; }
-          .cta-inner { padding: 24px 20px !important; }
+         @media (max-width: 480px) {
+            .hero-section { padding: 40px 16px 32px !important; }
+            .hero-title { font-size: 28px !important; letter-spacing: -0.3px !important; }
+            .home-section { padding-left: 16px !important; padding-right: 16px !important; }
+            .cta-inner { padding: 24px 20px !important; }
+            .stats-grid { gap: 8px !important; }
         }
       `}</style>
 
