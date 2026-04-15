@@ -15,8 +15,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Collect static files with dummy secret key for build only
+RUN SECRET_KEY=dummy-build-key-not-used-in-production \
+    DEBUG=False \
+    DATABASE_URL=sqlite:///dummy.db \
+    python manage.py collectstatic --noinput
 
 # Run migrations and start server
 CMD python manage.py migrate && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
