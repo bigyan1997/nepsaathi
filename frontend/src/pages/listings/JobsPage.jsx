@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
 import { useNavigate } from "react-router-dom";
 import { SkeletonCard } from "../../components/ui/Skeleton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -13,6 +14,7 @@ const JOB_TYPES = [
 ];
 
 export default function JobsPage() {
+  usePageTitle("Jobs in Australia");
   const navigate = useNavigate();
   const [filters, setFilters] = useState({ job_type: "", search: "" });
 

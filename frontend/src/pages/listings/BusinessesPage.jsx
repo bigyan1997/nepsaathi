@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -69,6 +70,7 @@ const CATEGORY_COLORS = {
 };
 
 export default function BusinessesPage() {
+  usePageTitle("Nepalese Businesses");
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     category: "",

@@ -6,6 +6,7 @@ import { createRoom } from "../../api/rooms";
 import { createAnnouncement } from "../../api/announcements";
 import { createEvent } from "../../api/events";
 import ImageUpload from "../../components/ui/ImageUpload";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const LISTING_TYPES = [
   { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
@@ -85,6 +86,7 @@ const labelStyle = {
 };
 
 export default function PostAdPage() {
+  usePageTitle("Post a Free Ad");
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);

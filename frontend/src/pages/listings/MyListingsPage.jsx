@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyListings, deleteListing } from "../../api/listings";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import useAuthStore from "../../store/authStore";
+import { SkeletonCard } from "../../components/ui/Skeleton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const STATUS_COLORS = {
   active: { bg: "#E1F5EE", color: "#085041" },
@@ -27,6 +29,7 @@ const TYPE_EMOJIS = {
 };
 
 export default function MyListingsPage() {
+  usePageTitle("My Listings");
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();

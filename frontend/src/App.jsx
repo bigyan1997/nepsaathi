@@ -9,6 +9,7 @@ import GuestRoute from "./components/auth/GuestRoute";
 // Layout
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import PageWrapper from "./components/layout/PageWrapper";
 
 // Public pages
 import HomePage from "./pages/HomePage";
@@ -17,7 +18,7 @@ import RoomsPage from "./pages/listings/RoomsPage";
 import JobDetailPage from "./pages/listings/JobDetailPage";
 import RoomDetailPage from "./pages/listings/RoomDetailPage";
 import AnnouncementsPage from "./pages/listings/AnnouncementsPage";
-import AnnouncementDetailPage from "./pages/listings/AnnouncementsPage";
+import AnnouncementDetailPage from "./pages/listings/AnnouncementDetailPage";
 import EventsPage from "./pages/listings/EventsPage";
 import EventDetailPage from "./pages/listings/EventDetailPage";
 import BusinessesPage from "./pages/listings/BusinessesPage";
@@ -27,7 +28,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
-// Public Listing Pages
+// Protected pages
 import PostAdPage from "./pages/listings/PostAdPage";
 import MyListingsPage from "./pages/listings/MyListingsPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -51,7 +52,6 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <div
-            className="min-h-screen"
             style={{
               backgroundColor: "#F5F4F0",
               minHeight: "100vh",
@@ -61,96 +61,101 @@ function App() {
           >
             <Navbar />
             <div style={{ flex: 1 }}>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/jobs" element={<JobsPage />} />
-                <Route path="/jobs/:id" element={<JobDetailPage />} />
-                <Route path="/rooms" element={<RoomsPage />} />
-                <Route path="/rooms/:id" element={<RoomDetailPage />} />
-                <Route path="/jobs/listing/:id" element={<JobDetailPage />} />
-                <Route path="/rooms/listing/:id" element={<RoomDetailPage />} />
-                <Route path="/announcements" element={<AnnouncementsPage />} />
-                <Route
-                  path="/announcements/:id"
-                  element={<AnnouncementDetailPage />}
-                />
-                <Route
-                  path="/announcements/listing/:id"
-                  element={<AnnouncementDetailPage />}
-                />
+              <PageWrapper>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/jobs" element={<JobsPage />} />
+                  <Route path="/jobs/:id" element={<JobDetailPage />} />
+                  <Route path="/jobs/listing/:id" element={<JobDetailPage />} />
+                  <Route path="/rooms" element={<RoomsPage />} />
+                  <Route path="/rooms/:id" element={<RoomDetailPage />} />
+                  <Route
+                    path="/rooms/listing/:id"
+                    element={<RoomDetailPage />}
+                  />
+                  <Route
+                    path="/announcements"
+                    element={<AnnouncementsPage />}
+                  />
+                  <Route
+                    path="/announcements/:id"
+                    element={<AnnouncementDetailPage />}
+                  />
+                  <Route
+                    path="/announcements/listing/:id"
+                    element={<AnnouncementDetailPage />}
+                  />
+                  <Route path="/events" element={<EventsPage />} />
+                  <Route path="/events/:id" element={<EventDetailPage />} />
+                  <Route
+                    path="/events/listing/:id"
+                    element={<EventDetailPage />}
+                  />
+                  <Route path="/businesses" element={<BusinessesPage />} />
+                  <Route
+                    path="/businesses/:id"
+                    element={<BusinessDetailPage />}
+                  />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
 
-                <Route path="/events" element={<EventsPage />} />
-                <Route path="/events/:id" element={<EventDetailPage />} />
-                <Route
-                  path="/events/listing/:id"
-                  element={<EventDetailPage />}
-                />
+                  {/* Guest only routes */}
+                  <Route
+                    path="/login"
+                    element={
+                      <GuestRoute>
+                        <LoginPage />
+                      </GuestRoute>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <GuestRoute>
+                        <RegisterPage />
+                      </GuestRoute>
+                    }
+                  />
 
-                <Route path="/businesses" element={<BusinessesPage />} />
-                <Route
-                  path="/businesses/:id"
-                  element={<BusinessDetailPage />}
-                />
+                  {/* Protected routes */}
+                  <Route
+                    path="/post-ad"
+                    element={
+                      <ProtectedRoute>
+                        <PostAdPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/register-business"
+                    element={
+                      <ProtectedRoute>
+                        <RegisterBusinessPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/my-listings"
+                    element={
+                      <ProtectedRoute>
+                        <MyListingsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Guest only routes */}
-                <Route
-                  path="/login"
-                  element={
-                    <GuestRoute>
-                      <LoginPage />
-                    </GuestRoute>
-                  }
-                />
-                <Route
-                  path="/register"
-                  element={
-                    <GuestRoute>
-                      <RegisterPage />
-                    </GuestRoute>
-                  }
-                />
-
-                <Route
-                  path="/post-ad"
-                  element={
-                    <ProtectedRoute>
-                      <PostAdPage />
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route
-                  path="/register-business"
-                  element={
-                    <ProtectedRoute>
-                      <RegisterBusinessPage />
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route
-                  path="/my-listings"
-                  element={
-                    <ProtectedRoute>
-                      <MyListingsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* 404 — catches everything else */}
-                <Route path="*" element={<NotFoundPage />} />
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-              </Routes>
+                  {/* 404 — must be last */}
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </PageWrapper>
             </div>
             <Footer />
           </div>

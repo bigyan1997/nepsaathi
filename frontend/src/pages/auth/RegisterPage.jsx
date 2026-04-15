@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import { register } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function RegisterPage() {
+  usePageTitle("Create Account");
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
   const [form, setForm] = useState({

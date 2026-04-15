@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../../api/events";
 import { SkeletonCard } from "../../components/ui/Skeleton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -39,6 +40,7 @@ const CATEGORY_EMOJIS = {
 };
 
 export default function EventsPage() {
+  usePageTitle("Community Events");
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     category: "",

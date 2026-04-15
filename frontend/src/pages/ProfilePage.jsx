@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfile, updateProfile } from "../api/auth";
 import useAuthStore from "../store/authStore";
+import usePageTitle from "../hooks/usePageTitle";
 
 const inputStyle = {
   width: "100%",
@@ -23,6 +24,7 @@ const labelStyle = {
 };
 
 export default function ProfilePage() {
+  usePageTitle("Profile Settings");
   const { user, updateUser } = useAuthStore();
   const queryClient = useQueryClient();
   const [success, setSuccess] = useState("");

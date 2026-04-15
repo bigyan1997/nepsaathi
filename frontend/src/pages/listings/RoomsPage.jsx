@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
 import { useNavigate } from "react-router-dom";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const ROOM_TYPES = [
   { value: "", label: "All types" },
@@ -13,6 +14,7 @@ const ROOM_TYPES = [
 ];
 
 export default function RoomsPage() {
+  usePageTitle("Rooms for Rent");
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     room_type: "",
