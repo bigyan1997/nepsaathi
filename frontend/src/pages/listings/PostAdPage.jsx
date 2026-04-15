@@ -5,6 +5,7 @@ import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
 import { createAnnouncement } from "../../api/announcements";
 import { createEvent } from "../../api/events";
+import ImageUpload from "../../components/ui/ImageUpload";
 
 const LISTING_TYPES = [
   { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
@@ -153,6 +154,8 @@ export default function PostAdPage() {
     event_url: "",
   });
 
+  const [createdListingId, setCreatedListingId] = useState(null);
+
   // Handle final submission
   const handleSubmit = async () => {
     setLoading(true);
@@ -175,21 +178,17 @@ export default function PostAdPage() {
 
       // Step 2 — attach type specific details
       if (listingType === "job") {
-        const jobData = {
+        await createJob({
           listing: listing.id,
           ...jobForm,
           salary: jobForm.salary || null,
-        };
-        await createJob(jobData);
-        navigate(`/jobs/listing/${listing.id}`);
+        });
       } else if (listingType === "room") {
-        const roomData = {
+        await createRoom({
           listing: listing.id,
           ...roomForm,
           price: roomForm.price,
-        };
-        await createRoom(roomData);
-        navigate(`/rooms/listing/${listing.id}`);
+        });
       } else if (listingType === "announcement") {
         await createAnnouncement({
           listing: listing.id,
@@ -199,7 +198,6 @@ export default function PostAdPage() {
           is_free: announcementForm.is_free,
           is_urgent: announcementForm.is_urgent,
         });
-        navigate(`/announcements/listing/${listing.id}`);
       } else if (listingType === "event") {
         await createEvent({
           listing: listing.id,
@@ -214,8 +212,9 @@ export default function PostAdPage() {
           is_online: eventForm.is_online,
           event_url: eventForm.event_url,
         });
-        navigate(`/events/listing/${listing.id}`);
       }
+      setCreatedListingId(listing.id);
+      setStep(4);
     } catch (err) {
       const errors = err.response?.data;
       if (errors) {
@@ -235,6 +234,17 @@ export default function PostAdPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleImageComplete = () => {
+    if (listingType === "job") navigate(`/jobs/listing/${createdListingId}`);
+    else if (listingType === "room")
+      navigate(`/rooms/listing/${createdListingId}`);
+    else if (listingType === "announcement")
+      navigate(`/announcements/listing/${createdListingId}`);
+    else if (listingType === "event")
+      navigate(`/events/listing/${createdListingId}`);
+    else navigate("/");
   };
 
   return (
@@ -265,7 +275,7 @@ export default function PostAdPage() {
           marginBottom: "28px",
         }}
       >
-        {[1, 2, 3].map((s) => (
+        {[1, 2, 3, 4].map((s) => (
           <div
             key={s}
             style={{ display: "flex", alignItems: "center", gap: "8px" }}
@@ -287,7 +297,7 @@ export default function PostAdPage() {
             >
               {s}
             </div>
-            {s < 3 && (
+            {s < 4 && (
               <div
                 style={{
                   width: "40px",
@@ -303,7 +313,9 @@ export default function PostAdPage() {
             ? "Choose type"
             : step === 2
               ? "Basic details"
-              : "Specific details"}
+              : step === 3
+                ? "Specific details"
+                : "Add photos"}
         </span>
       </div>
 
@@ -1346,6 +1358,13 @@ export default function PostAdPage() {
               </button>
             </div>
           </div>
+        )}
+        {/* ── STEP 4 — Image upload ── */}
+        {step === 4 && createdListingId && (
+          <ImageUpload
+            listingId={createdListingId}
+            onComplete={handleImageComplete}
+          />
         )}
       </div>
     </div>

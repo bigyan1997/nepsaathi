@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-
+from cloudinary.models import CloudinaryField
+import cloudinary.uploader
 
 class Listing(models.Model):
     """
@@ -91,20 +92,30 @@ class Listing(models.Model):
 
     def __str__(self):
         return f'{self.listing_type.upper()} — {self.title} ({self.location})'
+    
+    def delete(self, *args, **kwargs):
+        """
+        Override delete to remove all Cloudinary images
+        before deleting the listing from the database.
+        This frees up Cloudinary storage space.
+        """
+        # Delete all images from Cloudinary first
+        for image in self.images.all():
+            image.delete()
+        super().delete(*args, **kwargs)
 
 
 class ListingImage(models.Model):
     """
     Images attached to a listing.
-    A listing can have multiple images.
-    We store them in Cloudinary (configured later).
+    Stored on Cloudinary CDN for fast delivery.
     """
     listing = models.ForeignKey(
         Listing,
         on_delete=models.CASCADE,
         related_name='images'
     )
-    image = models.ImageField(upload_to='listings/')
+    image = CloudinaryField('image', folder='nepsaathi/listings/')
     is_primary = models.BooleanField(
         default=False,
         help_text='Primary image shown as the listing thumbnail'
@@ -116,3 +127,19 @@ class ListingImage(models.Model):
 
     def __str__(self):
         return f'Image for {self.listing.title}'
+    
+    def delete(self, *args, **kwargs):
+        """
+        Override delete to remove the image from Cloudinary
+        before deleting the database record.
+        This frees up Cloudinary storage.
+        """
+        try:
+            # Get the Cloudinary public_id from the image field
+            public_id = self.image.public_id
+            if public_id:
+                cloudinary.uploader.destroy(public_id)
+        except Exception:
+            # Don't block deletion if Cloudinary fails
+            pass
+        super().delete(*args, **kwargs)

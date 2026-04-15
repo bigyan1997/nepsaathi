@@ -123,8 +123,13 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         listing = self.get_object()
+        # Delete all images from Cloudinary to free storage
+        for image in listing.images.all():
+            image.delete()
+        # Soft delete: mark as deleted instead of removing from DB
         listing.status = 'deleted'
         listing.save()
+
         return Response(
             {'detail': 'Listing deleted successfully.'},
             status=status.HTTP_200_OK
@@ -148,8 +153,15 @@ class MyListingsView(generics.ListAPIView):
 class ListingImageUploadView(APIView):
     """
     POST /api/listings/<id>/images/
-    Upload images to a listing.
+    Upload images to a listing — stored on Cloudinary.
     Only the listing owner can upload images.
+    Max 5 images per listing.
+
+    Security:
+    - Must be authenticated
+    - Must own the listing
+    - Max 5 images per listing
+    - Only image files accepted
     """
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -162,6 +174,14 @@ class ListingImageUploadView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        # Max 5 images per listing
+        existing_count = listing.images.count()
+        if existing_count >= 5:
+            return Response(
+                {'detail': 'Maximum 5 images per listing.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         images = request.FILES.getlist('images')
         if not images:
             return Response(
@@ -169,8 +189,20 @@ class ListingImageUploadView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Limit to remaining slots
+        remaining = 5 - existing_count
+        images = images[:remaining]
+
         uploaded = []
         for i, image in enumerate(images):
+            # Validate file is an image
+            if not image.content_type.startswith('image/'):
+                continue
+
+            # Validate file size — max 5MB
+            if image.size > 5 * 1024 * 1024:
+                continue
+
             listing_image = ListingImage.objects.create(
                 listing=listing,
                 image=image,
@@ -179,3 +211,26 @@ class ListingImageUploadView(APIView):
             uploaded.append(ListingImageSerializer(listing_image).data)
 
         return Response(uploaded, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk):
+        """
+        DELETE /api/listings/<id>/images/<image_id>/
+        Delete a specific image from Cloudinary and database.
+        """
+        image_id = request.data.get('image_id')
+        try:
+            image = ListingImage.objects.get(
+                pk=image_id,
+                listing__pk=pk,
+                listing__user=request.user
+            )
+            image.delete()  # This calls our custom delete which removes from Cloudinary
+            return Response(
+                {'detail': 'Image deleted successfully.'},
+                status=status.HTTP_200_OK
+            )
+        except ListingImage.DoesNotExist:
+            return Response(
+                {'detail': 'Image not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
