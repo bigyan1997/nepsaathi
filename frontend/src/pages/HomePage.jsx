@@ -277,13 +277,13 @@ export default function HomePage() {
 
         {/* ── STATS ── */}
         <div
-          className="home-section"
+          className="home-section stats-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: "12px",
             padding: "28px",
-            maxWidth: "700px",
+            maxWidth: "1000px",
             margin: "0 auto",
           }}
         >
