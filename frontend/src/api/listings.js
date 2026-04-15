@@ -55,3 +55,27 @@ export const getStats = async () => {
   const response = await api.get("/api/listings/stats/");
   return response.data;
 };
+
+// Save/bookmark a listing
+export const saveListing = async (id) => {
+  const response = await api.post(`/api/listings/${id}/save/`);
+  return response.data;
+};
+
+// Unsave/unbookmark a listing
+export const unsaveListing = async (id) => {
+  const response = await api.delete(`/api/listings/${id}/save/`);
+  return response.data;
+};
+
+// Check if listing is saved
+export const checkSaved = async (id) => {
+  const response = await api.get(`/api/listings/${id}/save/`);
+  return response.data;
+};
+
+// Get all saved listings
+export const getSavedListings = async () => {
+  const response = await api.get("/api/listings/saved/");
+  return response.data;
+};

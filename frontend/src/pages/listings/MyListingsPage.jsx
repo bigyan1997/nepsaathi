@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyListings, deleteListing } from "../../api/listings";
+import {
+  getMyListings,
+  deleteListing,
+  getSavedListings,
+  unsaveListing,
+} from "../../api/listings";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import useAuthStore from "../../store/authStore";
 import { SkeletonCard } from "../../components/ui/Skeleton";
@@ -48,6 +53,12 @@ export default function MyListingsPage() {
   const { data: businessesData, isLoading: businessesLoading } = useQuery({
     queryKey: ["my-businesses"],
     queryFn: getMyBusinesses,
+  });
+
+  //   Save listings
+  const { data: savedData, isLoading: savedLoading } = useQuery({
+    queryKey: ["saved-listings"],
+    queryFn: getSavedListings,
   });
 
   // Delete listing mutation
@@ -180,6 +191,7 @@ export default function MyListingsPage() {
         {[
           { key: "listings", label: `Listings (${listings.length})` },
           { key: "businesses", label: `Businesses (${businesses.length})` },
+          { key: "saved", label: `Saved (${savedData?.results?.length || 0})` },
         ].map(({ key, label }) => (
           <button
             key={key}
@@ -584,6 +596,185 @@ export default function MyListingsPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+      {/* ── SAVED TAB ── */}
+      {activeTab === "saved" && (
+        <div>
+          {savedLoading && (
+            <div
+              style={{ textAlign: "center", padding: "40px", color: "#888" }}
+            >
+              Loading saved listings...
+            </div>
+          )}
+
+          {!savedLoading && savedData?.results?.length === 0 && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "48px",
+                background: "#fff",
+                borderRadius: "14px",
+                border: "0.5px solid #e5e5e5",
+              }}
+            >
+              <div style={{ fontSize: "32px", marginBottom: "12px" }}>🤍</div>
+              <h3
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "#26215C",
+                  marginBottom: "6px",
+                }}
+              >
+                No saved listings yet
+              </h3>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#888",
+                  marginBottom: "20px",
+                }}
+              >
+                Click the heart button on any listing to save it
+              </p>
+            </div>
+          )}
+
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
+            {savedData?.results?.map((saved) => {
+              const typeColor =
+                TYPE_COLORS[saved.listing_type] || TYPE_COLORS.job;
+              const typeEmoji = TYPE_EMOJIS[saved.listing_type] || "📌";
+
+              const getPath = () => {
+                switch (saved.listing_type) {
+                  case "job":
+                    return `/jobs/listing/${saved.listing}`;
+                  case "room":
+                    return `/rooms/listing/${saved.listing}`;
+                  case "event":
+                    return `/events/listing/${saved.listing}`;
+                  case "announcement":
+                    return `/announcements/listing/${saved.listing}`;
+                  default:
+                    return "/";
+                }
+              };
+
+              return (
+                <div
+                  key={saved.id}
+                  style={{
+                    background: "#fff",
+                    border: "0.5px solid #e5e5e5",
+                    borderRadius: "12px",
+                    padding: "16px 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "10px",
+                      background: typeColor.bg,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "18px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {typeEmoji}
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      <h3
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#26215C",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {saved.listing_title}
+                      </h3>
+                      <span
+                        style={{
+                          background: typeColor.bg,
+                          color: typeColor.color,
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          padding: "2px 8px",
+                          borderRadius: "8px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {saved.listing_type}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "12px", color: "#888" }}>
+                      📍 {saved.listing_location}, {saved.listing_state}
+                    </p>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                    <button
+                      onClick={() => navigate(getPath())}
+                      style={{
+                        background: "#EEEDFE",
+                        color: "#534AB7",
+                        border: "none",
+                        borderRadius: "7px",
+                        padding: "7px 14px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => {
+                        unsaveListing(saved.listing).then(() => {
+                          queryClient.invalidateQueries(["saved-listings"]);
+                          addToast("Removed from saved listings.", "info");
+                        });
+                      }}
+                      style={{
+                        background: "#FCEBEB",
+                        color: "#A32D2D",
+                        border: "none",
+                        borderRadius: "7px",
+                        padding: "7px 14px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

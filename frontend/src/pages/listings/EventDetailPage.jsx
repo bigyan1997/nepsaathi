@@ -4,6 +4,7 @@ import { getEvent, getEventByListing } from "../../api/events";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
+import SaveButton from "../../components/ui/SaveButton";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489" },
@@ -63,7 +64,7 @@ export default function EventDetailPage() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button and share */}
+      {/* Back button, share and save */}
       <div
         style={{
           display: "flex",
@@ -88,7 +89,10 @@ export default function EventDetailPage() {
         >
           ← Back to jobs
         </button>
-        <ShareButton title={job?.listing_title} />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <SaveButton listingId={job?.listing_id} />
+          <ShareButton title={job?.listing_title} />
+        </div>
       </div>
 
       {/* Main card */}

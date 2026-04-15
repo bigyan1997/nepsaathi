@@ -2,8 +2,8 @@ from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Listing, ListingImage
-from .serializers import ListingSerializer, ListingCreateSerializer, ListingImageSerializer
+from .models import Listing, ListingImage, SavedListing
+from .serializers import ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
 from .throttles import ListingCreateThrottle
 
 
@@ -271,3 +271,60 @@ class StatsView(APIView):
 
         cache.set('nepsaathi_stats', stats, 60 * 10)
         return Response(stats)
+
+class SaveListingView(APIView):
+    """
+    POST /api/listings/<id>/save/   — save a listing
+    DELETE /api/listings/<id>/save/ — unsave a listing
+    GET /api/listings/<id>/save/    — check if saved
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk):
+        is_saved = SavedListing.objects.filter(
+            user=request.user,
+            listing__pk=pk
+        ).exists()
+        return Response({'is_saved': is_saved})
+
+    def post(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk, status='active')
+        except Listing.DoesNotExist:
+            return Response(
+                {'detail': 'Listing not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        saved, created = SavedListing.objects.get_or_create(
+            user=request.user,
+            listing=listing
+        )
+        if created:
+            return Response({'is_saved': True, 'detail': 'Listing saved!'})
+        return Response({'is_saved': True, 'detail': 'Already saved.'})
+
+    def delete(self, request, pk):
+        deleted = SavedListing.objects.filter(
+            user=request.user,
+            listing__pk=pk
+        ).delete()
+        if deleted[0]:
+            return Response({'is_saved': False, 'detail': 'Listing unsaved!'})
+        return Response(
+            {'detail': 'Not saved.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
+class MySavedListingsView(generics.ListAPIView):
+    """
+    GET /api/listings/saved/
+    Returns all listings saved by the logged in user.
+    """
+    serializer_class = SavedListingSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return SavedListing.objects.filter(
+            user=self.request.user
+        ).select_related('listing', 'listing__user')

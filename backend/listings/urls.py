@@ -21,4 +21,8 @@ urlpatterns = [
 
     # Stats
     path('stats/', views.StatsView.as_view(), name='stats'),
+
+    # Saved listings
+    path('saved/', views.MySavedListingsView.as_view(), name='saved-listings'),
+    path('<int:pk>/save/', views.SaveListingView.as_view(), name='save-listing'),
 ]

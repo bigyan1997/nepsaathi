@@ -4,6 +4,7 @@ import { getJob, getJobByListing } from "../../api/jobs";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
+import SaveButton from "../../components/ui/SaveButton";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -32,7 +33,7 @@ export default function JobDetailPage() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button and share */}
+      {/* Back button, share and save */}
       <div
         style={{
           display: "flex",
@@ -57,7 +58,10 @@ export default function JobDetailPage() {
         >
           ← Back to jobs
         </button>
-        <ShareButton title={job?.listing_title} />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <SaveButton listingId={job?.listing_id} />
+          <ShareButton title={job?.listing_title} />
+        </div>
       </div>
 
       {/* Hero section */}

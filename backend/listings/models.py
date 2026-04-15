@@ -143,3 +143,28 @@ class ListingImage(models.Model):
             # Don't block deletion if Cloudinary fails
             pass
         super().delete(*args, **kwargs)
+    
+class SavedListing(models.Model):
+    """
+    Allows users to bookmark/save listings they like.
+    One save per user per listing.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='saved_listings'
+    )
+    listing = models.ForeignKey(
+        Listing,
+        on_delete=models.CASCADE,
+        related_name='saved_by'
+    )
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'saved_listings'
+        unique_together = ('user', 'listing')
+        ordering = ['-saved_at']
+
+    def __str__(self):
+        return f'{self.user.email} saved {self.listing.title}'

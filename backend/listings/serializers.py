@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Listing, ListingImage
+from .models import Listing, ListingImage, SavedListing
 from jobs.serializers import JobSerializer
 from rooms.serializers import RoomSerializer
 
@@ -88,3 +88,24 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_whatsapp',
             'expires_at',
         )
+
+class SavedListingSerializer(serializers.ModelSerializer):
+    listing_title = serializers.CharField(source='listing.title', read_only=True)
+    listing_type = serializers.CharField(source='listing.listing_type', read_only=True)
+    listing_location = serializers.CharField(source='listing.location', read_only=True)
+    listing_state = serializers.CharField(source='listing.state', read_only=True)
+    listing_status = serializers.CharField(source='listing.status', read_only=True)
+
+    class Meta:
+        model = SavedListing
+        fields = (
+            'id',
+            'listing',
+            'listing_title',
+            'listing_type',
+            'listing_location',
+            'listing_state',
+            'listing_status',
+            'saved_at',
+        )
+        read_only_fields = ('id', 'saved_at')

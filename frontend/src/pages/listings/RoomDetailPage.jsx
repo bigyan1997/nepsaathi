@@ -4,6 +4,7 @@ import { getRoom, getRoomByListing } from "../../api/rooms";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
+import SaveButton from "../../components/ui/SaveButton";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
@@ -57,7 +58,10 @@ export default function RoomDetailPage() {
         >
           ← Back to jobs
         </button>
-        <ShareButton title={job?.listing_title} />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <SaveButton listingId={job?.listing_id} />
+          <ShareButton title={job?.listing_title} />
+        </div>
       </div>
 
       {/* Hero section */}
