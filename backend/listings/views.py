@@ -234,3 +234,40 @@ class ListingImageUploadView(APIView):
                 {'detail': 'Image not found.'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class StatsView(APIView):
+    """
+    GET /api/listings/stats/
+    Returns live counts for the homepage stats section.
+    Cached for 10 minutes to avoid DB hits on every page load.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        from django.core.cache import cache
+        from users.models import User
+
+        cached = cache.get('nepsaathi_stats')
+        if cached:
+            return Response(cached)
+
+        stats = {
+            'total_jobs': Listing.objects.filter(
+                listing_type='job', status='active'
+            ).count(),
+            'total_rooms': Listing.objects.filter(
+                listing_type='room', status='active'
+            ).count(),
+            'total_members': User.objects.filter(
+                is_active=True
+            ).count(),
+            'total_events': Listing.objects.filter(
+                listing_type='event', status='active'
+            ).count(),
+            'total_businesses': Listing.objects.filter(
+                listing_type='announcement', status='active'
+            ).count(),
+        }
+
+        cache.set('nepsaathi_stats', stats, 60 * 10)
+        return Response(stats)

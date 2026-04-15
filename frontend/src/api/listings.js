@@ -50,3 +50,8 @@ export const uploadImages = async (listingId, images) => {
   );
   return response.data;
 };
+
+export const getStats = async () => {
+  const response = await api.get("/api/listings/stats/");
+  return response.data;
+};

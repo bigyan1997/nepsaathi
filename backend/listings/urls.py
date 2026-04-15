@@ -18,4 +18,7 @@ urlpatterns = [
 
     # Upload images to a listing
     path('<int:pk>/images/', views.ListingImageUploadView.as_view(), name='listing-images'),
+
+    # Stats
+    path('stats/', views.StatsView.as_view(), name='stats'),
 ]

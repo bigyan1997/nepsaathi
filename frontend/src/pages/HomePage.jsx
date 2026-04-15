@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getJobs } from "../api/jobs";
 import { getRooms } from "../api/rooms";
 import { getEvents } from "../api/events";
+import { getStats } from "../api/listings";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
 
@@ -101,6 +102,12 @@ export default function HomePage() {
     queryKey: ["home-events"],
     queryFn: () => getEvents({ upcoming: "true", page_size: 3 }),
     staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: statsData } = useQuery({
+    queryKey: ["stats"],
+    queryFn: getStats,
+    staleTime: 1000 * 60 * 10,
   });
 
   return (
@@ -337,6 +344,7 @@ export default function HomePage() {
         </div>
 
         {/* ── STATS ── */}
+        {/* ── STATS ── */}
         <div
           className="home-section stats-grid"
           style={{
@@ -349,12 +357,25 @@ export default function HomePage() {
           }}
         >
           {[
-            { num: "1,240+", label: "Active job listings", color: "#E87722" },
-            { num: "830+", label: "Rooms available", color: "#534AB7" },
-            { num: "5,600+", label: "Community members", color: "#26215C" },
+            {
+              num: statsData ? `${statsData.total_jobs}+` : "0",
+              label: "Active job listings",
+              color: "#E87722",
+            },
+            {
+              num: statsData ? `${statsData.total_rooms}+` : "0",
+              label: "Rooms available",
+              color: "#534AB7",
+            },
+            {
+              num: statsData ? `${statsData.total_members}+` : "0",
+              label: "Community members",
+              color: "#26215C",
+            },
           ].map(({ num, label, color }) => (
             <div
               key={label}
+              className="stat-card"
               style={{
                 background: "#fff",
                 borderRadius: "12px",
