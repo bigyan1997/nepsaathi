@@ -186,7 +186,7 @@ export default function JobDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(4, 1fr)",
             borderBottom: "0.5px solid #e5e5e5",
           }}
         >
@@ -199,6 +199,16 @@ export default function JobDetailPage() {
             {
               label: "Location",
               value: `${job.listing_location}, ${job.listing_state}`,
+            },
+            {
+              label: "Expires",
+              value: job.expires_at
+                ? new Date(job.expires_at).toLocaleDateString("en-AU", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })
+                : "30 days from posting",
             },
           ].map(({ label, value }) => (
             <div

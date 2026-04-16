@@ -5,6 +5,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Listing, ListingImage, ListingReport, SavedListing
 from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
 from .throttles import ListingCreateThrottle
+from django.utils import timezone
+from datetime import timedelta
+from rest_framework.exceptions import ValidationError
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -63,50 +66,42 @@ class ListingCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        from django.utils import timezone
-        from datetime import timedelta
-        from rest_framework.exceptions import ValidationError
 
         # Check max active listings per user
         active_count = Listing.objects.filter(
-            user=user,
-            status='active'
+            user=user, status='active'
         ).count()
-
         if active_count >= 20:
             raise ValidationError(
-                'You have reached the maximum of 20 active listings. '
-                'Please delete some listings before posting new ones.'
+                'You have reached the maximum of 20 active listings.'
             )
 
-        # Check 5 minute cooldown between posts
+        # Check 5 minute cooldown
         five_mins_ago = timezone.now() - timedelta(minutes=5)
         recent_post = Listing.objects.filter(
-            user=user,
-            created_at__gte=five_mins_ago
+            user=user, created_at__gte=five_mins_ago
         ).exists()
-
         if recent_post:
             raise ValidationError(
                 'Please wait 5 minutes before posting again.'
             )
 
-        # Check for duplicate title in last 24 hours
+        # Check duplicate title in last 24 hours
         yesterday = timezone.now() - timedelta(hours=24)
         title = self.request.data.get('title', '').strip().lower()
-
         duplicate = Listing.objects.filter(
             user=user,
             title__iexact=title,
             created_at__gte=yesterday,
         ).exists()
-
         if duplicate:
             raise ValidationError(
                 'You already posted a listing with this title in the last 24 hours.'
             )
 
-        serializer.save(user=user)
+        # Set expiry to 30 days from now
+        expires_at = timezone.now() + timedelta(days=30)
+        serializer.save(user=user, expires_at=expires_at)
 
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
