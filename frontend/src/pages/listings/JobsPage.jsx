@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
-import { useNavigate, useLocation } from "react-router-dom";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { STATES } from "../../utils/constants";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -13,20 +14,8 @@ const JOB_TYPES = [
   { value: "contract", label: "Contract" },
 ];
 
-const STATES = [
-  { value: "", label: "All states" },
-  { value: "NSW", label: "NSW" },
-  { value: "VIC", label: "VIC" },
-  { value: "QLD", label: "QLD" },
-  { value: "WA", label: "WA" },
-  { value: "SA", label: "SA" },
-  { value: "TAS", label: "TAS" },
-  { value: "ACT", label: "ACT" },
-  { value: "NT", label: "NT" },
-];
 export default function JobsPage() {
   usePageTitle("Jobs in Australia");
-  const navigate = useNavigate();
   const location = useLocation();
   const [filters, setFilters] = useState({
     job_type: "",
@@ -141,7 +130,7 @@ export default function JobsPage() {
         </select>
       </div>
 
-      {/* Results */}
+      {/* Loading */}
       {isLoading && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -150,6 +139,7 @@ export default function JobsPage() {
         </div>
       )}
 
+      {/* Error */}
       {error && (
         <div
           style={{
@@ -165,6 +155,7 @@ export default function JobsPage() {
         </div>
       )}
 
+      {/* Empty */}
       {data && data.results?.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
           No jobs found. Try a different search.
@@ -174,9 +165,9 @@ export default function JobsPage() {
       {/* Job cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {data?.results?.map((job) => (
-          <div
+          <Link
             key={job.id}
-            onClick={() => navigate(`/jobs/${job.id}`)}
+            to={`/jobs/${job.id}`}
             style={{
               background: "#fff",
               border: "0.5px solid #e5e5e5",
@@ -184,6 +175,8 @@ export default function JobsPage() {
               padding: "18px 20px",
               cursor: "pointer",
               transition: "border-color 0.15s",
+              textDecoration: "none",
+              display: "block",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.borderColor = "#AFA9EC")
@@ -200,7 +193,6 @@ export default function JobsPage() {
               }}
             >
               <div>
-                {/* Urgent badge */}
                 {job.is_urgent && (
                   <span
                     style={{
@@ -238,7 +230,6 @@ export default function JobsPage() {
                   {job.listing_state}
                 </p>
               </div>
-              {/* Salary */}
               <div
                 style={{
                   background: "#EEEDFE",
@@ -254,7 +245,6 @@ export default function JobsPage() {
               </div>
             </div>
 
-            {/* Footer */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <span
                 style={{
@@ -274,9 +264,24 @@ export default function JobsPage() {
                 Posted by {job.posted_by}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
+
+      {/* Pagination info */}
+      {data?.count > 20 && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "20px",
+            color: "#888",
+            fontSize: "13px",
+          }}
+        >
+          Showing 20 of {data.count} jobs — refine your search to find more
+          specific results
+        </div>
+      )}
     </div>
   );
 }
