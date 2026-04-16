@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../../api/events";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { STATES } from "../../utils/constants";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -39,25 +40,13 @@ const CATEGORY_EMOJIS = {
   other: "📌",
 };
 
-const STATES = [
-  { value: "", label: "All states" },
-  { value: "NSW", label: "NSW" },
-  { value: "VIC", label: "VIC" },
-  { value: "QLD", label: "QLD" },
-  { value: "WA", label: "WA" },
-  { value: "SA", label: "SA" },
-  { value: "TAS", label: "TAS" },
-  { value: "ACT", label: "ACT" },
-  { value: "NT", label: "NT" },
-];
-
 export default function EventsPage() {
   usePageTitle("Community Events");
-  const navigate = useNavigate();
   const location = useLocation();
   const [filters, setFilters] = useState({
     category: "",
     search: "",
+    state: "",
     is_free: "",
     is_online: "",
     upcoming: "true",
@@ -77,8 +66,7 @@ export default function EventsPage() {
   });
 
   const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-AU", {
+    return new Date(dateStr).toLocaleDateString("en-AU", {
       weekday: "short",
       day: "numeric",
       month: "short",
@@ -87,8 +75,7 @@ export default function EventsPage() {
   };
 
   const formatTime = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString("en-AU", {
+    return new Date(dateStr).toLocaleTimeString("en-AU", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -257,7 +244,7 @@ export default function EventsPage() {
         </label>
       </div>
 
-      {/* Results */}
+      {/* Loading */}
       {isLoading && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -266,6 +253,7 @@ export default function EventsPage() {
         </div>
       )}
 
+      {/* Error */}
       {error && (
         <div
           style={{
@@ -281,6 +269,7 @@ export default function EventsPage() {
         </div>
       )}
 
+      {/* Empty */}
       {data && data.results?.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
           No events found. Try a different search.
@@ -294,9 +283,9 @@ export default function EventsPage() {
             CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
           const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
           return (
-            <div
+            <Link
               key={event.id}
-              onClick={() => navigate(`/events/${event.id}`)}
+              to={`/events/${event.id}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",
@@ -307,6 +296,7 @@ export default function EventsPage() {
                 display: "flex",
                 gap: "16px",
                 alignItems: "flex-start",
+                textDecoration: "none",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.borderColor = "#AFA9EC")
@@ -412,7 +402,6 @@ export default function EventsPage() {
                 >
                   {event.listing_title}
                 </h3>
-
                 <div
                   style={{
                     fontSize: "13px",
@@ -423,7 +412,6 @@ export default function EventsPage() {
                   {formatDate(event.event_date)} at{" "}
                   {formatTime(event.event_date)}
                 </div>
-
                 {event.venue && (
                   <div style={{ fontSize: "12px", color: "#888" }}>
                     📍 {event.venue}
@@ -446,10 +434,24 @@ export default function EventsPage() {
               >
                 {event.ticket_display}
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
+
+      {/* Pagination info */}
+      {data?.count > 20 && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "20px",
+            color: "#888",
+            fontSize: "13px",
+          }}
+        >
+          Showing 20 of {data.count} events — refine your search to find more
+        </div>
+      )}
     </div>
   );
 }
