@@ -7,7 +7,6 @@ from rooms.serializers import RoomSerializer
 class ListingImageSerializer(serializers.ModelSerializer):
     """
     Serializer for listing images.
-    Converts image model to JSON for the API.
     """
     class Meta:
         model = ListingImage
@@ -18,16 +17,10 @@ class ListingImageSerializer(serializers.ModelSerializer):
 class ListingSerializer(serializers.ModelSerializer):
     """
     Serializer for the base Listing model.
-
-    - images: all images attached to this listing
-    - job_detail: job specific fields (only if listing_type is job)
-    - room_detail: room specific fields (only if listing_type is room)
-    - user_email: read only, shows who posted it
-    - is_owner: tells React if the logged in user owns this listing
     """
     images = ListingImageSerializer(many=True, read_only=True)
-    job_detail = JobSerializer(read_only=True)
-    room_detail = RoomSerializer(read_only=True)
+    job_detail = serializers.SerializerMethodField()
+    room_detail = serializers.SerializerMethodField()
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_name = serializers.CharField(source='user.full_name', read_only=True)
     is_owner = serializers.SerializerMethodField()
@@ -57,23 +50,38 @@ class ListingSerializer(serializers.ModelSerializer):
             'updated_at',
             'expires_at',
         )
-        read_only_fields = ('id', 'created_at', 'updated_at', 'user_email', 'user_name', 'expires_at')
+        read_only_fields = (
+            'id',
+            'created_at',
+            'updated_at',
+            'user_email',
+            'user_name',
+            'expires_at',
+        )
 
     def get_is_owner(self, obj):
-        """
-        Returns True if the logged in user owns this listing.
-        React uses this to show/hide edit and delete buttons.
-        """
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return obj.user == request.user
         return False
 
+    def get_job_detail(self, obj):
+        """Only serialize job detail if listing is a job."""
+        if obj.listing_type == 'job' and hasattr(obj, 'job_detail'):
+            return JobSerializer(obj.job_detail).data
+        return None
+
+    def get_room_detail(self, obj):
+        """Only serialize room detail if listing is a room."""
+        if obj.listing_type == 'room' and hasattr(obj, 'room_detail'):
+            return RoomSerializer(obj.room_detail).data
+        return None
+
 
 class ListingCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating a new listing.
-    User is set automatically from the request — not from the payload.
+    User and expires_at are set automatically in the view.
     """
     class Meta:
         model = Listing
@@ -87,8 +95,9 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_email',
             'contact_phone',
             'contact_whatsapp',
-            'expires_at',
         )
+        # expires_at removed — set automatically to 30 days in view
+
 
 class SavedListingSerializer(serializers.ModelSerializer):
     listing_title = serializers.CharField(source='listing.title', read_only=True)
@@ -110,6 +119,7 @@ class SavedListingSerializer(serializers.ModelSerializer):
             'saved_at',
         )
         read_only_fields = ('id', 'saved_at')
+
 
 class ListingReportSerializer(serializers.ModelSerializer):
     class Meta:
