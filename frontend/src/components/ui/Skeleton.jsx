@@ -139,13 +139,3 @@ export function SkeletonDetailPage() {
     </div>
   );
 }
-
-// Add shimmer animation globally
-const style = document.createElement("style");
-style.textContent = `
-  @keyframes skeleton-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-`;
-document.head.appendChild(style);
