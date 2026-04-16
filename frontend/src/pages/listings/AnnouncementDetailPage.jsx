@@ -7,6 +7,8 @@ import {
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
+import SaveButton from "../../components/ui/SaveButton";
+import ReportButton from "../../components/ui/ReportButton";
 
 const CATEGORY_COLORS = {
   news: { bg: "#EEEDFE", color: "#3C3489" },
@@ -48,7 +50,7 @@ export default function AnnouncementDetailPage() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button and share */}
+      {/* Back button, share and save */}
       <div
         style={{
           display: "flex",
@@ -58,7 +60,7 @@ export default function AnnouncementDetailPage() {
         }}
       >
         <button
-          onClick={() => navigate("/jobs")}
+          onClick={() => navigate("/announcements")}
           style={{
             background: "transparent",
             border: "none",
@@ -71,9 +73,12 @@ export default function AnnouncementDetailPage() {
             gap: "4px",
           }}
         >
-          ← Back to jobs
+          ← Back to announcements
         </button>
-        <ShareButton title={job?.listing_title} />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <SaveButton listingId={announcement?.listing_id} />
+          <ShareButton title={announcement?.listing_title} />
+        </div>
       </div>
 
       {/* Main card */}
@@ -349,6 +354,16 @@ export default function AnnouncementDetailPage() {
             to view contact details.
           </div>
         )}
+        {/* Report */}
+        <div
+          style={{
+            marginTop: "16px",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          <ReportButton listingId={announcement?.listing_id} />
+        </div>
       </div>
     </div>
   );

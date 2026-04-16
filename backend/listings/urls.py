@@ -25,4 +25,7 @@ urlpatterns = [
     # Saved listings
     path('saved/', views.MySavedListingsView.as_view(), name='saved-listings'),
     path('<int:pk>/save/', views.SaveListingView.as_view(), name='save-listing'),
+
+    # Report listing
+    path('<int:pk>/report/', views.ReportListingView.as_view(), name='report-listing'),
 ]

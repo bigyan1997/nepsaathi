@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Listing, ListingImage, SavedListing
+from .models import Listing, ListingImage, SavedListing, ListingReport
 from jobs.serializers import JobSerializer
 from rooms.serializers import RoomSerializer
 
@@ -109,3 +109,9 @@ class SavedListingSerializer(serializers.ModelSerializer):
             'saved_at',
         )
         read_only_fields = ('id', 'saved_at')
+
+class ListingReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ListingReport
+        fields = ('id', 'listing', 'reason', 'details', 'created_at')
+        read_only_fields = ('id', 'created_at')

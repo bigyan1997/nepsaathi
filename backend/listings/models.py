@@ -168,3 +168,50 @@ class SavedListing(models.Model):
 
     def __str__(self):
         return f'{self.user.email} saved {self.listing.title}'
+
+class ListingReport(models.Model):
+    """
+    Allows users to report spam, fake or inappropriate listings.
+    Admin can review and take action.
+    """
+
+    class Reason(models.TextChoices):
+        SPAM = 'spam', 'Spam or duplicate'
+        FAKE = 'fake', 'Fake or misleading'
+        INAPPROPRIATE = 'inappropriate', 'Inappropriate content'
+        SCAM = 'scam', 'Scam or fraud'
+        WRONG_CATEGORY = 'wrong_category', 'Wrong category'
+        OTHER = 'other', 'Other'
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='reports'
+    )
+    listing = models.ForeignKey(
+        Listing,
+        on_delete=models.CASCADE,
+        related_name='reports'
+    )
+    reason = models.CharField(
+        max_length=20,
+        choices=Reason.choices,
+        default=Reason.SPAM,
+    )
+    details = models.TextField(
+        blank=True,
+        help_text='Additional details about the report'
+    )
+    is_reviewed = models.BooleanField(
+        default=False,
+        help_text='Has admin reviewed this report?'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'listing_reports'
+        unique_together = ('user', 'listing')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user.email} reported {self.listing.title} — {self.reason}'

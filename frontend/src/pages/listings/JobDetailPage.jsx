@@ -5,6 +5,7 @@ import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
+import ReportButton from "../../components/ui/ReportButton";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -430,6 +431,17 @@ export default function JobDetailPage() {
               </a>
             </div>
           )}
+
+          {/* Report */}
+          <div
+            style={{
+              marginTop: "16px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <ReportButton listingId={job?.listing_id} />
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Listing, ListingImage
+from django.utils.html import format_html
+from .models import Listing, ListingImage, SavedListing, ListingReport
 
 
 class ListingImageInline(admin.TabularInline):
@@ -72,3 +73,99 @@ class ListingImageAdmin(admin.ModelAdmin):
     """
     list_display = ('listing', 'is_primary', 'uploaded_at')
     list_filter = ('is_primary',)
+
+@admin.register(ListingReport)
+class ListingReportAdmin(admin.ModelAdmin):
+    list_display = (
+        'listing_title',
+        'reason',
+        'reported_by',
+        'details_preview',
+        'is_reviewed',
+        'created_at',
+        'delete_listing_button',
+    )
+    list_filter = ('reason', 'is_reviewed', 'created_at')
+    search_fields = ('listing__title', 'user__email', 'details')
+    ordering = ('-created_at',)
+    readonly_fields = ('user', 'listing', 'reason', 'details', 'created_at', 'listing_info')
+
+    fieldsets = (
+        ('Report Details', {
+            'fields': ('user', 'reason', 'details', 'created_at')
+        }),
+        ('Listing Information', {
+            'fields': ('listing_info',)
+        }),
+        ('Status', {
+            'fields': ('is_reviewed',)
+        }),
+    )
+
+    def listing_title(self, obj):
+        return obj.listing.title
+    listing_title.short_description = 'Listing'
+
+    def reported_by(self, obj):
+        return obj.user.email
+    reported_by.short_description = 'Reported by'
+
+    def details_preview(self, obj):
+        if obj.details:
+            return obj.details[:60] + '...' if len(obj.details) > 60 else obj.details
+        return '—'
+    details_preview.short_description = 'Details'
+
+    def listing_info(self, obj):
+        listing = obj.listing
+        return format_html(
+            '<strong>Title:</strong> {}<br>'
+            '<strong>Type:</strong> {}<br>'
+            '<strong>Location:</strong> {}, {}<br>'
+            '<strong>Posted by:</strong> {}<br>'
+            '<strong>Status:</strong> {}<br>'
+            '<strong>Created:</strong> {}',
+            listing.title,
+            listing.listing_type,
+            listing.location,
+            listing.state,
+            listing.user.email,
+            listing.status,
+            listing.created_at.strftime('%d %b %Y %H:%M'),
+        )
+    listing_info.short_description = 'Listing Details'
+
+    def delete_listing_button(self, obj):
+        if obj.listing.status != 'deleted':
+            return format_html(
+                '<a href="/admin/listings/listing/{}/delete/" '
+                'style="background:#A32D2D;color:#fff;padding:4px 10px;'
+                'border-radius:4px;text-decoration:none;font-size:11px;">'
+                '🗑 Delete listing</a>',
+                obj.listing.id
+            )
+        return format_html(
+            '<span style="color:#888;font-size:11px;">Already deleted</span>'
+        )
+    delete_listing_button.short_description = 'Action'
+
+    actions = ['mark_reviewed', 'delete_reported_listings']
+
+    def mark_reviewed(self, request, queryset):
+        queryset.update(is_reviewed=True)
+        self.message_user(request, f'{queryset.count()} reports marked as reviewed.')
+    mark_reviewed.short_description = '✅ Mark as reviewed'
+
+    def delete_reported_listings(self, request, queryset):
+        count = 0
+        for report in queryset:
+            if report.listing.status != 'deleted':
+                for image in report.listing.images.all():
+                    image.delete()
+                report.listing.status = 'deleted'
+                report.listing.save()
+                report.is_reviewed = True
+                report.save()
+                count += 1
+        self.message_user(request, f'{count} listings deleted successfully.')
+    delete_reported_listings.short_description = '🗑 Delete reported listings'

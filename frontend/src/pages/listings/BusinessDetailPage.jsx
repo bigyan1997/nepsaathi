@@ -5,6 +5,7 @@ import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
+import ReportButton from "../../components/ui/ReportButton";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -78,7 +79,7 @@ export default function BusinessDetailPage() {
         }}
       >
         <button
-          onClick={() => navigate("/jobs")}
+          onClick={() => navigate("/businesses")}
           style={{
             background: "transparent",
             border: "none",
@@ -91,11 +92,11 @@ export default function BusinessDetailPage() {
             gap: "4px",
           }}
         >
-          ← Back to jobs
+          ← Back to Businesses
         </button>
         <div style={{ display: "flex", gap: "8px" }}>
-          <SaveButton listingId={job?.listing_id} />
-          <ShareButton title={job?.listing_title} />
+          <SaveButton listingId={business?.listing_id} />
+          <ShareButton title={business?.listing_title} />
         </div>
       </div>
 
@@ -405,6 +406,16 @@ export default function BusinessDetailPage() {
               to view contact details.
             </div>
           )}
+          {/* Report */}
+          <div
+            style={{
+              marginTop: "16px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <ReportButton listingId={business?.listing_id} />
+          </div>
         </div>
       </div>
     </div>

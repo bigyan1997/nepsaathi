@@ -2,8 +2,8 @@ from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Listing, ListingImage, SavedListing
-from .serializers import ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
+from .models import Listing, ListingImage, ListingReport, SavedListing
+from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
 from .throttles import ListingCreateThrottle
 
 
@@ -328,3 +328,81 @@ class MySavedListingsView(generics.ListAPIView):
         return SavedListing.objects.filter(
             user=self.request.user
         ).select_related('listing', 'listing__user')
+
+class ReportListingView(APIView):
+    """
+    POST /api/listings/<id>/report/
+    Report a listing for spam, fake content etc.
+
+    Security:
+    - Must be authenticated
+    - One report per user per listing
+    - Cannot report your own listing
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk)
+        except Listing.DoesNotExist:
+            return Response(
+                {'detail': 'Listing not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if listing.user == request.user:
+            return Response(
+                {'detail': 'You cannot report your own listing.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if ListingReport.objects.filter(
+            user=request.user,
+            listing=listing
+        ).exists():
+            return Response(
+                {'detail': 'You have already reported this listing.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = ListingReportSerializer(data={
+            'listing': listing.id,
+            'reason': request.data.get('reason', 'spam'),
+            'details': request.data.get('details', ''),
+        })
+
+        if serializer.is_valid():
+            report = serializer.save(user=request.user, listing=listing)
+
+            # Notify admin by email
+            try:
+                from django.core.mail import send_mail
+                from decouple import config
+                send_mail(
+                    subject=f'[NepSaathi] New listing report — {listing.title}',
+                    message=f'''
+    A listing has been reported on NepSaathi.
+
+    Listing: {listing.title}
+    Type: {listing.listing_type}
+    Location: {listing.location}, {listing.state}
+    Posted by: {listing.user.email}
+
+    Report reason: {report.get_reason_display()}
+    Reported by: {request.user.email}
+    Details: {report.details or "No details provided"}
+
+    Review at: https://nepsaathi-production.up.railway.app/admin/listings/listingreport/
+                    ''',
+                    from_email='noreply@nepsaathi.com',
+                    recipient_list=['admin@nepsaathi.com'],
+                    fail_silently=True,
+                )
+            except Exception:
+                pass
+
+            return Response(
+                {'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

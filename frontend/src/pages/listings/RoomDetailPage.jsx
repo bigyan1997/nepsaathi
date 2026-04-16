@@ -5,6 +5,7 @@ import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
+import ReportButton from "../../components/ui/ReportButton";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
@@ -43,7 +44,7 @@ export default function RoomDetailPage() {
         }}
       >
         <button
-          onClick={() => navigate("/jobs")}
+          onClick={() => navigate("/rooms")}
           style={{
             background: "transparent",
             border: "none",
@@ -56,11 +57,11 @@ export default function RoomDetailPage() {
             gap: "4px",
           }}
         >
-          ← Back to jobs
+          ← Back to Rooms
         </button>
         <div style={{ display: "flex", gap: "8px" }}>
-          <SaveButton listingId={job?.listing_id} />
-          <ShareButton title={job?.listing_title} />
+          <SaveButton listingId={room?.listing_id} />
+          <ShareButton title={room?.listing_title} />
         </div>
       </div>
 
@@ -457,6 +458,16 @@ export default function RoomDetailPage() {
               </a>
             </div>
           )}
+          {/* Report */}
+          <div
+            style={{
+              marginTop: "16px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <ReportButton listingId={room?.listing_id} />
+          </div>
         </div>
       </div>
     </div>
