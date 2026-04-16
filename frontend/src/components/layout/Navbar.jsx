@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import { logout as logoutApi } from "../../api/auth";
 
 const NAV_LINKS = [
   { to: "/jobs", label: "Jobs" },
@@ -35,10 +36,19 @@ export default function Navbar() {
     setDropdownOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-    setDropdownOpen(false);
+  const handleLogout = async () => {
+    try {
+      const refreshToken = localStorage.getItem("nepsaathi_refresh_token");
+      if (refreshToken) {
+        await logoutApi(refreshToken);
+      }
+    } catch (e) {
+      // Even if API call fails, clear local state
+    } finally {
+      logout();
+      navigate("/");
+      setDropdownOpen(false);
+    }
   };
 
   const isActive = (path) => location.pathname === path;
