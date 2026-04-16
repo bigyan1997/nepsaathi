@@ -19,13 +19,16 @@ from django.http import HttpResponseRedirect
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from decouple import config
 
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 urlpatterns = [
     # Admin panel
     path('admin/', admin.site.urls),
 
-    path('', lambda request: HttpResponseRedirect('http://localhost:5173')),
+    # Redirect root to frontend
+    path('', lambda request: HttpResponseRedirect(FRONTEND_URL)),
 
     # Auth — login, logout, password change
     path('api/auth/', include('dj_rest_auth.urls')),
@@ -42,7 +45,7 @@ urlpatterns = [
     # Users — profile
     path('api/users/', include('users.urls')),
 
-    # Listing - Jobs, rooms, events, businesses
+    # Listings
     path('api/listings/', include('listings.urls')),
 
     # Jobs
@@ -62,6 +65,9 @@ urlpatterns = [
 
     # Exchange Rates
     path('api/exchange/', include('exchange.urls')),
+]
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Only serve media files locally — Cloudinary handles production
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
