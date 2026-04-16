@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, filters
+from rest_framework.exceptions import PermissionDenied, NotFound
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
 from .models import Room
@@ -10,12 +11,6 @@ class RoomListView(generics.ListAPIView):
     GET /api/rooms/
     Returns all active room listings.
     Anyone can browse — no login needed.
-
-    Filters:
-        /api/rooms/?room_type=private
-        /api/rooms/?bills_included=true
-        /api/rooms/?nepalese_household=true
-        /api/rooms/?search=parramatta
     """
     serializer_class = RoomSerializer
     permission_classes = (permissions.AllowAny,)
@@ -33,23 +28,16 @@ class RoomListView(generics.ListAPIView):
         'listing__title',
         'listing__description',
         'listing__location',
+        'listing__state',
     )
     ordering_fields = ('listing__created_at', 'price')
     ordering = ('-listing__created_at',)
 
     def get_queryset(self):
-        """
-        Only return rooms where the base listing is active.
-        Also supports price range filtering via query params.
-
-        Examples:
-            /api/rooms/?min_price=100&max_price=300
-        """
         queryset = Room.objects.filter(
             listing__status='active'
         ).select_related('listing', 'listing__user')
 
-        # Price range filter
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
 
@@ -65,26 +53,11 @@ class RoomCreateView(generics.CreateAPIView):
     """
     POST /api/rooms/create/
     Attaches room details to an existing listing.
-    Must be logged in and must own the listing.
-
-    Request body:
-        {
-            "listing": 1,
-            "room_type": "private",
-            "price": 250.00,
-            "furnishing": "furnished",
-            "bills_included": true,
-            "nepalese_household": true
-        }
     """
     serializer_class = RoomSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
-        """
-        Verify the listing belongs to the logged in user
-        and is of type room before saving.
-        """
         listing_id = self.request.data.get('listing')
         try:
             listing = Listing.objects.get(
@@ -93,7 +66,6 @@ class RoomCreateView(generics.CreateAPIView):
                 listing_type='room'
             )
         except Listing.DoesNotExist:
-            from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied(
                 'Listing not found, not yours, or not a room listing.'
             )
@@ -113,18 +85,16 @@ class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Room.objects.select_related('listing', 'listing__user')
 
     def check_object_permissions(self, request, obj):
-        """Only the listing owner can edit or delete."""
         super().check_object_permissions(request, obj)
         if request.method not in permissions.SAFE_METHODS:
             if obj.listing.user != request.user:
-                from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied('You do not own this listing.')
+
 
 class RoomDetailByListingView(generics.RetrieveAPIView):
     """
     GET /api/rooms/listing/<listing_id>/
     Fetches room detail by the parent listing ID.
-    React uses this after creating a listing to show the detail page.
     """
     serializer_class = RoomSerializer
     permission_classes = (permissions.AllowAny,)
@@ -136,5 +106,4 @@ class RoomDetailByListingView(generics.RetrieveAPIView):
                 'listing', 'listing__user'
             ).get(listing__id=listing_id)
         except Room.DoesNotExist:
-            from rest_framework.exceptions import NotFound
             raise NotFound('Room not found.')
