@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
-import { useNavigate, useLocation } from "react-router-dom";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { STATES } from "../../utils/constants";
 
 const ROOM_TYPES = [
   { value: "", label: "All types" },
@@ -13,21 +14,8 @@ const ROOM_TYPES = [
   { value: "studio", label: "Studio" },
 ];
 
-const STATES = [
-  { value: "", label: "All states" },
-  { value: "NSW", label: "NSW" },
-  { value: "VIC", label: "VIC" },
-  { value: "QLD", label: "QLD" },
-  { value: "WA", label: "WA" },
-  { value: "SA", label: "SA" },
-  { value: "TAS", label: "TAS" },
-  { value: "ACT", label: "ACT" },
-  { value: "NT", label: "NT" },
-];
-
 export default function RoomsPage() {
   usePageTitle("Rooms for Rent");
-  const navigate = useNavigate();
   const location = useLocation();
   const [filters, setFilters] = useState({
     room_type: "",
@@ -192,7 +180,7 @@ export default function RoomsPage() {
         </label>
       </div>
 
-      {/* Results */}
+      {/* Loading */}
       {isLoading && (
         <div
           style={{
@@ -207,6 +195,7 @@ export default function RoomsPage() {
         </div>
       )}
 
+      {/* Error */}
       {error && (
         <div
           style={{
@@ -222,6 +211,7 @@ export default function RoomsPage() {
         </div>
       )}
 
+      {/* Empty */}
       {data && data.results?.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
           No rooms found. Try a different search.
@@ -237,9 +227,9 @@ export default function RoomsPage() {
         }}
       >
         {data?.results?.map((room) => (
-          <div
+          <Link
             key={room.id}
-            onClick={() => navigate(`/rooms/${room.id}`)}
+            to={`/rooms/${room.id}`}
             style={{
               background: "#fff",
               border: "0.5px solid #e5e5e5",
@@ -247,6 +237,8 @@ export default function RoomsPage() {
               overflow: "hidden",
               cursor: "pointer",
               transition: "border-color 0.15s",
+              textDecoration: "none",
+              display: "block",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.borderColor = "#EFD9C0")
@@ -357,9 +349,24 @@ export default function RoomsPage() {
                 )}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
+
+      {/* Pagination info */}
+      {data?.count > 20 && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "20px",
+            color: "#888",
+            fontSize: "13px",
+          }}
+        >
+          Showing 20 of {data.count} rooms — refine your search to find more
+          specific results
+        </div>
+      )}
     </div>
   );
 }
