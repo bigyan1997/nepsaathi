@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAnnouncements } from "../../api/announcements";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { STATES } from "../../utils/constants";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -24,25 +25,13 @@ const CATEGORY_COLORS = {
   general: { bg: "#F1EFE8", color: "#444441" },
 };
 
-const STATES = [
-  { value: "", label: "All states" },
-  { value: "NSW", label: "NSW" },
-  { value: "VIC", label: "VIC" },
-  { value: "QLD", label: "QLD" },
-  { value: "WA", label: "WA" },
-  { value: "SA", label: "SA" },
-  { value: "TAS", label: "TAS" },
-  { value: "ACT", label: "ACT" },
-  { value: "NT", label: "NT" },
-];
-
 export default function AnnouncementsPage() {
   usePageTitle("Announcements");
-  const navigate = useNavigate();
   const location = useLocation();
   const [filters, setFilters] = useState({
     category: "",
     search: "",
+    state: "",
     is_free: "",
     is_urgent: "",
   });
@@ -135,7 +124,6 @@ export default function AnnouncementsPage() {
             </option>
           ))}
         </select>
-
         <select
           value={filters.state}
           onChange={(e) => setFilters({ ...filters, state: e.target.value })}
@@ -201,7 +189,7 @@ export default function AnnouncementsPage() {
         </label>
       </div>
 
-      {/* Results */}
+      {/* Loading */}
       {isLoading && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -210,6 +198,7 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
+      {/* Error */}
       {error && (
         <div
           style={{
@@ -225,6 +214,7 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
+      {/* Empty */}
       {data && data.results?.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
           No announcements found. Try a different search.
@@ -237,9 +227,9 @@ export default function AnnouncementsPage() {
           const catColor =
             CATEGORY_COLORS[announcement.category] || CATEGORY_COLORS.general;
           return (
-            <div
+            <Link
               key={announcement.id}
-              onClick={() => navigate(`/announcements/${announcement.id}`)}
+              to={`/announcements/${announcement.id}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",
@@ -247,6 +237,8 @@ export default function AnnouncementsPage() {
                 padding: "18px 20px",
                 cursor: "pointer",
                 transition: "border-color 0.15s",
+                textDecoration: "none",
+                display: "block",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.borderColor = "#EFD9C0")
@@ -357,10 +349,25 @@ export default function AnnouncementsPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
+
+      {/* Pagination info */}
+      {data?.count > 20 && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "20px",
+            color: "#888",
+            fontSize: "13px",
+          }}
+        >
+          Showing 20 of {data.count} announcements — refine your search to find
+          more
+        </div>
+      )}
     </div>
   );
 }
