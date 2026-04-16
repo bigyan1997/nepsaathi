@@ -11,20 +11,30 @@ class User(AbstractUser):
     username = None
 
     email = models.EmailField(unique=True)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    google_avatar = models.URLField(
-    blank=True,
-    help_text='Google profile picture URL'
+
+    # Profile picture — either uploaded or from Google
+    avatar = models.URLField(
+        blank=True,
+        default='',
+        help_text='Custom uploaded profile picture URL'
     )
+    google_avatar = models.URLField(
+        blank=True,
+        help_text='Google profile picture URL — set automatically on Google login'
+    )
+
     phone = models.CharField(max_length=20, blank=True)
     location = models.CharField(max_length=100, blank=True)
     bio = models.TextField(max_length=500, blank=True)
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(
+        default=False,
+        help_text='Verified by NepSaathi admin'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # removed username from here too
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     class Meta:
         db_table = 'users'
