@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { STATES } from "../../utils/constants";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -21,18 +22,6 @@ const CATEGORIES = [
   { value: "freelancer", label: "Freelancer & Pujari" },
   { value: "retail", label: "Retail & Shopping" },
   { value: "other", label: "Other" },
-];
-
-const STATES = [
-  { value: "", label: "All states" },
-  { value: "NSW", label: "NSW" },
-  { value: "VIC", label: "VIC" },
-  { value: "QLD", label: "QLD" },
-  { value: "WA", label: "WA" },
-  { value: "SA", label: "SA" },
-  { value: "TAS", label: "TAS" },
-  { value: "ACT", label: "ACT" },
-  { value: "NT", label: "NT" },
 ];
 
 const CATEGORY_EMOJIS = {
@@ -71,7 +60,6 @@ const CATEGORY_COLORS = {
 
 export default function BusinessesPage() {
   usePageTitle("Nepalese Businesses");
-  const navigate = useNavigate();
   const location = useLocation();
   const [filters, setFilters] = useState({
     category: "",
@@ -234,7 +222,7 @@ export default function BusinessesPage() {
         </label>
       </div>
 
-      {/* Results */}
+      {/* Loading */}
       {isLoading && (
         <div
           style={{
@@ -249,6 +237,7 @@ export default function BusinessesPage() {
         </div>
       )}
 
+      {/* Error */}
       {error && (
         <div
           style={{
@@ -264,6 +253,7 @@ export default function BusinessesPage() {
         </div>
       )}
 
+      {/* Empty */}
       {data && data.results?.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
           No businesses found. Try a different search.
@@ -283,9 +273,9 @@ export default function BusinessesPage() {
             CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
           const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
           return (
-            <div
+            <Link
               key={business.id}
-              onClick={() => navigate(`/businesses/${business.id}`)}
+              to={`/businesses/${business.id}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",
@@ -293,6 +283,8 @@ export default function BusinessesPage() {
                 padding: "18px",
                 cursor: "pointer",
                 transition: "border-color 0.15s",
+                textDecoration: "none",
+                display: "block",
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.borderColor = "#AFA9EC")
@@ -410,10 +402,25 @@ export default function BusinessesPage() {
                   </span>
                 </div>
               )}
-            </div>
+            </Link>
           );
         })}
       </div>
+
+      {/* Pagination info */}
+      {data?.count > 20 && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "20px",
+            color: "#888",
+            fontSize: "13px",
+          }}
+        >
+          Showing 20 of {data.count} businesses — refine your search to find
+          more
+        </div>
+      )}
     </div>
   );
 }
