@@ -32,7 +32,7 @@ class ExchangeRateView(APIView):
             # Free API — base is USD, we convert via USD
             # 1 USD = X NPR, 1 USD = Y AUD → 1 AUD = (X/Y) NPR
             url = 'https://api.exchangerate-api.com/v4/latest/USD'
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=3)
             data = response.json()
             all_rates = data.get('rates', {})
 
@@ -55,10 +55,10 @@ class ExchangeRateView(APIView):
         except Exception:
             # Fallback approximate rates
             fallback = {
-                'AUD': {'rate': 88.50, 'flag': '🇦🇺', 'name': 'Australian Dollar'},
-                'GBP': {'rate': 163.20, 'flag': '🇬🇧', 'name': 'British Pound'},
-                'USD': {'rate': 133.50, 'flag': '🇺🇸', 'name': 'US Dollar'},
-                'CAD': {'rate': 98.20, 'flag': '🇨🇦', 'name': 'Canadian Dollar'},
+                'AUD': {'rate': 86.50, 'flag': '🇦🇺', 'name': 'Australian Dollar'},
+                'GBP': {'rate': 172.30, 'flag': '🇬🇧', 'name': 'British Pound'},
+                'USD': {'rate': 136.50, 'flag': '🇺🇸', 'name': 'US Dollar'},
+                'CAD': {'rate': 99.80, 'flag': '🇨🇦', 'name': 'Canadian Dollar'},
             }
             return Response({
                 'rates': fallback,
