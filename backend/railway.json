@@ -5,7 +5,7 @@
     "buildCommand": "python3 -m pip install -r requirements.txt"
   },
   "deploy": {
-    "startCommand": "sh -c 'python3 manage.py migrate && gunicorn core.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120'",
+    "startCommand": "bash start.sh",
     "restartPolicyType": "ON_FAILURE"
   }
 }
