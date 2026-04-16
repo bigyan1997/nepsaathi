@@ -13,7 +13,6 @@ export const register = async (data) => {
 };
 
 // Login with email and password
-// Returns access token, refresh token and user object
 export const login = async (email, password) => {
   const response = await api.post("/api/auth/login/", { email, password });
   return response.data;
@@ -21,7 +20,7 @@ export const login = async (email, password) => {
 
 // Logout — blacklists the refresh token on Django
 export const logout = async (refreshToken) => {
-  const response = await api.post("/api/users/auth/logout/", {
+  const response = await api.post("/api/auth/logout/", {
     refresh: refreshToken,
   });
   return response.data;
@@ -40,7 +39,6 @@ export const updateProfile = async (data) => {
 };
 
 // Google OAuth login
-// Sends the Google access token to Django which verifies it
 export const googleLogin = async (accessToken) => {
   const response = await api.post("/api/users/auth/google/", {
     access_token: accessToken,
@@ -50,9 +48,8 @@ export const googleLogin = async (accessToken) => {
   // Fetch full profile to get google_avatar and all fields
   if (data.access) {
     try {
-      const profileResponse = await api.get("/api/users/profile/", {
-        headers: { Authorization: `Bearer ${data.access}` },
-      });
+      localStorage.setItem("nepsaathi_access_token", data.access);
+      const profileResponse = await api.get("/api/users/profile/");
       data.user = profileResponse.data;
     } catch (e) {
       // Use basic user data if profile fetch fails
