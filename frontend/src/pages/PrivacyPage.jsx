@@ -1,4 +1,6 @@
+import usePageTitle from "../hooks/usePageTitle";
 export default function PrivacyPage() {
+  usePageTitle("Privacy Policy");
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto", padding: "48px 28px" }}>
       {/* Header */}

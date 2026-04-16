@@ -7,6 +7,7 @@ import { getEvents } from "../api/events";
 import { getStats } from "../api/listings";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
+import usePageTitle from "../hooks/usePageTitle";
 
 const CATEGORIES = [
   {
@@ -64,6 +65,7 @@ const STATES = [
 ];
 
 export default function HomePage() {
+  usePageTitle(null); // uses default NepSaathi title
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [search, setSearch] = useState("");
@@ -343,7 +345,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── STATS ── */}
         {/* ── STATS ── */}
         <div
           className="home-section stats-grid"

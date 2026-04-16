@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function NotFoundPage() {
+  usePageTitle("Page Not Found");
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
 
@@ -18,7 +20,7 @@ export default function NotFoundPage() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [navigate]);
 
   return (
     <div
