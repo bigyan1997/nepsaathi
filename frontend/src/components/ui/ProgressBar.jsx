@@ -4,6 +4,7 @@ import {
   useContext,
   createContext,
   useCallback,
+  useRef,
 } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -17,30 +18,14 @@ export function ProgressProvider({ children }) {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
   const location = useLocation();
-
-  // Auto trigger on route change
-  useEffect(() => {
-    start();
-    const timer = setTimeout(() => done(), 500);
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
-
-  const start = useCallback(() => {
-    setVisible(true);
-    setProgress(10);
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 200);
-    return interval;
-  }, []);
+  const intervalRef = useRef(null);
 
   const done = useCallback(() => {
+    // Clear any running interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     setProgress(100);
     setTimeout(() => {
       setVisible(false);
@@ -48,9 +33,39 @@ export function ProgressProvider({ children }) {
     }, 300);
   }, []);
 
+  const start = useCallback(() => {
+    // Clear previous interval if still running
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    setVisible(true);
+    setProgress(10);
+    intervalRef.current = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 200);
+  }, []);
+
+  // Auto trigger on route change
+  useEffect(() => {
+    start();
+    const timer = setTimeout(() => done(), 500);
+    return () => {
+      clearTimeout(timer);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [location.pathname, start, done]);
+
   return (
     <ProgressContext.Provider value={{ start, done }}>
-      {/* Progress bar */}
       {visible && (
         <div
           style={{
