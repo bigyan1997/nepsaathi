@@ -1,7 +1,4 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from listings.models import Listing
 
 
@@ -9,10 +6,6 @@ class Room(models.Model):
     """
     Room/rental specific details for a NepSaathi listing.
     Links back to the base Listing model via OneToOneField.
-
-    Example:
-        listing = Listing(type='room', title='Private room in Parramatta')
-        room = Room(listing=listing, price=250, room_type='private')
     """
 
     class RoomType(models.TextChoices):
@@ -32,14 +25,12 @@ class Room(models.Model):
         SIX_WEEKS = '6_weeks', '6 Weeks'
         NEGOTIABLE = 'negotiable', 'Negotiable'
 
-    # Link to base listing
     listing = models.OneToOneField(
         Listing,
         on_delete=models.CASCADE,
         related_name='room_detail'
     )
 
-    # Room specific fields
     room_type = models.CharField(
         max_length=20,
         choices=RoomType.choices,
@@ -62,7 +53,7 @@ class Room(models.Model):
     )
     bills_included = models.BooleanField(
         default=False,
-        help_text='Are electricity, water, internet included in the rent?'
+        help_text='Are electricity, water, internet included?'
     )
     available_from = models.DateField(
         null=True,
@@ -88,9 +79,9 @@ class Room(models.Model):
         verbose_name_plural = 'Rooms'
 
     def __str__(self):
-        return f'{self.get_room_type_display()} — ${self.price}/wk ({self.listing.location})'
+        return f'{self.get_room_type_display()} — ${self.price:,.2f}/wk ({self.listing.location})'
 
     @property
     def price_display(self):
-        """Returns formatted price string e.g. $250/wk"""
-        return f'${self.price}/wk'
+        """Returns formatted price string e.g. $250.00/wk"""
+        return f'${self.price:,.2f}/wk'
