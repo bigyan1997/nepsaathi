@@ -1,22 +1,11 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from listings.models import Listing
 
 
 class Announcement(models.Model):
     """
     Announcement-specific details for a NepSaathi listing.
-    Links back to the base Listing model via OneToOneField.
-
-    Categories cover the most common Nepalese community announcements:
-    - news: community news and updates
-    - sale: items for sale
-    - service: services being offered
-    - general: anything else
     """
-
     class Category(models.TextChoices):
         NEWS = 'news', 'Community News'
         SALE = 'sale', 'Item for Sale'
@@ -33,14 +22,11 @@ class Announcement(models.Model):
         POOR = 'poor', 'Poor'
         NOT_APPLICABLE = 'na', 'Not Applicable'
 
-    # Link to base listing
     listing = models.OneToOneField(
         Listing,
         on_delete=models.CASCADE,
         related_name='announcement_detail'
     )
-
-    # Announcement specific fields
     category = models.CharField(
         max_length=20,
         choices=Category.choices,
@@ -79,9 +65,8 @@ class Announcement(models.Model):
 
     @property
     def price_display(self):
-        """Returns formatted price string e.g. $50.00 or Free"""
         if self.is_free:
             return 'Free'
         if self.price:
-            return f'${self.price}'
+            return f'${self.price:,.2f}'
         return 'Contact for price'

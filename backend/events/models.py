@@ -1,16 +1,12 @@
 from django.db import models
+from django.utils import timezone
 from listings.models import Listing
 
 
 class Event(models.Model):
     """
     Event-specific details for a NepSaathi listing.
-    Links back to the base Listing model via OneToOneField.
-
-    Covers community events like Dashain celebrations,
-    cultural programs, sports tournaments and meetups.
     """
-
     class EventCategory(models.TextChoices):
         CULTURAL = 'cultural', 'Cultural'
         SPORTS = 'sports', 'Sports'
@@ -21,14 +17,11 @@ class Event(models.Model):
         EDUCATION = 'education', 'Education & Workshop'
         OTHER = 'other', 'Other'
 
-    # Link to base listing
     listing = models.OneToOneField(
         Listing,
         on_delete=models.CASCADE,
         related_name='event_detail'
     )
-
-    # Event specific fields
     category = models.CharField(
         max_length=20,
         choices=EventCategory.choices,
@@ -66,7 +59,7 @@ class Event(models.Model):
     max_attendees = models.PositiveIntegerField(
         null=True,
         blank=True,
-        help_text='Maximum number of attendees — leave empty for unlimited'
+        help_text='Maximum number of attendees'
     )
     is_online = models.BooleanField(
         default=False,
@@ -88,15 +81,12 @@ class Event(models.Model):
 
     @property
     def ticket_display(self):
-        """Returns formatted ticket price e.g. $20.00 or Free"""
         if self.is_free:
             return 'Free'
         if self.ticket_price:
-            return f'${self.ticket_price}'
+            return f'${self.ticket_price:,.2f}'
         return 'Contact for price'
 
     @property
     def is_upcoming(self):
-        """Returns True if the event is in the future"""
-        from django.utils import timezone
         return self.event_date >= timezone.now()
