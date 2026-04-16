@@ -29,6 +29,8 @@ class EventSerializer(serializers.ModelSerializer):
         source='listing.contact_email', read_only=True)
     created_at = serializers.DateTimeField(
         source='listing.created_at', read_only=True)
+    listing_status = serializers.CharField(source='listing.status', read_only=True)
+    expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True) 
 
     class Meta:
         model = Event
@@ -56,6 +58,8 @@ class EventSerializer(serializers.ModelSerializer):
             'event_url',
             'is_upcoming',
             'created_at',
+            'listing_status',
+    'expires_at',
         )
         read_only_fields = (
             'id',
@@ -71,4 +75,6 @@ class EventSerializer(serializers.ModelSerializer):
             'contact_whatsapp',
             'contact_email',
             'created_at',
+            'listing_status',
+            'expires_at',
         )
