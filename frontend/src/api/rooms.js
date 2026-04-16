@@ -30,3 +30,9 @@ export const updateRoom = async (id, data) => {
   const response = await api.patch(`/api/rooms/${id}/`, data);
   return response.data;
 };
+
+// Delete room listing (owner only)
+export const deleteRoom = async (id) => {
+  const response = await api.delete(`/api/rooms/${id}/`);
+  return response.data;
+};

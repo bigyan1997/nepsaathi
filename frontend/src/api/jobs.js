@@ -30,3 +30,9 @@ export const updateJob = async (id, data) => {
   const response = await api.patch(`/api/jobs/${id}/`, data);
   return response.data;
 };
+
+// Delete job listing (owner only)
+export const deleteJob = async (id) => {
+  const response = await api.delete(`/api/jobs/${id}/`);
+  return response.data;
+};
