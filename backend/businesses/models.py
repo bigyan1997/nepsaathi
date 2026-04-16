@@ -115,6 +115,13 @@ class Business(models.Model):
         verbose_name = 'Business'
         verbose_name_plural = 'Businesses'
         ordering = ['-is_verified', '-created_at']
+        indexes = [
+            models.Index(fields=['category']),
+            models.Index(fields=['state']),
+            models.Index(fields=['is_verified']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['owner']),
+        ]
 
     def __str__(self):
         return f'{self.business_name} ({self.get_category_display()}) — {self.suburb}'
