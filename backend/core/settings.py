@@ -254,6 +254,7 @@ ALLOWED_HOSTS = config(
 )
 
 # Security headers for production
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
