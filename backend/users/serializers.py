@@ -8,8 +8,8 @@ class RegisterSerializer(BaseRegisterSerializer):
     Custom registration serializer for NepSaathi.
     Email only — username completely removed.
     """
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
+    first_name = serializers.CharField(required=True, max_length=50)
+    last_name = serializers.CharField(required=True, max_length=50)
 
     # Remove username field completely
     username = None
@@ -51,5 +51,19 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'is_verified',
             'created_at',
+            'updated_at',
         )
-        read_only_fields = ('id', 'email', 'is_verified', 'created_at', 'google_avatar',)
+        read_only_fields = (
+            'id',
+            'email',
+            'is_verified',
+            'created_at',
+            'updated_at',
+            'google_avatar',
+        )
+        extra_kwargs = {
+            'first_name': {'max_length': 50},
+            'last_name': {'max_length': 50},
+            'phone': {'max_length': 20},
+            'bio': {'max_length': 500},
+        }
