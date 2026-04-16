@@ -28,8 +28,6 @@ export default function ProfilePage() {
   usePageTitle("Profile Settings");
   const { user, updateUser } = useAuthStore();
   const queryClient = useQueryClient();
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const { addToast } = useToast();
 
   const [form, setForm] = useState({
@@ -40,13 +38,11 @@ export default function ProfilePage() {
     bio: "",
   });
 
-  // Fetch profile from API
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: getProfile,
   });
 
-  // Populate form when profile loads
   useEffect(() => {
     if (profile) {
       setForm({
@@ -59,7 +55,6 @@ export default function ProfilePage() {
     }
   }, [profile]);
 
-  // Update profile mutation
   const updateMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: (data) => {
@@ -83,10 +78,9 @@ export default function ProfilePage() {
 
   const handleSubmit = () => {
     if (!form.first_name || !form.last_name) {
-      setError("First name and last name are required.");
+      addToast("First name and last name are required.", "error");
       return;
     }
-    setError("");
     updateMutation.mutate(form);
   };
 
@@ -129,7 +123,6 @@ export default function ProfilePage() {
           gap: "20px",
         }}
       >
-        {/* Avatar */}
         <div
           style={{
             width: "72px",
@@ -203,38 +196,6 @@ export default function ProfilePage() {
         <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#26215C" }}>
           Personal info
         </h2>
-
-        {/* Success message */}
-        {success && (
-          <div
-            style={{
-              background: "#E1F5EE",
-              border: "0.5px solid #9FE1CB",
-              borderRadius: "8px",
-              padding: "10px 14px",
-              fontSize: "13px",
-              color: "#085041",
-            }}
-          >
-            {success}
-          </div>
-        )}
-
-        {/* Error message */}
-        {error && (
-          <div
-            style={{
-              background: "#FCEBEB",
-              border: "0.5px solid #F09595",
-              borderRadius: "8px",
-              padding: "10px 14px",
-              fontSize: "13px",
-              color: "#A32D2D",
-            }}
-          >
-            {error}
-          </div>
-        )}
 
         {/* Name */}
         <div
@@ -338,7 +299,7 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      {/* Account stats */}
+      {/* Account info */}
       <div
         style={{
           background: "#fff",
@@ -426,8 +387,10 @@ export default function ProfilePage() {
         </p>
         <button
           onClick={() =>
-            alert(
-              "Please contact support@nepsaathi.com to delete your account.",
+            addToast(
+              "To delete your account please email support@nepsaathi.com",
+              "info",
+              6000,
             )
           }
           style={{
