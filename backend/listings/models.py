@@ -89,6 +89,14 @@ class Listing(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Listing'
         verbose_name_plural = 'Listings'
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['listing_type']),
+            models.Index(fields=['state']),
+            models.Index(fields=['user']),
+            models.Index(fields=['expires_at']),
+            models.Index(fields=['-created_at']),
+        ]
 
     def __str__(self):
         return f'{self.listing_type.upper()} — {self.title} ({self.location})'
