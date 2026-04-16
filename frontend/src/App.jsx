@@ -71,36 +71,45 @@ function App() {
                     <Routes>
                       {/* Public routes */}
                       <Route path="/" element={<HomePage />} />
+                      {/* Jobs */}
                       <Route path="/jobs" element={<JobsPage />} />
-                      <Route path="/jobs/:id" element={<JobDetailPage />} />
                       <Route
                         path="/jobs/listing/:id"
                         element={<JobDetailPage />}
-                      />
+                      />{" "}
+                      {/* static first */}
+                      <Route
+                        path="/jobs/:id"
+                        element={<JobDetailPage />}
+                      />{" "}
+                      {/* dynamic after */}
+                      {/* Rooms */}
                       <Route path="/rooms" element={<RoomsPage />} />
-                      <Route path="/rooms/:id" element={<RoomDetailPage />} />
                       <Route
                         path="/rooms/listing/:id"
                         element={<RoomDetailPage />}
                       />
+                      <Route path="/rooms/:id" element={<RoomDetailPage />} />
+                      {/* Announcements */}
                       <Route
                         path="/announcements"
                         element={<AnnouncementsPage />}
                       />
                       <Route
-                        path="/announcements/:id"
-                        element={<AnnouncementDetailPage />}
-                      />
-                      <Route
                         path="/announcements/listing/:id"
                         element={<AnnouncementDetailPage />}
                       />
+                      <Route
+                        path="/announcements/:id"
+                        element={<AnnouncementDetailPage />}
+                      />
+                      {/* Events */}
                       <Route path="/events" element={<EventsPage />} />
-                      <Route path="/events/:id" element={<EventDetailPage />} />
                       <Route
                         path="/events/listing/:id"
                         element={<EventDetailPage />}
                       />
+                      <Route path="/events/:id" element={<EventDetailPage />} />
                       <Route path="/businesses" element={<BusinessesPage />} />
                       <Route
                         path="/businesses/:id"
@@ -108,7 +117,6 @@ function App() {
                       />
                       <Route path="/privacy" element={<PrivacyPage />} />
                       <Route path="/terms" element={<TermsPage />} />
-
                       {/* Guest only routes */}
                       <Route
                         path="/login"
@@ -126,7 +134,6 @@ function App() {
                           </GuestRoute>
                         }
                       />
-
                       {/* Protected routes */}
                       <Route
                         path="/post-ad"
@@ -160,7 +167,6 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
-
                       {/* 404 — must be last */}
                       <Route path="*" element={<NotFoundPage />} />
                     </Routes>
