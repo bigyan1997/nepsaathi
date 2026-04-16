@@ -31,7 +31,7 @@ class ListingSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_name = serializers.CharField(source='user.full_name', read_only=True)
     is_owner = serializers.SerializerMethodField()
-    expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
+    expires_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Listing
@@ -57,7 +57,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'updated_at',
             'expires_at',
         )
-        read_only_fields = ('id', 'created_at', 'updated_at', 'user_email', 'user_name')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'user_email', 'user_name', 'expires_at')
 
     def get_is_owner(self, obj):
         """
