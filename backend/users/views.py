@@ -5,7 +5,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from decouple import config
 from .serializers import UserSerializer
+
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 
 class GoogleLoginView(SocialLoginView):
@@ -16,30 +19,24 @@ class GoogleLoginView(SocialLoginView):
     returns NepSaathi JWT token pair.
     """
     adapter_class = GoogleOAuth2Adapter
-    callback_url = 'http://localhost:5173'
+    callback_url = FRONTEND_URL
     client_class = OAuth2Client
 
     def get_response(self):
         response = super().get_response()
-
-        # After Google login save the profile picture URL
         try:
             user = self.user
             social_account = user.socialaccount_set.filter(
                 provider='google'
             ).first()
-
             if social_account:
                 extra_data = social_account.extra_data
                 picture_url = extra_data.get('picture', '')
-
-                # Save Google avatar URL to user profile
-                if picture_url and not user.avatar:
+                if picture_url and not user.google_avatar:
                     user.google_avatar = picture_url
                     user.save()
         except Exception:
             pass
-
         return response
 
 
@@ -64,7 +61,12 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data['refresh']
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response(
+                    {'detail': 'Refresh token is required.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(
