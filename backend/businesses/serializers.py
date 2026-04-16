@@ -60,14 +60,23 @@ class BusinessSerializer(serializers.ModelSerializer):
         }
 
     def get_is_owner(self, obj):
-        """
-        Returns True if the logged in user owns this business.
-        React uses this to show/hide edit and delete buttons.
-        """
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return obj.owner == request.user
         return False
+
+    def to_representation(self, instance):
+        """Hide owner_email from non-owners."""
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        is_owner = (
+            request and
+            request.user.is_authenticated and
+            instance.owner == request.user
+        )
+        if not is_owner:
+            data.pop('owner_email', None)
+        return data
 
     def create(self, validated_data):
         """Automatically assign the logged in user as owner."""
