@@ -1,7 +1,4 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from listings.models import Listing
 
 
@@ -9,10 +6,6 @@ class Job(models.Model):
     """
     Job-specific details for a NepSaathi listing.
     Links back to the base Listing model via OneToOneField.
-
-    Example:
-        listing = Listing(type='job', title='Kitchen Hand')
-        job = Job(listing=listing, salary=23.50, job_type='casual')
     """
 
     class JobType(models.TextChoices):
@@ -30,14 +23,12 @@ class Job(models.Model):
         YEARLY = 'yearly', 'Per Year'
         NEGOTIABLE = 'negotiable', 'Negotiable'
 
-    # Link to base listing
     listing = models.OneToOneField(
         Listing,
         on_delete=models.CASCADE,
         related_name='job_detail'
     )
 
-    # Job specific fields
     company_name = models.CharField(max_length=200, blank=True)
     job_type = models.CharField(
         max_length=20,
@@ -74,7 +65,7 @@ class Job(models.Model):
     @property
     def salary_display(self):
         """Returns formatted salary string e.g. $23.50/hr"""
-        if not self.salary:
+        if not self.salary or self.salary_type == 'negotiable':
             return 'Negotiable'
         suffix = {
             'hourly': '/hr',
@@ -82,4 +73,4 @@ class Job(models.Model):
             'monthly': '/mo',
             'yearly': '/yr',
         }.get(self.salary_type, '')
-        return f'${self.salary}{suffix}'
+        return f'${self.salary:,.2f}{suffix}'
