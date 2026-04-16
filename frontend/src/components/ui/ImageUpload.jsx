@@ -9,10 +9,7 @@ export default function ImageUpload({ listingId, onComplete }) {
   const [uploaded, setUploaded] = useState(false);
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-
-    // Validate files
+  const validateAndAddFiles = (files) => {
     const validFiles = files.filter((f) => {
       if (!f.type.startsWith("image/")) {
         setError("Only image files are allowed.");
@@ -33,14 +30,23 @@ export default function ImageUpload({ listingId, onComplete }) {
     setError("");
     setImages((prev) => [...prev, ...validFiles]);
 
-    // Create previews
     validFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPreviews((prev) => [...prev, e.target.result]);
+        setPreviews((prev) => [
+          ...prev,
+          {
+            url: e.target.result,
+            id: `${file.name}-${Date.now()}-${Math.random()}`,
+          },
+        ]);
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleFileSelect = (e) => {
+    validateAndAddFiles(Array.from(e.target.files));
   };
 
   const removeImage = (index) => {
@@ -53,10 +59,8 @@ export default function ImageUpload({ listingId, onComplete }) {
       onComplete();
       return;
     }
-
     setUploading(true);
     setError("");
-
     try {
       await uploadImages(listingId, images);
       setUploaded(true);
@@ -66,6 +70,12 @@ export default function ImageUpload({ listingId, onComplete }) {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleSkip = () => {
+    setImages([]);
+    setPreviews([]);
+    onComplete();
   };
 
   return (
@@ -99,8 +109,7 @@ export default function ImageUpload({ listingId, onComplete }) {
           e.preventDefault();
           e.currentTarget.style.background = "#EEEDFE";
           const files = Array.from(e.dataTransfer.files);
-          const fakeEvent = { target: { files } };
-          handleFileSelect(fakeEvent);
+          validateAndAddFiles(files);
         }}
       >
         <div style={{ fontSize: "32px", marginBottom: "8px" }}>📷</div>
@@ -153,9 +162,9 @@ export default function ImageUpload({ listingId, onComplete }) {
           }}
         >
           {previews.map((preview, index) => (
-            <div key={index} style={{ position: "relative" }}>
+            <div key={preview.id} style={{ position: "relative" }}>
               <img
-                src={preview}
+                src={preview.url}
                 alt={`Preview ${index + 1}`}
                 style={{
                   width: "100%",
@@ -230,7 +239,7 @@ export default function ImageUpload({ listingId, onComplete }) {
       {/* Action buttons */}
       <div style={{ display: "flex", gap: "10px" }}>
         <button
-          onClick={onComplete}
+          onClick={handleSkip}
           style={{
             flex: 1,
             background: "#fff",
