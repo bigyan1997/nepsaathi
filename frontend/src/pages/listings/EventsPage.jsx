@@ -220,28 +220,44 @@ export default function EventsPage() {
           />
           Online only
         </label>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            fontSize: "13px",
-            color: "#444",
-            cursor: "pointer",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={filters.upcoming === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                upcoming: e.target.checked ? "true" : "",
-              })
-            }
-          />
-          Upcoming only
-        </label>
+        <div style={{ display: "flex", gap: "6px" }}>
+          <button
+            type="button"
+            onClick={() => setFilters({ ...filters, upcoming: "" })}
+            style={{
+              background: filters.upcoming === "" ? "#534AB7" : "#fff",
+              color: filters.upcoming === "" ? "#fff" : "#534AB7",
+              border: "0.5px solid #AFA9EC",
+              borderRadius: "20px",
+              padding: "10px 16px",
+              fontSize: "13px",
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "all 0.15s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            📅 All events
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilters({ ...filters, upcoming: "true" })}
+            style={{
+              background: filters.upcoming === "true" ? "#534AB7" : "#fff",
+              color: filters.upcoming === "true" ? "#fff" : "#534AB7",
+              border: "0.5px solid #AFA9EC",
+              borderRadius: "20px",
+              padding: "10px 16px",
+              fontSize: "13px",
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "all 0.15s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            🔜 Upcoming only
+          </button>
+        </div>
       </div>
 
       {/* Loading */}
