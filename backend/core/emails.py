@@ -32,7 +32,6 @@ def send_welcome_email(user):
         )
         msg.attach_alternative(html, 'text/html')
         thread = threading.Thread(target=_send_email, args=(msg,))
-        thread.daemon = True
         thread.start()
     except Exception as e:
         print(f'Welcome email failed: {e}')
@@ -59,7 +58,6 @@ def send_report_emails(report):
         )
         msg_admin.attach_alternative(html_admin, 'text/html')
         thread1 = threading.Thread(target=_send_email, args=(msg_admin,))
-        thread1.daemon = True
         thread1.start()
 
         # Email to listing owner
@@ -76,7 +74,6 @@ def send_report_emails(report):
         )
         msg_owner.attach_alternative(html_owner, 'text/html')
         thread2 = threading.Thread(target=_send_email, args=(msg_owner,))
-        thread2.daemon = True
         thread2.start()
     except Exception as e:
         print(f'Report email failed: {e}')
