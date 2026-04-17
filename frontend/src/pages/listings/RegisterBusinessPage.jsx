@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { createBusiness } from "../../api/businesses";
+import usePageTitle from "../../hooks/usePageTitle";
+import { useToast } from "../../components/ui/Toast";
+import { STATES } from "../../utils/constants";
 
 const inputStyle = {
   width: "100%",
@@ -38,7 +42,7 @@ const CATEGORIES = [
   { value: "other", label: "Other" },
 ];
 
-const STATES = [
+const STATES_FULL = [
   { value: "NSW", label: "New South Wales" },
   { value: "VIC", label: "Victoria" },
   { value: "QLD", label: "Queensland" },
@@ -50,6 +54,9 @@ const STATES = [
 ];
 
 export default function RegisterBusinessPage() {
+  usePageTitle("Register Business");
+  const { addToast } = useToast();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -73,26 +80,33 @@ export default function RegisterBusinessPage() {
 
   const handleSubmit = async () => {
     if (!form.business_name || !form.description || !form.suburb) {
-      setError("Please fill in business name, description and suburb.");
+      addToast(
+        "Please fill in business name, description and suburb.",
+        "error",
+      );
       return;
     }
-
     setLoading(true);
     setError("");
-
     try {
       const business = await createBusiness({
         ...form,
         established_year: form.established_year || null,
       });
+      queryClient.invalidateQueries(["businesses"]);
+      queryClient.invalidateQueries(["my-businesses"]);
+      addToast("Business registered successfully! 🎉", "success");
       navigate(`/businesses/${business.id}`);
     } catch (err) {
       const errors = err.response?.data;
       if (errors) {
         const firstError = Object.values(errors)[0];
-        setError(Array.isArray(firstError) ? firstError[0] : firstError);
+        const msg = Array.isArray(firstError) ? firstError[0] : firstError;
+        setError(msg);
+        addToast(msg, "error");
       } else {
         setError("Something went wrong. Please try again.");
+        addToast("Something went wrong. Please try again.", "error");
       }
     } finally {
       setLoading(false);
