@@ -18,7 +18,7 @@ def send_welcome_email(user):
         msg = EmailMultiAlternatives(
             subject=subject,
             body=f'Welcome to NepSaathi, {user.first_name}! Visit us at {FRONTEND_URL}',
-            from_email=f'NepSaathi <{settings.DEFAULT_FROM_EMAIL}>',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=[user.email],
         )
         msg.attach_alternative(html, 'text/html')
