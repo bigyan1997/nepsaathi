@@ -1,3 +1,4 @@
+import threading
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -7,8 +8,16 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 ADMIN_URL = config('ADMIN_URL', default='https://nepsaathi-production.up.railway.app/admin')
 
 
+def _send_email(msg):
+    """Send email in background thread."""
+    try:
+        msg.send()
+    except Exception as e:
+        print(f'Email send failed: {e}')
+
+
 def send_welcome_email(user):
-    """Send welcome email to new user."""
+    """Send welcome email to new user in background."""
     try:
         subject = 'Welcome to NepSaathi! 🎉'
         html = render_to_string('emails/welcome.html', {
@@ -22,13 +31,15 @@ def send_welcome_email(user):
             to=[user.email],
         )
         msg.attach_alternative(html, 'text/html')
-        msg.send()
+        thread = threading.Thread(target=_send_email, args=(msg,))
+        thread.daemon = True
+        thread.start()
     except Exception as e:
         print(f'Welcome email failed: {e}')
 
 
 def send_report_emails(report):
-    """Send report notification to admin and listing owner."""
+    """Send report notifications in background."""
     listing = report.listing
     try:
         # Email to admin
@@ -43,11 +54,13 @@ def send_report_emails(report):
         msg_admin = EmailMultiAlternatives(
             subject=f'[NepSaathi] New report — {listing.title}',
             body=f'A listing has been reported: {listing.title}',
-            from_email=f'NepSaathi <{settings.DEFAULT_FROM_EMAIL}>',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=['hello@nepsaathi.com'],
         )
         msg_admin.attach_alternative(html_admin, 'text/html')
-        msg_admin.send()
+        thread1 = threading.Thread(target=_send_email, args=(msg_admin,))
+        thread1.daemon = True
+        thread1.start()
 
         # Email to listing owner
         html_owner = render_to_string('emails/report_owner.html', {
@@ -56,12 +69,14 @@ def send_report_emails(report):
             'frontend_url': FRONTEND_URL,
         })
         msg_owner = EmailMultiAlternatives(
-            subject=f'[NepSaathi] Your listing has been reported',
+            subject='[NepSaathi] Your listing has been reported',
             body=f'Your listing {listing.title} has been reported.',
-            from_email=f'NepSaathi <{settings.DEFAULT_FROM_EMAIL}>',
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=[listing.user.email],
         )
         msg_owner.attach_alternative(html_owner, 'text/html')
-        msg_owner.send()
+        thread2 = threading.Thread(target=_send_email, args=(msg_owner,))
+        thread2.daemon = True
+        thread2.start()
     except Exception as e:
         print(f'Report email failed: {e}')
