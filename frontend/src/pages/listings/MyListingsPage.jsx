@@ -8,7 +8,6 @@ import {
   unsaveListing,
 } from "../../api/listings";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
-import useAuthStore from "../../store/authStore";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
@@ -34,34 +33,111 @@ const TYPE_EMOJIS = {
   announcement: "📢",
 };
 
+// Confirmation modal component
+function ConfirmModal({ message, onConfirm, onCancel }) {
+  return (
+    <>
+      <div
+        onClick={onCancel}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.4)",
+          zIndex: 200,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          background: "#fff",
+          borderRadius: "14px",
+          padding: "28px",
+          width: "100%",
+          maxWidth: "380px",
+          zIndex: 201,
+          boxShadow: "0 8px 40px rgba(0,0,0,0.15)",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ fontSize: "32px", marginBottom: "12px" }}>⚠️</div>
+        <h3
+          style={{
+            fontSize: "16px",
+            fontWeight: 600,
+            color: "#26215C",
+            marginBottom: "8px",
+          }}
+        >
+          Are you sure?
+        </h3>
+        <p style={{ fontSize: "14px", color: "#888", marginBottom: "24px" }}>
+          {message}
+        </p>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            onClick={onCancel}
+            style={{
+              flex: 1,
+              background: "#fff",
+              color: "#555",
+              border: "0.5px solid #ccc",
+              borderRadius: "8px",
+              padding: "11px",
+              fontSize: "14px",
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            style={{
+              flex: 1,
+              background: "#A32D2D",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "11px",
+              fontSize: "14px",
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+          >
+            Yes, delete
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export default function MyListingsPage() {
   usePageTitle("My Listings");
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("listings");
   const [deletingId, setDeletingId] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null);
 
-  // Fetch my listings
   const { data: listingsData, isLoading: listingsLoading } = useQuery({
     queryKey: ["my-listings"],
     queryFn: getMyListings,
   });
 
-  // Fetch my businesses
   const { data: businessesData, isLoading: businessesLoading } = useQuery({
     queryKey: ["my-businesses"],
     queryFn: getMyBusinesses,
   });
 
-  //   Save listings
   const { data: savedData, isLoading: savedLoading } = useQuery({
     queryKey: ["saved-listings"],
     queryFn: getSavedListings,
   });
 
-  // Delete listing mutation
   const deleteListingMutation = useMutation({
     mutationFn: deleteListing,
     onSuccess: () => {
@@ -82,7 +158,6 @@ export default function MyListingsPage() {
     },
   });
 
-  // Delete business mutation
   const deleteBusinessMutation = useMutation({
     mutationFn: deleteBusiness,
     onSuccess: () => {
@@ -97,18 +172,39 @@ export default function MyListingsPage() {
     },
   });
 
+  const unsaveMutation = useMutation({
+    mutationFn: unsaveListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["saved-listings"]);
+      addToast("Removed from saved listings.", "info");
+    },
+    onError: () => {
+      addToast("Failed to remove. Please try again.", "error");
+    },
+  });
+
   const handleDeleteListing = (id) => {
-    if (window.confirm("Are you sure you want to delete this listing?")) {
-      setDeletingId(id);
-      deleteListingMutation.mutate(id);
-    }
+    setConfirmModal({
+      message: "This listing will be permanently deleted.",
+      onConfirm: () => {
+        setConfirmModal(null);
+        setDeletingId(id);
+        deleteListingMutation.mutate(id);
+      },
+      onCancel: () => setConfirmModal(null),
+    });
   };
 
   const handleDeleteBusiness = (id) => {
-    if (window.confirm("Are you sure you want to remove this business?")) {
-      setDeletingId(id);
-      deleteBusinessMutation.mutate(id);
-    }
+    setConfirmModal({
+      message: "This business will be removed from NepSaathi.",
+      onConfirm: () => {
+        setConfirmModal(null);
+        setDeletingId(id);
+        deleteBusinessMutation.mutate(id);
+      },
+      onCancel: () => setConfirmModal(null),
+    });
   };
 
   const getDetailPath = (listing) => {
@@ -126,15 +222,40 @@ export default function MyListingsPage() {
     }
   };
 
+  const getSavedPath = (saved) => {
+    switch (saved.listing_type) {
+      case "job":
+        return `/jobs/listing/${saved.listing}`;
+      case "room":
+        return `/rooms/listing/${saved.listing}`;
+      case "event":
+        return `/events/listing/${saved.listing}`;
+      case "announcement":
+        return `/announcements/listing/${saved.listing}`;
+      default:
+        return "/";
+    }
+  };
+
   const listings = (listingsData?.results || []).filter(
     (l) => l.status !== "deleted",
   );
   const businesses = (businessesData?.results || []).filter(
     (b) => b.is_active !== false,
   );
+  const saved = savedData?.results || [];
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>
+      {/* Confirm modal */}
+      {confirmModal && (
+        <ConfirmModal
+          message={confirmModal.message}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={confirmModal.onCancel}
+        />
+      )}
+
       {/* Header */}
       <div
         style={{
@@ -191,7 +312,7 @@ export default function MyListingsPage() {
         {[
           { key: "listings", label: `Listings (${listings.length})` },
           { key: "businesses", label: `Businesses (${businesses.length})` },
-          { key: "saved", label: `Saved (${savedData?.results?.length || 0})` },
+          { key: "saved", label: `Saved (${saved.length})` },
         ].map(({ key, label }) => (
           <button
             key={key}
@@ -205,6 +326,7 @@ export default function MyListingsPage() {
               fontWeight: activeTab === key ? 500 : 400,
               color: activeTab === key ? "#26215C" : "#888",
               cursor: "pointer",
+              transition: "all 0.15s",
             }}
           >
             {label}
@@ -217,9 +339,11 @@ export default function MyListingsPage() {
         <div>
           {listingsLoading && (
             <div
-              style={{ textAlign: "center", padding: "40px", color: "#888" }}
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
             >
-              Loading your listings...
+              {[1, 2, 3].map((i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           )}
 
@@ -280,6 +404,10 @@ export default function MyListingsPage() {
               const statusColor =
                 STATUS_COLORS[listing.status] || STATUS_COLORS.active;
               const typeEmoji = TYPE_EMOJIS[listing.listing_type] || "📌";
+              const isExpiringSoon =
+                listing.expires_at &&
+                new Date(listing.expires_at) - new Date() <
+                  1000 * 60 * 60 * 24 * 5;
 
               return (
                 <div
@@ -292,9 +420,15 @@ export default function MyListingsPage() {
                     display: "flex",
                     alignItems: "center",
                     gap: "16px",
+                    transition: "border-color 0.15s",
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.borderColor = "#AFA9EC")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor = "#e5e5e5")
+                  }
                 >
-                  {/* Type icon */}
                   <div
                     style={{
                       width: "42px",
@@ -311,7 +445,6 @@ export default function MyListingsPage() {
                     {typeEmoji}
                   </div>
 
-                  {/* Content */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
@@ -360,14 +493,41 @@ export default function MyListingsPage() {
                       >
                         {listing.status}
                       </span>
+                      {isExpiringSoon && (
+                        <span
+                          style={{
+                            background: "#FFF1E0",
+                            color: "#633806",
+                            fontSize: "10px",
+                            fontWeight: 500,
+                            padding: "2px 8px",
+                            borderRadius: "8px",
+                            flexShrink: 0,
+                          }}
+                        >
+                          ⚠️ Expiring soon
+                        </span>
+                      )}
                     </div>
                     <p style={{ fontSize: "12px", color: "#888" }}>
                       📍 {listing.location}, {listing.state} · Posted{" "}
                       {new Date(listing.created_at).toLocaleDateString("en-AU")}
+                      {listing.expires_at && (
+                        <span
+                          style={{
+                            marginLeft: "8px",
+                            color: isExpiringSoon ? "#E87722" : "#aaa",
+                          }}
+                        >
+                          · Expires{" "}
+                          {new Date(listing.expires_at).toLocaleDateString(
+                            "en-AU",
+                          )}
+                        </span>
+                      )}
                     </p>
                   </div>
 
-                  {/* Actions */}
                   <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
                     <button
                       onClick={() => navigate(getDetailPath(listing))}
@@ -414,9 +574,11 @@ export default function MyListingsPage() {
         <div>
           {businessesLoading && (
             <div
-              style={{ textAlign: "center", padding: "40px", color: "#888" }}
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
             >
-              Loading your businesses...
+              {[1, 2, 3].map((i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           )}
 
@@ -482,9 +644,15 @@ export default function MyListingsPage() {
                   display: "flex",
                   alignItems: "center",
                   gap: "16px",
+                  transition: "border-color 0.15s",
                 }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = "#AFA9EC")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.borderColor = "#e5e5e5")
+                }
               >
-                {/* Icon */}
                 <div
                   style={{
                     width: "42px",
@@ -501,7 +669,6 @@ export default function MyListingsPage() {
                   🏪
                 </div>
 
-                {/* Content */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
@@ -524,7 +691,7 @@ export default function MyListingsPage() {
                     >
                       {business.business_name}
                     </h3>
-                    {business.is_verified && (
+                    {business.is_verified ? (
                       <span
                         style={{
                           background: "#E1F5EE",
@@ -537,8 +704,7 @@ export default function MyListingsPage() {
                       >
                         ✓ Verified
                       </span>
-                    )}
-                    {!business.is_verified && (
+                    ) : (
                       <span
                         style={{
                           background: "#FAEEDA",
@@ -559,7 +725,6 @@ export default function MyListingsPage() {
                   </p>
                 </div>
 
-                {/* Actions */}
                 <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
                   <button
                     onClick={() => navigate(`/businesses/${business.id}`)}
@@ -599,18 +764,21 @@ export default function MyListingsPage() {
           </div>
         </div>
       )}
+
       {/* ── SAVED TAB ── */}
       {activeTab === "saved" && (
         <div>
           {savedLoading && (
             <div
-              style={{ textAlign: "center", padding: "40px", color: "#888" }}
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
             >
-              Loading saved listings...
+              {[1, 2, 3].map((i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           )}
 
-          {!savedLoading && savedData?.results?.length === 0 && (
+          {!savedLoading && saved.length === 0 && (
             <div
               style={{
                 textAlign: "center",
@@ -631,13 +799,7 @@ export default function MyListingsPage() {
               >
                 No saved listings yet
               </h3>
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "#888",
-                  marginBottom: "20px",
-                }}
-              >
+              <p style={{ fontSize: "14px", color: "#888" }}>
                 Click the heart button on any listing to save it
               </p>
             </div>
@@ -646,29 +808,14 @@ export default function MyListingsPage() {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "12px" }}
           >
-            {savedData?.results?.map((saved) => {
+            {saved.map((item) => {
               const typeColor =
-                TYPE_COLORS[saved.listing_type] || TYPE_COLORS.job;
-              const typeEmoji = TYPE_EMOJIS[saved.listing_type] || "📌";
-
-              const getPath = () => {
-                switch (saved.listing_type) {
-                  case "job":
-                    return `/jobs/listing/${saved.listing}`;
-                  case "room":
-                    return `/rooms/listing/${saved.listing}`;
-                  case "event":
-                    return `/events/listing/${saved.listing}`;
-                  case "announcement":
-                    return `/announcements/listing/${saved.listing}`;
-                  default:
-                    return "/";
-                }
-              };
+                TYPE_COLORS[item.listing_type] || TYPE_COLORS.job;
+              const typeEmoji = TYPE_EMOJIS[item.listing_type] || "📌";
 
               return (
                 <div
-                  key={saved.id}
+                  key={item.id}
                   style={{
                     background: "#fff",
                     border: "0.5px solid #e5e5e5",
@@ -677,7 +824,14 @@ export default function MyListingsPage() {
                     display: "flex",
                     alignItems: "center",
                     gap: "16px",
+                    transition: "border-color 0.15s",
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.borderColor = "#AFA9EC")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor = "#e5e5e5")
+                  }
                 >
                   <div
                     style={{
@@ -714,7 +868,7 @@ export default function MyListingsPage() {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {saved.listing_title}
+                        {item.listing_title}
                       </h3>
                       <span
                         style={{
@@ -727,17 +881,32 @@ export default function MyListingsPage() {
                           flexShrink: 0,
                         }}
                       >
-                        {saved.listing_type}
+                        {item.listing_type}
                       </span>
+                      {item.listing_status === "expired" && (
+                        <span
+                          style={{
+                            background: "#F1EFE8",
+                            color: "#444441",
+                            fontSize: "10px",
+                            fontWeight: 500,
+                            padding: "2px 8px",
+                            borderRadius: "8px",
+                            flexShrink: 0,
+                          }}
+                        >
+                          Expired
+                        </span>
+                      )}
                     </div>
                     <p style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {saved.listing_location}, {saved.listing_state}
+                      📍 {item.listing_location}, {item.listing_state}
                     </p>
                   </div>
 
                   <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
                     <button
-                      onClick={() => navigate(getPath())}
+                      onClick={() => navigate(getSavedPath(item))}
                       style={{
                         background: "#EEEDFE",
                         color: "#534AB7",
@@ -752,12 +921,8 @@ export default function MyListingsPage() {
                       View
                     </button>
                     <button
-                      onClick={() => {
-                        unsaveListing(saved.listing).then(() => {
-                          queryClient.invalidateQueries(["saved-listings"]);
-                          addToast("Removed from saved listings.", "info");
-                        });
-                      }}
+                      onClick={() => unsaveMutation.mutate(item.listing)}
+                      disabled={unsaveMutation.isPending}
                       style={{
                         background: "#FCEBEB",
                         color: "#A32D2D",
@@ -767,6 +932,7 @@ export default function MyListingsPage() {
                         fontSize: "12px",
                         fontWeight: 500,
                         cursor: "pointer",
+                        opacity: unsaveMutation.isPending ? 0.6 : 1,
                       }}
                     >
                       Remove
