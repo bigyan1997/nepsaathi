@@ -6,6 +6,7 @@ import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
@@ -22,6 +23,10 @@ export default function RoomDetailPage() {
     queryKey: ["room", id, isListingRoute],
     queryFn: () => (isListingRoute ? getRoomByListing(id) : getRoom(id)),
   });
+
+  usePageTitle(
+    room?.listing_title ? `${room.listing_title} — Room` : "Room for Rent",
+  );
 
   if (isLoading) return <SkeletonDetailPage />;
 
@@ -187,7 +192,7 @@ export default function RoomDetailPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: "repeat(5, 1fr)",
             borderBottom: "0.5px solid #e5e5e5",
           }}
         >
@@ -196,6 +201,16 @@ export default function RoomDetailPage() {
             { label: "Bathrooms", value: room.bathrooms },
             { label: "Max occupants", value: room.max_occupants },
             { label: "Bond", value: room.bond?.replace("_", " ") },
+            {
+              label: "Expires",
+              value: room.expires_at
+                ? new Date(room.expires_at).toLocaleDateString("en-AU", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "30 days",
+            },
           ].map(({ label, value }) => (
             <div
               key={label}
