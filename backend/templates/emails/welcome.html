@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: -apple-system, sans-serif;
+        background: #f5f4f0;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 0.5px solid #e5e5e5;
+      }
+      .header {
+        background: #26215c;
+        padding: 32px;
+        text-align: center;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .logo span {
+        color: #e87722;
+      }
+      .body {
+        padding: 32px;
+      }
+      .title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #26215c;
+        margin-bottom: 12px;
+      }
+      .text {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 16px;
+      }
+      .button {
+        display: inline-block;
+        background: #e87722;
+        color: #fff;
+        padding: 12px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .footer {
+        background: #f5f4f0;
+        padding: 20px 32px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+      }
+      .divider {
+        border: none;
+        border-top: 0.5px solid #e5e5e5;
+        margin: 24px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo"><span>Nep</span>Saathi नेपसाथी</div>
+      </div>
+      <div class="body">
+        <h1 class="title">Welcome to NepSaathi, {{ first_name }}! 🎉</h1>
+        <p class="text">
+          We're so excited to have you join the NepSaathi community — your
+          trusted Nepali friend across Australia.
+        </p>
+        <p class="text">You can now:</p>
+        <p class="text">
+          💼 Browse and post <strong>jobs</strong><br />
+          🏠 Find and list <strong>rooms</strong><br />
+          🎉 Discover <strong>community events</strong><br />
+          📢 Share <strong>announcements</strong><br />
+          🏪 Register your <strong>Nepalese business</strong>
+        </p>
+        <hr class="divider" />
+        <p class="text">Ready to get started?</p>
+        <a href="{{ frontend_url }}" class="button">Visit NepSaathi →</a>
+      </div>
+      <div class="footer">
+        © 2026 NepSaathi · नेपसाथी<br />
+        <a href="{{ frontend_url }}/privacy" style="color: #888"
+          >Privacy Policy</a
+        >
+        ·
+        <a href="{{ frontend_url }}/terms" style="color: #888">Terms of Use</a>
+      </div>
+    </div>
+  </body>
+</html>

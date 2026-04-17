@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: -apple-system, sans-serif;
+        background: #f5f4f0;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 0.5px solid #e5e5e5;
+      }
+      .header {
+        background: #26215c;
+        padding: 32px;
+        text-align: center;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .logo span {
+        color: #e87722;
+      }
+      .body {
+        padding: 32px;
+      }
+      .title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #26215c;
+        margin-bottom: 12px;
+      }
+      .text {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 16px;
+      }
+      .info-box {
+        background: #fff1e0;
+        border: 0.5px solid #efd9c0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .footer {
+        background: #f5f4f0;
+        padding: 20px 32px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo"><span>Nep</span>Saathi नेपसाथी</div>
+      </div>
+      <div class="body">
+        <h1 class="title">Your listing has been reported</h1>
+        <p class="text">Hi {{ first_name }},</p>
+        <p class="text">
+          Your listing <strong>{{ listing_title }}</strong> has been reported by
+          a community member. Our admin team will review it shortly.
+        </p>
+        <div class="info-box">
+          <p class="text" style="margin: 0">
+            If your listing follows our community guidelines it will remain
+            active. If you believe this report is incorrect please contact us at
+            <a href="mailto:support@nepsaathi.com">support@nepsaathi.com</a>
+          </p>
+        </div>
+        <p class="text">
+          Please make sure your listing follows our
+          <a href="{{ frontend_url }}/terms">Terms of Use</a>.
+        </p>
+      </div>
+      <div class="footer">
+        © 2026 NepSaathi · नेपसाथी<br />
+        <a href="mailto:support@nepsaathi.com" style="color: #888"
+          >support@nepsaathi.com</a
+        >
+      </div>
+    </div>
+  </body>
+</html>

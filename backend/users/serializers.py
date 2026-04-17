@@ -27,6 +27,12 @@ class RegisterSerializer(BaseRegisterSerializer):
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
         user.save()
+        # Send welcome email
+        try:
+            from core.emails import send_welcome_email
+            send_welcome_email(user)
+        except Exception:
+            pass
         return user
 
 

@@ -26,15 +26,16 @@ class GoogleLoginView(SocialLoginView):
         response = super().get_response()
         try:
             user = self.user
-            social_account = user.socialaccount_set.filter(
-                provider='google'
-            ).first()
+            social_account = user.socialaccount_set.filter(provider='google').first()
             if social_account:
                 extra_data = social_account.extra_data
                 picture_url = extra_data.get('picture', '')
                 if picture_url and not user.google_avatar:
                     user.google_avatar = picture_url
                     user.save()
+                    # Send welcome email only on first Google login
+                    from core.emails import send_welcome_email
+                    send_welcome_email(user)
         except Exception:
             pass
         return response

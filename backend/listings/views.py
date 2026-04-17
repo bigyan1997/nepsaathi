@@ -368,36 +368,13 @@ class ReportListingView(APIView):
 
         if serializer.is_valid():
             report = serializer.save(user=request.user, listing=listing)
-
-            # Notify admin by email
+            # Send emails to admin and listing owner
             try:
-                from django.core.mail import send_mail
-                from decouple import config
-                send_mail(
-                    subject=f'[NepSaathi] New listing report — {listing.title}',
-                    message=f'''
-    A listing has been reported on NepSaathi.
-
-    Listing: {listing.title}
-    Type: {listing.listing_type}
-    Location: {listing.location}, {listing.state}
-    Posted by: {listing.user.email}
-
-    Report reason: {report.get_reason_display()}
-    Reported by: {request.user.email}
-    Details: {report.details or "No details provided"}
-
-    Review at: https://nepsaathi-production.up.railway.app/admin/listings/listingreport/
-                    ''',
-                    from_email='noreply@nepsaathi.com',
-                    recipient_list=['admin@nepsaathi.com'],
-                    fail_silently=True,
-                )
+                from core.emails import send_report_emails
+                send_report_emails(report)
             except Exception:
                 pass
-
             return Response(
                 {'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'},
                 status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    )
