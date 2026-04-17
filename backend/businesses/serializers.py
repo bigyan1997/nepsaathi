@@ -77,8 +77,3 @@ class BusinessSerializer(serializers.ModelSerializer):
         if not is_owner:
             data.pop('owner_email', None)
         return data
-
-    def create(self, validated_data):
-        """Automatically assign the logged in user as owner."""
-        owner = self.context['request'].user
-        return Business.objects.create(owner=owner, **validated_data)

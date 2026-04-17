@@ -6,6 +6,7 @@ import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -54,6 +55,11 @@ export default function BusinessDetailPage() {
     queryKey: ["business", id],
     queryFn: () => getBusiness(id),
   });
+  usePageTitle(
+    business?.business_name
+      ? `${business.business_name} — Business`
+      : "Business",
+  );
 
   if (isLoading) return <SkeletonDetailPage />;
 
@@ -94,10 +100,7 @@ export default function BusinessDetailPage() {
         >
           ← Back to Businesses
         </button>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <SaveButton listingId={business?.listing_id} />
-          <ShareButton title={business?.listing_title} />
-        </div>
+        <ShareButton title={business?.business_name} />
       </div>
 
       <div
