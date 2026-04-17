@@ -6,6 +6,7 @@ import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489" },
@@ -33,6 +34,9 @@ export default function EventDetailPage() {
     queryKey: ["event", id, isListingRoute],
     queryFn: () => (isListingRoute ? getEventByListing(id) : getEvent(id)),
   });
+  usePageTitle(
+    event?.listing_title ? `${event.listing_title} — Event` : "Event",
+  );
 
   if (isLoading) return <SkeletonDetailPage />;
 
