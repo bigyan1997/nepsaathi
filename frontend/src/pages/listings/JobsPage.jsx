@@ -193,6 +193,23 @@ export default function JobsPage() {
               }}
             >
               <div>
+                {job.is_featured && (
+                  <span
+                    style={{
+                      background: "linear-gradient(135deg, #E87722, #534AB7)",
+                      color: "#fff",
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      padding: "2px 8px",
+                      borderRadius: "8px",
+                      marginBottom: "6px",
+                      marginRight: "4px",
+                      display: "inline-block",
+                    }}
+                  >
+                    ⭐ Featured
+                  </span>
+                )}
                 {job.is_urgent && (
                   <span
                     style={{

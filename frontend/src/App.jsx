@@ -31,6 +31,7 @@ import BusinessDetailPage from "./pages/listings/BusinessDetailPage";
 import RegisterBusinessPage from "./pages/listings/RegisterBusinessPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
+import ContactPage from "./pages/ContactPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Protected pages
@@ -119,6 +120,7 @@ function App() {
                       />
                       <Route path="/privacy" element={<PrivacyPage />} />
                       <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
                       {/* Guest only routes */}
                       <Route
                         path="/login"

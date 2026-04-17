@@ -31,7 +31,7 @@ class RoomListView(generics.ListAPIView):
         'listing__state',
     )
     ordering_fields = ('listing__created_at', 'price')
-    ordering = ('-listing__created_at',)
+    ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):
         queryset = Room.objects.filter(

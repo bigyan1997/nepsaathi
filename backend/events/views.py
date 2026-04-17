@@ -33,7 +33,7 @@ class EventListView(generics.ListAPIView):
         'organiser',
     )
     ordering_fields = ('event_date', 'listing__created_at')
-    ordering = ('event_date',)
+    ordering = ('-listing__is_featured', 'event_date',)
 
     def get_queryset(self):
         queryset = Event.objects.filter(

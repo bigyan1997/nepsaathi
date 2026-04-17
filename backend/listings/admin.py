@@ -20,6 +20,7 @@ class ListingAdmin(admin.ModelAdmin):
     Admin configuration for the base Listing model.
     """
     inlines = [ListingImageInline]
+    
 
     list_display = (
         'title',
@@ -64,6 +65,19 @@ class ListingAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+    actions = ['mark_featured', 'unmark_featured']
+
+    def mark_featured(self, request, queryset):
+        queryset.update(is_featured=True)
+        self.message_user(request, f'{queryset.count()} listings marked as featured.')
+    mark_featured.short_description = '⭐ Mark as featured'
+
+    def unmark_featured(self, request, queryset):
+        queryset.update(is_featured=False)
+        self.message_user(request, f'{queryset.count()} listings removed from featured.')
+    unmark_featured.short_description = '✖ Remove from featured'
+
+    
 
 
 @admin.register(ListingImage)

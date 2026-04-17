@@ -36,3 +36,4 @@ class JobAdmin(admin.ModelAdmin):
             'fields': ('experience_required', 'qualifications')
         }),
     )
+

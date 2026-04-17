@@ -18,6 +18,7 @@ class JobSerializer(serializers.ModelSerializer):
     posted_by = serializers.CharField(source='listing.user.full_name', read_only=True)
     created_at = serializers.DateTimeField(source='listing.created_at', read_only=True)
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
+    is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
 
     class Meta:
         model = Job
@@ -42,6 +43,7 @@ class JobSerializer(serializers.ModelSerializer):
             'is_urgent',
             'created_at',
             'expires_at',
+            'is_featured',
         )
         read_only_fields = (
             'id',
@@ -57,4 +59,5 @@ class JobSerializer(serializers.ModelSerializer):
             'contact_email',
             'created_at',
             'expires_at',
+            'is_featured',
         )

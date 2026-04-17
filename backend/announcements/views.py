@@ -41,7 +41,7 @@ class AnnouncementListView(generics.ListAPIView):
         'listing__state',
     )
     ordering_fields = ('listing__created_at',)
-    ordering = ('-listing__created_at',)
+    ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):
         return Announcement.objects.filter(
