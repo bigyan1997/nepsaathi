@@ -9,6 +9,7 @@ import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const CATEGORY_COLORS = {
   news: { bg: "#EEEDFE", color: "#3C3489" },
@@ -35,6 +36,11 @@ export default function AnnouncementDetailPage() {
     queryFn: () =>
       isListingRoute ? getAnnouncementByListing(id) : getAnnouncement(id),
   });
+  usePageTitle(
+    announcement?.listing_title
+      ? `${announcement.listing_title} — Announcement`
+      : "Announcement",
+  );
 
   if (isLoading) return <SkeletonDetailPage />;
 
