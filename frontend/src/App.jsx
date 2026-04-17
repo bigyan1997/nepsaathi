@@ -10,6 +10,7 @@ import GuestRoute from "./components/auth/GuestRoute";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import PageWrapper from "./components/layout/PageWrapper";
+import ScrollToTop from "./components/layout/ScrollToTop";
 
 // UI
 import { ToastProvider } from "./components/ui/Toast";
@@ -55,6 +56,7 @@ function App() {
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
+          <ScrollToTop />
           <ProgressProvider>
             <ToastProvider>
               <div
