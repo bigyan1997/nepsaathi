@@ -9,6 +9,7 @@ import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView } from "../../api/listings";
 import { useEffect } from "react";
+import ImageGallery from "../../components/ui/ImageGallery";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489" },
@@ -155,6 +156,9 @@ export default function EventDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Image gallery */}
+      {event?.images?.length > 0 && <ImageGallery images={event.images} />}
 
       {/* Main card */}
       <div

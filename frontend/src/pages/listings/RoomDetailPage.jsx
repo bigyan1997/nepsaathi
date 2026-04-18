@@ -11,6 +11,7 @@ import { trackView } from "../../api/listings";
 import { useEffect } from "react";
 import { getSimilarListings } from "../../api/listings";
 import { Link } from "react-router-dom";
+import ImageGallery from "../../components/ui/ImageGallery";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
@@ -128,6 +129,8 @@ export default function RoomDetailPage() {
           </div>
         </div>
       )}
+      {/* Image gallery */}
+      {room?.images?.length > 0 && <ImageGallery images={room.images} />}
 
       {/* Hero section */}
       <div

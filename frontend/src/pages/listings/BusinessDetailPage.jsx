@@ -7,6 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
+import ImageGallery from "../../components/ui/ImageGallery";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",

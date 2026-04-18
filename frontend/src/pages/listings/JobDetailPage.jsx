@@ -11,6 +11,7 @@ import { trackView } from "../../api/listings";
 import { useEffect } from "react";
 import { getSimilarListings } from "../../api/listings";
 import { Link } from "react-router-dom";
+import ImageGallery from "../../components/ui/ImageGallery";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -126,6 +127,9 @@ export default function JobDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Image gallery */}
+      {job?.images?.length > 0 && <ImageGallery images={job.images} />}
 
       {/* Hero section */}
       <div

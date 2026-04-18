@@ -13,6 +13,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
+import ImageGallery from "../../components/ui/ImageGallery";
 
 const CATEGORY_COLORS = {
   news: { bg: "#EEEDFE", color: "#3C3489" },
@@ -143,6 +144,11 @@ export default function AnnouncementDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Image gallery */}
+      {announcement?.images?.length > 0 && (
+        <ImageGallery images={announcement.images} />
       )}
 
       {/* Main card */}

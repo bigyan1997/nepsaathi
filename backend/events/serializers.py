@@ -34,6 +34,17 @@ class EventSerializer(serializers.ModelSerializer):
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
     view_count = serializers.IntegerField(source='listing.views.count', read_only=True)
     description = serializers.CharField(source='listing.description', read_only=True)
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        return [
+            {
+                'id': img.id,
+                'url': img.image.url,
+                'is_primary': img.is_primary,
+            }
+            for img in obj.listing.images.all()
+        ]
 
 
     class Meta:
@@ -67,6 +78,7 @@ class EventSerializer(serializers.ModelSerializer):
             'expires_at',
             'view_count',
             'description',
+            'images',
         )
         read_only_fields = (
             'id',
