@@ -166,7 +166,11 @@ class ListingReportAdmin(admin.ModelAdmin):
     actions = ['mark_reviewed', 'clear_listing', 'remove_listing']
 
     def mark_reviewed(self, request, queryset):
-        queryset.update(is_reviewed=True)
+        for report in queryset:
+            report.is_reviewed = True
+            report.save()
+            report.listing.is_under_review = False
+            report.listing.save()
         self.message_user(request, f'{queryset.count()} reports marked as reviewed.')
     mark_reviewed.short_description = '✅ Mark as reviewed'
 
