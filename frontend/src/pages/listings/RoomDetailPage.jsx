@@ -47,7 +47,7 @@ export default function RoomDetailPage() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button and share */}
+      {/* Back button, share and save */}
       <div
         style={{
           display: "flex",
@@ -56,36 +56,39 @@ export default function RoomDetailPage() {
           marginBottom: "20px",
         }}
       >
-        <button
-          onClick={() => navigate("/rooms")}
+        {/* Left: back + views */}
+        <div
           style={{
-            background: "transparent",
-            border: "none",
-            color: "#534AB7",
-            fontSize: "13px",
-            cursor: "pointer",
-            padding: 0,
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "10px",
+            minWidth: 0,
           }}
         >
-          ← Back to Rooms
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button
+            onClick={() => navigate("/rooms")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#534AB7",
+              fontSize: "13px",
+              cursor: "pointer",
+              padding: 0,
+              whiteSpace: "nowrap",
+            }}
+          >
+            ← Back to rooms
+          </button>
           {room?.view_count > 0 && (
             <span
-              style={{
-                fontSize: "12px",
-                color: "#aaa",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
+              style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {room.view_count} {room.view_count === 1 ? "view" : "views"}
+              👁️ {room.view_count}
             </span>
           )}
+        </div>
+        {/* Right: save + share */}
+        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
           <SaveButton listingId={room?.listing_id} />
           <ShareButton title={room?.listing_title} />
         </div>

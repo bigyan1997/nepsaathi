@@ -73,37 +73,39 @@ export default function AnnouncementDetailPage() {
           marginBottom: "20px",
         }}
       >
-        <button
-          onClick={() => navigate("/announcements")}
+        {/* Left: back + views */}
+        <div
           style={{
-            background: "transparent",
-            border: "none",
-            color: "#534AB7",
-            fontSize: "13px",
-            cursor: "pointer",
-            padding: 0,
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "10px",
+            minWidth: 0,
           }}
         >
-          ← Back to announcements
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button
+            onClick={() => navigate("/announcements")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#534AB7",
+              fontSize: "13px",
+              cursor: "pointer",
+              padding: 0,
+              whiteSpace: "nowrap",
+            }}
+          >
+            ← Back to announcements
+          </button>
           {announcement?.view_count > 0 && (
             <span
-              style={{
-                fontSize: "12px",
-                color: "#aaa",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
+              style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {announcement.view_count}{" "}
-              {announcement.view_count === 1 ? "view" : "views"}
+              👁️ {announcement.view_count}
             </span>
           )}
+        </div>
+        {/* Right: save + share */}
+        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
           <SaveButton listingId={announcement?.listing_id} />
           <ShareButton title={announcement?.listing_title} />
         </div>

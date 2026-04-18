@@ -85,38 +85,41 @@ export default function EventDetailPage() {
           marginBottom: "20px",
         }}
       >
-        <button
-          onClick={() => navigate("/events")}
+        {/* Left: back + views */}
+        <div
           style={{
-            background: "transparent",
-            border: "none",
-            color: "#534AB7",
-            fontSize: "13px",
-            cursor: "pointer",
-            padding: 0,
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "10px",
+            minWidth: 0,
           }}
         >
-          ← Back to Events
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {event?.view_count > 0 && (
+          <button
+            onClick={() => navigate("/jobs")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#534AB7",
+              fontSize: "13px",
+              cursor: "pointer",
+              padding: 0,
+              whiteSpace: "nowrap",
+            }}
+          >
+            ← Back to jobs
+          </button>
+          {job?.view_count > 0 && (
             <span
-              style={{
-                fontSize: "12px",
-                color: "#aaa",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
+              style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {event.view_count} {event.view_count === 1 ? "view" : "views"}
+              👁️ {job.view_count}
             </span>
           )}
-          <SaveButton listingId={event?.listing_id} />
-          <ShareButton title={event?.listing_title} />
+        </div>
+        {/* Right: save + share */}
+        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+          <SaveButton listingId={job?.listing_id} />
+          <ShareButton title={job?.listing_title} />
         </div>
       </div>
 
