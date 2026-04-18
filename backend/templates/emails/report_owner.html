@@ -267,24 +267,48 @@
                   </tr>
                 </table>
 
-                <!-- CTA -->
-                <table width="100%" cellpadding="0" cellspacing="0">
+                <!-- CTA buttons -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="margin-bottom: 12px"
+                >
+                  <tr>
+                    <td align="center" style="padding-bottom: 10px">
+                      <a
+                        href="{{ listing_url }}"
+                        style="
+                          display: inline-block;
+                          background: #eeedfe;
+                          color: #534ab7;
+                          text-decoration: none;
+                          font-size: 13px;
+                          font-weight: 600;
+                          padding: 10px 24px;
+                          border-radius: 8px;
+                        "
+                      >
+                        View your listing →
+                      </a>
+                    </td>
+                  </tr>
                   <tr>
                     <td align="center">
                       <a
-                        href="mailto:support@nepsaathi.com"
+                        href="mailto:support@nepsaathi.com?subject=Report dispute - {{ listing_title }}&body=Hi NepSaathi team,%0A%0AI believe the report on my listing '{{ listing_title }}' is incorrect because..."
                         style="
                           display: inline-block;
                           background: #534ab7;
                           color: #ffffff;
                           text-decoration: none;
-                          font-size: 14px;
+                          font-size: 13px;
                           font-weight: 600;
-                          padding: 12px 32px;
-                          border-radius: 10px;
+                          padding: 10px 24px;
+                          border-radius: 8px;
                         "
                       >
-                        Contact Support →
+                        Dispute this report →
                       </a>
                     </td>
                   </tr>
@@ -299,16 +323,9 @@
                     line-height: 1.6;
                   "
                 >
-                  If you believe this report is incorrect, please email us at<br />
-                  <a
-                    href="mailto:support@nepsaathi.com"
-                    style="
-                      color: #534ab7;
-                      text-decoration: none;
-                      font-weight: 500;
-                    "
-                    >support@nepsaathi.com</a
-                  >
+                  Clicking "Dispute this report" will open your email with your
+                  listing details pre-filled.<br />
+                  Our team reviews all disputes within 24 hours.
                 </p>
               </td>
             </tr>
