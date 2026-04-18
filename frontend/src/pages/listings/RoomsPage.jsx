@@ -23,6 +23,8 @@ export default function RoomsPage() {
     bills_included: "",
     nepalese_household: "",
     state: "",
+    min_price: "",
+    max_price: "",
   });
 
   const { data, isLoading, error } = useQuery({
@@ -34,6 +36,8 @@ export default function RoomsPage() {
         bills_included: filters.bills_included || undefined,
         nepalese_household: filters.nepalese_household || undefined,
         listing__state: filters.state || undefined,
+        min_price: filters.min_price || undefined,
+        max_price: filters.max_price || undefined,
       }),
   });
 
@@ -134,6 +138,40 @@ export default function RoomsPage() {
             </option>
           ))}
         </select>
+        <input
+          type="number"
+          placeholder="Min $"
+          value={filters.min_price}
+          onChange={(e) =>
+            setFilters({ ...filters, min_price: e.target.value })
+          }
+          style={{
+            width: "85px",
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+          }}
+        />
+        <input
+          type="number"
+          placeholder="Max $"
+          value={filters.max_price}
+          onChange={(e) =>
+            setFilters({ ...filters, max_price: e.target.value })
+          }
+          style={{
+            width: "85px",
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+          }}
+        />
         <label
           style={{
             display: "flex",
