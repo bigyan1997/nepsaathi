@@ -556,6 +556,21 @@ export default function MyListingsPage() {
                     >
                       View
                     </button>
+                    <button
+                      onClick={() => navigate(`/edit-listing/${listing.id}`)}
+                      style={{
+                        background: "#F5F4F0",
+                        color: "#444",
+                        border: "none",
+                        borderRadius: "7px",
+                        padding: "7px 14px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                      }}
+                    >
+                      ✏️ Edit
+                    </button>
                     {/* Mark as filled/active toggle */}
                     {listing.status === "active" && (
                       <button

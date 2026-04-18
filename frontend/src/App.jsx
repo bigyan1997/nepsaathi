@@ -29,6 +29,7 @@ import EventDetailPage from "./pages/listings/EventDetailPage";
 import BusinessesPage from "./pages/listings/BusinessesPage";
 import BusinessDetailPage from "./pages/listings/BusinessDetailPage";
 import RegisterBusinessPage from "./pages/listings/RegisterBusinessPage";
+import EditListingPage from "./pages/listings/EditListingPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import ContactPage from "./pages/ContactPage";
@@ -117,6 +118,14 @@ function App() {
                       <Route
                         path="/businesses/:id"
                         element={<BusinessDetailPage />}
+                      />
+                      <Route
+                        path="/edit-listing/:id"
+                        element={
+                          <ProtectedRoute>
+                            <EditListingPage />
+                          </ProtectedRoute>
+                        }
                       />
                       <Route path="/privacy" element={<PrivacyPage />} />
                       <Route path="/terms" element={<TermsPage />} />
