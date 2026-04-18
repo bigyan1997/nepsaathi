@@ -43,7 +43,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'contact_phone',
             'contact_whatsapp',
             'is_featured',
-            'is_under_review'
+            'is_under_review',
             'images',
             'job_detail',
             'room_detail',
