@@ -1,5 +1,8 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { trackView } from "../../api/listings";
+import { useEffect } from "react";
+
 import {
   getAnnouncement,
   getAnnouncementByListing,
@@ -41,6 +44,11 @@ export default function AnnouncementDetailPage() {
       ? `${announcement.listing_title} — Announcement`
       : "Announcement",
   );
+  useEffect(() => {
+    if (announcement?.listing_id) {
+      trackView(announcement.listing_id).catch(() => {});
+    }
+  }, [announcement?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
 
@@ -81,7 +89,21 @@ export default function AnnouncementDetailPage() {
         >
           ← Back to announcements
         </button>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {announcement?.view_count > 0 && (
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#aaa",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              👁️ {announcement.view_count}{" "}
+              {announcement.view_count === 1 ? "view" : "views"}
+            </span>
+          )}
           <SaveButton listingId={announcement?.listing_id} />
           <ShareButton title={announcement?.listing_title} />
         </div>

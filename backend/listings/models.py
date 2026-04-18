@@ -224,3 +224,21 @@ class ListingReport(models.Model):
 
     def __str__(self):
         return f'{self.user.email} reported {self.listing.title} — {self.reason}'
+
+class ListingView(models.Model):
+    """Tracks unique views per listing."""
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name='views'
+    )
+    user = models.ForeignKey(
+        'users.User', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='listing_views'
+    )
+    ip_address = models.GenericIPAddressField()
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['listing', 'user']),
+            models.Index(fields=['listing', 'ip_address']),
+        ]

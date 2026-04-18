@@ -537,6 +537,12 @@ export default function MyListingsPage() {
                           )}
                         </span>
                       )}
+                      {listing.view_count > 0 && (
+                        <span style={{ marginLeft: "8px", color: "#aaa" }}>
+                          · 👁️ {listing.view_count}{" "}
+                          {listing.view_count === 1 ? "view" : "views"}
+                        </span>
+                      )}
                     </p>
                   </div>
 

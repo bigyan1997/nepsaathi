@@ -7,6 +7,8 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { trackView } from "../../api/listings";
+import { useEffect } from "react";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -26,6 +28,11 @@ export default function JobDetailPage() {
   usePageTitle(
     job?.listing_title ? `${job.listing_title} — Job` : "Job Listing",
   );
+  useEffect(() => {
+    if (job?.listing_id) {
+      trackView(job.listing_id).catch(() => {});
+    }
+  }, [job?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
 
@@ -63,7 +70,20 @@ export default function JobDetailPage() {
         >
           ← Back to jobs
         </button>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {job?.view_count > 0 && (
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#aaa",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              👁️ {job.view_count} {job.view_count === 1 ? "view" : "views"}
+            </span>
+          )}
           <SaveButton listingId={job?.listing_id} />
           <ShareButton title={job?.listing_title} />
         </div>

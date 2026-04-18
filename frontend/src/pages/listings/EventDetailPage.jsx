@@ -7,6 +7,8 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { trackView } from "../../api/listings";
+import { useEffect } from "react";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489" },
@@ -37,6 +39,11 @@ export default function EventDetailPage() {
   usePageTitle(
     event?.listing_title ? `${event.listing_title} — Event` : "Event",
   );
+  useEffect(() => {
+    if (event?.listing_id) {
+      trackView(event.listing_id).catch(() => {});
+    }
+  }, [event?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
 
@@ -94,9 +101,22 @@ export default function EventDetailPage() {
         >
           ← Back to Events
         </button>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <SaveButton listingId={event?.listing_id} />
-          <ShareButton title={event?.listing_title} />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {room?.view_count > 0 && (
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#aaa",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              👁️ {room.view_count} {room.view_count === 1 ? "view" : "views"}
+            </span>
+          )}
+          <SaveButton listingId={room?.listing_id} />
+          <ShareButton title={room?.listing_title} />
         </div>
       </div>
 

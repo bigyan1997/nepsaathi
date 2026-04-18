@@ -7,6 +7,8 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
+import { trackView } from "../../api/listings";
+import { useEffect } from "react";
 
 export default function RoomDetailPage() {
   const { id } = useParams();
@@ -27,6 +29,12 @@ export default function RoomDetailPage() {
   usePageTitle(
     room?.listing_title ? `${room.listing_title} — Room` : "Room for Rent",
   );
+
+  useEffect(() => {
+    if (room?.listing_id) {
+      trackView(room.listing_id).catch(() => {});
+    }
+  }, [room?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
 
@@ -64,7 +72,20 @@ export default function RoomDetailPage() {
         >
           ← Back to Rooms
         </button>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {room?.view_count > 0 && (
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#aaa",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              👁️ {room.view_count} {room.view_count === 1 ? "view" : "views"}
+            </span>
+          )}
           <SaveButton listingId={room?.listing_id} />
           <ShareButton title={room?.listing_title} />
         </div>

@@ -37,4 +37,7 @@ urlpatterns = [
 
     # Filled Status
     path('<int:pk>/status/', views.MarkListingStatusView.as_view(), name='listing-status'),
+
+    # Listing View
+    path('<int:pk>/view/', views.TrackListingViewView.as_view(), name='track-view'),
 ]

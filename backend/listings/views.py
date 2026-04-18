@@ -2,7 +2,7 @@ from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Listing, ListingImage, ListingReport, SavedListing
+from .models import Listing, ListingImage, ListingReport, SavedListing, ListingView
 from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
 from .throttles import ListingCreateThrottle
 from django.utils import timezone
@@ -427,3 +427,51 @@ class MarkListingStatusView(APIView):
         listing.status = new_status
         listing.save()
         return Response({'detail': f'Listing marked as {new_status}.'})
+    
+class TrackListingViewView(APIView):
+    """
+    POST /api/listings/<id>/view/
+    Track a unique view for a listing.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk, status='active')
+        except Listing.DoesNotExist:
+            return Response({'detail': 'Listing not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get IP address
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
+        if ip:
+            ip = ip.split(',')[0].strip()
+        else:
+            ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
+
+        user = request.user if request.user.is_authenticated else None
+
+        if user:
+            # Logged in — count once ever per user per listing
+            already_viewed = ListingView.objects.filter(
+                listing=listing, user=user
+            ).exists()
+        else:
+            # Logged out — count once per IP per 24 hours
+            from django.utils import timezone
+            from datetime import timedelta
+            yesterday = timezone.now() - timedelta(hours=24)
+            already_viewed = ListingView.objects.filter(
+                listing=listing,
+                ip_address=ip,
+                viewed_at__gte=yesterday
+            ).exists()
+
+        if not already_viewed:
+            ListingView.objects.create(
+                listing=listing,
+                user=user,
+                ip_address=ip,
+            )
+
+        view_count = ListingView.objects.filter(listing=listing).count()
+        return Response({'views': view_count})

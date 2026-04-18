@@ -25,6 +25,7 @@ class ListingSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.full_name', read_only=True)
     is_owner = serializers.SerializerMethodField()
     expires_at = serializers.DateTimeField(read_only=True)
+    view_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -50,6 +51,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'expires_at',
+            'view_count',
         )
         read_only_fields = (
             'id',
@@ -58,6 +60,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'user_email',
             'user_name',
             'expires_at',
+            
         )
 
     def get_is_owner(self, obj):
@@ -77,6 +80,9 @@ class ListingSerializer(serializers.ModelSerializer):
         if obj.listing_type == 'room' and hasattr(obj, 'room_detail'):
             return RoomSerializer(obj.room_detail).data
         return None
+    
+    def get_view_count(self, obj):
+        return obj.views.count()
 
 
 class ListingCreateSerializer(serializers.ModelSerializer):
