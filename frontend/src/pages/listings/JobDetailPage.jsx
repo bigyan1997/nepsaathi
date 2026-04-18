@@ -6,6 +6,7 @@ import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import usePageTitle from "../../hooks/usePageTitle";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -22,6 +23,9 @@ export default function JobDetailPage() {
     queryKey: ["job", id, isListingRoute],
     queryFn: () => (isListingRoute ? getJobByListing(id) : getJob(id)),
   });
+  usePageTitle(
+    job?.listing_title ? `${job.listing_title} — Job` : "Job Listing",
+  );
 
   if (isLoading) return <SkeletonDetailPage />;
 
