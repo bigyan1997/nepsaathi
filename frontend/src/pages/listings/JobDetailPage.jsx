@@ -81,7 +81,7 @@ export default function JobDetailPage() {
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {job.view_count}
+              👁️ {job.view_count} {job.view_count === 1 ? "view" : "views"}
             </span>
           )}
         </div>

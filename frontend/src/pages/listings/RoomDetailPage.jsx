@@ -83,7 +83,7 @@ export default function RoomDetailPage() {
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {room.view_count}
+              👁️ {room.view_count} {room.view_count === 1 ? "view" : "views"}
             </span>
           )}
         </div>
