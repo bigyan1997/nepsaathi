@@ -33,6 +33,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         source='listing.created_at', read_only=True)
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
+    is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
     
 
     class Meta:
@@ -57,6 +58,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'created_at',
             'listing_status',
             'expires_at',
+            'is_under_review',
         )
         read_only_fields = (
             'id',
@@ -73,4 +75,5 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'created_at',
             'listing_status',
             'expires_at',
+            'is_under_review',
         )

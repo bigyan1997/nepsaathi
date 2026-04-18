@@ -60,4 +60,5 @@ class JobSerializer(serializers.ModelSerializer):
             'created_at',
             'expires_at',
             'is_featured',
+            'is_under_review',
         )
