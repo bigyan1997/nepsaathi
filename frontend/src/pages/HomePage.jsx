@@ -245,6 +245,8 @@ export default function HomePage() {
               display: "flex",
               flexDirection: "column",
               gap: "8px",
+              position: "relative",
+              zIndex: 50,
             }}
           >
             {/* Top row — type + search + button */}
@@ -253,8 +255,9 @@ export default function HomePage() {
                 display: "flex",
                 border: "1.5px solid #AFA9EC",
                 borderRadius: "12px",
-                overflow: "hidden",
+                overflow: "visible",
                 background: "#fff",
+                position: "relative",
               }}
             >
               <select
@@ -299,19 +302,18 @@ export default function HomePage() {
                   }}
                 />
 
-                {/* Suggestions dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
                   <div
                     style={{
                       position: "absolute",
-                      top: "calc(100% + 8px)",
-                      left: "-140px",
-                      right: "-120px",
+                      top: "calc(100% + 4px)",
+                      left: 0,
+                      right: 0,
                       background: "#fff",
                       borderRadius: "12px",
                       border: "0.5px solid #e5e5e5",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-                      zIndex: 100,
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                      zIndex: 999,
                       overflow: "hidden",
                     }}
                   >
