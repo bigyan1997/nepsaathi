@@ -21,6 +21,7 @@ export default function JobsPage() {
     job_type: "",
     search: "",
     state: "",
+    ordering: "-listing__created_at",
   });
 
   const { data, isLoading, error } = useQuery({
@@ -30,6 +31,7 @@ export default function JobsPage() {
         job_type: filters.job_type || undefined,
         search: filters.search || undefined,
         listing__state: filters.state || undefined,
+        ordering: filters.ordering || undefined,
       }),
   });
 
@@ -127,6 +129,24 @@ export default function JobsPage() {
               {label}
             </option>
           ))}
+        </select>
+        <select
+          value={filters.ordering}
+          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          <option value="-listing__created_at">Newest first</option>
+          <option value="listing__created_at">Oldest first</option>
+          <option value="salary">Salary: low to high</option>
+          <option value="-salary">Salary: high to low</option>
         </select>
       </div>
 

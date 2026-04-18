@@ -25,6 +25,7 @@ export default function RoomsPage() {
     state: "",
     min_price: "",
     max_price: "",
+    ordering: "-listing__created_at",
   });
 
   const { data, isLoading, error } = useQuery({
@@ -38,6 +39,7 @@ export default function RoomsPage() {
         listing__state: filters.state || undefined,
         min_price: filters.min_price || undefined,
         max_price: filters.max_price || undefined,
+        ordering: filters.ordering || undefined,
       }),
   });
 
@@ -216,6 +218,24 @@ export default function RoomsPage() {
           />
           Nepalese household
         </label>
+        <select
+          value={filters.ordering}
+          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          <option value="-listing__created_at">Newest first</option>
+          <option value="listing__created_at">Oldest first</option>
+          <option value="price">Price: low to high</option>
+          <option value="-price">Price: high to low</option>
+        </select>
       </div>
 
       {/* Loading */}

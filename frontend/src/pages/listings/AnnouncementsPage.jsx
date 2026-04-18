@@ -34,6 +34,7 @@ export default function AnnouncementsPage() {
     state: "",
     is_free: "",
     is_urgent: "",
+    ordering: "",
   });
 
   const { data, isLoading, error } = useQuery({
@@ -45,6 +46,7 @@ export default function AnnouncementsPage() {
         listing__state: filters.state || undefined,
         is_free: filters.is_free || undefined,
         is_urgent: filters.is_urgent || undefined,
+        ordering: filters.ordering || undefined,
       }),
   });
 
@@ -142,6 +144,24 @@ export default function AnnouncementsPage() {
               {label}
             </option>
           ))}
+        </select>
+        <select
+          value={filters.ordering}
+          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          <option value="-listing__created_at">Newest first</option>
+          <option value="listing__created_at">Oldest first</option>
+          <option value="event_date">Date: earliest first</option>
+          <option value="-event_date">Date: latest first</option>
         </select>
         <label
           style={{

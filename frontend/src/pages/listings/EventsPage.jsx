@@ -50,6 +50,7 @@ export default function EventsPage() {
     is_free: "",
     is_online: "",
     upcoming: "true",
+    ordering: "",
   });
 
   const { data, isLoading, error } = useQuery({
@@ -62,6 +63,7 @@ export default function EventsPage() {
         is_free: filters.is_free || undefined,
         is_online: filters.is_online || undefined,
         upcoming: filters.upcoming || undefined,
+        ordering: filters.ordering || undefined,
       }),
   });
 
@@ -175,6 +177,24 @@ export default function EventsPage() {
               {label}
             </option>
           ))}
+        </select>
+        <select
+          value={filters.ordering}
+          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          style={{
+            border: "0.5px solid #ccc",
+            borderRadius: "8px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            outline: "none",
+            background: "#fff",
+            color: "#444",
+          }}
+        >
+          <option value="-listing__created_at">Newest first</option>
+          <option value="listing__created_at">Oldest first</option>
+          <option value="event_date">Date: earliest first</option>
+          <option value="-event_date">Date: latest first</option>
         </select>
         <label
           style={{
