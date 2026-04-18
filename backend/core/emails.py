@@ -126,3 +126,24 @@ def send_listing_removed_email(report, reason):
         thread.start()
     except Exception as e:
         print(f'Listing removed email failed: {e}', flush=True)
+    
+def send_expiry_warning_email(listing):
+    """Send warning email 3 days before listing expires."""
+    try:
+        html = render_to_string('emails/expiry_warning.html', {
+            'first_name': listing.user.first_name,
+            'listing_title': listing.title,
+            'listing_url': f'{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}',
+            'expires_at': listing.expires_at.strftime('%d %B %Y'),
+            'frontend_url': FRONTEND_URL,
+        })
+        params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [listing.user.email],
+            'subject': f'[NepSaathi] Your listing expires in 3 days — {listing.title}',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
+        thread.start()
+    except Exception as e:
+        print(f'Expiry warning email failed: {e}', flush=True)

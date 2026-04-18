@@ -34,4 +34,7 @@ urlpatterns = [
 
     # Report a listing
     path('<int:pk>/report/', views.ReportListingView.as_view(), name='report-listing'),
+
+    # Filled Status
+    path('<int:pk>/status/', views.MarkListingStatusView.as_view(), name='listing-status'),
 ]

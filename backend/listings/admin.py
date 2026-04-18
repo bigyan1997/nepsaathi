@@ -189,16 +189,32 @@ class ListingReportAdmin(admin.ModelAdmin):
     def remove_listing(self, request, queryset):
         from core.emails import send_listing_removed_email
         for report in queryset:
-            listing = report.listing
-            reason = f'Your listing violated our community guidelines: {report.get_reason_display()}'
-            for image in listing.images.all():
-                image.delete()
-            listing.status = 'deleted'
-            listing.is_under_review = False
-            listing.save()
-            report.is_reviewed = True
-            report.save()
-            send_listing_removed_email(report, reason)
+                listing = report.listing
+                owner = listing.user
+                reason = f'Your listing violated our community guidelines: {report.get_reason_display()}'
+                for image in listing.images.all():
+                    image.delete()
+                listing.status = 'deleted'
+                listing.is_under_review = False
+                listing.save()
+                report.is_reviewed = True
+                report.save()
+                send_listing_removed_email(report, reason)
+
+                # Check if user should be banned (3 removals)
+                removed_count = Listing.objects.filter(
+                    user=owner, status='deleted'
+                ).count()
+                if removed_count >= 3 and not owner.is_banned:
+                    owner.is_banned = True
+                    owner.ban_reason = 'Multiple listing violations'
+                    owner.save()
+                    self.message_user(
+                        request,
+                        f'⚠️ User {owner.email} has been banned after {removed_count} violations.',
+                        level='WARNING'
+                    )
+
         self.message_user(request, f'{queryset.count()} listings removed — owners notified.')
     remove_listing.short_description = '❌ Remove listing — notify owner'
 

@@ -8,6 +8,8 @@ from .throttles import ListingCreateThrottle
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework.exceptions import ValidationError
+from django.utils import timezone
+from datetime import timedelta
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -75,6 +77,7 @@ class ListingCreateView(generics.CreateAPIView):
             raise ValidationError(
                 'You have reached the maximum of 20 active listings.'
             )
+        
 
         # Check 5 minute cooldown
         five_mins_ago = timezone.now() - timedelta(minutes=5)
@@ -85,7 +88,11 @@ class ListingCreateView(generics.CreateAPIView):
             raise ValidationError(
                 'Please wait 5 minutes before posting again.'
             )
-
+        # Check if user is banned
+        if user.is_banned:
+            raise ValidationError(
+                'Your account has been suspended due to multiple violations. Contact support@nepsaathi.com'
+            )
         # Check duplicate title in last 24 hours
         yesterday = timezone.now() - timedelta(hours=24)
         title = self.request.data.get('title', '').strip().lower()
@@ -359,6 +366,17 @@ class ReportListingView(APIView):
                 {'detail': 'You have already reported this listing.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        # Limit 5 reports per day per user
+        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        daily_reports = ListingReport.objects.filter(
+            user=request.user,
+            created_at__gte=today_start
+        ).count()
+        if daily_reports >= 5:
+            return Response(
+                {'detail': 'You have reached the maximum of 5 reports per day.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer = ListingReportSerializer(data={
             'listing': listing.id,
@@ -384,3 +402,28 @@ class ReportListingView(APIView):
                 status=status.HTTP_201_CREATED
             ) # Properly closed and indented
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # Always handle the 'else' case for is_valid()
+
+class MarkListingStatusView(APIView):
+    """
+    PATCH /api/listings/<id>/status/
+    Owner can mark listing as filled/taken/active
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def patch(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk, user=request.user)
+        except Listing.DoesNotExist:
+            return Response(
+                {'detail': 'Listing not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        new_status = request.data.get('status')
+        if new_status not in ['active', 'filled']:
+            return Response(
+                {'detail': 'Invalid status. Use active or filled.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        listing.status = new_status
+        listing.save()
+        return Response({'detail': f'Listing marked as {new_status}.'})

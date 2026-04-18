@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your listing is expiring soon</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: #f5f4f0;
+      font-family:
+        -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background: #f5f4f0; padding: 40px 20px"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              max-width: 600px;
+              width: 100%;
+              background: #ffffff;
+              border-radius: 16px;
+              overflow: hidden;
+              border: 0.5px solid #e5e5e5;
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  background: linear-gradient(135deg, #26215c 0%, #534ab7 100%);
+                  padding: 40px 32px;
+                  text-align: center;
+                "
+              >
+                <div style="display: inline-block; margin-bottom: 16px">
+                  <div
+                    style="
+                      display: inline-block;
+                      width: 28px;
+                      height: 28px;
+                      border-radius: 50%;
+                      background: #e87722;
+                      margin-right: -10px;
+                      vertical-align: middle;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      display: inline-block;
+                      width: 28px;
+                      height: 28px;
+                      border-radius: 50%;
+                      background: #afa9ec;
+                      opacity: 0.9;
+                      vertical-align: middle;
+                    "
+                  ></div>
+                </div>
+                <br />
+                <span style="font-size: 28px; font-weight: 700; color: #ffffff">
+                  <span style="color: #e87722">Nep</span>Saathi
+                </span>
+                <br />
+                <span style="font-size: 13px; color: #afa9ec"
+                  >नेपसाथी · your Nepali friend, wherever you are</span
+                >
+              </td>
+            </tr>
+            <!-- Warning banner -->
+            <tr>
+              <td
+                style="
+                  background: #fff1e0;
+                  padding: 20px 32px;
+                  text-align: center;
+                  border-bottom: 0.5px solid #efd9c0;
+                "
+              >
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: #633806;
+                    font-weight: 600;
+                  "
+                >
+                  ⏰ YOUR LISTING EXPIRES IN 3 DAYS
+                </p>
+              </td>
+            </tr>
+            <!-- Body -->
+            <tr>
+              <td style="padding: 36px 32px">
+                <h1
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #26215c;
+                  "
+                >
+                  Your listing is expiring soon!
+                </h1>
+                <p
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 15px;
+                    color: #555;
+                    line-height: 1.7;
+                  "
+                >
+                  Hi <strong>{{ first_name }}</strong>,
+                </p>
+                <p
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 14px;
+                    color: #555;
+                    line-height: 1.7;
+                  "
+                >
+                  Your listing will expire on <strong>{{ expires_at }}</strong>.
+                  After this date it will no longer be visible to the community.
+                </p>
+                <!-- Listing box -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    margin-bottom: 24px;
+                    background: #fff1e0;
+                    border-radius: 12px;
+                    border: 0.5px solid #efd9c0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 20px">
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 11px;
+                          color: #633806;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                        "
+                      >
+                        ⏰ Expiring soon
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 16px;
+                          font-weight: 600;
+                          color: #26215c;
+                        "
+                      >
+                        {{ listing_title }}
+                      </p>
+                      <p style="margin: 4px 0 0; font-size: 12px; color: #888">
+                        Expires {{ expires_at }}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+                <!-- What to do -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    margin-bottom: 28px;
+                    background: #eeedfe;
+                    border-radius: 12px;
+                    border: 0.5px solid #afa9ec;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 20px">
+                      <p
+                        style="
+                          margin: 0 0 8px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #3c3489;
+                        "
+                      >
+                        What you can do:
+                      </p>
+                      <p
+                        style="margin: 0 0 6px; font-size: 13px; color: #3c3489"
+                      >
+                        ✅ If still relevant — post a new listing
+                      </p>
+                      <p style="margin: 0; font-size: 13px; color: #3c3489">
+                        ❌ If filled/taken — no action needed, it will expire
+                        automatically
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+                <!-- CTA -->
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center" style="padding-bottom: 12px">
+                      <a
+                        href="{{ frontend_url }}/post-ad"
+                        style="
+                          display: inline-block;
+                          background: linear-gradient(135deg, #e87722, #534ab7);
+                          color: #ffffff;
+                          text-decoration: none;
+                          font-size: 14px;
+                          font-weight: 600;
+                          padding: 14px 40px;
+                          border-radius: 10px;
+                        "
+                      >
+                        Post a new listing →
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center">
+                      <a
+                        href="{{ listing_url }}"
+                        style="
+                          display: inline-block;
+                          background: #f5f4f0;
+                          color: #534ab7;
+                          text-decoration: none;
+                          font-size: 13px;
+                          font-weight: 600;
+                          padding: 12px 32px;
+                          border-radius: 10px;
+                          border: 0.5px solid #afa9ec;
+                        "
+                      >
+                        View your listing →
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  background: #26215c;
+                  padding: 28px 32px;
+                  text-align: center;
+                "
+              >
+                <p
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #ffffff;
+                  "
+                >
+                  <span style="color: #e87722">Nep</span>Saathi · नेपसाथी
+                </p>
+                <p style="margin: 0 0 16px; font-size: 12px; color: #afa9ec">
+                  Your Nepali friend, wherever you are 🇳🇵
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #afa9ec">
+                  <a
+                    href="{{ frontend_url }}/privacy"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Privacy Policy</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="{{ frontend_url }}/terms"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Terms of Use</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="mailto:support@nepsaathi.com"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Support</a
+                  >
+                </p>
+                <p style="margin: 12px 0 0; font-size: 10px; color: #534ab7">
+                  © 2026 NepSaathi · nepsaathi.com
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

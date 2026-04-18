@@ -30,6 +30,8 @@ class User(AbstractUser):
         default=False,
         help_text='Verified by NepSaathi admin'
     )
+    is_banned = models.BooleanField(default=False)
+    ban_reason = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
