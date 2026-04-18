@@ -101,7 +101,7 @@ export default function EventDetailPage() {
       </div>
 
       {/* Under review banner */}
-      {job.is_under_review && (
+      {event.is_under_review && (
         <div
           style={{
             background: "#FFF1E0",

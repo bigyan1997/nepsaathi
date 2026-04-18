@@ -88,7 +88,7 @@ export default function AnnouncementDetailPage() {
       </div>
 
       {/* Under review banner */}
-      {job.is_under_review && (
+      {announcement.is_under_review && (
         <div
           style={{
             background: "#FFF1E0",
