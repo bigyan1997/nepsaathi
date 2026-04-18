@@ -102,7 +102,7 @@ export default function EventDetailPage() {
           ← Back to Events
         </button>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {room?.view_count > 0 && (
+          {event?.view_count > 0 && (
             <span
               style={{
                 fontSize: "12px",
@@ -112,16 +112,16 @@ export default function EventDetailPage() {
                 gap: "4px",
               }}
             >
-              👁️ {room.view_count} {room.view_count === 1 ? "view" : "views"}
+              👁️ {event.view_count} {event.view_count === 1 ? "view" : "views"}
             </span>
           )}
-          <SaveButton listingId={room?.listing_id} />
-          <ShareButton title={room?.listing_title} />
+          <SaveButton listingId={event?.listing_id} />
+          <ShareButton title={event?.listing_title} />
         </div>
       </div>
 
       {/* Under review banner */}
-      {event.is_under_review && (
+      {event?.is_under_review && (
         <div
           style={{
             background: "#FFF1E0",
