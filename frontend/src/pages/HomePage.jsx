@@ -73,6 +73,15 @@ const TYPE_EMOJI = {
   business: "🏪",
 };
 
+const SEARCH_TYPES = [
+  { value: "all", emoji: "🔍", label: "All" },
+  { value: "jobs", emoji: "💼", label: "Jobs" },
+  { value: "rooms", emoji: "🏠", label: "Rooms" },
+  { value: "events", emoji: "🎉", label: "Events" },
+  { value: "announcements", emoji: "📢", label: "Announcements" },
+  { value: "businesses", emoji: "🏪", label: "Businesses" },
+];
+
 export default function HomePage() {
   usePageTitle(null); // uses default NepSaathi title
   const navigate = useNavigate();
@@ -85,6 +94,8 @@ export default function HomePage() {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -116,6 +127,9 @@ export default function HomePage() {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowSuggestions(false);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -140,6 +154,21 @@ export default function HomePage() {
     } else if (searchType === "businesses") {
       navigate(`/businesses?${params.toString()}`);
     }
+  };
+
+  const highlightMatch = (text, query) => {
+    if (!query) return text;
+    const index = text.toLowerCase().indexOf(query.toLowerCase());
+    if (index === -1) return text;
+    return (
+      <>
+        {text.slice(0, index)}
+        <span style={{ color: "#534AB7", fontWeight: 700 }}>
+          {text.slice(index, index + query.length)}
+        </span>
+        {text.slice(index + query.length)}
+      </>
+    );
   };
 
   const { data: jobsData } = useQuery({
@@ -264,29 +293,93 @@ export default function HomePage() {
                 position: "relative",
               }}
             >
-              <select
-                value={searchType}
-                onChange={(e) => setSearchType(e.target.value)}
-                style={{
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                  fontSize: "16px",
-                  padding: "0 8px",
-                  color: "#555",
-                  borderRight: "0.5px solid #e5e5e5",
-                  cursor: "pointer",
-                  width: "56px",
-                  flexShrink: 0,
-                }}
+              {/* Custom dropdown */}
+              <div
+                style={{ position: "relative", flexShrink: 0 }}
+                ref={dropdownRef}
               >
-                <option value="all">🔍</option>
-                <option value="jobs">💼</option>
-                <option value="rooms">🏠</option>
-                <option value="events">🎉</option>
-                <option value="announcements">📢</option>
-                <option value="businesses">🏪</option>
-              </select>
+                <button
+                  type="button"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    padding: "0 10px",
+                    height: "100%",
+                    borderRight: "0.5px solid #e5e5e5",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    fontSize: "18px",
+                    minWidth: "56px",
+                  }}
+                >
+                  {SEARCH_TYPES.find((t) => t.value === searchType)?.emoji}
+                  <span style={{ fontSize: "10px", color: "#aaa" }}>▼</span>
+                </button>
+
+                {dropdownOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 4px)",
+                      left: 0,
+                      background: "#fff",
+                      borderRadius: "12px",
+                      border: "0.5px solid #e5e5e5",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                      zIndex: 999,
+                      overflow: "hidden",
+                      minWidth: "160px",
+                    }}
+                  >
+                    {SEARCH_TYPES.map((type) => (
+                      <div
+                        key={type.value}
+                        onClick={() => {
+                          setSearchType(type.value);
+                          setDropdownOpen(false);
+                        }}
+                        style={{
+                          padding: "10px 16px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          fontSize: "13px",
+                          color: searchType === type.value ? "#534AB7" : "#333",
+                          fontWeight: searchType === type.value ? 600 : 400,
+                          background:
+                            searchType === type.value
+                              ? "#EEEDFE"
+                              : "transparent",
+                          transition: "background 0.1s",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (searchType !== type.value)
+                            e.currentTarget.style.background = "#F5F4F0";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (searchType !== type.value)
+                            e.currentTarget.style.background = "transparent";
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>{type.emoji}</span>
+                        {type.label}
+                        {searchType === type.value && (
+                          <span
+                            style={{ marginLeft: "auto", fontSize: "11px" }}
+                          >
+                            ✓
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
                 <input
                   type="text"
@@ -377,7 +470,7 @@ export default function HomePage() {
                               color: "#26215C",
                             }}
                           >
-                            {suggestion.label}
+                            {highlightMatch(suggestion.label, search)}
                           </div>
                           <div style={{ fontSize: "11px", color: "#888" }}>
                             {suggestion.sublabel}
