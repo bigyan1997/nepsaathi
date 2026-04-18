@@ -46,6 +46,20 @@
 
     <!-- Theme color (mobile browser bar) -->
     <meta name="theme-color" content="#26215C" />
+
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_ID%"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-M6E6RYVXKN");
+    </script>
   </head>
   <body>
     <div id="root"></div>
