@@ -18,15 +18,36 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const passwordMatch =
+    form.password &&
+    form.confirmPassword &&
+    form.password === form.confirmPassword;
+
+  const passwordChecks = {
+    length: form.password.length >= 8,
+    uppercase: /[A-Z]/.test(form.password),
+    number: /[0-9]/.test(form.password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(form.password),
+  };
+  const passwordStrong =
+    passwordChecks.length &&
+    passwordChecks.uppercase &&
+    passwordChecks.number &&
+    passwordChecks.special;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!passwordStrong) {
+      setError(
+        "Password must be at least 8 characters with one uppercase letter, one number and one special character.",
+      );
       return;
     }
-    if (form.password !== form.confirmPassword) {
+    if (!passwordMatch) {
       setError("Passwords do not match.");
       return;
     }
@@ -54,33 +75,22 @@ export default function RegisterPage() {
     }
   };
 
-  const fields = [
-    {
-      key: "firstName",
-      label: "First name",
-      type: "text",
-      placeholder: "John",
-    },
-    { key: "lastName", label: "Last name", type: "text", placeholder: "Doe" },
-    {
-      key: "email",
-      label: "Email",
-      type: "email",
-      placeholder: "you@example.com",
-    },
-    {
-      key: "password",
-      label: "Password",
-      type: "password",
-      placeholder: "••••••••",
-    },
-    {
-      key: "confirmPassword",
-      label: "Confirm password",
-      type: "password",
-      placeholder: "••••••••",
-    },
-  ];
+  const inputStyle = {
+    width: "100%",
+    border: "0.5px solid #ccc",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    fontSize: "14px",
+    outline: "none",
+  };
+
+  const labelStyle = {
+    fontSize: "13px",
+    fontWeight: 500,
+    color: "#444",
+    display: "block",
+    marginBottom: "6px",
+  };
 
   return (
     <div
@@ -167,6 +177,13 @@ export default function RegisterPage() {
             }}
           >
             {error}
+            {error.includes("already registered") && (
+              <div style={{ marginTop: "8px" }}>
+                <Link to="/login" style={{ color: "#A32D2D", fontWeight: 600 }}>
+                  Sign in →
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
@@ -175,36 +192,202 @@ export default function RegisterPage() {
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "14px" }}
         >
-          {fields.map(({ key, label, type, placeholder }) => (
-            <div key={key}>
-              <label
-                style={{
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  color: "#444",
-                  display: "block",
-                  marginBottom: "6px",
-                }}
-              >
-                {label}
-              </label>
+          {/* Name row */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "12px",
+            }}
+          >
+            <div>
+              <label style={labelStyle}>First name</label>
               <input
-                type={type}
+                type="text"
                 required
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                placeholder={placeholder}
-                style={{
-                  width: "100%",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "10px 14px",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                value={form.firstName}
+                onChange={(e) =>
+                  setForm({ ...form, firstName: e.target.value })
+                }
+                placeholder="John"
+                style={inputStyle}
               />
             </div>
-          ))}
+            <div>
+              <label style={labelStyle}>Last name</label>
+              <input
+                type="text"
+                required
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                placeholder="Doe"
+                style={inputStyle}
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label style={labelStyle}>Email</label>
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="you@example.com"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label style={labelStyle}>Password</label>
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="••••••••"
+                style={{
+                  ...inputStyle,
+                  paddingRight: "44px",
+                  borderColor: form.password
+                    ? passwordStrong
+                      ? "#1D9E75"
+                      : "#F09595"
+                    : "#ccc",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  color: "#888",
+                }}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+            {/* Password strength indicator */}
+            {form.password && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "4px",
+                }}
+              >
+                {[
+                  { key: "length", label: "At least 8 characters" },
+                  { key: "uppercase", label: "One uppercase letter (A-Z)" },
+                  { key: "number", label: "One number (0-9)" },
+                  { key: "special", label: "One special character (!@#$%^&*)" },
+                ].map(({ key, label }) => (
+                  <div
+                    key={key}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        color: passwordChecks[key] ? "#1D9E75" : "#aaa",
+                        fontWeight: passwordChecks[key] ? 600 : 400,
+                      }}
+                    >
+                      {passwordChecks[key] ? "✓" : "○"}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: passwordChecks[key] ? "#1D9E75" : "#aaa",
+                      }}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label style={labelStyle}>Confirm password</label>
+            <div style={{ position: "relative" }}>
+              <input
+                type={showConfirm ? "text" : "password"}
+                required
+                value={form.confirmPassword}
+                onChange={(e) =>
+                  setForm({ ...form, confirmPassword: e.target.value })
+                }
+                placeholder="••••••••"
+                style={{
+                  ...inputStyle,
+                  paddingRight: "44px",
+                  borderColor: form.confirmPassword
+                    ? passwordMatch
+                      ? "#1D9E75"
+                      : "#F09595"
+                    : "#ccc",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  color: "#888",
+                }}
+              >
+                {showConfirm ? "🙈" : "👁️"}
+              </button>
+            </div>
+            {/* Match indicator */}
+            {form.confirmPassword && (
+              <div
+                style={{
+                  marginTop: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: passwordMatch ? "#1D9E75" : "#A32D2D",
+                  }}
+                >
+                  {passwordMatch
+                    ? "✓ Passwords match"
+                    : "✗ Passwords do not match"}
+                </span>
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             disabled={loading}
