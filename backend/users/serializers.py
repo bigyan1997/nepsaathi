@@ -27,7 +27,7 @@ class RegisterSerializer(BaseRegisterSerializer):
         user.first_name = self.validated_data.get('first_name', '')
         user.last_name = self.validated_data.get('last_name', '')
         user.save()
-        # Send welcome email
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
