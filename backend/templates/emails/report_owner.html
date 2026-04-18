@@ -1,96 +1,367 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <style>
-      body {
-        font-family: -apple-system, sans-serif;
-        background: #f5f4f0;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        max-width: 600px;
-        margin: 40px auto;
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 0.5px solid #e5e5e5;
-      }
-      .header {
-        background: #26215c;
-        padding: 32px;
-        text-align: center;
-      }
-      .logo {
-        font-size: 24px;
-        font-weight: 700;
-        color: #fff;
-      }
-      .logo span {
-        color: #e87722;
-      }
-      .body {
-        padding: 32px;
-      }
-      .title {
-        font-size: 22px;
-        font-weight: 600;
-        color: #26215c;
-        margin-bottom: 12px;
-      }
-      .text {
-        font-size: 14px;
-        color: #555;
-        line-height: 1.7;
-        margin-bottom: 16px;
-      }
-      .info-box {
-        background: #fff1e0;
-        border: 0.5px solid #efd9c0;
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 16px;
-      }
-      .footer {
-        background: #f5f4f0;
-        padding: 20px 32px;
-        text-align: center;
-        font-size: 12px;
-        color: #888;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your listing has been reported</title>
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <div class="logo"><span>Nep</span>Saathi नेपसाथी</div>
-      </div>
-      <div class="body">
-        <h1 class="title">Your listing has been reported</h1>
-        <p class="text">Hi {{ first_name }},</p>
-        <p class="text">
-          Your listing <strong>{{ listing_title }}</strong> has been reported by
-          a community member. Our admin team will review it shortly.
-        </p>
-        <div class="info-box">
-          <p class="text" style="margin: 0">
-            If your listing follows our community guidelines it will remain
-            active. If you believe this report is incorrect please contact us at
-            <a href="mailto:support@nepsaathi.com">support@nepsaathi.com</a>
-          </p>
-        </div>
-        <p class="text">
-          Please make sure your listing follows our
-          <a href="{{ frontend_url }}/terms">Terms of Use</a>.
-        </p>
-      </div>
-      <div class="footer">
-        © 2026 NepSaathi · नेपसाथी<br />
-        <a href="mailto:support@nepsaathi.com" style="color: #888"
-          >support@nepsaathi.com</a
-        >
-      </div>
-    </div>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: #f5f4f0;
+      font-family:
+        -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background: #f5f4f0; padding: 40px 20px"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              max-width: 600px;
+              width: 100%;
+              background: #ffffff;
+              border-radius: 16px;
+              overflow: hidden;
+              border: 0.5px solid #e5e5e5;
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  background: linear-gradient(135deg, #26215c 0%, #534ab7 100%);
+                  padding: 40px 32px;
+                  text-align: center;
+                "
+              >
+                <div style="display: inline-block; margin-bottom: 16px">
+                  <div
+                    style="
+                      display: inline-block;
+                      width: 28px;
+                      height: 28px;
+                      border-radius: 50%;
+                      background: #e87722;
+                      margin-right: -10px;
+                      vertical-align: middle;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      display: inline-block;
+                      width: 28px;
+                      height: 28px;
+                      border-radius: 50%;
+                      background: #afa9ec;
+                      opacity: 0.9;
+                      vertical-align: middle;
+                    "
+                  ></div>
+                </div>
+                <br />
+                <span style="font-size: 28px; font-weight: 700; color: #ffffff">
+                  <span style="color: #e87722">Nep</span>Saathi
+                </span>
+                <br />
+                <span
+                  style="
+                    font-size: 13px;
+                    color: #afa9ec;
+                    letter-spacing: 0.05em;
+                  "
+                  >नेपसाथी · your Nepali friend, wherever you are</span
+                >
+              </td>
+            </tr>
+
+            <!-- Alert banner -->
+            <tr>
+              <td
+                style="
+                  background: #fcebeb;
+                  padding: 20px 32px;
+                  text-align: center;
+                  border-bottom: 0.5px solid #f09595;
+                "
+              >
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: #a32d2d;
+                    font-weight: 600;
+                    letter-spacing: 0.03em;
+                  "
+                >
+                  ⚠️ LISTING REPORT NOTICE
+                </p>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding: 36px 32px">
+                <h1
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #26215c;
+                    line-height: 1.2;
+                  "
+                >
+                  Your listing has been reported
+                </h1>
+                <p
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 15px;
+                    color: #555;
+                    line-height: 1.7;
+                  "
+                >
+                  Hi <strong>{{ first_name }}</strong>,
+                </p>
+                <p
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 14px;
+                    color: #555;
+                    line-height: 1.7;
+                  "
+                >
+                  A community member has reported your listing. Our admin team
+                  will review it shortly and take appropriate action.
+                </p>
+
+                <!-- Listing box -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    margin-bottom: 24px;
+                    background: #f5f4f0;
+                    border-radius: 12px;
+                    border: 0.5px solid #e5e5e5;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 20px">
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 11px;
+                          color: #aaa;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                        "
+                      >
+                        Reported listing
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 16px;
+                          font-weight: 600;
+                          color: #26215c;
+                        "
+                      >
+                        {{ listing_title }}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Info box -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    margin-bottom: 24px;
+                    background: #fff1e0;
+                    border-radius: 12px;
+                    border: 0.5px solid #efd9c0;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 20px">
+                      <p
+                        style="
+                          margin: 0 0 8px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #633806;
+                        "
+                      >
+                        ✅ What happens next?
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 13px;
+                          color: #633806;
+                          line-height: 1.7;
+                        "
+                      >
+                        If your listing follows our community guidelines it will
+                        remain active with no action taken. Our team typically
+                        reviews reports within 24 hours.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Guidelines box -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    margin-bottom: 28px;
+                    background: #eeedfe;
+                    border-radius: 12px;
+                    border: 0.5px solid #afa9ec;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 20px">
+                      <p
+                        style="
+                          margin: 0 0 8px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #3c3489;
+                        "
+                      >
+                        📋 Community guidelines reminder
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 13px;
+                          color: #3c3489;
+                          line-height: 1.7;
+                        "
+                      >
+                        Please ensure your listing is accurate, not misleading,
+                        and follows our
+                        <a
+                          href="{{ frontend_url }}/terms"
+                          style="color: #534ab7; font-weight: 600"
+                          >Terms of Use</a
+                        >.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- CTA -->
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center">
+                      <a
+                        href="mailto:support@nepsaathi.com"
+                        style="
+                          display: inline-block;
+                          background: #534ab7;
+                          color: #ffffff;
+                          text-decoration: none;
+                          font-size: 14px;
+                          font-weight: 600;
+                          padding: 12px 32px;
+                          border-radius: 10px;
+                        "
+                      >
+                        Contact Support →
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p
+                  style="
+                    margin: 20px 0 0;
+                    font-size: 12px;
+                    color: #aaa;
+                    text-align: center;
+                    line-height: 1.6;
+                  "
+                >
+                  If you believe this report is incorrect, please email us at<br />
+                  <a
+                    href="mailto:support@nepsaathi.com"
+                    style="
+                      color: #534ab7;
+                      text-decoration: none;
+                      font-weight: 500;
+                    "
+                    >support@nepsaathi.com</a
+                  >
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  background: #26215c;
+                  padding: 28px 32px;
+                  text-align: center;
+                "
+              >
+                <p
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #ffffff;
+                  "
+                >
+                  <span style="color: #e87722">Nep</span>Saathi · नेपसाथी
+                </p>
+                <p style="margin: 0 0 16px; font-size: 12px; color: #afa9ec">
+                  Your Nepali friend, wherever you are 🇳🇵
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #afa9ec">
+                  <a
+                    href="{{ frontend_url }}/privacy"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Privacy Policy</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="{{ frontend_url }}/terms"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Terms of Use</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="mailto:support@nepsaathi.com"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Support</a
+                  >
+                </p>
+                <p style="margin: 12px 0 0; font-size: 10px; color: #534ab7">
+                  © 2026 NepSaathi · nepsaathi.com
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

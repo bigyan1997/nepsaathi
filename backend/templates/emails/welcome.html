@@ -1,105 +1,482 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <style>
-      body {
-        font-family: -apple-system, sans-serif;
-        background: #f5f4f0;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        max-width: 600px;
-        margin: 40px auto;
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-        border: 0.5px solid #e5e5e5;
-      }
-      .header {
-        background: #26215c;
-        padding: 32px;
-        text-align: center;
-      }
-      .logo {
-        font-size: 24px;
-        font-weight: 700;
-        color: #fff;
-      }
-      .logo span {
-        color: #e87722;
-      }
-      .body {
-        padding: 32px;
-      }
-      .title {
-        font-size: 22px;
-        font-weight: 600;
-        color: #26215c;
-        margin-bottom: 12px;
-      }
-      .text {
-        font-size: 14px;
-        color: #555;
-        line-height: 1.7;
-        margin-bottom: 16px;
-      }
-      .button {
-        display: inline-block;
-        background: #e87722;
-        color: #fff;
-        padding: 12px 28px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
-      }
-      .footer {
-        background: #f5f4f0;
-        padding: 20px 32px;
-        text-align: center;
-        font-size: 12px;
-        color: #888;
-      }
-      .divider {
-        border: none;
-        border-top: 0.5px solid #e5e5e5;
-        margin: 24px 0;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to NepSaathi</title>
   </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <div class="logo"><span>Nep</span>Saathi नेपसाथी</div>
-      </div>
-      <div class="body">
-        <h1 class="title">Welcome to NepSaathi, {{ first_name }}! 🎉</h1>
-        <p class="text">
-          We're so excited to have you join the NepSaathi community — your
-          trusted Nepali friend across Australia.
-        </p>
-        <p class="text">You can now:</p>
-        <p class="text">
-          💼 Browse and post <strong>jobs</strong><br />
-          🏠 Find and list <strong>rooms</strong><br />
-          🎉 Discover <strong>community events</strong><br />
-          📢 Share <strong>announcements</strong><br />
-          🏪 Register your <strong>Nepalese business</strong>
-        </p>
-        <hr class="divider" />
-        <p class="text">Ready to get started?</p>
-        <a href="{{ frontend_url }}" class="button">Visit NepSaathi →</a>
-      </div>
-      <div class="footer">
-        © 2026 NepSaathi · नेपसाथी<br />
-        <a href="{{ frontend_url }}/privacy" style="color: #888"
-          >Privacy Policy</a
-        >
-        ·
-        <a href="{{ frontend_url }}/terms" style="color: #888">Terms of Use</a>
-      </div>
-    </div>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background: #f5f4f0;
+      font-family:
+        -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background: #f5f4f0; padding: 40px 20px"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              max-width: 600px;
+              width: 100%;
+              background: #ffffff;
+              border-radius: 16px;
+              overflow: hidden;
+              border: 0.5px solid #e5e5e5;
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  background: linear-gradient(135deg, #26215c 0%, #534ab7 100%);
+                  padding: 40px 32px;
+                  text-align: center;
+                "
+              >
+                <!-- Logo circles -->
+                <div style="display: inline-block; margin-bottom: 16px">
+                  <table
+                    cellpadding="0"
+                    cellspacing="0"
+                    style="display: inline-table"
+                  >
+                    <tr>
+                      <td>
+                        <div
+                          style="
+                            display: inline-block;
+                            width: 28px;
+                            height: 28px;
+                            border-radius: 50%;
+                            background: #e87722;
+                            margin-right: -10px;
+                            vertical-align: middle;
+                          "
+                        ></div>
+                        <div
+                          style="
+                            display: inline-block;
+                            width: 28px;
+                            height: 28px;
+                            border-radius: 50%;
+                            background: #afa9ec;
+                            opacity: 0.9;
+                            vertical-align: middle;
+                          "
+                        ></div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <br />
+                <span
+                  style="
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: #ffffff;
+                    letter-spacing: -0.5px;
+                  "
+                >
+                  <span style="color: #e87722">Nep</span>Saathi
+                </span>
+                <br />
+                <span
+                  style="
+                    font-size: 13px;
+                    color: #afa9ec;
+                    letter-spacing: 0.05em;
+                  "
+                  >नेपसाथी · your Nepali friend, wherever you are</span
+                >
+              </td>
+            </tr>
+
+            <!-- Welcome banner -->
+            <tr>
+              <td
+                style="
+                  background: #fff1e0;
+                  padding: 24px 32px;
+                  text-align: center;
+                  border-bottom: 0.5px solid #efd9c0;
+                "
+              >
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: #633806;
+                    font-weight: 500;
+                    letter-spacing: 0.03em;
+                  "
+                >
+                  🎉 WELCOME TO THE COMMUNITY
+                </p>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding: 36px 32px">
+                <h1
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 26px;
+                    font-weight: 700;
+                    color: #26215c;
+                    line-height: 1.2;
+                  "
+                >
+                  Namaste, {{ first_name }}! 🙏
+                </h1>
+                <p
+                  style="
+                    margin: 0 0 24px;
+                    font-size: 15px;
+                    color: #555;
+                    line-height: 1.7;
+                  "
+                >
+                  We're thrilled to have you join <strong>NepSaathi</strong> —
+                  the trusted community hub for Nepalese Australians. Your
+                  account is ready and you can start exploring right away!
+                </p>
+
+                <!-- Feature cards -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="margin-bottom: 28px"
+                >
+                  <tr>
+                    <td
+                      width="48%"
+                      style="
+                        background: #eeedfe;
+                        border-radius: 12px;
+                        padding: 16px;
+                        vertical-align: top;
+                      "
+                    >
+                      <p style="margin: 0 0 6px; font-size: 20px">💼</p>
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #26215c;
+                        "
+                      >
+                        Jobs
+                      </p>
+                      <p style="margin: 0; font-size: 12px; color: #666">
+                        Find Nepalese-friendly jobs across Australia
+                      </p>
+                    </td>
+                    <td width="4%"></td>
+                    <td
+                      width="48%"
+                      style="
+                        background: #fff1e0;
+                        border-radius: 12px;
+                        padding: 16px;
+                        vertical-align: top;
+                      "
+                    >
+                      <p style="margin: 0 0 6px; font-size: 20px">🏠</p>
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #26215c;
+                        "
+                      >
+                        Rooms
+                      </p>
+                      <p style="margin: 0; font-size: 12px; color: #666">
+                        Find affordable rooms near your community
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" style="height: 12px"></td>
+                  </tr>
+                  <tr>
+                    <td
+                      width="48%"
+                      style="
+                        background: #e1f5ee;
+                        border-radius: 12px;
+                        padding: 16px;
+                        vertical-align: top;
+                      "
+                    >
+                      <p style="margin: 0 0 6px; font-size: 20px">🎉</p>
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #26215c;
+                        "
+                      >
+                        Events
+                      </p>
+                      <p style="margin: 0; font-size: 12px; color: #666">
+                        Discover Nepalese events and celebrations
+                      </p>
+                    </td>
+                    <td width="4%"></td>
+                    <td
+                      width="48%"
+                      style="
+                        background: #faeeda;
+                        border-radius: 12px;
+                        padding: 16px;
+                        vertical-align: top;
+                      "
+                    >
+                      <p style="margin: 0 0 6px; font-size: 20px">🏪</p>
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 13px;
+                          font-weight: 600;
+                          color: #26215c;
+                        "
+                      >
+                        Businesses
+                      </p>
+                      <p style="margin: 0; font-size: 12px; color: #666">
+                        Support Nepalese-owned businesses
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Divider -->
+                <hr
+                  style="
+                    border: none;
+                    border-top: 0.5px solid #e5e5e5;
+                    margin: 0 0 28px;
+                  "
+                />
+
+                <!-- Stats -->
+                <table
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    margin-bottom: 28px;
+                    background: #f5f4f0;
+                    border-radius: 12px;
+                    padding: 20px;
+                  "
+                >
+                  <tr>
+                    <td style="padding: 20px" align="center">
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 24px;
+                          font-weight: 700;
+                          color: #e87722;
+                        "
+                      >
+                        1,000+
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 11px;
+                          color: #888;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                        "
+                      >
+                        Community members
+                      </p>
+                    </td>
+                    <td
+                      style="border-left: 0.5px solid #e5e5e5; padding: 20px"
+                      align="center"
+                    >
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 24px;
+                          font-weight: 700;
+                          color: #534ab7;
+                        "
+                      >
+                        Free
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 11px;
+                          color: #888;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                        "
+                      >
+                        Always & forever
+                      </p>
+                    </td>
+                    <td
+                      style="border-left: 0.5px solid #e5e5e5; padding: 20px"
+                      align="center"
+                    >
+                      <p
+                        style="
+                          margin: 0 0 4px;
+                          font-size: 24px;
+                          font-weight: 700;
+                          color: #26215c;
+                        "
+                      >
+                        🇦🇺
+                      </p>
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 11px;
+                          color: #888;
+                          text-transform: uppercase;
+                          letter-spacing: 0.05em;
+                        "
+                      >
+                        Australia-wide
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- CTA Button -->
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center">
+                      <a
+                        href="{{ frontend_url }}"
+                        style="
+                          display: inline-block;
+                          background: linear-gradient(135deg, #e87722, #534ab7);
+                          color: #ffffff;
+                          text-decoration: none;
+                          font-size: 15px;
+                          font-weight: 600;
+                          padding: 14px 40px;
+                          border-radius: 10px;
+                          letter-spacing: 0.02em;
+                        "
+                      >
+                        Explore NepSaathi →
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p
+                  style="
+                    margin: 24px 0 0;
+                    font-size: 12px;
+                    color: #aaa;
+                    text-align: center;
+                    line-height: 1.6;
+                  "
+                >
+                  Or browse directly:<br />
+                  <a
+                    href="{{ frontend_url }}/jobs"
+                    style="color: #534ab7; text-decoration: none"
+                    >Jobs</a
+                  >
+                  ·
+                  <a
+                    href="{{ frontend_url }}/rooms"
+                    style="color: #534ab7; text-decoration: none"
+                    >Rooms</a
+                  >
+                  ·
+                  <a
+                    href="{{ frontend_url }}/events"
+                    style="color: #534ab7; text-decoration: none"
+                    >Events</a
+                  >
+                  ·
+                  <a
+                    href="{{ frontend_url }}/businesses"
+                    style="color: #534ab7; text-decoration: none"
+                    >Businesses</a
+                  >
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  background: #26215c;
+                  padding: 28px 32px;
+                  text-align: center;
+                "
+              >
+                <p
+                  style="
+                    margin: 0 0 8px;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #ffffff;
+                  "
+                >
+                  <span style="color: #e87722">Nep</span>Saathi · नेपसाथी
+                </p>
+                <p style="margin: 0 0 16px; font-size: 12px; color: #afa9ec">
+                  Your Nepali friend, wherever you are 🇳🇵
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #534ab7">
+                  <a
+                    href="{{ frontend_url }}/privacy"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Privacy Policy</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="{{ frontend_url }}/terms"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Terms of Use</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="mailto:support@nepsaathi.com"
+                    style="color: #afa9ec; text-decoration: none"
+                    >Support</a
+                  >
+                </p>
+                <p style="margin: 12px 0 0; font-size: 10px; color: #534ab7">
+                  © 2026 NepSaathi · nepsaathi.com
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>
