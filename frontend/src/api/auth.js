@@ -38,6 +38,12 @@ export const updateProfile = async (data) => {
   return response.data;
 };
 
+// Delete User
+export const deleteAccount = async () => {
+  const response = await api.delete("/api/users/delete-account/");
+  return response.data;
+};
+
 // Google OAuth login
 export const googleLogin = async (accessToken) => {
   const response = await api.post("/api/users/auth/google/", {

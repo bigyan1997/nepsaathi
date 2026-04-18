@@ -12,4 +12,7 @@ urlpatterns = [
 
     # Logout
     path('auth/logout/', views.LogoutView.as_view(), name='logout'),
+
+    # Delete Account
+    path('delete-account/', views.DeleteAccountView.as_view(), name='delete-account'),
 ]

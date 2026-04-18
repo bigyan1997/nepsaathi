@@ -79,3 +79,28 @@ class LogoutView(APIView):
                 {'detail': 'Invalid token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+    
+class DeleteAccountView(APIView):
+        """
+        DELETE /api/users/delete-account/
+        Permanently deletes the logged in user's account.
+        """
+        permission_classes = (permissions.IsAuthenticated,)
+
+        def delete(self, request):
+            user = request.user
+            try:
+                # Soft delete all listings
+                from listings.models import Listing
+                Listing.objects.filter(user=user).update(status='deleted')
+                # Delete user
+                user.delete()
+                return Response(
+                    {'detail': 'Your account has been permanently deleted.'},
+                    status=status.HTTP_200_OK
+                )
+            except Exception as e:
+                return Response(
+                    {'detail': 'Failed to delete account. Please contact support.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )

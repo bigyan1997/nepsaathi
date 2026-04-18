@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { deleteAccount } from "../api/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfile, updateProfile } from "../api/auth";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
 import { useToast } from "../components/ui/Toast";
+import { useNavigate } from "react-router-dom";
 
 const inputStyle = {
   width: "100%",
@@ -26,6 +28,9 @@ const labelStyle = {
 
 export default function ProfilePage() {
   usePageTitle("Profile Settings");
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { user, updateUser } = useAuthStore();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -73,6 +78,21 @@ export default function ProfilePage() {
       } else {
         addToast("Something went wrong. Please try again.", "error");
       }
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: () => {
+      logout();
+      navigate("/");
+      addToast("Your account has been permanently deleted.", "info");
+    },
+    onError: () => {
+      addToast(
+        "Failed to delete account. Please contact support@nepsaathi.com",
+        "error",
+      );
     },
   });
 
@@ -385,27 +405,81 @@ export default function ProfilePage() {
           Once you delete your account all your listings and data will be
           permanently removed.
         </p>
-        <button
-          onClick={() =>
-            addToast(
-              "To delete your account please email support@nepsaathi.com",
-              "info",
-              6000,
-            )
-          }
-          style={{
-            background: "transparent",
-            color: "#A32D2D",
-            border: "0.5px solid #F09595",
-            borderRadius: "8px",
-            padding: "9px 18px",
-            fontSize: "13px",
-            cursor: "pointer",
-            fontWeight: 500,
-          }}
-        >
-          Delete account
-        </button>
+
+        {!showDeleteConfirm ? (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{
+              background: "transparent",
+              color: "#A32D2D",
+              border: "0.5px solid #F09595",
+              borderRadius: "8px",
+              padding: "9px 18px",
+              fontSize: "13px",
+              cursor: "pointer",
+              fontWeight: 500,
+            }}
+          >
+            Delete account
+          </button>
+        ) : (
+          <div
+            style={{
+              background: "#FCEBEB",
+              border: "0.5px solid #F09595",
+              borderRadius: "10px",
+              padding: "16px",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "13px",
+                color: "#A32D2D",
+                marginBottom: "14px",
+                fontWeight: 500,
+              }}
+            >
+              ⚠️ Are you absolutely sure? This cannot be undone!
+            </p>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{
+                  flex: 1,
+                  background: "#fff",
+                  color: "#555",
+                  border: "0.5px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "10px",
+                  fontSize: "13px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteAccountMutation.mutate()}
+                disabled={deleteAccountMutation.isPending}
+                style={{
+                  flex: 1,
+                  background: "#A32D2D",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "10px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  opacity: deleteAccountMutation.isPending ? 0.6 : 1,
+                }}
+              >
+                {deleteAccountMutation.isPending
+                  ? "Deleting..."
+                  : "Yes, delete forever"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
