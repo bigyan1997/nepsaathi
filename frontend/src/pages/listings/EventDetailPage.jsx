@@ -95,7 +95,7 @@ export default function EventDetailPage() {
           }}
         >
           <button
-            onClick={() => navigate("/jobs")}
+            onClick={() => navigate("/events")}
             style={{
               background: "transparent",
               border: "none",
@@ -106,20 +106,20 @@ export default function EventDetailPage() {
               whiteSpace: "nowrap",
             }}
           >
-            ← Back to jobs
+            ← Back to events
           </button>
-          {job?.view_count > 0 && (
+          {event?.view_count > 0 && (
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {job.view_count}
+              👁️ {event.view_count}
             </span>
           )}
         </div>
         {/* Right: save + share */}
         <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-          <SaveButton listingId={job?.listing_id} />
-          <ShareButton title={job?.listing_title} />
+          <SaveButton listingId={event?.listing_id} />
+          <ShareButton title={event?.listing_title} />
         </div>
       </div>
 
