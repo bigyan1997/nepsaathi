@@ -179,7 +179,7 @@ REST_AUTH = {
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # ─── Google OAuth ─────────────────────────────────────────────────────────────
@@ -238,6 +238,7 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    EMAIL_TIMEOUT = 10
 
 # ─── Cache ────────────────────────────────────────────────────────────────────
 REDIS_URL = config('REDIS_URL', default=None)
