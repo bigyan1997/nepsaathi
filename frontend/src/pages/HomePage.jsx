@@ -555,11 +555,7 @@ export default function HomePage() {
               </Link>
             </div>
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                gap: "12px",
-              }}
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
               {roomsData.results.map((room) => (
                 <Link
@@ -569,8 +565,12 @@ export default function HomePage() {
                     background: "#fff",
                     border: "0.5px solid #e5e5e5",
                     borderRadius: "12px",
-                    overflow: "hidden",
+                    padding: "16px 20px",
                     textDecoration: "none",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "16px",
                     transition: "border-color 0.15s",
                   }}
                   onMouseEnter={(e) =>
@@ -582,68 +582,70 @@ export default function HomePage() {
                 >
                   <div
                     style={{
-                      height: "90px",
-                      background: "#FFF1E0",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "28px",
+                      gap: "14px",
                     }}
                   >
-                    🏠
-                  </div>
-                  <div style={{ padding: "12px 14px" }}>
                     <div
                       style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "10px",
+                        background: "#FFF1E0",
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        marginBottom: "4px",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "18px",
+                        flexShrink: 0,
                       }}
                     >
+                      🏠
+                    </div>
+                    <div>
                       <div
                         style={{
-                          fontSize: "13px",
+                          fontSize: "14px",
                           fontWeight: 600,
                           color: "#26215C",
+                          marginBottom: "3px",
                         }}
                       >
                         {room.listing_title}
                       </div>
                       <div
                         style={{
-                          background: "#FFF1E0",
-                          color: "#633806",
                           fontSize: "12px",
-                          fontWeight: 600,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                          whiteSpace: "nowrap",
-                          marginLeft: "8px",
+                          color: "#888",
+                          display: "flex",
+                          gap: "6px",
+                          flexWrap: "wrap",
                         }}
                       >
-                        {room.price_display}
+                        <span>
+                          📍 {room.listing_location}, {room.listing_state}
+                        </span>
+                        {room.nepalese_household && (
+                          <span>· 🇳🇵 Nepalese home</span>
+                        )}
+                        {room.room_type && (
+                          <span>· {room.room_type.replace("_", " ")}</span>
+                        )}
                       </div>
                     </div>
-                    <div style={{ fontSize: "11px", color: "#888" }}>
-                      📍 {room.listing_location}, {room.listing_state}
-                    </div>
-                    {room.nepalese_household && (
-                      <div
-                        style={{
-                          marginTop: "8px",
-                          display: "inline-block",
-                          background: "#EEEDFE",
-                          color: "#3C3489",
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        🇳🇵 Nepalese home
-                      </div>
-                    )}
+                  </div>
+                  <div
+                    style={{
+                      background: "#FFF1E0",
+                      color: "#633806",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      padding: "4px 12px",
+                      borderRadius: "20px",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {room.price_display}
                   </div>
                 </Link>
               ))}
