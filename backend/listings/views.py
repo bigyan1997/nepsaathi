@@ -370,10 +370,12 @@ class ReportListingView(APIView):
             report = serializer.save(user=request.user, listing=listing)
             # Send emails to admin and listing owner
             try:
+                print('DEBUG: calling send_report_emails', flush=True)
                 from core.emails import send_report_emails
                 send_report_emails(report)
-            except Exception:
-                pass
+                print('DEBUG: send_report_emails returned', flush=True)
+            except Exception as e:
+                print(f'DEBUG: email exception: {e}', flush=True)
             return Response(
                 {'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'},
                 status=status.HTTP_201_CREATED
