@@ -9,11 +9,11 @@ ADMIN_URL = config('ADMIN_URL', default='https://nepsaathi-production.up.railway
 
 
 def _send_email(msg):
-    """Send email in background thread."""
     try:
         msg.send()
+        print(f'Email sent OK: {msg.subject} -> {msg.to}')
     except Exception as e:
-        print(f'Email send failed: {e}')
+        print(f'Email send FAILED: {e}')
 
 
 def send_welcome_email(user):
