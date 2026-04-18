@@ -513,3 +513,93 @@ class SimilarListingsView(APIView):
             similar, many=True, context={'request': request}
         )
         return Response(serializer.data)
+
+class SearchSuggestionsView(APIView):
+    """
+    GET /api/listings/search-suggestions/?q=kitchen
+    Returns search suggestions based on query.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        query = request.query_params.get('q', '').strip()
+        if len(query) < 2:
+            return Response([])
+
+        from django.db.models import Q
+        suggestions = []
+
+        # Search listing titles
+        listings = Listing.objects.filter(
+            Q(title__icontains=query) |
+            Q(location__icontains=query),
+            status='active'
+        ).values('title', 'listing_type', 'location', 'state', 'id')[:8]
+
+        for listing in listings:
+            suggestions.append({
+                'type': 'listing',
+                'label': listing['title'],
+                'sublabel': f"{listing['location']}, {listing['state']}",
+                'listing_type': listing['listing_type'],
+                'id': listing['id'],
+            })
+
+        return Response(suggestions)
+
+class GlobalSearchView(APIView):
+    """
+    GET /api/listings/search/?q=kitchen
+    Returns results from all listing types.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        query = request.query_params.get('q', '').strip()
+        state = request.query_params.get('state', '').strip()
+
+        if len(query) < 2:
+            return Response({
+                'jobs': [], 'rooms': [], 
+                'events': [], 'announcements': []
+            })
+
+        from django.db.models import Q
+        from jobs.models import Job
+        from jobs.serializers import JobSerializer
+        from rooms.models import Room
+        from rooms.serializers import RoomSerializer
+        from events.models import Event
+        from events.serializers import EventSerializer
+        from announcements.models import Announcement
+        from announcements.serializers import AnnouncementSerializer
+
+        base_filter = Q(listing__title__icontains=query) | Q(listing__location__icontains=query) | Q(listing__description__icontains=query)
+        state_filter = Q(listing__state=state) if state else Q()
+
+        jobs = Job.objects.filter(
+            base_filter & state_filter,
+            listing__status='active'
+        ).select_related('listing', 'listing__user')[:5]
+
+        rooms = Room.objects.filter(
+            base_filter & state_filter,
+            listing__status='active'
+        ).select_related('listing', 'listing__user')[:5]
+
+        events = Event.objects.filter(
+            base_filter & state_filter,
+            listing__status='active'
+        ).select_related('listing', 'listing__user')[:5]
+
+        announcements = Announcement.objects.filter(
+            base_filter & state_filter,
+            listing__status='active'
+        ).select_related('listing', 'listing__user')[:5]
+
+        return Response({
+            'jobs': JobSerializer(jobs, many=True, context={'request': request}).data,
+            'rooms': RoomSerializer(rooms, many=True, context={'request': request}).data,
+            'events': EventSerializer(events, many=True, context={'request': request}).data,
+            'announcements': AnnouncementSerializer(announcements, many=True, context={'request': request}).data,
+        })

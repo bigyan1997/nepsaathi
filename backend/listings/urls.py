@@ -43,4 +43,10 @@ urlpatterns = [
 
     # Show similar Listing
     path('<int:pk>/similar/', views.SimilarListingsView.as_view(), name='similar-listings'),
+
+    # Search Suggestions
+    path('search-suggestions/', views.SearchSuggestionsView.as_view(), name='search-suggestions'),
+
+    # Global Search
+    path('search/', views.GlobalSearchView.as_view(), name='global-search'),
 ]

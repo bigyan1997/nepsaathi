@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getJobs } from "../api/jobs";
 import { getRooms } from "../api/rooms";
 import { getEvents } from "../api/events";
@@ -8,6 +8,7 @@ import { getStats } from "../api/listings";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
+import { getSearchSuggestions } from "../api/listings";
 
 const CATEGORIES = [
   {
@@ -64,6 +65,14 @@ const STATES = [
   { value: "NT", label: "NT" },
 ];
 
+const TYPE_EMOJI = {
+  job: "💼",
+  room: "🏠",
+  event: "🎉",
+  announcement: "📢",
+  business: "🏪",
+};
+
 export default function HomePage() {
   usePageTitle(null); // uses default NepSaathi title
   const navigate = useNavigate();
@@ -71,6 +80,46 @@ export default function HomePage() {
   const [search, setSearch] = useState("");
   const [searchType, setSearchType] = useState("all");
   const [state, setState] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const searchRef = useRef(null);
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (search.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setSuggestionsLoading(true);
+      try {
+        const data = await getSearchSuggestions(search);
+        setSuggestions(data);
+        setShowSuggestions(true);
+      } catch (e) {
+        setSuggestions([]);
+      } finally {
+        setSuggestionsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceRef.current);
+  }, [search]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -80,12 +129,17 @@ export default function HomePage() {
     if (search.trim()) params.set("search", search);
     if (state) params.set("state", state);
 
-    if (searchType === "jobs" || searchType === "all")
+    if (searchType === "all") {
+      navigate(`/search?${params.toString()}`);
+    } else if (searchType === "jobs") {
       navigate(`/jobs?${params.toString()}`);
-    else if (searchType === "rooms") navigate(`/rooms?${params.toString()}`);
-    else if (searchType === "events") navigate(`/events?${params.toString()}`);
-    else if (searchType === "businesses")
+    } else if (searchType === "rooms") {
+      navigate(`/rooms?${params.toString()}`);
+    } else if (searchType === "events") {
+      navigate(`/events?${params.toString()}`);
+    } else if (searchType === "businesses") {
       navigate(`/businesses?${params.toString()}`);
+    }
   };
 
   const { data: jobsData } = useQuery({
@@ -224,21 +278,105 @@ export default function HomePage() {
                 <option value="events">Events</option>
                 <option value="businesses">Businesses</option>
               </select>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search jobs, rooms, events..."
-                style={{
-                  flex: 1,
-                  border: "none",
-                  outline: "none",
-                  fontSize: "14px",
-                  padding: "14px 16px",
-                  color: "#333",
-                  background: "transparent",
-                }}
-              />
+              <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onFocus={() =>
+                    suggestions.length > 0 && setShowSuggestions(true)
+                  }
+                  placeholder="Search jobs, rooms, events..."
+                  style={{
+                    width: "100%",
+                    border: "none",
+                    outline: "none",
+                    fontSize: "14px",
+                    padding: "14px 16px",
+                    color: "#333",
+                    background: "transparent",
+                    boxSizing: "border-box",
+                  }}
+                />
+
+                {/* Suggestions dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 8px)",
+                      left: "-140px",
+                      right: "-120px",
+                      background: "#fff",
+                      borderRadius: "12px",
+                      border: "0.5px solid #e5e5e5",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+                      zIndex: 100,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          setShowSuggestions(false);
+                          setSearch(suggestion.label);
+                          const params = new URLSearchParams();
+                          params.set("search", suggestion.label);
+                          navigate(
+                            `/${suggestion.listing_type}s?${params.toString()}`,
+                          );
+                        }}
+                        style={{
+                          padding: "10px 16px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          borderBottom:
+                            index < suggestions.length - 1
+                              ? "0.5px solid #f5f5f5"
+                              : "none",
+                          transition: "background 0.1s",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#F5F4F0")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "#fff")
+                        }
+                      >
+                        <span style={{ fontSize: "16px" }}>
+                          {TYPE_EMOJI[suggestion.listing_type] || "🔍"}
+                        </span>
+                        <div>
+                          <div
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: 500,
+                              color: "#26215C",
+                            }}
+                          >
+                            {suggestion.label}
+                          </div>
+                          <div style={{ fontSize: "11px", color: "#888" }}>
+                            {suggestion.sublabel}
+                          </div>
+                        </div>
+                        <span
+                          style={{
+                            marginLeft: "auto",
+                            fontSize: "11px",
+                            color: "#aaa",
+                          }}
+                        >
+                          {suggestion.listing_type}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 type="submit"
                 style={{

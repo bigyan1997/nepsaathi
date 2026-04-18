@@ -97,3 +97,18 @@ export const getSimilarListings = async (id) => {
   const response = await api.get(`/api/listings/${id}/similar/`);
   return response.data;
 };
+
+// Search Suggestions
+export const getSearchSuggestions = async (q) => {
+  const response = await api.get(`/api/listings/search-suggestions/?q=${q}`);
+  return response.data;
+};
+
+// Global Search
+export const globalSearch = async (q, state) => {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (state) params.set("state", state);
+  const response = await api.get(`/api/listings/search/?${params.toString()}`);
+  return response.data;
+};

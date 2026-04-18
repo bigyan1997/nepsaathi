@@ -34,6 +34,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import ContactPage from "./pages/ContactPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import SearchPage from "./pages/SearchPage";
 
 // Protected pages
 import PostAdPage from "./pages/listings/PostAdPage";
@@ -127,6 +128,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route path="/search" element={<SearchPage />} />
                       <Route path="/privacy" element={<PrivacyPage />} />
                       <Route path="/terms" element={<TermsPage />} />
                       <Route path="/contact" element={<ContactPage />} />
