@@ -176,6 +176,10 @@ export default function HomePage() {
             .cta-inner { padding: 24px 20px !important; }
             .stats-grid { gap: 8px !important; }
             .stat-num { font-size: 18px !important; }
+            .search-btn-text { display: none !important; }
+        }
+        @media (min-width: 481px) {
+            .search-btn-text { display: inline !important; }
         }
       `}</style>
 
@@ -267,19 +271,21 @@ export default function HomePage() {
                   border: "none",
                   outline: "none",
                   background: "transparent",
-                  fontSize: "13px",
-                  padding: "0 14px",
+                  fontSize: "16px",
+                  padding: "0 8px",
                   color: "#555",
                   borderRight: "0.5px solid #e5e5e5",
-                  minWidth: "100px",
                   cursor: "pointer",
+                  width: "56px",
+                  flexShrink: 0,
                 }}
               >
-                <option value="all">All</option>
-                <option value="jobs">Jobs</option>
-                <option value="rooms">Rooms</option>
-                <option value="events">Events</option>
-                <option value="businesses">Businesses</option>
+                <option value="all">🔍</option>
+                <option value="jobs">💼</option>
+                <option value="rooms">🏠</option>
+                <option value="events">🎉</option>
+                <option value="announcements">📢</option>
+                <option value="businesses">🏪</option>
               </select>
               <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
                 <input
@@ -289,13 +295,25 @@ export default function HomePage() {
                   onFocus={() =>
                     suggestions.length > 0 && setShowSuggestions(true)
                   }
-                  placeholder="Search jobs, rooms, events..."
+                  placeholder={
+                    searchType === "all"
+                      ? "Search jobs, rooms, events..."
+                      : searchType === "jobs"
+                        ? "Search jobs..."
+                        : searchType === "rooms"
+                          ? "Search rooms..."
+                          : searchType === "events"
+                            ? "Search events..."
+                            : searchType === "announcements"
+                              ? "Search announcements..."
+                              : "Search businesses..."
+                  }
                   style={{
                     width: "100%",
                     border: "none",
                     outline: "none",
                     fontSize: "14px",
-                    padding: "14px 16px",
+                    padding: "14px 12px",
                     color: "#333",
                     background: "transparent",
                     boxSizing: "border-box",
@@ -385,13 +403,29 @@ export default function HomePage() {
                   background: "#534AB7",
                   color: "#fff",
                   border: "none",
-                  padding: "0 28px",
+                  padding: "0 20px",
                   fontSize: "14px",
                   fontWeight: 500,
                   cursor: "pointer",
+                  borderRadius: "0 10px 10px 0",
+                  whiteSpace: "nowrap",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
                 }}
               >
-                Search
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <span className="search-btn-text">Search</span>
               </button>
             </div>
 
