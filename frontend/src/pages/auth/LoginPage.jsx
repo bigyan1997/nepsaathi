@@ -26,7 +26,19 @@ export default function LoginPage() {
       setAuth(data.user, data.access, data.refresh);
       navigate(from, { replace: true }); // ← send them back where they came from
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      const status = err.response?.status;
+      const errors = err.response?.data;
+      if (status === 400) {
+        if (errors?.non_field_errors) {
+          setError(errors.non_field_errors[0]);
+        } else {
+          setError("Invalid email or password. Please try again.");
+        }
+      } else if (status === 404) {
+        setError("No account found with this email. Please register first.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -117,6 +129,17 @@ export default function LoginPage() {
             }}
           >
             {error}
+            {error.includes("Invalid email or password") && (
+              <div style={{ marginTop: "8px", fontSize: "12px" }}>
+                Forgot your password? Email us at{" "}
+                <a
+                  href="mailto:support@nepsaathi.com"
+                  style={{ color: "#A32D2D", fontWeight: 600 }}
+                >
+                  support@nepsaathi.com
+                </a>
+              </div>
+            )}
           </div>
         )}
 

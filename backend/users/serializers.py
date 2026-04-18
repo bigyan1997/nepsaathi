@@ -4,15 +4,18 @@ from .models import User
 
 
 class RegisterSerializer(BaseRegisterSerializer):
-    """
-    Custom registration serializer for NepSaathi.
-    Email only — username completely removed.
-    """
     first_name = serializers.CharField(required=True, max_length=50)
     last_name = serializers.CharField(required=True, max_length=50)
-
-    # Remove username field completely
     username = None
+
+    def validate_email(self, value):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError(
+                "A user with this email already exists."
+            )
+        return value
 
     def get_cleaned_data(self):
         return {
@@ -28,7 +31,6 @@ class RegisterSerializer(BaseRegisterSerializer):
         user.last_name = self.validated_data.get('last_name', '')
         user.save()
         return user
-
 
 class UserSerializer(serializers.ModelSerializer):
     """

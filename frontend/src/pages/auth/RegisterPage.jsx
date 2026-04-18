@@ -37,8 +37,17 @@ export default function RegisterPage() {
       navigate("/");
     } catch (err) {
       const errors = err.response?.data;
-      if (errors?.email) setError(errors.email[0]);
-      else if (errors?.password1) setError(errors.password1[0]);
+      if (errors?.email) {
+        const msg = errors.email[0];
+        if (msg.toLowerCase().includes("already")) {
+          setError(
+            "This email is already registered. Please sign in or reset your password.",
+          );
+        } else {
+          setError(msg);
+        }
+      } else if (errors?.password1) setError(errors.password1[0]);
+      else if (errors?.non_field_errors) setError(errors.non_field_errors[0]);
       else setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
