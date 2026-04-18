@@ -1,44 +1,44 @@
+import resend
 import threading
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.conf import settings
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 ADMIN_URL = config('ADMIN_URL', default='https://nepsaathi-production.up.railway.app/admin')
 
+resend.api_key = config('RESEND_API_KEY', default='')
 
-def _send_email(msg):
+
+def _send_resend(params):
+    """Send email via Resend API in background."""
     try:
-        msg.send()
-        print(f'Email sent OK: {msg.subject} -> {msg.to}', flush=True)
+        resend.Emails.send(params)
+        print(f'Email sent OK: {params["subject"]} -> {params["to"]}', flush=True)
     except Exception as e:
         print(f'Email send FAILED: {e}', flush=True)
 
 
 def send_welcome_email(user):
-    """Send welcome email to new user in background."""
+    """Send welcome email to new user via Resend."""
     try:
-        subject = 'Welcome to NepSaathi! 🎉'
         html = render_to_string('emails/welcome.html', {
             'first_name': user.first_name,
             'frontend_url': FRONTEND_URL,
         })
-        msg = EmailMultiAlternatives(
-            subject=subject,
-            body=f'Welcome to NepSaathi, {user.first_name}! Visit us at {FRONTEND_URL}',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email],
-        )
-        msg.attach_alternative(html, 'text/html')
-        thread = threading.Thread(target=_send_email, args=(msg,))
+        params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [user.email],
+            'subject': 'Welcome to NepSaathi! 🎉',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
         thread.start()
     except Exception as e:
-        print(f'Welcome email failed: {e}')
+        print(f'Welcome email failed: {e}', flush=True)
 
 
 def send_report_emails(report):
-    """Send report notifications in background."""
+    """Send report notifications via Resend."""
     listing = report.listing
     try:
         # Email to admin
@@ -50,14 +50,13 @@ def send_report_emails(report):
             'listing_owner': listing.user.email,
             'admin_url': f'{ADMIN_URL}/listings/listingreport/',
         })
-        msg_admin = EmailMultiAlternatives(
-            subject=f'[NepSaathi] New report — {listing.title}',
-            body=f'A listing has been reported: {listing.title}',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=['hello@nepsaathi.com'],
-        )
-        msg_admin.attach_alternative(html_admin, 'text/html')
-        thread1 = threading.Thread(target=_send_email, args=(msg_admin,))
+        params_admin = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': ['hello@nepsaathi.com'],
+            'subject': f'[NepSaathi] New report — {listing.title}',
+            'html': html_admin,
+        }
+        thread1 = threading.Thread(target=_send_resend, args=(params_admin,))
         thread1.start()
 
         # Email to listing owner
@@ -66,14 +65,13 @@ def send_report_emails(report):
             'listing_title': listing.title,
             'frontend_url': FRONTEND_URL,
         })
-        msg_owner = EmailMultiAlternatives(
-            subject='[NepSaathi] Your listing has been reported',
-            body=f'Your listing {listing.title} has been reported.',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[listing.user.email],
-        )
-        msg_owner.attach_alternative(html_owner, 'text/html')
-        thread2 = threading.Thread(target=_send_email, args=(msg_owner,))
+        params_owner = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [listing.user.email],
+            'subject': '[NepSaathi] Your listing has been reported',
+            'html': html_owner,
+        }
+        thread2 = threading.Thread(target=_send_resend, args=(params_owner,))
         thread2.start()
     except Exception as e:
-        print(f'Report email failed: {e}')
+        print(f'Report email failed: {e}', flush=True)
