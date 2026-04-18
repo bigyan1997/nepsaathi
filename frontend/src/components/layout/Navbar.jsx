@@ -553,10 +553,18 @@ export default function Navbar() {
                     padding: "10px 12px",
                     borderRadius: "8px",
                     fontSize: "14px",
-                    color: highlight ? "#E87722" : "#333",
+                    color: highlight
+                      ? "#E87722"
+                      : isActive(to)
+                        ? "#534AB7"
+                        : "#333",
                     textDecoration: "none",
-                    fontWeight: highlight ? 500 : 400,
-                    background: highlight ? "#FFF1E0" : "transparent",
+                    fontWeight: highlight || isActive(to) ? 600 : 400,
+                    background: highlight
+                      ? "#FFF1E0"
+                      : isActive(to)
+                        ? "#EEEDFE"
+                        : "transparent",
                   }}
                 >
                   <span style={{ fontSize: "16px" }}>{emoji}</span>
