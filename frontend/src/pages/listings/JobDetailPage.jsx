@@ -9,6 +9,8 @@ import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView } from "../../api/listings";
 import { useEffect } from "react";
+import { getSimilarListings } from "../../api/listings";
+import { Link } from "react-router-dom";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -28,6 +30,11 @@ export default function JobDetailPage() {
   usePageTitle(
     job?.listing_title ? `${job.listing_title} — Job` : "Job Listing",
   );
+  const { data: similarListings } = useQuery({
+    queryKey: ["similar", job?.listing_id],
+    queryFn: () => getSimilarListings(job.listing_id),
+    enabled: !!job?.listing_id,
+  });
   useEffect(() => {
     if (job?.listing_id) {
       trackView(job.listing_id).catch(() => {});
@@ -536,6 +543,94 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+      {/* Similar listings */}
+      {similarListings?.length > 0 && (
+        <div style={{ marginTop: "24px" }}>
+          <h3
+            style={{
+              fontSize: "16px",
+              fontWeight: 600,
+              color: "#26215C",
+              marginBottom: "12px",
+            }}
+          >
+            Similar jobs
+          </h3>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+          >
+            {similarListings.map((listing) => (
+              <Link
+                key={listing.id}
+                to={`/jobs/listing/${listing.id}`}
+                style={{
+                  background: "#fff",
+                  border: "0.5px solid #e5e5e5",
+                  borderRadius: "12px",
+                  padding: "14px 18px",
+                  textDecoration: "none",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "12px",
+                  transition: "border-color 0.15s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = "#AFA9EC")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.borderColor = "#e5e5e5")
+                }
+              >
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                >
+                  <div
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "8px",
+                      background: "#EEEDFE",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "16px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    💼
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#26215C",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      {listing.title}
+                    </div>
+                    <div style={{ fontSize: "11px", color: "#888" }}>
+                      📍 {listing.location}, {listing.state}
+                    </div>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#534AB7",
+                    fontWeight: 500,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  View →
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
       <style>{`
         @media (max-width: 600px) {
           .job-details-grid {

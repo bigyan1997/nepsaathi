@@ -40,4 +40,7 @@ urlpatterns = [
 
     # Listing View
     path('<int:pk>/view/', views.TrackListingViewView.as_view(), name='track-view'),
+
+    # Show similar Listing
+    path('<int:pk>/similar/', views.SimilarListingsView.as_view(), name='similar-listings'),
 ]

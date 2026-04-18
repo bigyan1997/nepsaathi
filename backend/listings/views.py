@@ -475,3 +475,41 @@ class TrackListingViewView(APIView):
 
         view_count = ListingView.objects.filter(listing=listing).count()
         return Response({'views': view_count})
+
+class SimilarListingsView(APIView):
+    """
+    GET /api/listings/<id>/similar/
+    Returns up to 3 similar listings based on type and state.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk)
+        except Listing.DoesNotExist:
+            return Response([], status=status.HTTP_200_OK)
+
+        # Get similar listings — same type, same state, exclude current
+        similar = Listing.objects.filter(
+            listing_type=listing.listing_type,
+            status='active',
+            state=listing.state,
+        ).exclude(pk=pk).order_by('-is_featured', '-created_at')[:3]
+
+        # If not enough in same state, get from anywhere
+        if similar.count() < 3:
+            extra = Listing.objects.filter(
+                listing_type=listing.listing_type,
+                status='active',
+            ).exclude(
+                pk=pk
+            ).exclude(
+                pk__in=[s.pk for s in similar]
+            ).order_by('-is_featured', '-created_at')[:3 - similar.count()]
+            similar = list(similar) + list(extra)
+
+        from listings.serializers import ListingSerializer
+        serializer = ListingSerializer(
+            similar, many=True, context={'request': request}
+        )
+        return Response(serializer.data)

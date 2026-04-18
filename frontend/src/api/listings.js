@@ -91,3 +91,9 @@ export const trackView = async (id) => {
   const response = await api.post(`/api/listings/${id}/view/`);
   return response.data;
 };
+
+// Similar Listing
+export const getSimilarListings = async (id) => {
+  const response = await api.get(`/api/listings/${id}/similar/`);
+  return response.data;
+};
