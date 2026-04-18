@@ -173,6 +173,34 @@ export default function JobDetailPage() {
         </div>
       </div>
 
+      {/* Under review banner */}
+      {job.is_under_review && (
+        <div
+          style={{
+            background: "#FFF1E0",
+            border: "0.5px solid #EFD9C0",
+            borderRadius: "10px",
+            padding: "12px 18px",
+            marginBottom: "16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <span style={{ fontSize: "18px" }}>⚠️</span>
+          <div>
+            <div
+              style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
+            >
+              This listing is under review
+            </div>
+            <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>
+              A report has been submitted and our admin team is reviewing it.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main card */}
       <div
         style={{

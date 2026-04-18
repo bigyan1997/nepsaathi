@@ -368,6 +368,9 @@ class ReportListingView(APIView):
 
         if serializer.is_valid():
             report = serializer.save(user=request.user, listing=listing)
+            # Mark listing as under review
+            listing.is_under_review = True
+            listing.save()
             # Send emails to admin and listing owner
             try:
                 print('DEBUG: calling send_report_emails', flush=True)

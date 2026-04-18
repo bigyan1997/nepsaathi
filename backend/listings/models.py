@@ -78,6 +78,7 @@ class Listing(models.Model):
         default=False,
         help_text='Featured listings appear at the top of search results'
     )
+    is_under_review = models.BooleanField(default=False)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

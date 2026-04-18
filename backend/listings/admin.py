@@ -175,8 +175,11 @@ class ListingReportAdmin(admin.ModelAdmin):
         for report in queryset:
             report.is_reviewed = True
             report.save()
+            # Clear under review flag
+            report.listing.is_under_review = False
+            report.listing.save()
             send_listing_cleared_email(report)
-        self.message_user(request, f'{queryset.count()} listings cleared — owners notified by email.')
+        self.message_user(request, f'{queryset.count()} listings cleared — owners notified.')
     clear_listing.short_description = '✅ Clear listing — notify owner'
 
     def remove_listing(self, request, queryset):
@@ -187,11 +190,12 @@ class ListingReportAdmin(admin.ModelAdmin):
             for image in listing.images.all():
                 image.delete()
             listing.status = 'deleted'
+            listing.is_under_review = False
             listing.save()
             report.is_reviewed = True
             report.save()
             send_listing_removed_email(report, reason)
-        self.message_user(request, f'{queryset.count()} listings removed — owners notified by email.')
+        self.message_user(request, f'{queryset.count()} listings removed — owners notified.')
     remove_listing.short_description = '❌ Remove listing — notify owner'
 
     def delete_reported_listings(self, request, queryset):
