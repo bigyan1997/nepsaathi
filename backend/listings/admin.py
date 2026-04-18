@@ -163,12 +163,36 @@ class ListingReportAdmin(admin.ModelAdmin):
         )
     delete_listing_button.short_description = 'Action'
 
-    actions = ['mark_reviewed', 'delete_reported_listings']
+    actions = ['mark_reviewed', 'clear_listing', 'remove_listing']
 
     def mark_reviewed(self, request, queryset):
         queryset.update(is_reviewed=True)
         self.message_user(request, f'{queryset.count()} reports marked as reviewed.')
     mark_reviewed.short_description = '✅ Mark as reviewed'
+
+    def clear_listing(self, request, queryset):
+        from core.emails import send_listing_cleared_email
+        for report in queryset:
+            report.is_reviewed = True
+            report.save()
+            send_listing_cleared_email(report)
+        self.message_user(request, f'{queryset.count()} listings cleared — owners notified by email.')
+    clear_listing.short_description = '✅ Clear listing — notify owner'
+
+    def remove_listing(self, request, queryset):
+        from core.emails import send_listing_removed_email
+        for report in queryset:
+            listing = report.listing
+            reason = f'Your listing violated our community guidelines: {report.get_reason_display()}'
+            for image in listing.images.all():
+                image.delete()
+            listing.status = 'deleted'
+            listing.save()
+            report.is_reviewed = True
+            report.save()
+            send_listing_removed_email(report, reason)
+        self.message_user(request, f'{queryset.count()} listings removed — owners notified by email.')
+    remove_listing.short_description = '❌ Remove listing — notify owner'
 
     def delete_reported_listings(self, request, queryset):
         count = 0

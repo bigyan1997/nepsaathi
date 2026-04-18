@@ -83,3 +83,46 @@ def send_report_emails(report):
         thread2.start()
     except Exception as e:
         print(f'Report email failed: {e}', flush=True)
+    
+def send_listing_cleared_email(report):
+    """Send email to listing owner when their listing is cleared."""
+    listing = report.listing
+    try:
+        html = render_to_string('emails/listing_cleared.html', {
+            'first_name': listing.user.first_name,
+            'listing_title': listing.title,
+            'listing_url': f'{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}',
+            'frontend_url': FRONTEND_URL,
+        })
+        params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [listing.user.email],
+            'subject': f'[NepSaathi] Your listing has been reviewed and cleared ✅',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
+        thread.start()
+    except Exception as e:
+        print(f'Listing cleared email failed: {e}', flush=True)
+
+
+def send_listing_removed_email(report, reason):
+    """Send email to listing owner when their listing is removed."""
+    listing = report.listing
+    try:
+        html = render_to_string('emails/listing_removed.html', {
+            'first_name': listing.user.first_name,
+            'listing_title': listing.title,
+            'reason': reason,
+            'frontend_url': FRONTEND_URL,
+        })
+        params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [listing.user.email],
+            'subject': f'[NepSaathi] Your listing has been removed',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
+        thread.start()
+    except Exception as e:
+        print(f'Listing removed email failed: {e}', flush=True)
