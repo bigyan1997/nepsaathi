@@ -33,6 +33,8 @@ class EventSerializer(serializers.ModelSerializer):
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True) 
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
     view_count = serializers.IntegerField(source='listing.views.count', read_only=True)
+    description = serializers.CharField(source='listing.description', read_only=True)
+
 
     class Meta:
         model = Event
@@ -64,6 +66,7 @@ class EventSerializer(serializers.ModelSerializer):
             'is_under_review',
             'expires_at',
             'view_count',
+            'description',
         )
         read_only_fields = (
             'id',
@@ -83,4 +86,5 @@ class EventSerializer(serializers.ModelSerializer):
             'expires_at',
             'is_under_review',
             'view_count',
+            'description',
         )

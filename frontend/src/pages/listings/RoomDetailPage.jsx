@@ -124,15 +124,11 @@ export default function RoomDetailPage() {
         style={{
           background: "#FFF1E0",
           borderRadius: "14px",
-          padding: "28px",
+          padding: "20px",
           marginBottom: "12px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: "16px",
         }}
       >
-        <div style={{ flex: 1 }}>
+        <div>
           {/* Badges */}
           <div
             style={{
@@ -200,31 +196,32 @@ export default function RoomDetailPage() {
           </p>
         </div>
 
-        {/* Price badge */}
+        {/* Price badge — full width */}
         <div
           style={{
             background: "#fff",
             border: "0.5px solid #EFD9C0",
-            borderRadius: "12px",
-            padding: "14px 18px",
-            textAlign: "center",
-            flexShrink: 0,
+            borderRadius: "10px",
+            padding: "12px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "14px",
           }}
         >
-          <div
+          <span
             style={{
               fontSize: "11px",
               color: "#888",
-              marginBottom: "4px",
               textTransform: "uppercase",
               letterSpacing: "0.05em",
             }}
           >
             Weekly rent
-          </div>
-          <div style={{ fontSize: "20px", fontWeight: 700, color: "#26215C" }}>
+          </span>
+          <span style={{ fontSize: "18px", fontWeight: 700, color: "#26215C" }}>
             {room.price_display}
-          </div>
+          </span>
         </div>
       </div>
 
@@ -239,6 +236,7 @@ export default function RoomDetailPage() {
       >
         {/* Details grid */}
         <div
+          className="room-details-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(5, 1fr)",
@@ -288,6 +286,38 @@ export default function RoomDetailPage() {
         </div>
 
         <div style={{ padding: "24px" }}>
+          {/* Description */}
+          {room.description && (
+            <>
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  color: "#26215C",
+                  marginBottom: "8px",
+                }}
+              >
+                About this room
+              </h3>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#555",
+                  lineHeight: 1.7,
+                  marginBottom: "20px",
+                }}
+              >
+                {room.description}
+              </p>
+              <div
+                style={{
+                  borderTop: "0.5px solid #e5e5e5",
+                  marginBottom: "20px",
+                }}
+              />
+            </>
+          )}
+
           {/* Features */}
           <div
             style={{
@@ -534,6 +564,13 @@ export default function RoomDetailPage() {
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 600px) {
+          .room-details-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
