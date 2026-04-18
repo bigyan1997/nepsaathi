@@ -110,7 +110,7 @@ export default function AnnouncementDetailPage() {
       </div>
 
       {/* Under review banner */}
-      {announcement.is_under_review && (
+      {announcement?.is_under_review && (
         <div
           style={{
             background: "#FFF1E0",
@@ -150,9 +150,9 @@ export default function AnnouncementDetailPage() {
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
+            flexDirection: "column",
             marginBottom: "16px",
+            gap: "12px",
           }}
         >
           <div>
@@ -227,15 +227,31 @@ export default function AnnouncementDetailPage() {
             <div
               style={{
                 background: announcement.is_free ? "#E1F5EE" : "#FFF1E0",
-                color: announcement.is_free ? "#085041" : "#633806",
-                fontSize: "18px",
-                fontWeight: 600,
-                padding: "6px 16px",
-                borderRadius: "20px",
-                whiteSpace: "nowrap",
+                border: `0.5px solid ${announcement.is_free ? "#9FE1CB" : "#EFD9C0"}`,
+                borderRadius: "10px",
+                padding: "10px 16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              {announcement.price_display}
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: announcement.is_free ? "#085041" : "#633806",
+                }}
+              >
+                Price
+              </span>
+              <span
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: announcement.is_free ? "#085041" : "#633806",
+                }}
+              >
+                {announcement.price_display}
+              </span>
             </div>
           )}
         </div>
