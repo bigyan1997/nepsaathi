@@ -79,3 +79,9 @@ export const getSavedListings = async () => {
   const response = await api.get("/api/listings/saved/");
   return response.data;
 };
+
+// Mark Listing Status
+export const markListingStatus = async (id, status) => {
+  const response = await axios.patch(`/listings/${id}/status/`, { status });
+  return response.data;
+};

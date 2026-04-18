@@ -6,6 +6,7 @@ import {
   deleteListing,
   getSavedListings,
   unsaveListing,
+  markListingStatus,
 } from "../../api/listings";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import { SkeletonCard } from "../../components/ui/Skeleton";
@@ -180,6 +181,17 @@ export default function MyListingsPage() {
     },
     onError: () => {
       addToast("Failed to remove. Please try again.", "error");
+    },
+  });
+
+  const markStatusMutation = useMutation({
+    mutationFn: ({ id, status }) => markListingStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["my-listings"]);
+      addToast("Listing status updated!", "success");
+    },
+    onError: () => {
+      addToast("Failed to update status. Please try again.", "error");
     },
   });
 
@@ -544,6 +556,58 @@ export default function MyListingsPage() {
                     >
                       View
                     </button>
+                    {/* Mark as filled/active toggle */}
+                    {listing.status === "active" && (
+                      <button
+                        onClick={() =>
+                          setConfirmModal({
+                            message: `Mark "${listing.title}" as filled/taken? It will no longer appear in search results.`,
+                            onConfirm: () => {
+                              setConfirmModal(null);
+                              markStatusMutation.mutate({
+                                id: listing.id,
+                                status: "filled",
+                              });
+                            },
+                            onCancel: () => setConfirmModal(null),
+                          })
+                        }
+                        style={{
+                          background: "#FAEEDA",
+                          color: "#633806",
+                          border: "none",
+                          borderRadius: "7px",
+                          padding: "7px 14px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                        }}
+                      >
+                        ✓ Filled
+                      </button>
+                    )}
+                    {listing.status === "filled" && (
+                      <button
+                        onClick={() =>
+                          markStatusMutation.mutate({
+                            id: listing.id,
+                            status: "active",
+                          })
+                        }
+                        style={{
+                          background: "#E1F5EE",
+                          color: "#085041",
+                          border: "none",
+                          borderRadius: "7px",
+                          padding: "7px 14px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                        }}
+                      >
+                        ↺ Reopen
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDeleteListing(listing.id)}
                       disabled={deletingId === listing.id}
