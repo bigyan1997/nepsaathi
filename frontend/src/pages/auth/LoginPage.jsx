@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Where were they trying to go before login?
   const from = location.state?.from?.pathname || "/";
@@ -188,21 +189,41 @@ export default function LoginPage() {
             >
               Password
             </label>
-            <input
-              type="password"
-              required
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="••••••••"
-              style={{
-                width: "100%",
-                border: "0.5px solid #ccc",
-                borderRadius: "8px",
-                padding: "10px 14px",
-                fontSize: "14px",
-                outline: "none",
-              }}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="••••••••"
+                style={{
+                  width: "100%",
+                  border: "0.5px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "10px 14px",
+                  paddingRight: "44px",
+                  fontSize: "14px",
+                  outline: "none",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  color: "#888",
+                }}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
           </div>
           <button
             type="submit"
