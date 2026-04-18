@@ -122,106 +122,100 @@ export default function JobDetailPage() {
         style={{
           background: "#EEEDFE",
           borderRadius: "14px",
-          padding: "28px",
+          padding: "20px",
           marginBottom: "12px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: "16px",
         }}
       >
-        <div style={{ flex: 1 }}>
-          {/* Badges */}
-          <div
-            style={{
-              display: "flex",
-              gap: "6px",
-              marginBottom: "12px",
-              flexWrap: "wrap",
-            }}
-          >
-            {job.is_urgent && (
-              <span
-                style={{
-                  background: "#FCEBEB",
-                  color: "#A32D2D",
-                  fontSize: "11px",
-                  fontWeight: 500,
-                  padding: "3px 10px",
-                  borderRadius: "20px",
-                }}
-              >
-                🔴 Urgent
-              </span>
-            )}
+        {/* Badges */}
+        <div
+          style={{
+            display: "flex",
+            gap: "6px",
+            marginBottom: "12px",
+            flexWrap: "wrap",
+          }}
+        >
+          {job.is_urgent && (
             <span
               style={{
-                background: "#fff",
-                color: "#534AB7",
+                background: "#FCEBEB",
+                color: "#A32D2D",
                 fontSize: "11px",
                 fontWeight: 500,
                 padding: "3px 10px",
                 borderRadius: "20px",
               }}
             >
-              💼 {job.job_type?.replace("_", " ")}
+              🔴 Urgent
             </span>
-          </div>
-
-          {/* Title */}
-          <h1
+          )}
+          <span
             style={{
-              fontSize: "26px",
-              fontWeight: 700,
-              color: "#26215C",
-              marginBottom: "8px",
-              lineHeight: 1.2,
-            }}
-          >
-            {job.listing_title}
-          </h1>
-
-          {/* Company and location */}
-          <p
-            style={{
-              fontSize: "15px",
+              background: "#fff",
               color: "#534AB7",
-              marginBottom: "4px",
+              fontSize: "11px",
               fontWeight: 500,
+              padding: "3px 10px",
+              borderRadius: "20px",
             }}
           >
-            {job.company_name || "Company not specified"}
-          </p>
-          <p style={{ fontSize: "13px", color: "#666" }}>
-            📍 {job.listing_location}, {job.listing_state}
-          </p>
+            💼 {job.job_type?.replace("_", " ")}
+          </span>
         </div>
 
-        {/* Salary badge */}
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: "22px",
+            fontWeight: 700,
+            color: "#26215C",
+            marginBottom: "6px",
+            lineHeight: 1.25,
+          }}
+        >
+          {job.listing_title}
+        </h1>
+
+        {/* Company and location */}
+        <p
+          style={{
+            fontSize: "14px",
+            color: "#534AB7",
+            marginBottom: "3px",
+            fontWeight: 500,
+          }}
+        >
+          {job.company_name || "Company not specified"}
+        </p>
+        <p style={{ fontSize: "13px", color: "#666", marginBottom: "14px" }}>
+          📍 {job.listing_location}, {job.listing_state}
+        </p>
+
+        {/* Salary badge — full width on mobile */}
         <div
           style={{
             background: "#fff",
             border: "0.5px solid #AFA9EC",
-            borderRadius: "12px",
-            padding: "14px 18px",
-            textAlign: "center",
-            flexShrink: 0,
+            borderRadius: "10px",
+            padding: "12px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <div
+          <span
             style={{
               fontSize: "11px",
               color: "#888",
-              marginBottom: "4px",
               textTransform: "uppercase",
               letterSpacing: "0.05em",
             }}
           >
             Salary
-          </div>
-          <div style={{ fontSize: "20px", fontWeight: 700, color: "#26215C" }}>
+          </span>
+          <span style={{ fontSize: "18px", fontWeight: 700, color: "#26215C" }}>
             {job.salary_display}
-          </div>
+          </span>
         </div>
       </div>
 
@@ -236,6 +230,7 @@ export default function JobDetailPage() {
       >
         {/* Details grid */}
         <div
+          className="job-details-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
@@ -288,7 +283,39 @@ export default function JobDetailPage() {
           ))}
         </div>
 
-        <div style={{ padding: "24px" }}>
+        <div style={{ padding: "20px" }}>
+          {/* Description */}
+          {job.description && (
+            <>
+              <h3
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  color: "#26215C",
+                  marginBottom: "8px",
+                }}
+              >
+                About the role
+              </h3>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#555",
+                  lineHeight: 1.7,
+                  marginBottom: "20px",
+                }}
+              >
+                {job.description}
+              </p>
+              <div
+                style={{
+                  borderTop: "0.5px solid #e5e5e5",
+                  marginBottom: "20px",
+                }}
+              />
+            </>
+          )}
+
           {/* Qualifications */}
           {job.qualifications && (
             <>
@@ -506,6 +533,13 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 600px) {
+          .job-details-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -21,6 +21,7 @@ class JobSerializer(serializers.ModelSerializer):
     is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
     view_count = serializers.IntegerField(source='listing.views.count', read_only=True)
+    description = serializers.CharField(source='listing.description', read_only=True)
 
     class Meta:
         model = Job
@@ -48,6 +49,7 @@ class JobSerializer(serializers.ModelSerializer):
             'is_featured',
             'is_under_review',
             'view_count',
+            'description',
         )
         read_only_fields = (
             'id',
@@ -66,4 +68,5 @@ class JobSerializer(serializers.ModelSerializer):
             'is_featured',
             'is_under_review',
             'view_count',
+            'description',
         )
