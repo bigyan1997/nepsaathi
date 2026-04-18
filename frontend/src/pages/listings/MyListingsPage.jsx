@@ -123,6 +123,7 @@ export default function MyListingsPage() {
   const [activeTab, setActiveTab] = useState("listings");
   const [deletingId, setDeletingId] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null);
 
   const { data: listingsData, isLoading: listingsLoading } = useQuery({
     queryKey: ["my-listings"],
@@ -546,106 +547,184 @@ export default function MyListingsPage() {
                     </p>
                   </div>
 
-                  <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                  {/* Three dots menu */}
+                  <div style={{ position: "relative", flexShrink: 0 }}>
                     <button
-                      onClick={() => navigate(getDetailPath(listing))}
-                      style={{
-                        background: "#EEEDFE",
-                        color: "#534AB7",
-                        border: "none",
-                        borderRadius: "7px",
-                        padding: "7px 14px",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                      }}
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => navigate(`/edit-listing/${listing.id}`)}
+                      onClick={() =>
+                        setOpenMenu(openMenu === listing.id ? null : listing.id)
+                      }
                       style={{
                         background: "#F5F4F0",
-                        color: "#444",
                         border: "none",
-                        borderRadius: "7px",
-                        padding: "7px 14px",
-                        fontSize: "12px",
-                        fontWeight: 500,
+                        borderRadius: "8px",
+                        width: "36px",
+                        height: "36px",
+                        fontSize: "18px",
                         cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#555",
                       }}
                     >
-                      ✏️ Edit
+                      ⋮
                     </button>
-                    {/* Mark as filled/active toggle */}
-                    {listing.status === "active" && (
-                      <button
-                        onClick={() =>
-                          setConfirmModal({
-                            message: `Mark "${listing.title}" as filled/taken? It will no longer appear in search results.`,
-                            onConfirm: () => {
-                              setConfirmModal(null);
-                              markStatusMutation.mutate({
-                                id: listing.id,
-                                status: "filled",
-                              });
-                            },
-                            onCancel: () => setConfirmModal(null),
-                          })
-                        }
-                        style={{
-                          background: "#FAEEDA",
-                          color: "#633806",
-                          border: "none",
-                          borderRadius: "7px",
-                          padding: "7px 14px",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
-                      >
-                        ✓ Filled
-                      </button>
+
+                    {openMenu === listing.id && (
+                      <>
+                        {/* Backdrop */}
+                        <div
+                          onClick={() => setOpenMenu(null)}
+                          style={{
+                            position: "fixed",
+                            inset: 0,
+                            zIndex: 10,
+                          }}
+                        />
+                        {/* Dropdown */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            right: 0,
+                            top: "44px",
+                            background: "#fff",
+                            borderRadius: "12px",
+                            border: "0.5px solid #e5e5e5",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                            zIndex: 11,
+                            minWidth: "160px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setOpenMenu(null);
+                              navigate(getDetailPath(listing));
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "12px 16px",
+                              background: "none",
+                              border: "none",
+                              textAlign: "left",
+                              fontSize: "13px",
+                              color: "#333",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            👁️ View listing
+                          </button>
+                          <button
+                            onClick={() => {
+                              setOpenMenu(null);
+                              navigate(`/edit-listing/${listing.id}`);
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "12px 16px",
+                              background: "none",
+                              border: "none",
+                              textAlign: "left",
+                              fontSize: "13px",
+                              color: "#333",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                              borderTop: "0.5px solid #f5f5f5",
+                            }}
+                          >
+                            ✏️ Edit listing
+                          </button>
+                          {listing.status === "active" && (
+                            <button
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setConfirmModal({
+                                  message: `Mark "${listing.title}" as filled/taken?`,
+                                  onConfirm: () => {
+                                    setConfirmModal(null);
+                                    markStatusMutation.mutate({
+                                      id: listing.id,
+                                      status: "filled",
+                                    });
+                                  },
+                                  onCancel: () => setConfirmModal(null),
+                                });
+                              }}
+                              style={{
+                                width: "100%",
+                                padding: "12px 16px",
+                                background: "none",
+                                border: "none",
+                                textAlign: "left",
+                                fontSize: "13px",
+                                color: "#633806",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                borderTop: "0.5px solid #f5f5f5",
+                              }}
+                            >
+                              ✓ Mark as filled
+                            </button>
+                          )}
+                          {listing.status === "filled" && (
+                            <button
+                              onClick={() => {
+                                setOpenMenu(null);
+                                markStatusMutation.mutate({
+                                  id: listing.id,
+                                  status: "active",
+                                });
+                              }}
+                              style={{
+                                width: "100%",
+                                padding: "12px 16px",
+                                background: "none",
+                                border: "none",
+                                textAlign: "left",
+                                fontSize: "13px",
+                                color: "#085041",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                borderTop: "0.5px solid #f5f5f5",
+                              }}
+                            >
+                              ↺ Reopen listing
+                            </button>
+                          )}
+                          <button
+                            onClick={() => {
+                              setOpenMenu(null);
+                              handleDeleteListing(listing.id);
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "12px 16px",
+                              background: "none",
+                              border: "none",
+                              textAlign: "left",
+                              fontSize: "13px",
+                              color: "#A32D2D",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                              borderTop: "0.5px solid #f5f5f5",
+                            }}
+                          >
+                            🗑️ Delete listing
+                          </button>
+                        </div>
+                      </>
                     )}
-                    {listing.status === "filled" && (
-                      <button
-                        onClick={() =>
-                          markStatusMutation.mutate({
-                            id: listing.id,
-                            status: "active",
-                          })
-                        }
-                        style={{
-                          background: "#E1F5EE",
-                          color: "#085041",
-                          border: "none",
-                          borderRadius: "7px",
-                          padding: "7px 14px",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
-                      >
-                        ↺ Reopen
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleDeleteListing(listing.id)}
-                      disabled={deletingId === listing.id}
-                      style={{
-                        background: "#FCEBEB",
-                        color: "#A32D2D",
-                        border: "none",
-                        borderRadius: "7px",
-                        padding: "7px 14px",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        opacity: deletingId === listing.id ? 0.6 : 1,
-                      }}
-                    >
-                      {deletingId === listing.id ? "Deleting..." : "Delete"}
-                    </button>
                   </div>
                 </div>
               );
@@ -810,39 +889,99 @@ export default function MyListingsPage() {
                   </p>
                 </div>
 
-                <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                {/* Three dots menu */}
+                <div style={{ position: "relative", flexShrink: 0 }}>
                   <button
-                    onClick={() => navigate(`/businesses/${business.id}`)}
+                    onClick={() =>
+                      setOpenMenu(
+                        openMenu === `b-${business.id}`
+                          ? null
+                          : `b-${business.id}`,
+                      )
+                    }
                     style={{
-                      background: "#EEEDFE",
-                      color: "#534AB7",
+                      background: "#F5F4F0",
                       border: "none",
-                      borderRadius: "7px",
-                      padding: "7px 14px",
-                      fontSize: "12px",
-                      fontWeight: 500,
+                      borderRadius: "8px",
+                      width: "36px",
+                      height: "36px",
+                      fontSize: "18px",
                       cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#555",
                     }}
                   >
-                    View
+                    ⋮
                   </button>
-                  <button
-                    onClick={() => handleDeleteBusiness(business.id)}
-                    disabled={deletingId === business.id}
-                    style={{
-                      background: "#FCEBEB",
-                      color: "#A32D2D",
-                      border: "none",
-                      borderRadius: "7px",
-                      padding: "7px 14px",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      opacity: deletingId === business.id ? 0.6 : 1,
-                    }}
-                  >
-                    {deletingId === business.id ? "Removing..." : "Remove"}
-                  </button>
+
+                  {openMenu === `b-${business.id}` && (
+                    <>
+                      <div
+                        onClick={() => setOpenMenu(null)}
+                        style={{ position: "fixed", inset: 0, zIndex: 10 }}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: 0,
+                          top: "44px",
+                          background: "#fff",
+                          borderRadius: "12px",
+                          border: "0.5px solid #e5e5e5",
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                          zIndex: 11,
+                          minWidth: "160px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            setOpenMenu(null);
+                            navigate(`/businesses/${business.id}`);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "12px 16px",
+                            background: "none",
+                            border: "none",
+                            textAlign: "left",
+                            fontSize: "13px",
+                            color: "#333",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          👁️ View business
+                        </button>
+                        <button
+                          onClick={() => {
+                            setOpenMenu(null);
+                            handleDeleteBusiness(business.id);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "12px 16px",
+                            background: "none",
+                            border: "none",
+                            textAlign: "left",
+                            fontSize: "13px",
+                            color: "#A32D2D",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            borderTop: "0.5px solid #f5f5f5",
+                          }}
+                        >
+                          🗑️ Remove business
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
