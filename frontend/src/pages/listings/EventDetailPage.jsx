@@ -112,7 +112,7 @@ export default function EventDetailPage() {
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {event.view_count}
+              👁️ {event.view_count} {event.view_count === 1 ? "view" : "views"}
             </span>
           )}
         </div>

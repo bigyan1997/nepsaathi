@@ -100,7 +100,7 @@ export default function AnnouncementDetailPage() {
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {announcement.view_count}
+              👁️ {job.view_count} {job.view_count === 1 ? "view" : "views"}
             </span>
           )}
         </div>
