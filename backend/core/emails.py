@@ -6,14 +6,15 @@ from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 ADMIN_URL = config('ADMIN_URL', default='https://nepsaathi-production.up.railway.app/admin')
+RESEND_API_KEY = config('RESEND_API_KEY', default='')
 
-resend.api_key = config('RESEND_API_KEY', default='')
+resend.api_key = RESEND_API_KEY
 
 
 def _send_resend(params):
     """Send email via Resend API in background."""
-    if settings.DEBUG:
-        print(f'[DEBUG] Email skipped in development: {params["subject"]} -> {params["to"]}', flush=True)
+    if not RESEND_API_KEY:
+        print(f'[DEBUG] No API key — skipping email: {params["subject"]}', flush=True)
         return
     try:
         resend.Emails.send(params)
