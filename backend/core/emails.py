@@ -54,7 +54,7 @@ def send_report_emails(report):
             'reported_by': report.user.email,
             'listing_owner': listing.user.email,
             'admin_url': f'{ADMIN_URL}/listings/listingreport/{report.id}/change/',
-            'listing_url': f'{FRONTEND_URL}/{listing.listing_type}s/{listing.id}',
+            'listing_url': f'{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}',
         })
         params_admin = {
             'from': 'NepSaathi <noreply@nepsaathi.com>',
@@ -69,7 +69,7 @@ def send_report_emails(report):
         html_owner = render_to_string('emails/report_owner.html', {
             'first_name': listing.user.first_name,
             'listing_title': listing.title,
-            'listing_url': f'{FRONTEND_URL}/{listing.listing_type}s/{listing.id}',
+            'listing_url': f'{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}',
             'frontend_url': FRONTEND_URL,
             'report_id': report.id,
         })
