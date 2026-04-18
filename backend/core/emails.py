@@ -1,6 +1,7 @@
 import resend
 import threading
 from django.template.loader import render_to_string
+from django.conf import settings
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -11,6 +12,9 @@ resend.api_key = config('RESEND_API_KEY', default='')
 
 def _send_resend(params):
     """Send email via Resend API in background."""
+    if settings.DEBUG:
+        print(f'[DEBUG] Email skipped in development: {params["subject"]} -> {params["to"]}', flush=True)
+        return
     try:
         resend.Emails.send(params)
         print(f'Email sent OK: {params["subject"]} -> {params["to"]}', flush=True)
