@@ -379,4 +379,5 @@ class ReportListingView(APIView):
             return Response(
                 {'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'},
                 status=status.HTTP_201_CREATED
-    )
+            ) # Properly closed and indented
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # Always handle the 'else' case for is_valid()
