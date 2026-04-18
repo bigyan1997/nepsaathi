@@ -11,9 +11,9 @@ ADMIN_URL = config('ADMIN_URL', default='https://nepsaathi-production.up.railway
 def _send_email(msg):
     try:
         msg.send()
-        print(f'Email sent OK: {msg.subject} -> {msg.to}')
+        print(f'Email sent OK: {msg.subject} -> {msg.to}', flush=True)
     except Exception as e:
-        print(f'Email send FAILED: {e}')
+        print(f'Email send FAILED: {e}', flush=True)
 
 
 def send_welcome_email(user):
