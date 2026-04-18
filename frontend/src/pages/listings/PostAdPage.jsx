@@ -239,6 +239,15 @@ export default function PostAdPage() {
       addToast("Listing created successfully! Now add some photos.", "success");
     } catch (err) {
       const errors = err.response?.data;
+      if (
+        err.response?.status === 403 ||
+        err.response?.data?.detail?.includes("suspended")
+      ) {
+        setError(
+          "Your account has been suspended due to multiple violations. Please contact support@nepsaathi.com",
+        );
+        return;
+      }
       if (errors) {
         const firstError = Object.values(errors)[0];
         if (Array.isArray(firstError)) {
