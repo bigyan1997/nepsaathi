@@ -75,7 +75,6 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'expires_at',
             'is_under_review',
             'view_count',
-            'description',
             'images',
         )
         read_only_fields = (

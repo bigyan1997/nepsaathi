@@ -1,4 +1,5 @@
 import axios from "axios";
+import useAuthStore from "../store/authStore";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -38,8 +39,8 @@ const clearAuth = () => {
   localStorage.removeItem("nepsaathi_access_token");
   localStorage.removeItem("nepsaathi_refresh_token");
   localStorage.removeItem("nepsaathi-auth");
+  useAuthStore.getState().logout();
 };
-
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

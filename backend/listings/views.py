@@ -267,7 +267,7 @@ class StatsView(APIView):
                 listing_type='event', status='active'
             ).count(),
             'total_businesses': Listing.objects.filter(
-                listing_type='announcement', status='active'
+                listing_type='business', status='active'
             ).count(),
         }
 
@@ -497,16 +497,18 @@ class SimilarListingsView(APIView):
         ).exclude(pk=pk).order_by('-is_featured', '-created_at')[:3]
 
         # If not enough in same state, get from anywhere
-        if similar.count() < 3:
+        similar_list = list(similar)
+        if len(similar_list) < 3:
             extra = Listing.objects.filter(
                 listing_type=listing.listing_type,
                 status='active',
             ).exclude(
                 pk=pk
             ).exclude(
-                pk__in=[s.pk for s in similar]
-            ).order_by('-is_featured', '-created_at')[:3 - similar.count()]
-            similar = list(similar) + list(extra)
+                pk__in=[s.pk for s in similar_list]
+            ).order_by('-is_featured', '-created_at')[:3 - len(similar_list)]
+            similar_list = similar_list + list(extra)
+        similar = similar_list
 
         from listings.serializers import ListingSerializer
         serializer = ListingSerializer(

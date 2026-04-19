@@ -77,7 +77,6 @@ class EventSerializer(serializers.ModelSerializer):
             'is_under_review',
             'expires_at',
             'view_count',
-            'description',
             'images',
         )
         read_only_fields = (
