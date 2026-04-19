@@ -274,7 +274,7 @@ export default function ContactPage() {
                 <label style={labelStyle}>Your name *</label>
                 <input
                   style={inputStyle}
-                  placeholder="Bigyan Karki"
+                  placeholder="John Doe"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
