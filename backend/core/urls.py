@@ -25,7 +25,7 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 urlpatterns = [
     # Admin panel
-    path('admin/', admin.site.urls),
+    path('nepsaathi-admin/', admin.site.urls),
 
     # Redirect root to frontend
     path('', lambda request: HttpResponseRedirect(FRONTEND_URL)),
