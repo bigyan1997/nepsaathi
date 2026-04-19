@@ -70,6 +70,12 @@ class ListingCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
 
+        # Check if user is banned FIRST
+        if user.is_banned:
+            raise ValidationError(
+                'Your account has been suspended due to multiple violations. Contact support@nepsaathi.com'
+            )
+
         # Check max active listings per user
         active_count = Listing.objects.filter(
             user=user, status='active'
@@ -79,7 +85,6 @@ class ListingCreateView(generics.CreateAPIView):
                 'You have reached the maximum of 20 active listings.'
             )
         
-
         # Check 5 minute cooldown
         five_mins_ago = timezone.now() - timedelta(minutes=5)
         recent_post = Listing.objects.filter(
@@ -88,11 +93,6 @@ class ListingCreateView(generics.CreateAPIView):
         if recent_post:
             raise ValidationError(
                 'Please wait 5 minutes before posting again.'
-            )
-        # Check if user is banned
-        if user.is_banned:
-            raise ValidationError(
-                'Your account has been suspended due to multiple violations. Contact support@nepsaathi.com'
             )
         # Check duplicate title in last 24 hours
         yesterday = timezone.now() - timedelta(hours=24)
