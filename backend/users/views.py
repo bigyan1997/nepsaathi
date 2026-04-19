@@ -116,9 +116,15 @@ class ContactView(APIView):
         subject = request.data.get('subject', 'NepSaathi Enquiry').strip()
         message = request.data.get('message', '').strip()
 
+        import re
         if not name or not email or not message:
             return Response(
                 {'detail': 'Name, email and message are required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
+            return Response(
+                {'detail': 'Please enter a valid email address.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

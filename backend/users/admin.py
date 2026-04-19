@@ -32,6 +32,9 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
+        ('Account Status', {
+            'fields': ('is_active', 'is_banned', 'ban_reason'),
+        }),
     )
 
     # Override add_fieldsets — form when creating a new user in admin

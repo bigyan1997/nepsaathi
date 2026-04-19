@@ -202,8 +202,13 @@ class ListingReportAdmin(admin.ModelAdmin):
                 send_listing_removed_email(report, reason)
 
                 # Check if user should be banned (3 removals)
-                removed_count = Listing.objects.filter(
-                    user=owner, status='deleted'
+                # Only count admin-removed listings, not user self-deletes
+            # We track this by checking reports that were reviewed and removed
+                
+                removed_count = ListingReport.objects.filter(
+                    listing__user=owner,
+                    is_reviewed=True,
+                    listing__status='deleted'
                 ).count()
                 if removed_count >= 3 and not owner.is_banned:
                     owner.is_banned = True

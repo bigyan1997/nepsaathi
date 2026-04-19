@@ -380,7 +380,11 @@ class ReportListingView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         # Limit 5 reports per day per user
-        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        import zoneinfo
+        sydney_tz = zoneinfo.ZoneInfo('Australia/Sydney')
+        today_start = timezone.now().astimezone(sydney_tz).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
         daily_reports = ListingReport.objects.filter(
             user=request.user,
             created_at__gte=today_start
@@ -404,12 +408,10 @@ class ReportListingView(APIView):
             listing.save()
             # Send emails to admin and listing owner
             try:
-                print('DEBUG: calling send_report_emails', flush=True)
                 from core.emails import send_report_emails
                 send_report_emails(report)
-                print('DEBUG: send_report_emails returned', flush=True)
             except Exception as e:
-                print(f'DEBUG: email exception: {e}', flush=True)
+                print(f'Report email failed: {e}', flush=True)
             return Response(
                 {'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'},
                 status=status.HTTP_201_CREATED
@@ -455,7 +457,7 @@ class TrackListingViewView(APIView):
             return Response({'detail': 'Listing not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Get IP address
-        iip = request.META.get('HTTP_X_FORWARDED_FOR', '')
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
         if ip:
             ip = ip.split(',')[0].strip()
         else:

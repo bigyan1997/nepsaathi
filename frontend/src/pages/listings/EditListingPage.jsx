@@ -166,13 +166,12 @@ export default function EditListingPage() {
     setLoading(true);
     setError("");
     try {
-      await updateListing(id, baseForm);
-      // Safety check — typeId must be set before saving
       if (!typeId) {
         setError("Please wait for the listing details to load before saving.");
         setLoading(false);
         return;
       }
+      await updateListing(id, baseForm);
       if (listingType === "job") await updateJob(typeId, typeForm);
       else if (listingType === "room")
         await updateRoom(typeId, { ...typeForm, price: typeForm.price });
