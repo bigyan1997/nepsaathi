@@ -10,6 +10,7 @@ import usePageTitle from "../../hooks/usePageTitle";
 import { trackView } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
+import useIsMobile from "../../hooks/useIsMobile";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489" },
@@ -28,6 +29,7 @@ export default function EventDetailPage() {
   const location = useLocation();
   const { isAuthenticated } = useAuthStore();
   const isListingRoute = location.pathname.includes("/listing/");
+  const isMobile = useIsMobile();
 
   const {
     data: event,
@@ -124,8 +126,8 @@ export default function EventDetailPage() {
         </div>
         {/* Right: save + share */}
         <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-          <SaveButton listingId={event?.listing_id} />
-          <ShareButton title={event?.listing_title} />
+          <SaveButton listingId={event?.listing_id} compact={isMobile} />
+          <ShareButton title={event?.listing_title} compact={isMobile} />
         </div>
       </div>
 

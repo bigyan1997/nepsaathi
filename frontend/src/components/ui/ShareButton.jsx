@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useToast } from "./Toast";
 
-export default function ShareButton({ title, url }) {
+export default function ShareButton({ title, url, compact = false }) {
   const [open, setOpen] = useState(false);
   const { addToast } = useToast();
 
@@ -60,7 +60,7 @@ export default function ShareButton({ title, url }) {
           background: "#F5F4F0",
           border: "0.5px solid #e5e5e5",
           borderRadius: "8px",
-          padding: "9px 16px",
+          padding: compact ? "9px 12px" : "9px 16px",
           fontSize: "13px",
           fontWeight: 500,
           color: "#555",
@@ -71,7 +71,7 @@ export default function ShareButton({ title, url }) {
         onMouseLeave={(e) => (e.currentTarget.style.background = "#F5F4F0")}
       >
         <span>🔗</span>
-        Share
+        {!compact && "Share"}
       </button>
 
       {/* Dropdown */}

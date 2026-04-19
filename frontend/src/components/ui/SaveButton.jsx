@@ -5,7 +5,7 @@ import { useToast } from "./Toast";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 
-export default function SaveButton({ listingId }) {
+export default function SaveButton({ listingId, compact = false }) {
   const { isAuthenticated } = useAuthStore();
   const { addToast } = useToast();
   const queryClient = useQueryClient();
@@ -55,7 +55,7 @@ export default function SaveButton({ listingId }) {
         background: isSaved ? "#FCEBEB" : "#F5F4F0",
         border: `0.5px solid ${isSaved ? "#F09595" : "#e5e5e5"}`,
         borderRadius: "8px",
-        padding: "9px 16px",
+        padding: compact ? "9px 12px" : "9px 16px",
         fontSize: "13px",
         fontWeight: 500,
         color: isSaved ? "#A32D2D" : "#555",
@@ -73,7 +73,7 @@ export default function SaveButton({ listingId }) {
       }}
     >
       <span style={{ fontSize: "16px" }}>{isSaved ? "❤️" : "🤍"}</span>
-      {isSaved ? "Saved" : "Save"}
+      {!compact && (isSaved ? "Saved" : "Save")}
     </button>
   );
 }

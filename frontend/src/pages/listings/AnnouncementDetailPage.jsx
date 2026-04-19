@@ -14,6 +14,7 @@ import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import ImageGallery from "../../components/ui/ImageGallery";
+import useIsMobile from "../../hooks/useIsMobile";
 
 const CATEGORY_COLORS = {
   news: { bg: "#EEEDFE", color: "#3C3489" },
@@ -30,6 +31,7 @@ export default function AnnouncementDetailPage() {
   const location = useLocation();
   const { isAuthenticated } = useAuthStore();
   const isListingRoute = location.pathname.includes("/listing/");
+  const isMobile = useIsMobile();
 
   const {
     data: announcement,
@@ -113,8 +115,8 @@ export default function AnnouncementDetailPage() {
         </div>
         {/* Right: save + share */}
         <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-          <SaveButton listingId={announcement?.listing_id} />
-          <ShareButton title={announcement?.listing_title} />
+          <SaveButton listingId={announcement?.listing_id} compact={isMobile} />
+          <ShareButton title={announcement?.listing_title} compact={isMobile} />
         </div>
       </div>
 

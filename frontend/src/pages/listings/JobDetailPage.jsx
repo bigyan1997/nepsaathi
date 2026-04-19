@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { getSimilarListings } from "../../api/listings";
 import { Link } from "react-router-dom";
 import ImageGallery from "../../components/ui/ImageGallery";
+import useIsMobile from "../../hooks/useIsMobile";
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ export default function JobDetailPage() {
   const location = useLocation();
   const { isAuthenticated } = useAuthStore();
   const isListingRoute = location.pathname.includes("/listing/");
+  const isMobile = useIsMobile();
 
   const {
     data: job,
@@ -95,8 +97,8 @@ export default function JobDetailPage() {
         </div>
         {/* Right: save + share */}
         <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-          <SaveButton listingId={job?.listing_id} />
-          <ShareButton title={job?.listing_title} />
+          <SaveButton listingId={job?.listing_id} compact={isMobile} />
+          <ShareButton title={job?.listing_title} compact={isMobile} />
         </div>
       </div>
 
