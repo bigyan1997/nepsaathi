@@ -33,7 +33,6 @@ class EventSerializer(serializers.ModelSerializer):
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True) 
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
     view_count = serializers.IntegerField(source='listing.views.count', read_only=True)
-    description = serializers.CharField(source='listing.description', read_only=True)
     images = serializers.SerializerMethodField()
 
     def get_images(self, obj):
