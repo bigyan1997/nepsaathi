@@ -10,6 +10,7 @@ from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
+from businesses.models import Business
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -266,8 +267,8 @@ class StatsView(APIView):
             'total_events': Listing.objects.filter(
                 listing_type='event', status='active'
             ).count(),
-            'total_businesses': Listing.objects.filter(
-                listing_type='business', status='active'
+            'total_businesses': Business.objects.filter(
+                is_active=True
             ).count(),
         }
 
