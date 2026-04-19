@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
-
-# Disallow admin and auth pages
 Disallow: /admin/
 Disallow: /login
 Disallow: /register
@@ -10,5 +8,4 @@ Disallow: /my-listings
 Disallow: /post-ad
 Disallow: /edit-listing/
 
-# Sitemap location
 Sitemap: https://nepsaathi.com/sitemap.xml
