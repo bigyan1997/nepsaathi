@@ -2,13 +2,19 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
 from listings.models import Listing
-
+import zoneinfo
 
 class Command(BaseCommand):
     help = 'Send expiry warning emails to listings expiring in 3 days'
 
     def handle(self, *args, **kwargs):
-        warning_date = timezone.now() + timedelta(days=3)
+        sydney_tz = zoneinfo.ZoneInfo('Australia/Sydney')
+        
+        # Get current time in Sydney timezone
+        now_sydney = timezone.now().astimezone(sydney_tz)
+        warning_date = now_sydney + timedelta(days=3)
+        
+        # Set day boundaries in Sydney time
         start = warning_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end = warning_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
