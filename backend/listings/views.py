@@ -11,6 +11,7 @@ from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from datetime import timedelta
 from businesses.models import Business
+from django.db.models import Count
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -49,7 +50,9 @@ class ListingListView(generics.ListAPIView):
     def get_queryset(self):
         return Listing.objects.filter(
             status='active'
-        ).select_related('user').prefetch_related('images')
+        ).select_related('user').prefetch_related('images').annotate(
+            view_count_annotated=Count('views')
+        )
 
 
 class ListingCreateView(generics.CreateAPIView):
@@ -157,7 +160,9 @@ class MyListingsView(generics.ListAPIView):
     def get_queryset(self):
         return Listing.objects.filter(
             user=self.request.user
-        ).select_related('user').prefetch_related('images')
+        ).select_related('user').prefetch_related('images').annotate(
+            view_count_annotated=Count('views')
+        )
 
 
 class ListingImageUploadView(APIView):

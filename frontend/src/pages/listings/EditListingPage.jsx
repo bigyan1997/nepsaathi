@@ -86,6 +86,11 @@ export default function EditListingPage() {
   // Populate base form
   useEffect(() => {
     if (listing) {
+      // Redirect if not owner
+      if (!listing.is_owner) {
+        navigate("/");
+        return;
+      }
       setListingType(listing.listing_type);
       setBaseForm({
         title: listing.title || "",

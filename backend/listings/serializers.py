@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Listing, ListingImage, SavedListing, ListingReport
 from jobs.serializers import JobSerializer
 from rooms.serializers import RoomSerializer
+from django.db.models import Count
 
 
 class ListingImageSerializer(serializers.ModelSerializer):
@@ -83,6 +84,9 @@ class ListingSerializer(serializers.ModelSerializer):
         return None
     
     def get_view_count(self, obj):
+        # Use annotated value if available to avoid N+1
+        if hasattr(obj, 'view_count_annotated'):
+            return obj.view_count_annotated
         return obj.views.count()
 
 
