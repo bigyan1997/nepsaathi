@@ -162,6 +162,12 @@ export default function EditListingPage() {
     setError("");
     try {
       await updateListing(id, baseForm);
+      // Safety check — typeId must be set before saving
+      if (!typeId) {
+        setError("Please wait for the listing details to load before saving.");
+        setLoading(false);
+        return;
+      }
       if (listingType === "job") await updateJob(typeId, typeForm);
       else if (listingType === "room")
         await updateRoom(typeId, { ...typeForm, price: typeForm.price });
@@ -790,7 +796,7 @@ export default function EditListingPage() {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !typeId}
             style={{
               flex: 2,
               background: loading ? "#ccc" : "#534AB7",
