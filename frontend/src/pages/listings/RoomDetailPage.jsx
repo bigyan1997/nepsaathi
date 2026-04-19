@@ -89,16 +89,23 @@ export default function RoomDetailPage() {
           >
             ← Back to rooms
           </button>
+        </div>
+        {/* Right: save + share */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexShrink: 0,
+          }}
+        >
           {room?.view_count > 0 && (
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {room.view_count} {room.view_count === 1 ? "view" : "views"}
+              👁️ {room.view_count}
             </span>
           )}
-        </div>
-        {/* Right: save + share */}
-        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
           <SaveButton listingId={room?.listing_id} compact={isMobile} />
           <ShareButton title={room?.listing_title} compact={isMobile} />
         </div>

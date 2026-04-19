@@ -104,17 +104,23 @@ export default function AnnouncementDetailPage() {
           >
             ← Back to announcements
           </button>
+        </div>
+        {/* Right: save + share */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexShrink: 0,
+          }}
+        >
           {announcement?.view_count > 0 && (
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {announcement.view_count}{" "}
-              {announcement.view_count === 1 ? "view" : "views"}
+              👁️ {announcement.view_count}
             </span>
           )}
-        </div>
-        {/* Right: save + share */}
-        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
           <SaveButton listingId={announcement?.listing_id} compact={isMobile} />
           <ShareButton title={announcement?.listing_title} compact={isMobile} />
         </div>

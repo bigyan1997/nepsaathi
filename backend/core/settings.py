@@ -144,8 +144,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '1000/day',
+        'anon': '100/day' if not DEBUG else '10000/day',
+        'user': '1000/day' if not DEBUG else '10000/day',
         'listing_create': '10/hour',
         'business_create': '3/hour',
     },
@@ -240,6 +240,9 @@ else:
     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
     EMAIL_TIMEOUT = 10
+
+    # Resend API (used in production instead of SMTP)
+RESEND_API_KEY = config('RESEND_API_KEY', default='')
 
 # ─── Cache ────────────────────────────────────────────────────────────────────
 REDIS_URL = config('REDIS_URL', default=None)

@@ -116,16 +116,23 @@ export default function EventDetailPage() {
           >
             ← Back to events
           </button>
+        </div>
+        {/* Right: save + share */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexShrink: 0,
+          }}
+        >
           {event?.view_count > 0 && (
             <span
               style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
             >
-              👁️ {event.view_count} {event.view_count === 1 ? "view" : "views"}
+              👁️ {event.view_count}
             </span>
           )}
-        </div>
-        {/* Right: save + share */}
-        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
           <SaveButton listingId={event?.listing_id} compact={isMobile} />
           <ShareButton title={event?.listing_title} compact={isMobile} />
         </div>
