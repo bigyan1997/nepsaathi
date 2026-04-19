@@ -6,9 +6,9 @@ from .models import Listing, ListingImage, ListingReport, SavedListing, ListingV
 from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
 from .throttles import ListingCreateThrottle
 from django.utils import timezone
+from django.db.models import Q
 from datetime import timedelta
 from rest_framework.exceptions import ValidationError
-from django.utils import timezone
 from datetime import timedelta
 from businesses.models import Business
 
@@ -122,7 +122,14 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
     def get_queryset(self):
-        return Listing.objects.select_related('user').prefetch_related('images')
+        user = self.request.user
+        if user.is_authenticated:
+            return Listing.objects.select_related('user').prefetch_related('images').filter(
+                Q(status='active') | Q(user=user)
+            )
+        return Listing.objects.select_related('user').prefetch_related('images').filter(
+            status='active'
+        )
 
     def destroy(self, request, *args, **kwargs):
         listing = self.get_object()
