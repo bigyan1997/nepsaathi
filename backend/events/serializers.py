@@ -45,6 +45,12 @@ class EventSerializer(serializers.ModelSerializer):
             for img in obj.listing.images.all()
         ]
 
+    def validate_event_date(self, value):
+        from django.utils import timezone
+        if value < timezone.now():
+            raise serializers.ValidationError("Event date must be in the future.")
+        return value
+
 
     class Meta:
         model = Event

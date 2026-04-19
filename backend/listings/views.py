@@ -455,11 +455,13 @@ class TrackListingViewView(APIView):
             return Response({'detail': 'Listing not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Get IP address
-        ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
+        iip = request.META.get('HTTP_X_FORWARDED_FOR', '')
         if ip:
             ip = ip.split(',')[0].strip()
         else:
-            ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
+            ip = request.META.get('REMOTE_ADDR', '')
+        if not ip:
+            ip = '127.0.0.1'
 
         user = request.user if request.user.is_authenticated else None
 

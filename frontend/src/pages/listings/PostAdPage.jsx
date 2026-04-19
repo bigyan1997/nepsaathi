@@ -179,9 +179,6 @@ export default function PostAdPage() {
         return;
       }
 
-      // Small delay to ensure listing is committed to DB
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
       // Step 2 — attach type specific details
       if (listingType === "job") {
         await createJob({
@@ -1371,7 +1368,17 @@ export default function PostAdPage() {
                 ← Back
               </button>
               <button
-                onClick={handleSubmit}
+                onClick={() => {
+                  if (!eventForm.event_date) {
+                    setError("Please set an event date.");
+                    return;
+                  }
+                  if (new Date(eventForm.event_date) < new Date()) {
+                    setError("Event date must be in the future.");
+                    return;
+                  }
+                  handleSubmit();
+                }}
                 disabled={loading}
                 style={{
                   flex: 2,

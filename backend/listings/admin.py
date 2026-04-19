@@ -217,17 +217,3 @@ class ListingReportAdmin(admin.ModelAdmin):
 
         self.message_user(request, f'{queryset.count()} listings removed — owners notified.')
     remove_listing.short_description = '❌ Remove listing — notify owner'
-
-    def delete_reported_listings(self, request, queryset):
-        count = 0
-        for report in queryset:
-            if report.listing.status != 'deleted':
-                for image in report.listing.images.all():
-                    image.delete()
-                report.listing.status = 'deleted'
-                report.listing.save()
-                report.is_reviewed = True
-                report.save()
-                count += 1
-        self.message_user(request, f'{count} listings deleted successfully.')
-    delete_reported_listings.short_description = '🗑 Delete reported listings'
