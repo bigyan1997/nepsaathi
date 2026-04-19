@@ -34,8 +34,6 @@ class GoogleLoginView(SocialLoginView):
                     user.google_avatar = picture_url
                     user.save()
                     # Send welcome email only on first Google login
-                    from core.emails import send_welcome_email
-                    send_welcome_email(user)
         except Exception:
             pass
         return response
