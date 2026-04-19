@@ -60,6 +60,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'user_email',
             'user_name',
             'expires_at',
+            'listing_type',
             
         )
 
@@ -103,7 +104,10 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_phone',
             'contact_whatsapp',
         )
-        # expires_at removed — set automatically to 30 days in view
+        read_only_fields = ('id',)
+        extra_kwargs = {
+            'listing_type': {'required': True},
+        }
 
 
 class SavedListingSerializer(serializers.ModelSerializer):
