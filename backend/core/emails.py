@@ -147,3 +147,52 @@ def send_expiry_warning_email(listing):
         thread.start()
     except Exception as e:
         print(f'Expiry warning email failed: {e}', flush=True)
+
+def send_contact_email(name, email, subject, message):
+    """Send contact form email to hello@nepsaathi.com"""
+    try:
+        html = f"""
+        <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;">
+            <div style="background:#26215C;padding:28px;border-radius:12px 12px 0 0;text-align:center;">
+                <h2 style="color:#fff;margin:0;font-size:20px;">
+                    <span style="color:#E87722;">Nep</span>Saathi — Contact Form
+                </h2>
+            </div>
+            <div style="background:#fff;border:0.5px solid #e5e5e5;padding:28px;border-radius:0 0 12px 12px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="padding:8px 0;font-size:13px;color:#aaa;width:100px;">From</td>
+                        <td style="padding:8px 0;font-size:14px;color:#333;font-weight:600;">{name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 0;font-size:13px;color:#aaa;">Email</td>
+                        <td style="padding:8px 0;font-size:14px;color:#534AB7;">
+                            <a href="mailto:{email}" style="color:#534AB7;">{email}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 0;font-size:13px;color:#aaa;">Subject</td>
+                        <td style="padding:8px 0;font-size:14px;color:#333;">{subject}</td>
+                    </tr>
+                </table>
+                <hr style="border:none;border-top:0.5px solid #e5e5e5;margin:20px 0;">
+                <p style="font-size:13px;color:#aaa;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.05em;">Message</p>
+                <p style="font-size:14px;color:#333;line-height:1.7;white-space:pre-wrap;">{message}</p>
+                <hr style="border:none;border-top:0.5px solid #e5e5e5;margin:20px 0;">
+                <p style="font-size:12px;color:#aaa;margin:0;">
+                    Reply directly to <a href="mailto:{email}" style="color:#534AB7;">{email}</a> to respond to this enquiry.
+                </p>
+            </div>
+        </div>
+        """
+        params = {
+            'from': 'NepSaathi Contact <noreply@nepsaathi.com>',
+            'to': ['hello@nepsaathi.com'],
+            'reply_to': email,
+            'subject': f'[Contact] {subject} — from {name}',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
+        thread.start()
+    except Exception as e:
+        print(f'Contact email failed: {e}', flush=True)

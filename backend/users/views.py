@@ -104,3 +104,32 @@ class DeleteAccountView(APIView):
                     {'detail': 'Failed to delete account. Please contact support.'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+
+class ContactView(APIView):
+    """
+    POST /api/users/contact/
+    Send contact form email to hello@nepsaathi.com
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        name = request.data.get('name', '').strip()
+        email = request.data.get('email', '').strip()
+        subject = request.data.get('subject', 'NepSaathi Enquiry').strip()
+        message = request.data.get('message', '').strip()
+
+        if not name or not email or not message:
+            return Response(
+                {'detail': 'Name, email and message are required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            from core.emails import send_contact_email
+            send_contact_email(name, email, subject, message)
+            return Response({'detail': 'Message sent successfully!'})
+        except Exception as e:
+            return Response(
+                {'detail': 'Failed to send message. Please email us directly.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -15,4 +15,7 @@ urlpatterns = [
 
     # Delete Account
     path('delete-account/', views.DeleteAccountView.as_view(), name='delete-account'),
+
+    # Contact
+    path('contact/', views.ContactView.as_view(), name='contact'),
 ]

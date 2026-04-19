@@ -44,6 +44,12 @@ export const deleteAccount = async () => {
   return response.data;
 };
 
+// Contact
+export const sendContactForm = async (data) => {
+  const response = await api.post("/api/users/contact/", data);
+  return response.data;
+};
+
 // Google OAuth login
 export const googleLogin = async (accessToken) => {
   const response = await api.post("/api/users/auth/google/", {
