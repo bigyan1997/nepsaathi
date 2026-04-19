@@ -33,7 +33,7 @@ class UserAdmin(BaseUserAdmin):
             'classes': ('collapse',)
         }),
         ('Account Status', {
-            'fields': ('is_active', 'is_banned', 'ban_reason'),
+            'fields': ('is_banned', 'ban_reason'),
         }),
     )
 
