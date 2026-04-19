@@ -429,11 +429,12 @@ export default function MyListingsPage() {
                     background: "#fff",
                     border: "0.5px solid #e5e5e5",
                     borderRadius: "12px",
-                    padding: "16px 20px",
+                    padding: "14px 16px",
                     display: "flex",
-                    alignItems: "center",
-                    gap: "16px",
+                    flexDirection: "column",
+                    gap: "10px",
                     transition: "border-color 0.15s",
+                    position: "relative",
                   }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.borderColor = "#AFA9EC")
@@ -442,113 +443,141 @@ export default function MyListingsPage() {
                     (e.currentTarget.style.borderColor = "#e5e5e5")
                   }
                 >
+                  {/* Row 1: Icon + Title + Menu */}
                   <div
                     style={{
-                      width: "42px",
-                      height: "42px",
-                      borderRadius: "10px",
-                      background: typeColor.bg,
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "18px",
-                      flexShrink: 0,
+                      alignItems: "flex-start",
+                      gap: "10px",
+                      width: "100%",
                     }}
                   >
-                    {typeEmoji}
-                  </div>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
+                        width: "38px",
+                        height: "38px",
+                        borderRadius: "10px",
+                        background: typeColor.bg,
                         display: "flex",
                         alignItems: "center",
-                        gap: "8px",
-                        marginBottom: "4px",
-                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        fontSize: "18px",
+                        flexShrink: 0,
                       }}
                     >
+                      {typeEmoji}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {/* Title */}
                       <h3
                         style={{
                           fontSize: "14px",
                           fontWeight: 600,
                           color: "#26215C",
-                          whiteSpace: "nowrap",
+                          marginBottom: "6px",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         {listing.title}
                       </h3>
-                      <span
+
+                      {/* Badges row */}
+                      <div
                         style={{
-                          background: typeColor.bg,
-                          color: typeColor.color,
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                          flexShrink: 0,
+                          display: "flex",
+                          gap: "6px",
+                          marginBottom: "6px",
+                          flexWrap: "wrap",
                         }}
                       >
-                        {listing.listing_type}
-                      </span>
-                      <span
-                        style={{
-                          background: statusColor.bg,
-                          color: statusColor.color,
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {listing.status}
-                      </span>
-                      {isExpiringSoon && (
                         <span
                           style={{
-                            background: "#FFF1E0",
-                            color: "#633806",
+                            background: typeColor.bg,
+                            color: typeColor.color,
                             fontSize: "10px",
                             fontWeight: 500,
                             padding: "2px 8px",
                             borderRadius: "8px",
-                            flexShrink: 0,
                           }}
                         >
-                          ⚠️ Expiring soon
+                          {listing.listing_type}
                         </span>
-                      )}
-                    </div>
-                    <p style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {listing.location}, {listing.state} · Posted{" "}
-                      {new Date(listing.created_at).toLocaleDateString("en-AU")}
-                      {listing.expires_at && (
                         <span
                           style={{
-                            marginLeft: "8px",
-                            color: isExpiringSoon ? "#E87722" : "#aaa",
+                            background: statusColor.bg,
+                            color: statusColor.color,
+                            fontSize: "10px",
+                            fontWeight: 500,
+                            padding: "2px 8px",
+                            borderRadius: "8px",
                           }}
                         >
-                          · Expires{" "}
-                          {new Date(listing.expires_at).toLocaleDateString(
-                            "en-AU",
-                          )}
+                          {listing.status}
                         </span>
-                      )}
-                      {listing.view_count > 0 && (
-                        <span style={{ marginLeft: "8px", color: "#aaa" }}>
-                          · 👁️ {listing.view_count}{" "}
-                          {listing.view_count === 1 ? "view" : "views"}
-                        </span>
-                      )}
-                    </p>
+                        {isExpiringSoon && (
+                          <span
+                            style={{
+                              background: "#FFF1E0",
+                              color: "#633806",
+                              fontSize: "10px",
+                              fontWeight: 500,
+                              padding: "2px 8px",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            ⚠️ Expiring soon
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Location + views */}
+                      <p style={{ fontSize: "11px", color: "#888", margin: 0 }}>
+                        📍 {listing.location}, {listing.state}
+                        {listing.view_count > 0 && (
+                          <span style={{ marginLeft: "8px" }}>
+                            · 👁️ {listing.view_count}
+                          </span>
+                        )}
+                      </p>
+
+                      {/* Dates */}
+                      <p
+                        style={{
+                          fontSize: "11px",
+                          color: "#aaa",
+                          margin: "2px 0 0",
+                        }}
+                      >
+                        Posted{" "}
+                        {new Date(listing.created_at).toLocaleDateString(
+                          "en-AU",
+                          { day: "numeric", month: "short" },
+                        )}
+                        {listing.expires_at && (
+                          <span
+                            style={{
+                              color: isExpiringSoon ? "#E87722" : "#aaa",
+                            }}
+                          >
+                            {" "}
+                            · Expires{" "}
+                            {new Date(listing.expires_at).toLocaleDateString(
+                              "en-AU",
+                              { day: "numeric", month: "short" },
+                            )}
+                          </span>
+                        )}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Three dots menu */}
-                  <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div
+                    style={{ position: "absolute", top: "14px", right: "16px" }}
+                  >
                     <button
                       onClick={() =>
                         setOpenMenu(openMenu === listing.id ? null : listing.id)
