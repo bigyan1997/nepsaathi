@@ -185,6 +185,7 @@ def send_contact_email(name, email, subject, message):
             </div>
         </div>
         """
+        # Send to admin
         params = {
             'from': 'NepSaathi Contact <noreply@nepsaathi.com>',
             'to': ['hello@nepsaathi.com'],
@@ -194,5 +195,65 @@ def send_contact_email(name, email, subject, message):
         }
         thread = threading.Thread(target=_send_resend, args=(params,))
         thread.start()
+
+        # Send confirmation to user
+        confirmation_html = f"""
+        <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;">
+            <div style="background:linear-gradient(135deg,#26215C,#534AB7);padding:40px 32px;border-radius:16px 16px 0 0;text-align:center;">
+                <span style="font-size:28px;font-weight:700;color:#fff;">
+                    <span style="color:#E87722;">Nep</span>Saathi
+                </span>
+                <br>
+                <span style="font-size:13px;color:#AFA9EC;">नेपसाथी · your Nepali friend, wherever you are</span>
+            </div>
+
+            <div style="background:#fff;border:0.5px solid #e5e5e5;padding:32px;border-radius:0 0 16px 16px;">
+                <h2 style="font-size:22px;font-weight:700;color:#26215C;margin:0 0 8px;">
+                    We got your message! ✅
+                </h2>
+                <p style="font-size:14px;color:#555;line-height:1.7;margin:0 0 24px;">
+                    Hi <strong>{name}</strong>, thanks for reaching out to NepSaathi. 
+                    We'll get back to you within 24 hours at <strong>{email}</strong>.
+                </p>
+
+                <!-- Message summary -->
+                <div style="background:#F5F4F0;border-radius:12px;padding:20px;margin-bottom:24px;">
+                    <p style="margin:0 0 4px;font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Your message</p>
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+                        <tr>
+                            <td style="padding:6px 0;font-size:12px;color:#aaa;width:80px;">Subject</td>
+                            <td style="padding:6px 0;font-size:13px;color:#333;font-weight:500;">{subject}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 0;font-size:12px;color:#aaa;vertical-align:top;">Message</td>
+                            <td style="padding:6px 0;font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;">{message}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Info box -->
+                <div style="background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:12px;padding:16px;margin-bottom:24px;">
+                    <p style="margin:0;font-size:13px;color:#3C3489;line-height:1.7;">
+                        💬 If your enquiry is urgent, you can also reach us directly at 
+                        <a href="mailto:hello@nepsaathi.com" style="color:#534AB7;font-weight:600;">hello@nepsaathi.com</a>
+                    </p>
+                </div>
+
+                <p style="margin:0;font-size:12px;color:#aaa;text-align:center;line-height:1.6;">
+                    © 2026 NepSaathi · 
+                    <a href="{FRONTEND_URL}" style="color:#534AB7;text-decoration:none;">nepsaathi.com</a>
+                </p>
+            </div>
+        </div>
+        """
+
+        confirmation_params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [email],
+            'subject': f'We received your message — NepSaathi',
+            'html': confirmation_html,
+        }
+        thread2 = threading.Thread(target=_send_resend, args=(confirmation_params,))
+        thread2.start()
     except Exception as e:
         print(f'Contact email failed: {e}', flush=True)
