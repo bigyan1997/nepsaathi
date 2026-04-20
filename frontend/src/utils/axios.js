@@ -82,6 +82,12 @@ api.interceptors.response.use(
         const newToken = response.data.access;
         localStorage.setItem("nepsaathi_access_token", newToken);
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+        // Update Zustand store with new token
+        try {
+          useAuthStore.getState().setAccessToken(newToken);
+        } catch (e) {
+          // ignore if setAccessToken not available
+        }
         processQueue(null, newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
