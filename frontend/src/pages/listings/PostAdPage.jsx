@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createListing } from "../../api/listings";
+import { createListing, deleteListing } from "../../api/listings";
 import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
 import { createAnnouncement } from "../../api/announcements";
@@ -179,6 +179,9 @@ export default function PostAdPage() {
         return;
       }
 
+      // Track base listing ID for cleanup if type-detail fails
+      let baseListingId = listing.id;
+
       // Step 2 — attach type specific details
       if (listingType === "job") {
         await createJob({
@@ -235,6 +238,14 @@ export default function PostAdPage() {
       setStep(4);
       addToast("Listing created successfully! Now add some photos.", "success");
     } catch (err) {
+      // If base listing was created but type-detail failed, delete the orphaned listing
+      if (typeof baseListingId !== "undefined") {
+        try {
+          await deleteListing(baseListingId);
+        } catch (e) {
+          // ignore cleanup error
+        }
+      }
       const errors = err.response?.data;
       if (
         err.response?.status === 403 ||
