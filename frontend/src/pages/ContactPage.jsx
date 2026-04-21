@@ -96,11 +96,12 @@ export default function ContactPage() {
 
       {/* Contact cards */}
       <div
+        className="contact-cards-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "16px",
-          marginBottom: "32px",
+          gap: "12px",
+          marginBottom: "28px",
         }}
       >
         {[
@@ -169,10 +170,11 @@ export default function ContactPage() {
               <a
                 href={href}
                 style={{
-                  fontSize: "13px",
+                  fontSize: "12px",
                   color: "#534AB7",
                   fontWeight: 500,
                   textDecoration: "none",
+                  wordBreak: "break-all",
                 }}
               >
                 {value}
@@ -264,6 +266,7 @@ export default function ContactPage() {
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
             <div
+              className="contact-name-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -348,6 +351,20 @@ export default function ContactPage() {
           </form>
         </div>
       )}
+      <style>{`
+        @media (max-width: 480px) {
+          .contact-name-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .contact-cards-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+          }
+          .contact-cards-grid > div {
+            padding: 14px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
