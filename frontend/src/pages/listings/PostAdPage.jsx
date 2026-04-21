@@ -11,8 +11,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../components/ui/Toast";
 
 const LISTING_TYPES = [
-  { value: "job", label: "Job", emoji: "💼", desc: "Post a job vacancy" },
-  { value: "room", label: "Room", emoji: "🏠", desc: "List a room for rent" },
+  {
+    value: "job",
+    label: "Job",
+    emoji: "💼",
+    desc: "Post a job vacancy or find work",
+  },
+  {
+    value: "room",
+    label: "Room",
+    emoji: "🏠",
+    desc: "List a room or find accommodation",
+  },
   {
     value: "event",
     label: "Event",
@@ -67,7 +77,6 @@ const FURNISHING_TYPES = [
   { value: "unfurnished", label: "Unfurnished" },
 ];
 
-// Reusable input style
 const inputStyle = {
   width: "100%",
   border: "0.5px solid #ccc",
@@ -77,6 +86,7 @@ const inputStyle = {
   outline: "none",
   background: "#fff",
   color: "#333",
+  boxSizing: "border-box",
 };
 
 const labelStyle = {
@@ -87,6 +97,67 @@ const labelStyle = {
   marginBottom: "6px",
 };
 
+// Reusable toggle component
+function WantedToggle({ isWanted, listingType, onChange }) {
+  return (
+    <div
+      style={{
+        background: isWanted ? "#EEEDFE" : "#F5F4F0",
+        border: `1.5px solid ${isWanted ? "#534AB7" : "#e5e5e5"}`,
+        borderRadius: "10px",
+        padding: "14px 16px",
+        cursor: "pointer",
+        transition: "all 0.15s",
+      }}
+      onClick={onChange}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span style={{ fontSize: "20px" }}>
+          {listingType === "job" ? "🔍" : "🏘️"}
+        </span>
+        <div>
+          <div style={{ fontSize: "14px", fontWeight: 500, color: "#26215C" }}>
+            {listingType === "job"
+              ? "I'm looking for a job"
+              : "I'm looking for a room"}
+          </div>
+          <div style={{ fontSize: "12px", color: "#888" }}>
+            {listingType === "job"
+              ? "Toggle on if you're seeking work, not hiring"
+              : "Toggle on if you're looking for accommodation"}
+          </div>
+        </div>
+        <div
+          style={{
+            marginLeft: "auto",
+            width: "44px",
+            height: "24px",
+            borderRadius: "12px",
+            background: isWanted ? "#534AB7" : "#ccc",
+            position: "relative",
+            transition: "background 0.2s",
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "2px",
+              left: isWanted ? "22px" : "2px",
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
+              background: "#fff",
+              transition: "left 0.2s",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PostAdPage() {
   usePageTitle("Post a Free Ad");
   const navigate = useNavigate();
@@ -96,10 +167,8 @@ export default function PostAdPage() {
   const [error, setError] = useState("");
   const queryClient = useQueryClient();
 
-  // Step 1 — listing type
   const [listingType, setListingType] = useState("");
 
-  // Step 2 — base listing fields
   const [baseForm, setBaseForm] = useState({
     title: "",
     description: "",
@@ -108,9 +177,9 @@ export default function PostAdPage() {
     contact_email: "",
     contact_phone: "",
     contact_whatsapp: "",
+    is_wanted: false,
   });
 
-  // Step 3 — job specific fields
   const [jobForm, setJobForm] = useState({
     company_name: "",
     job_type: "casual",
@@ -121,7 +190,6 @@ export default function PostAdPage() {
     is_urgent: false,
   });
 
-  // Step 3 — room specific fields
   const [roomForm, setRoomForm] = useState({
     room_type: "private",
     price: "",
@@ -137,7 +205,6 @@ export default function PostAdPage() {
     parking_available: false,
   });
 
-  //   Step 4 - announcement specific fields
   const [announcementForm, setAnnouncementForm] = useState({
     category: "general",
     price: "",
@@ -146,7 +213,6 @@ export default function PostAdPage() {
     is_urgent: false,
   });
 
-  //   Step 5 - event specific fields
   const [eventForm, setEventForm] = useState({
     category: "community",
     event_date: "",
@@ -162,13 +228,12 @@ export default function PostAdPage() {
 
   const [createdListingId, setCreatedListingId] = useState(null);
 
-  // Handle final submission
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
+    let baseListingId;
 
     try {
-      // Step 1 — create base listing
       const listing = await createListing({
         ...baseForm,
         listing_type: listingType,
@@ -179,17 +244,14 @@ export default function PostAdPage() {
         return;
       }
 
-      // Track base listing ID for cleanup if type-detail fails
-      let baseListingId = listing.id;
+      baseListingId = listing.id;
 
-      // Step 2 — attach type specific details
       if (listingType === "job") {
         await createJob({
           listing: listing.id,
           ...jobForm,
           salary: jobForm.salary || null,
         });
-        // Invalidate cache so new listing shows immediately
         queryClient.invalidateQueries(["jobs"]);
         queryClient.invalidateQueries(["home-jobs"]);
         queryClient.invalidateQueries(["my-listings"]);
@@ -199,7 +261,6 @@ export default function PostAdPage() {
           ...roomForm,
           price: roomForm.price,
         });
-        // Invalidate cache so new listing shows immediately
         queryClient.invalidateQueries(["rooms"]);
         queryClient.invalidateQueries(["home-rooms"]);
         queryClient.invalidateQueries(["my-listings"]);
@@ -238,13 +299,10 @@ export default function PostAdPage() {
       setStep(4);
       addToast("Listing created successfully! Now add some photos.", "success");
     } catch (err) {
-      // If base listing was created but type-detail failed, delete the orphaned listing
       if (typeof baseListingId !== "undefined") {
         try {
           await deleteListing(baseListingId);
-        } catch (e) {
-          // ignore cleanup error
-        }
+        } catch (e) {}
       }
       const errors = err.response?.data;
       if (
@@ -258,15 +316,11 @@ export default function PostAdPage() {
       }
       if (errors) {
         const firstError = Object.values(errors)[0];
-        if (Array.isArray(firstError)) {
-          setError(firstError[0]);
-        } else if (typeof firstError === "string") {
-          setError(firstError);
-        } else if (typeof firstError === "object") {
+        if (Array.isArray(firstError)) setError(firstError[0]);
+        else if (typeof firstError === "string") setError(firstError);
+        else if (typeof firstError === "object")
           setError(JSON.stringify(firstError));
-        } else {
-          setError("Something went wrong. Please try again.");
-        }
+        else setError("Something went wrong. Please try again.");
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -288,7 +342,6 @@ export default function PostAdPage() {
 
   return (
     <div style={{ maxWidth: "620px", margin: "0 auto", padding: "28px" }}>
-      {/* Header */}
       <div style={{ marginBottom: "28px" }}>
         <h1
           style={{
@@ -358,7 +411,6 @@ export default function PostAdPage() {
         </span>
       </div>
 
-      {/* Card */}
       <div
         style={{
           background: "#fff",
@@ -367,7 +419,6 @@ export default function PostAdPage() {
           padding: "28px",
         }}
       >
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -384,7 +435,7 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 1 — Choose listing type ── */}
+        {/* ── STEP 1 ── */}
         {step === 1 && (
           <div>
             <h2
@@ -448,7 +499,6 @@ export default function PostAdPage() {
                 </div>
               ))}
             </div>
-
             <button
               onClick={() => {
                 if (!listingType) {
@@ -476,7 +526,7 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 2 — Basic details ── */}
+        {/* ── STEP 2 ── */}
         {step === 2 && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -485,16 +535,31 @@ export default function PostAdPage() {
               Basic details
             </h2>
 
+            {/* Wanted toggle — shown at top of step 2 for jobs and rooms */}
+            {(listingType === "job" || listingType === "room") && (
+              <WantedToggle
+                isWanted={baseForm.is_wanted}
+                listingType={listingType}
+                onChange={() =>
+                  setBaseForm({ ...baseForm, is_wanted: !baseForm.is_wanted })
+                }
+              />
+            )}
+
             <div>
               <label style={labelStyle}>Title *</label>
               <input
                 style={inputStyle}
                 placeholder={
-                  listingType === "job"
-                    ? "e.g. Kitchen Hand Wanted"
-                    : listingType === "room"
-                      ? "e.g. Private room in Parramatta"
-                      : "e.g. Community announcement"
+                  baseForm.is_wanted && listingType === "job"
+                    ? "e.g. Looking for kitchen hand job in Sydney"
+                    : baseForm.is_wanted && listingType === "room"
+                      ? "e.g. Looking for 1 bedroom in Parramatta"
+                      : listingType === "job"
+                        ? "e.g. Kitchen Hand Wanted"
+                        : listingType === "room"
+                          ? "e.g. Private room in Parramatta"
+                          : "e.g. Community announcement"
                 }
                 value={baseForm.title}
                 onChange={(e) =>
@@ -511,7 +576,13 @@ export default function PostAdPage() {
                   minHeight: "100px",
                   resize: "vertical",
                 }}
-                placeholder="Describe your listing in detail..."
+                placeholder={
+                  baseForm.is_wanted && listingType === "job"
+                    ? "Tell employers about yourself, your experience and what type of work you're looking for..."
+                    : baseForm.is_wanted && listingType === "room"
+                      ? "Tell landlords about yourself, your budget and what you're looking for..."
+                      : "Describe your listing in detail..."
+                }
                 value={baseForm.description}
                 onChange={(e) =>
                   setBaseForm({ ...baseForm, description: e.target.value })
@@ -592,7 +663,6 @@ export default function PostAdPage() {
               />
             </div>
 
-            {/* Navigation buttons */}
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
               <button
                 onClick={() => setStep(1)}
@@ -640,26 +710,46 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 3 — Job specific details ── */}
+        {/* ── STEP 3 — Job ── */}
         {step === 3 && listingType === "job" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
             <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              Job details
+              {baseForm.is_wanted ? "Your details" : "Job details"}
             </h2>
 
-            <div>
-              <label style={labelStyle}>Company name</label>
-              <input
-                style={inputStyle}
-                placeholder="e.g. Himalayan Cafe"
-                value={jobForm.company_name}
-                onChange={(e) =>
-                  setJobForm({ ...jobForm, company_name: e.target.value })
-                }
-              />
-            </div>
+            {/* Info banner */}
+            {baseForm.is_wanted && (
+              <div
+                style={{
+                  background: "#EEEDFE",
+                  border: "0.5px solid #AFA9EC",
+                  borderRadius: "10px",
+                  padding: "12px 16px",
+                  fontSize: "13px",
+                  color: "#3C3489",
+                }}
+              >
+                🔍 You're posting as a <strong>job seeker</strong> — fill in
+                your details and what you're looking for.
+              </div>
+            )}
+
+            {/* Company name — only for employers */}
+            {!baseForm.is_wanted && (
+              <div>
+                <label style={labelStyle}>Company name</label>
+                <input
+                  style={inputStyle}
+                  placeholder="e.g. Himalayan Cafe"
+                  value={jobForm.company_name}
+                  onChange={(e) =>
+                    setJobForm({ ...jobForm, company_name: e.target.value })
+                  }
+                />
+              </div>
+            )}
 
             <div
               style={{
@@ -669,7 +759,9 @@ export default function PostAdPage() {
               }}
             >
               <div>
-                <label style={labelStyle}>Job type *</label>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted ? "Type of work *" : "Job type *"}
+                </label>
                 <select
                   style={inputStyle}
                   value={jobForm.job_type}
@@ -685,7 +777,9 @@ export default function PostAdPage() {
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>Salary type</label>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted ? "Expected pay type" : "Salary type"}
+                </label>
                 <select
                   style={inputStyle}
                   value={jobForm.salary_type}
@@ -703,11 +797,13 @@ export default function PostAdPage() {
             </div>
 
             <div>
-              <label style={labelStyle}>Salary (AUD)</label>
+              <label style={labelStyle}>
+                {baseForm.is_wanted ? "Expected salary (AUD)" : "Salary (AUD)"}
+              </label>
               <input
                 type="number"
                 style={inputStyle}
-                placeholder="e.g. 23.50"
+                placeholder={baseForm.is_wanted ? "e.g. 25.00" : "e.g. 23.50"}
                 value={jobForm.salary}
                 onChange={(e) =>
                   setJobForm({ ...jobForm, salary: e.target.value })
@@ -716,10 +812,16 @@ export default function PostAdPage() {
             </div>
 
             <div>
-              <label style={labelStyle}>Experience required</label>
+              <label style={labelStyle}>
+                {baseForm.is_wanted ? "My experience" : "Experience required"}
+              </label>
               <input
                 style={inputStyle}
-                placeholder="e.g. 1 year kitchen experience"
+                placeholder={
+                  baseForm.is_wanted
+                    ? "e.g. 2 years kitchen experience"
+                    : "e.g. 1 year kitchen experience"
+                }
                 value={jobForm.experience_required}
                 onChange={(e) =>
                   setJobForm({
@@ -731,10 +833,16 @@ export default function PostAdPage() {
             </div>
 
             <div>
-              <label style={labelStyle}>Qualifications</label>
+              <label style={labelStyle}>
+                {baseForm.is_wanted ? "My qualifications" : "Qualifications"}
+              </label>
               <textarea
                 style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }}
-                placeholder="e.g. Food handler certificate preferred"
+                placeholder={
+                  baseForm.is_wanted
+                    ? "e.g. Food handler certificate, RSA certified"
+                    : "e.g. Food handler certificate preferred"
+                }
                 value={jobForm.qualifications}
                 onChange={(e) =>
                   setJobForm({ ...jobForm, qualifications: e.target.value })
@@ -742,28 +850,28 @@ export default function PostAdPage() {
               />
             </div>
 
-            {/* Urgent checkbox */}
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                cursor: "pointer",
-                fontSize: "13px",
-                color: "#444",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={jobForm.is_urgent}
-                onChange={(e) =>
-                  setJobForm({ ...jobForm, is_urgent: e.target.checked })
-                }
-              />
-              Mark as urgent — highlights your listing
-            </label>
+            {!baseForm.is_wanted && (
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  color: "#444",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={jobForm.is_urgent}
+                  onChange={(e) =>
+                    setJobForm({ ...jobForm, is_urgent: e.target.checked })
+                  }
+                />
+                Mark as urgent — highlights your listing
+              </label>
+            )}
 
-            {/* Navigation */}
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
               <button
                 onClick={() => setStep(2)}
@@ -795,20 +903,40 @@ export default function PostAdPage() {
                   cursor: loading ? "not-allowed" : "pointer",
                 }}
               >
-                {loading ? "Posting..." : "Post job →"}
+                {loading
+                  ? "Posting..."
+                  : baseForm.is_wanted
+                    ? "Post job wanted →"
+                    : "Post job →"}
               </button>
             </div>
           </div>
         )}
 
-        {/* ── STEP 3 — Room specific details ── */}
+        {/* ── STEP 3 — Room ── */}
         {step === 3 && listingType === "room" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
             <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              Room details
+              {baseForm.is_wanted ? "What you're looking for" : "Room details"}
             </h2>
+
+            {baseForm.is_wanted && (
+              <div
+                style={{
+                  background: "#FFF1E0",
+                  border: "0.5px solid #EFD9C0",
+                  borderRadius: "10px",
+                  padding: "12px 16px",
+                  fontSize: "13px",
+                  color: "#633806",
+                }}
+              >
+                🏘️ You're posting as a <strong>room seeker</strong> — fill in
+                what you're looking for.
+              </div>
+            )}
 
             <div
               style={{
@@ -818,7 +946,9 @@ export default function PostAdPage() {
               }}
             >
               <div>
-                <label style={labelStyle}>Room type *</label>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted ? "Room type needed" : "Room type *"}
+                </label>
                 <select
                   style={inputStyle}
                   value={roomForm.room_type}
@@ -834,7 +964,7 @@ export default function PostAdPage() {
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>Furnishing</label>
+                <label style={labelStyle}>Furnishing preference</label>
                 <select
                   style={inputStyle}
                   value={roomForm.furnishing}
@@ -859,11 +989,15 @@ export default function PostAdPage() {
               }}
             >
               <div>
-                <label style={labelStyle}>Weekly rent (AUD) *</label>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted
+                    ? "Max budget/wk (AUD)"
+                    : "Weekly rent (AUD) *"}
+                </label>
                 <input
                   type="number"
                   style={inputStyle}
-                  placeholder="e.g. 250"
+                  placeholder={baseForm.is_wanted ? "e.g. 300" : "e.g. 250"}
                   value={roomForm.price}
                   onChange={(e) =>
                     setRoomForm({ ...roomForm, price: e.target.value })
@@ -871,7 +1005,9 @@ export default function PostAdPage() {
                 />
               </div>
               <div>
-                <label style={labelStyle}>Available from</label>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted ? "Move in date" : "Available from"}
+                </label>
                 <input
                   type="date"
                   style={inputStyle}
@@ -883,63 +1019,77 @@ export default function PostAdPage() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                gap: "12px",
-              }}
-            >
-              <div>
-                <label style={labelStyle}>Bedrooms</label>
-                <input
-                  type="number"
-                  min="1"
-                  style={inputStyle}
-                  value={roomForm.bedrooms}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, bedrooms: e.target.value })
-                  }
-                />
+            {!baseForm.is_wanted && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: "12px",
+                }}
+              >
+                <div>
+                  <label style={labelStyle}>Bedrooms</label>
+                  <input
+                    type="number"
+                    min="1"
+                    style={inputStyle}
+                    value={roomForm.bedrooms}
+                    onChange={(e) =>
+                      setRoomForm({ ...roomForm, bedrooms: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Bathrooms</label>
+                  <input
+                    type="number"
+                    min="1"
+                    style={inputStyle}
+                    value={roomForm.bathrooms}
+                    onChange={(e) =>
+                      setRoomForm({ ...roomForm, bathrooms: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Max occupants</label>
+                  <input
+                    type="number"
+                    min="1"
+                    style={inputStyle}
+                    value={roomForm.max_occupants}
+                    onChange={(e) =>
+                      setRoomForm({
+                        ...roomForm,
+                        max_occupants: e.target.value,
+                      })
+                    }
+                  />
+                </div>
               </div>
-              <div>
-                <label style={labelStyle}>Bathrooms</label>
-                <input
-                  type="number"
-                  min="1"
-                  style={inputStyle}
-                  value={roomForm.bathrooms}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, bathrooms: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Max occupants</label>
-                <input
-                  type="number"
-                  min="1"
-                  style={inputStyle}
-                  value={roomForm.max_occupants}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, max_occupants: e.target.value })
-                  }
-                />
-              </div>
-            </div>
+            )}
 
-            {/* Checkboxes */}
             <div
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
               {[
                 {
                   key: "bills_included",
-                  label: "Bills included (electricity, water, internet)",
+                  label: baseForm.is_wanted
+                    ? "Bills included preferred"
+                    : "Bills included (electricity, water, internet)",
                 },
                 { key: "nepalese_household", label: "🇳🇵 Nepalese household" },
-                { key: "pets_allowed", label: "Pets allowed" },
-                { key: "parking_available", label: "Parking available" },
+                {
+                  key: "pets_allowed",
+                  label: baseForm.is_wanted ? "I have pets" : "Pets allowed",
+                },
+                {
+                  key: "parking_available",
+                  label: baseForm.is_wanted
+                    ? "Parking needed"
+                    : "Parking available",
+                },
               ].map(({ key, label }) => (
                 <label
                   key={key}
@@ -964,7 +1114,6 @@ export default function PostAdPage() {
               ))}
             </div>
 
-            {/* Navigation */}
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
               <button
                 onClick={() => setStep(2)}
@@ -996,13 +1145,17 @@ export default function PostAdPage() {
                   cursor: loading ? "not-allowed" : "pointer",
                 }}
               >
-                {loading ? "Posting..." : "Post room →"}
+                {loading
+                  ? "Posting..."
+                  : baseForm.is_wanted
+                    ? "Post room wanted →"
+                    : "Post room →"}
               </button>
             </div>
           </div>
         )}
 
-        {/* ── STEP 3 — Announcement specific details ── */}
+        {/* ── STEP 3 — Announcement ── */}
         {step === 3 && listingType === "announcement" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -1010,7 +1163,6 @@ export default function PostAdPage() {
             <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
               Announcement details
             </h2>
-
             <div>
               <label style={labelStyle}>Category *</label>
               <select
@@ -1037,7 +1189,6 @@ export default function PostAdPage() {
                 ))}
               </select>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -1087,7 +1238,6 @@ export default function PostAdPage() {
                 </select>
               </div>
             </div>
-
             <div
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
@@ -1136,7 +1286,6 @@ export default function PostAdPage() {
                 Mark as urgent
               </label>
             </div>
-
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
               <button
                 onClick={() => setStep(2)}
@@ -1174,7 +1323,7 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 3 — Event specific details ── */}
+        {/* ── STEP 3 — Event ── */}
         {step === 3 && listingType === "event" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -1182,7 +1331,6 @@ export default function PostAdPage() {
             <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
               Event details
             </h2>
-
             <div>
               <label style={labelStyle}>Category *</label>
               <select
@@ -1208,7 +1356,6 @@ export default function PostAdPage() {
                 ))}
               </select>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -1242,7 +1389,6 @@ export default function PostAdPage() {
                 />
               </div>
             </div>
-
             <div>
               <label style={labelStyle}>Venue / Address</label>
               <input
@@ -1254,7 +1400,6 @@ export default function PostAdPage() {
                 }
               />
             </div>
-
             <div>
               <label style={labelStyle}>Organiser</label>
               <input
@@ -1266,7 +1411,6 @@ export default function PostAdPage() {
                 }
               />
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -1303,7 +1447,6 @@ export default function PostAdPage() {
                 />
               </div>
             </div>
-
             <div>
               <label style={labelStyle}>
                 Event URL (registration / tickets)
@@ -1318,7 +1461,6 @@ export default function PostAdPage() {
                 }
               />
             </div>
-
             <div
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
@@ -1361,7 +1503,6 @@ export default function PostAdPage() {
                 Online / virtual event
               </label>
             </div>
-
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
               <button
                 onClick={() => setStep(2)}
@@ -1408,7 +1549,8 @@ export default function PostAdPage() {
             </div>
           </div>
         )}
-        {/* ── STEP 4 — Image upload ── */}
+
+        {/* ── STEP 4 — Images ── */}
         {step === 4 && createdListingId && (
           <ImageUpload
             listingId={createdListingId}

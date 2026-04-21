@@ -7,9 +7,8 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
-import { trackView } from "../../api/listings";
+import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
-import { getSimilarListings } from "../../api/listings";
 import { Link } from "react-router-dom";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
@@ -30,6 +29,7 @@ export default function RoomDetailPage() {
     queryKey: ["room", id, isListingRoute],
     queryFn: () => (isListingRoute ? getRoomByListing(id) : getRoom(id)),
   });
+
   const { data: similarListings } = useQuery({
     queryKey: ["similar", room?.listing_id],
     queryFn: () => getSimilarListings(room.listing_id),
@@ -41,13 +41,10 @@ export default function RoomDetailPage() {
   );
 
   useEffect(() => {
-    if (room?.listing_id) {
-      trackView(room.listing_id).catch(() => {});
-    }
+    if (room?.listing_id) trackView(room.listing_id).catch(() => {});
   }, [room?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
-
   if (error)
     return (
       <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
@@ -55,9 +52,11 @@ export default function RoomDetailPage() {
       </div>
     );
 
+  const isWanted = room?.is_wanted;
+
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button, share and save */}
+      {/* Top bar */}
       <div
         style={{
           display: "flex",
@@ -66,31 +65,19 @@ export default function RoomDetailPage() {
           marginBottom: "20px",
         }}
       >
-        {/* Left: back + views */}
-        <div
+        <button
+          onClick={() => navigate("/rooms")}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            minWidth: 0,
+            background: "transparent",
+            border: "none",
+            color: "#534AB7",
+            fontSize: "13px",
+            cursor: "pointer",
+            padding: 0,
           }}
         >
-          <button
-            onClick={() => navigate("/rooms")}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#534AB7",
-              fontSize: "13px",
-              cursor: "pointer",
-              padding: 0,
-              whiteSpace: "nowrap",
-            }}
-          >
-            ← Back to rooms
-          </button>
-        </div>
-        {/* Right: save + share */}
+          ← Back to rooms
+        </button>
         <div
           style={{
             display: "flex",
@@ -100,9 +87,7 @@ export default function RoomDetailPage() {
           }}
         >
           {room?.view_count > 0 && (
-            <span
-              style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
-            >
+            <span style={{ fontSize: "11px", color: "#aaa" }}>
               👁️ {room.view_count}
             </span>
           )}
@@ -138,87 +123,160 @@ export default function RoomDetailPage() {
           </div>
         </div>
       )}
+
       {/* Image gallery */}
       {room?.images?.length > 0 && <ImageGallery images={room.images} />}
 
       {/* Hero section */}
       <div
         style={{
-          background: "#FFF1E0",
+          background: isWanted
+            ? "linear-gradient(135deg, #FFF1E0 0%, #FAEEDA 100%)"
+            : "#FFF1E0",
           borderRadius: "14px",
           padding: "20px",
           marginBottom: "12px",
+          borderLeft: isWanted ? "4px solid #E87722" : "none",
         }}
       >
-        <div>
-          {/* Badges */}
-          <div
-            style={{
-              display: "flex",
-              gap: "6px",
-              marginBottom: "12px",
-              flexWrap: "wrap",
-            }}
-          >
+        {/* Badges */}
+        <div
+          style={{
+            display: "flex",
+            gap: "6px",
+            marginBottom: "12px",
+            flexWrap: "wrap",
+          }}
+        >
+          {isWanted && (
             <span
               style={{
-                background: "#fff",
-                color: "#633806",
+                background: "#E87722",
+                color: "#fff",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "3px 10px",
+                borderRadius: "20px",
+              }}
+            >
+              🏘️ Looking for room
+            </span>
+          )}
+          {room.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg, #E87722, #534AB7)",
+                color: "#fff",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "3px 10px",
+                borderRadius: "20px",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
+          <span
+            style={{
+              background: "#fff",
+              color: "#633806",
+              fontSize: "11px",
+              fontWeight: 500,
+              padding: "3px 10px",
+              borderRadius: "20px",
+            }}
+          >
+            🏠 {room.room_type?.replace("_", " ")}
+          </span>
+          {room.bills_included && (
+            <span
+              style={{
+                background: "#E1F5EE",
+                color: "#085041",
                 fontSize: "11px",
                 fontWeight: 500,
                 padding: "3px 10px",
                 borderRadius: "20px",
               }}
             >
-              🏠 {room.room_type?.replace("_", " ")}
+              Bills included
             </span>
-            {room.bills_included && (
-              <span
-                style={{
-                  background: "#E1F5EE",
-                  color: "#085041",
-                  fontSize: "11px",
-                  fontWeight: 500,
-                  padding: "3px 10px",
-                  borderRadius: "20px",
-                }}
-              >
-                Bills included
-              </span>
-            )}
-            {room.nepalese_household && (
-              <span
-                style={{
-                  background: "#EEEDFE",
-                  color: "#3C3489",
-                  fontSize: "11px",
-                  fontWeight: 500,
-                  padding: "3px 10px",
-                  borderRadius: "20px",
-                }}
-              >
-                🇳🇵 Nepalese home
-              </span>
-            )}
-          </div>
-
-          <h1
-            style={{
-              fontSize: "26px",
-              fontWeight: 700,
-              color: "#26215C",
-              marginBottom: "8px",
-              lineHeight: 1.2,
-            }}
-          >
-            {room.listing_title}
-          </h1>
-          <p style={{ fontSize: "13px", color: "#666" }}>
-            📍 {room.listing_location}, {room.listing_state}
-          </p>
+          )}
+          {room.nepalese_household && (
+            <span
+              style={{
+                background: "#EEEDFE",
+                color: "#3C3489",
+                fontSize: "11px",
+                fontWeight: 500,
+                padding: "3px 10px",
+                borderRadius: "20px",
+              }}
+            >
+              🇳🇵 Nepalese home
+            </span>
+          )}
         </div>
 
-        {/* Price badge — full width */}
+        {/* Title */}
+        <h1
+          style={{
+            fontSize: "22px",
+            fontWeight: 700,
+            color: "#26215C",
+            marginBottom: "6px",
+            lineHeight: 1.25,
+          }}
+        >
+          {room.listing_title}
+        </h1>
+
+        {/* Subtitle */}
+        {isWanted ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: "14px",
+            }}
+          >
+            <div
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                background: "#E87722",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "12px",
+                fontWeight: 600,
+                flexShrink: 0,
+              }}
+            >
+              {room.posted_by?.[0]?.toUpperCase()}
+            </div>
+            <div>
+              <span
+                style={{ fontSize: "13px", fontWeight: 500, color: "#E87722" }}
+              >
+                {room.posted_by}
+              </span>
+              <span style={{ fontSize: "13px", color: "#666" }}>
+                {" "}
+                · 📍 {room.listing_location}, {room.listing_state}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p style={{ fontSize: "13px", color: "#666", marginBottom: "14px" }}>
+            📍 {room.listing_location}, {room.listing_state}
+          </p>
+        )}
+
+        {/* Price badge */}
         <div
           style={{
             background: "#fff",
@@ -228,7 +286,6 @@ export default function RoomDetailPage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginTop: "14px",
           }}
         >
           <span
@@ -239,7 +296,7 @@ export default function RoomDetailPage() {
               letterSpacing: "0.05em",
             }}
           >
-            Weekly rent
+            {isWanted ? "Max budget / week" : "Weekly rent"}
           </span>
           <span style={{ fontSize: "18px", fontWeight: 700, color: "#26215C" }}>
             {room.price_display}
@@ -257,55 +314,117 @@ export default function RoomDetailPage() {
         }}
       >
         {/* Details grid */}
-        <div
-          className="room-details-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            borderBottom: "0.5px solid #e5e5e5",
-          }}
-        >
-          {[
-            { label: "Bedrooms", value: room.bedrooms },
-            { label: "Bathrooms", value: room.bathrooms },
-            { label: "Max occupants", value: room.max_occupants },
-            { label: "Bond", value: room.bond?.replace("_", " ") },
-            {
-              label: "Expires",
-              value: room.expires_at
-                ? new Date(room.expires_at).toLocaleDateString("en-AU", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })
-                : "30 days",
-            },
-          ].map(({ label, value }) => (
-            <div
-              key={label}
-              style={{
-                padding: "16px",
-                borderRight: "0.5px solid #e5e5e5",
-                textAlign: "center",
-              }}
-            >
+        {!isWanted && (
+          <div
+            className="room-details-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(5, 1fr)",
+              borderBottom: "0.5px solid #e5e5e5",
+            }}
+          >
+            {[
+              { label: "Bedrooms", value: room.bedrooms },
+              { label: "Bathrooms", value: room.bathrooms },
+              { label: "Max occupants", value: room.max_occupants },
+              { label: "Bond", value: room.bond?.replace("_", " ") },
+              {
+                label: "Expires",
+                value: room.expires_at
+                  ? new Date(room.expires_at).toLocaleDateString("en-AU", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "30 days",
+              },
+            ].map(({ label, value }) => (
               <div
+                key={label}
                 style={{
-                  fontSize: "11px",
-                  color: "#aaa",
-                  marginBottom: "4px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
+                  padding: "16px",
+                  borderRight: "0.5px solid #e5e5e5",
+                  textAlign: "center",
                 }}
               >
-                {label}
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#aaa",
+                    marginBottom: "4px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {label}
+                </div>
+                <div
+                  style={{ fontSize: "14px", color: "#333", fontWeight: 600 }}
+                >
+                  {value}
+                </div>
               </div>
-              <div style={{ fontSize: "14px", color: "#333", fontWeight: 600 }}>
-                {value}
+            ))}
+          </div>
+        )}
+
+        {/* Wanted details grid */}
+        {isWanted && (
+          <div
+            className="room-details-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              borderBottom: "0.5px solid #e5e5e5",
+            }}
+          >
+            {[
+              {
+                label: "Room type needed",
+                value: room.room_type?.replace("_", " "),
+              },
+              {
+                label: "Furnishing pref.",
+                value: room.furnishing?.replace("_", " ") || "Any",
+              },
+              {
+                label: "Move in",
+                value: room.available_from
+                  ? new Date(room.available_from).toLocaleDateString("en-AU", {
+                      day: "numeric",
+                      month: "short",
+                    })
+                  : "Flexible",
+              },
+            ].map(({ label, value }) => (
+              <div
+                key={label}
+                style={{
+                  padding: "16px",
+                  borderRight: "0.5px solid #e5e5e5",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#aaa",
+                    marginBottom: "4px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {label}
+                </div>
+                <div
+                  style={{ fontSize: "14px", color: "#333", fontWeight: 600 }}
+                >
+                  {value}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <div style={{ padding: "24px" }}>
           {/* Description */}
@@ -319,7 +438,7 @@ export default function RoomDetailPage() {
                   marginBottom: "8px",
                 }}
               >
-                About this room
+                {isWanted ? "About me" : "About this room"}
               </h3>
               <p
                 style={{
@@ -350,10 +469,22 @@ export default function RoomDetailPage() {
             }}
           >
             {[
-              room.furnishing && { label: room.furnishing, emoji: "🛋️" },
-              room.bills_included && { label: "Bills included", emoji: "💡" },
-              room.pets_allowed && { label: "Pets allowed", emoji: "🐾" },
-              room.parking_available && { label: "Parking", emoji: "🚗" },
+              room.furnishing && {
+                label: room.furnishing.replace("_", " "),
+                emoji: "🛋️",
+              },
+              room.bills_included && {
+                label: isWanted ? "Bills pref." : "Bills included",
+                emoji: "💡",
+              },
+              room.pets_allowed && {
+                label: isWanted ? "Has pets" : "Pets allowed",
+                emoji: "🐾",
+              },
+              room.parking_available && {
+                label: isWanted ? "Needs parking" : "Parking",
+                emoji: "🚗",
+              },
               room.nepalese_household && {
                 label: "Nepalese household",
                 emoji: "🇳🇵",
@@ -381,7 +512,7 @@ export default function RoomDetailPage() {
           </div>
 
           {/* Available from */}
-          {room.available_from && (
+          {room.available_from && !isWanted && (
             <div
               style={{
                 background: "#E1F5EE",
@@ -403,6 +534,29 @@ export default function RoomDetailPage() {
             </div>
           )}
 
+          {/* Move in date for seekers */}
+          {room.available_from && isWanted && (
+            <div
+              style={{
+                background: "#FFF1E0",
+                border: "0.5px solid #EFD9C0",
+                borderRadius: "8px",
+                padding: "12px 16px",
+                marginBottom: "24px",
+                fontSize: "13px",
+                color: "#633806",
+                fontWeight: 500,
+              }}
+            >
+              📅 Looking to move in from{" "}
+              {new Date(room.available_from).toLocaleDateString("en-AU", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </div>
+          )}
+
           {/* Posted by */}
           <div
             style={{
@@ -411,7 +565,7 @@ export default function RoomDetailPage() {
               gap: "10px",
               marginBottom: "24px",
               padding: "12px 16px",
-              background: "#F5F4F0",
+              background: isWanted ? "#FFF1E0" : "#F5F4F0",
               borderRadius: "10px",
             }}
           >
@@ -439,7 +593,7 @@ export default function RoomDetailPage() {
                 {room.posted_by}
               </div>
               <div style={{ fontSize: "11px", color: "#888" }}>
-                Posted{" "}
+                {isWanted ? "Looking for room · " : "Posted "}
                 {new Date(room.created_at).toLocaleDateString("en-AU", {
                   day: "numeric",
                   month: "long",
@@ -447,6 +601,21 @@ export default function RoomDetailPage() {
                 })}
               </div>
             </div>
+            {isWanted && (
+              <span
+                style={{
+                  marginLeft: "auto",
+                  background: "#E87722",
+                  color: "#fff",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  padding: "3px 10px",
+                  borderRadius: "20px",
+                }}
+              >
+                🏘️ Room Seeker
+              </span>
+            )}
           </div>
 
           <div
@@ -462,8 +631,25 @@ export default function RoomDetailPage() {
               marginBottom: "12px",
             }}
           >
-            Contact landlord
+            {isWanted ? "Contact this person" : "Contact landlord"}
           </h3>
+
+          {isWanted && isAuthenticated && (
+            <div
+              style={{
+                background: "#FFF1E0",
+                border: "0.5px solid #EFD9C0",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                marginBottom: "16px",
+                fontSize: "13px",
+                color: "#633806",
+              }}
+            >
+              💡 This person is looking for a room — reach out if you have one
+              available!
+            </div>
+          )}
 
           {isAuthenticated ? (
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -554,7 +740,9 @@ export default function RoomDetailPage() {
                   Sign in to view contact details
                 </div>
                 <div style={{ fontSize: "12px", color: "#888" }}>
-                  Create a free account to contact the landlord
+                  {isWanted
+                    ? "Create a free account to contact this room seeker"
+                    : "Create a free account to contact the landlord"}
                 </div>
               </div>
               <a
@@ -567,13 +755,13 @@ export default function RoomDetailPage() {
                   textDecoration: "none",
                   fontSize: "13px",
                   fontWeight: 500,
-                  whiteSpace: "nowrap",
                 }}
               >
                 Sign in →
               </a>
             </div>
           )}
+
           {/* Report */}
           <div
             style={{
@@ -586,6 +774,7 @@ export default function RoomDetailPage() {
           </div>
         </div>
       </div>
+
       {/* Similar listings */}
       {similarListings?.length > 0 && (
         <div style={{ marginTop: "24px" }}>
@@ -619,7 +808,7 @@ export default function RoomDetailPage() {
                   transition: "border-color 0.15s",
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#AFA9EC")
+                  (e.currentTarget.style.borderColor = "#EFD9C0")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.borderColor = "#e5e5e5")
@@ -633,7 +822,7 @@ export default function RoomDetailPage() {
                       width: "36px",
                       height: "36px",
                       borderRadius: "8px",
-                      background: "#EEEDFE",
+                      background: "#FFF1E0",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -641,7 +830,7 @@ export default function RoomDetailPage() {
                       flexShrink: 0,
                     }}
                   >
-                    💼
+                    🏠
                   </div>
                   <div>
                     <div
@@ -662,7 +851,7 @@ export default function RoomDetailPage() {
                 <span
                   style={{
                     fontSize: "11px",
-                    color: "#534AB7",
+                    color: "#E87722",
                     fontWeight: 500,
                     whiteSpace: "nowrap",
                   }}
@@ -674,6 +863,7 @@ export default function RoomDetailPage() {
           </div>
         </div>
       )}
+
       <style>{`
         @media (max-width: 600px) {
           .room-details-grid {

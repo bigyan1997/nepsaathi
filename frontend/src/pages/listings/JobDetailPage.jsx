@@ -7,9 +7,8 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
-import { trackView } from "../../api/listings";
+import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
-import { getSimilarListings } from "../../api/listings";
 import { Link } from "react-router-dom";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
@@ -30,22 +29,22 @@ export default function JobDetailPage() {
     queryKey: ["job", id, isListingRoute],
     queryFn: () => (isListingRoute ? getJobByListing(id) : getJob(id)),
   });
+
   usePageTitle(
     job?.listing_title ? `${job.listing_title} — Job` : "Job Listing",
   );
+
   const { data: similarListings } = useQuery({
     queryKey: ["similar", job?.listing_id],
     queryFn: () => getSimilarListings(job.listing_id),
     enabled: !!job?.listing_id,
   });
+
   useEffect(() => {
-    if (job?.listing_id) {
-      trackView(job.listing_id).catch(() => {});
-    }
+    if (job?.listing_id) trackView(job.listing_id).catch(() => {});
   }, [job?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
-
   if (error)
     return (
       <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
@@ -53,9 +52,28 @@ export default function JobDetailPage() {
       </div>
     );
 
+  const isWanted = job?.is_wanted;
+
+  // Color scheme based on type
+  const scheme = isWanted
+    ? {
+        heroBg: "linear-gradient(135deg, #EEEDFE 0%, #E8E6FC 100%)",
+        accent: "#534AB7",
+        accentLight: "#EEEDFE",
+        badgeBg: "#534AB7",
+        badgeColor: "#fff",
+      }
+    : {
+        heroBg: "#EEEDFE",
+        accent: "#534AB7",
+        accentLight: "#EEEDFE",
+        badgeBg: "#fff",
+        badgeColor: "#534AB7",
+      };
+
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button, share and save */}
+      {/* Top bar */}
       <div
         style={{
           display: "flex",
@@ -64,31 +82,19 @@ export default function JobDetailPage() {
           marginBottom: "20px",
         }}
       >
-        {/* Left: back + views */}
-        <div
+        <button
+          onClick={() => navigate("/jobs")}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            minWidth: 0,
+            background: "transparent",
+            border: "none",
+            color: "#534AB7",
+            fontSize: "13px",
+            cursor: "pointer",
+            padding: 0,
           }}
         >
-          <button
-            onClick={() => navigate("/jobs")}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#534AB7",
-              fontSize: "13px",
-              cursor: "pointer",
-              padding: 0,
-              whiteSpace: "nowrap",
-            }}
-          >
-            ← Back to jobs
-          </button>
-        </div>
-        {/* Right: save + share */}
+          ← Back to jobs
+        </button>
         <div
           style={{
             display: "flex",
@@ -98,9 +104,7 @@ export default function JobDetailPage() {
           }}
         >
           {job?.view_count > 0 && (
-            <span
-              style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
-            >
+            <span style={{ fontSize: "11px", color: "#aaa" }}>
               👁️ {job.view_count}
             </span>
           )}
@@ -143,10 +147,11 @@ export default function JobDetailPage() {
       {/* Hero section */}
       <div
         style={{
-          background: "#EEEDFE",
+          background: scheme.heroBg,
           borderRadius: "14px",
           padding: "20px",
           marginBottom: "12px",
+          borderLeft: isWanted ? "4px solid #534AB7" : "none",
         }}
       >
         {/* Badges */}
@@ -158,7 +163,21 @@ export default function JobDetailPage() {
             flexWrap: "wrap",
           }}
         >
-          {job.is_urgent && (
+          {isWanted && (
+            <span
+              style={{
+                background: "#534AB7",
+                color: "#fff",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "3px 10px",
+                borderRadius: "20px",
+              }}
+            >
+              🔍 Looking for work
+            </span>
+          )}
+          {job.is_urgent && !isWanted && (
             <span
               style={{
                 background: "#FCEBEB",
@@ -172,14 +191,29 @@ export default function JobDetailPage() {
               🔴 Urgent
             </span>
           )}
+          {job.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg, #E87722, #534AB7)",
+                color: "#fff",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "3px 10px",
+                borderRadius: "20px",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
           <span
             style={{
-              background: "#fff",
-              color: "#534AB7",
+              background: scheme.badgeBg,
+              color: scheme.badgeColor,
               fontSize: "11px",
               fontWeight: 500,
               padding: "3px 10px",
               borderRadius: "20px",
+              border: isWanted ? "none" : "0.5px solid #AFA9EC",
             }}
           >
             💼 {job.job_type?.replace("_", " ")}
@@ -199,22 +233,66 @@ export default function JobDetailPage() {
           {job.listing_title}
         </h1>
 
-        {/* Company and location */}
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#534AB7",
-            marginBottom: "3px",
-            fontWeight: 500,
-          }}
-        >
-          {job.company_name || "Company not specified"}
-        </p>
-        <p style={{ fontSize: "13px", color: "#666", marginBottom: "14px" }}>
-          📍 {job.listing_location}, {job.listing_state}
-        </p>
+        {/* Subtitle */}
+        {isWanted ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: "14px",
+            }}
+          >
+            <div
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                background: "#534AB7",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "12px",
+                fontWeight: 600,
+                flexShrink: 0,
+              }}
+            >
+              {job.posted_by?.[0]?.toUpperCase()}
+            </div>
+            <div>
+              <span
+                style={{ fontSize: "13px", fontWeight: 500, color: "#534AB7" }}
+              >
+                {job.posted_by}
+              </span>
+              <span style={{ fontSize: "13px", color: "#666" }}>
+                {" "}
+                · 📍 {job.listing_location}, {job.listing_state}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p
+              style={{
+                fontSize: "14px",
+                color: "#534AB7",
+                marginBottom: "3px",
+                fontWeight: 500,
+              }}
+            >
+              {job.company_name || "Company not specified"}
+            </p>
+            <p
+              style={{ fontSize: "13px", color: "#666", marginBottom: "14px" }}
+            >
+              📍 {job.listing_location}, {job.listing_state}
+            </p>
+          </>
+        )}
 
-        {/* Salary badge — full width on mobile */}
+        {/* Salary badge */}
         <div
           style={{
             background: "#fff",
@@ -234,7 +312,7 @@ export default function JobDetailPage() {
               letterSpacing: "0.05em",
             }}
           >
-            Salary
+            {isWanted ? "Expected salary" : "Salary"}
           </span>
           <span style={{ fontSize: "18px", fontWeight: 700, color: "#26215C" }}>
             {job.salary_display}
@@ -261,9 +339,12 @@ export default function JobDetailPage() {
           }}
         >
           {[
-            { label: "Job type", value: job.job_type?.replace("_", " ") },
             {
-              label: "Experience",
+              label: isWanted ? "Work type" : "Job type",
+              value: job.job_type?.replace("_", " "),
+            },
+            {
+              label: isWanted ? "My experience" : "Experience",
               value: job.experience_required || "Not specified",
             },
             {
@@ -318,7 +399,7 @@ export default function JobDetailPage() {
                   marginBottom: "8px",
                 }}
               >
-                About the role
+                {isWanted ? "About me" : "About the role"}
               </h3>
               <p
                 style={{
@@ -350,7 +431,7 @@ export default function JobDetailPage() {
                   marginBottom: "8px",
                 }}
               >
-                Qualifications
+                {isWanted ? "My qualifications" : "Qualifications"}
               </h3>
               <p
                 style={{
@@ -379,7 +460,7 @@ export default function JobDetailPage() {
               gap: "10px",
               marginBottom: "24px",
               padding: "12px 16px",
-              background: "#F5F4F0",
+              background: isWanted ? "#EEEDFE" : "#F5F4F0",
               borderRadius: "10px",
             }}
           >
@@ -407,7 +488,7 @@ export default function JobDetailPage() {
                 {job.posted_by}
               </div>
               <div style={{ fontSize: "11px", color: "#888" }}>
-                Posted{" "}
+                {isWanted ? "Looking for work · " : "Posted "}
                 {new Date(job.created_at).toLocaleDateString("en-AU", {
                   day: "numeric",
                   month: "long",
@@ -415,9 +496,23 @@ export default function JobDetailPage() {
                 })}
               </div>
             </div>
+            {isWanted && (
+              <span
+                style={{
+                  marginLeft: "auto",
+                  background: "#534AB7",
+                  color: "#fff",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  padding: "3px 10px",
+                  borderRadius: "20px",
+                }}
+              >
+                🔍 Job Seeker
+              </span>
+            )}
           </div>
 
-          {/* Divider */}
           <div
             style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
           />
@@ -431,8 +526,25 @@ export default function JobDetailPage() {
               marginBottom: "12px",
             }}
           >
-            Apply / Contact
+            {isWanted ? "Contact this person" : "Apply / Contact"}
           </h3>
+
+          {isWanted && isAuthenticated && (
+            <div
+              style={{
+                background: "#EEEDFE",
+                border: "0.5px solid #AFA9EC",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                marginBottom: "16px",
+                fontSize: "13px",
+                color: "#3C3489",
+              }}
+            >
+              💡 This person is looking for work — reach out if you have an
+              opportunity for them!
+            </div>
+          )}
 
           {isAuthenticated ? (
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -523,7 +635,9 @@ export default function JobDetailPage() {
                   Sign in to view contact details
                 </div>
                 <div style={{ fontSize: "12px", color: "#888" }}>
-                  Create a free account to apply for this job
+                  {isWanted
+                    ? "Create a free account to contact this job seeker"
+                    : "Create a free account to apply for this job"}
                 </div>
               </div>
               <a
@@ -536,7 +650,6 @@ export default function JobDetailPage() {
                   textDecoration: "none",
                   fontSize: "13px",
                   fontWeight: 500,
-                  whiteSpace: "nowrap",
                 }}
               >
                 Sign in →
@@ -556,6 +669,7 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+
       {/* Similar listings */}
       {similarListings?.length > 0 && (
         <div style={{ marginTop: "24px" }}>
@@ -644,6 +758,7 @@ export default function JobDetailPage() {
           </div>
         </div>
       )}
+
       <style>{`
         @media (max-width: 600px) {
           .job-details-grid {

@@ -53,6 +53,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'updated_at',
             'expires_at',
             'view_count',
+            'is_wanted',
         )
         read_only_fields = (
             'id',
@@ -107,6 +108,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_email',
             'contact_phone',
             'contact_whatsapp',
+            'is_wanted',
         )
         read_only_fields = ('id',)
         extra_kwargs = {
