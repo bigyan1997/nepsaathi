@@ -945,6 +945,8 @@ export default function PostAdPage() {
                 gap: "12px",
               }}
             >
+            <div 
+            className="room-type-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div>
                 <label style={labelStyle}>
                   {baseForm.is_wanted ? "Room type needed" : "Room type *"}
@@ -988,11 +990,10 @@ export default function PostAdPage() {
                 gap: "12px",
               }}
             >
+              <div className="room-price-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div>
                 <label style={labelStyle}>
-                  {baseForm.is_wanted
-                    ? "Max budget/wk (AUD)"
-                    : "Weekly rent (AUD) *"}
+                  {baseForm.is_wanted ? "Max budget/wk (AUD)" : "Weekly rent (AUD) *"}
                 </label>
                 <input
                   type="number"
@@ -1042,6 +1043,7 @@ export default function PostAdPage() {
 
             {!baseForm.is_wanted && (
               <div
+                className="room-beds-grid"
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr 1fr",
@@ -1112,17 +1114,7 @@ export default function PostAdPage() {
                     : "Parking available",
                 },
               ].map(({ key, label }) => (
-                <label
-                  key={key}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    color: "#444",
-                  }}
-                >
+                <label key={key} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "14px", color: "#444", padding: "8px 0" }}>
                   <input
                     type="checkbox"
                     checked={roomForm[key]}
@@ -1579,6 +1571,19 @@ export default function PostAdPage() {
           />
         )}
       </div>
+      <style>{`
+        @media (max-width: 480px) {
+          .room-beds-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .room-price-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .room-type-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
