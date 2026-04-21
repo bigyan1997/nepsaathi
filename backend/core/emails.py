@@ -195,7 +195,7 @@ def send_contact_email(name, email, subject, message):
         params = {
             'from': 'NepSaathi Contact <noreply@nepsaathi.com>',
             'to': ['hello@nepsaathi.com'],
-            'reply_to': email,
+            'reply_to': f'{name} <{email}>',
             'subject': f'[Contact] {subject} — from {name}',
             'html': html,
         }
