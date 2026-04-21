@@ -63,7 +63,6 @@ export default function RoomsPage() {
     }
   }, [location.search]);
 
-  // Filter by tab on frontend
   const filteredResults = data?.results?.filter((room) => {
     if (activeTab === "") return true;
     if (activeTab === "true") return room.is_wanted === true;
@@ -90,7 +89,7 @@ export default function RoomsPage() {
         </p>
       </div>
 
-      {/* Tab pills */}
+      {/* Tabs */}
       <div
         style={{
           display: "flex",
@@ -106,7 +105,8 @@ export default function RoomsPage() {
             style={{
               background: activeTab === value ? "#E87722" : "#fff",
               color: activeTab === value ? "#fff" : "#E87722",
-              border: `1.5px solid ${activeTab === value ? "#E87722" : "#EFD9C0"}`,
+              border:
+                "1.5px solid " + (activeTab === value ? "#E87722" : "#EFD9C0"),
               borderRadius: "20px",
               padding: "7px 18px",
               fontSize: "13px",
@@ -353,7 +353,7 @@ export default function RoomsPage() {
         </div>
       )}
 
-      {/* Room cards — list style like jobs */}
+      {/* Room cards */}
       <div
         style={{
           display: "flex",
@@ -366,20 +366,20 @@ export default function RoomsPage() {
         {filteredResults?.map((room) => (
           <Link
             key={room.id}
-            to={`/rooms/listing/${room.listing_id}`}
+            to={"/rooms/listing/" + room.listing_id}
             style={{
               background: "#fff",
-              border: `0.5px solid ${room.is_wanted ? "#EFD9C0" : "#e5e5e5"}`,
-              borderRadius: "12px",
-              padding: "16px 20px",
-              textDecoration: "none",
-              display: "block",
-              transition: "all 0.15s",
+              border: "0.5px solid " + (room.is_wanted ? "#EFD9C0" : "#e5e5e5"),
               borderLeft: room.is_wanted
                 ? "3px solid #E87722"
                 : room.is_featured
                   ? "3px solid #E87722"
                   : "0.5px solid #e5e5e5",
+              borderRadius: "12px",
+              padding: "14px 16px",
+              textDecoration: "none",
+              display: "block",
+              transition: "all 0.15s",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.boxShadow =
@@ -396,24 +396,24 @@ export default function RoomsPage() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-start",
-                gap: "12px",
+                gap: "10px",
               }}
             >
-              {/* Left — icon + content */}
+              {/* Left */}
               <div
                 style={{
                   display: "flex",
-                  gap: "14px",
+                  gap: "10px",
                   alignItems: "flex-start",
                   flex: 1,
                   minWidth: 0,
                 }}
               >
-                {/* Icon / thumbnail */}
+                {/* Thumbnail */}
                 <div
                   style={{
-                    width: "56px",
-                    height: "56px",
+                    width: "44px",
+                    height: "44px",
                     borderRadius: "10px",
                     background: room.images?.[0]?.url
                       ? "transparent"
@@ -421,7 +421,7 @@ export default function RoomsPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "24px",
+                    fontSize: "20px",
                     flexShrink: 0,
                     overflow: "hidden",
                   }}
@@ -446,47 +446,41 @@ export default function RoomsPage() {
 
                 {/* Content */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  {/* Badges */}
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "5px",
-                      flexWrap: "wrap",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    {room.is_featured && (
-                      <span
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #E87722, #534AB7)",
-                          color: "#fff",
-                          fontSize: "9px",
-                          fontWeight: 700,
-                          padding: "2px 7px",
-                          borderRadius: "6px",
-                          letterSpacing: "0.03em",
-                        }}
-                      >
-                        ⭐ FEATURED
-                      </span>
-                    )}
-                    {room.is_wanted && (
-                      <span
-                        style={{
-                          background: "#FFF1E0",
-                          color: "#E87722",
-                          fontSize: "9px",
-                          fontWeight: 700,
-                          padding: "2px 7px",
-                          borderRadius: "6px",
-                          letterSpacing: "0.03em",
-                        }}
-                      >
-                        🏘️ LOOKING FOR ROOM
-                      </span>
-                    )}
-                  </div>
+                  {/* Badge — only show one */}
+                  {(room.is_featured || room.is_wanted) && (
+                    <div style={{ marginBottom: "4px" }}>
+                      {room.is_featured && (
+                        <span
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #E87722, #534AB7)",
+                            color: "#fff",
+                            fontSize: "9px",
+                            fontWeight: 700,
+                            padding: "2px 7px",
+                            borderRadius: "6px",
+                          }}
+                        >
+                          ⭐ FEATURED
+                        </span>
+                      )}
+                      {room.is_wanted && (
+                        <span
+                          style={{
+                            background: "#FFF1E0",
+                            color: "#E87722",
+                            fontSize: "9px",
+                            fontWeight: 700,
+                            padding: "2px 7px",
+                            borderRadius: "6px",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          🏘️ Room Seeker
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Title */}
                   <h3
@@ -494,7 +488,7 @@ export default function RoomsPage() {
                       fontSize: "14px",
                       fontWeight: 600,
                       color: "#26215C",
-                      marginBottom: "3px",
+                      marginBottom: "2px",
                       lineHeight: 1.3,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -509,20 +503,22 @@ export default function RoomsPage() {
                     style={{
                       fontSize: "12px",
                       color: "#777",
-                      marginBottom: "8px",
+                      marginBottom: "6px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     📍 {room.listing_location}, {room.listing_state}
-                    {room.is_wanted && room.posted_by && ` · ${room.posted_by}`}
                   </p>
 
-                  {/* Tags */}
+                  {/* Tags — limit to 2 on mobile */}
                   <div
                     style={{
                       display: "flex",
-                      gap: "6px",
-                      flexWrap: "wrap",
-                      alignItems: "center",
+                      gap: "4px",
+                      flexWrap: "nowrap",
+                      overflow: "hidden",
                     }}
                   >
                     <span
@@ -531,8 +527,9 @@ export default function RoomsPage() {
                         color: "#633806",
                         fontSize: "11px",
                         fontWeight: 500,
-                        padding: "2px 9px",
+                        padding: "2px 8px",
                         borderRadius: "8px",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {room.room_type?.replace("_", " ")}
@@ -544,8 +541,9 @@ export default function RoomsPage() {
                           color: "#085041",
                           fontSize: "11px",
                           fontWeight: 500,
-                          padding: "2px 9px",
+                          padding: "2px 8px",
                           borderRadius: "8px",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         Bills incl.
@@ -558,11 +556,12 @@ export default function RoomsPage() {
                           color: "#3C3489",
                           fontSize: "11px",
                           fontWeight: 500,
-                          padding: "2px 9px",
+                          padding: "2px 8px",
                           borderRadius: "8px",
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        🇳🇵 Nepalese
+                        🇳🇵
                       </span>
                     )}
                   </div>
@@ -570,20 +569,20 @@ export default function RoomsPage() {
               </div>
 
               {/* Right — price */}
-              <div style={{ flexShrink: 0, textAlign: "right" }}>
+              <div style={{ flexShrink: 0 }}>
                 <div
                   style={{
                     background: "#FFF1E0",
                     color: "#633806",
-                    fontSize: "13px",
+                    fontSize: "12px",
                     fontWeight: 600,
-                    padding: "5px 12px",
+                    padding: "4px 10px",
                     borderRadius: "20px",
                     whiteSpace: "nowrap",
                   }}
                 >
                   {room.is_wanted
-                    ? `Up to ${room.price_display}`
+                    ? "Up to " + room.price_display
                     : room.price_display}
                 </div>
               </div>
@@ -602,8 +601,7 @@ export default function RoomsPage() {
             fontSize: "12px",
           }}
         >
-          Showing {filteredResults?.length} of {data.count} rooms — refine your
-          search for better results
+          Showing {filteredResults?.length} of {data.count} rooms
         </div>
       )}
     </div>
