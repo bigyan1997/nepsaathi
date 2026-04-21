@@ -39,6 +39,10 @@ const useAuthStore = create(
       },
 
       updateUser: (user) => set({ user }),
+      setAccessToken: (accessToken) => {
+        localStorage.setItem("nepsaathi_access_token", accessToken);
+        set({ accessToken });
+      },
     }),
     {
       name: "nepsaathi-auth",
