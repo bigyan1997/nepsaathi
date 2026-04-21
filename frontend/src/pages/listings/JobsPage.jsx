@@ -33,7 +33,7 @@ export default function JobsPage() {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["jobs", filters, activeTab],
+    queryKey: ["jobs", filters],
     queryFn: () =>
       getJobs({
         job_type: filters.job_type || undefined,
@@ -267,7 +267,15 @@ export default function JobsPage() {
       )}
 
       {/* Job cards */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          transition: "opacity 0.2s ease",
+          opacity: isLoading ? 0.5 : 1,
+        }}
+      >
         {filteredResults?.map((job) => (
           <Link
             key={job.id}

@@ -354,7 +354,15 @@ export default function RoomsPage() {
       )}
 
       {/* Room cards — list style like jobs */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          transition: "opacity 0.2s ease",
+          opacity: isLoading ? 0.5 : 1,
+        }}
+      >
         {filteredResults?.map((room) => (
           <Link
             key={room.id}
