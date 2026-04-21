@@ -97,13 +97,12 @@ const labelStyle = {
   marginBottom: "6px",
 };
 
-// Reusable toggle component
 function WantedToggle({ isWanted, listingType, onChange }) {
   return (
     <div
       style={{
         background: isWanted ? "#EEEDFE" : "#F5F4F0",
-        border: `1.5px solid ${isWanted ? "#534AB7" : "#e5e5e5"}`,
+        border: isWanted ? "1.5px solid #534AB7" : "1.5px solid #e5e5e5",
         borderRadius: "10px",
         padding: "14px 16px",
         cursor: "pointer",
@@ -166,7 +165,6 @@ export default function PostAdPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const queryClient = useQueryClient();
-
   const [listingType, setListingType] = useState("");
 
   const [baseForm, setBaseForm] = useState({
@@ -238,12 +236,10 @@ export default function PostAdPage() {
         ...baseForm,
         listing_type: listingType,
       });
-
       if (!listing.id) {
         setError("Failed to create listing. Please try again.");
         return;
       }
-
       baseListingId = listing.id;
 
       if (listingType === "job") {
@@ -254,16 +250,10 @@ export default function PostAdPage() {
         });
         queryClient.invalidateQueries(["jobs"]);
         queryClient.invalidateQueries(["home-jobs"]);
-        queryClient.invalidateQueries(["my-listings"]);
       } else if (listingType === "room") {
-        await createRoom({
-          listing: listing.id,
-          ...roomForm,
-          price: roomForm.price,
-        });
+        await createRoom({ listing: listing.id, ...roomForm });
         queryClient.invalidateQueries(["rooms"]);
         queryClient.invalidateQueries(["home-rooms"]);
-        queryClient.invalidateQueries(["my-listings"]);
       } else if (listingType === "announcement") {
         await createAnnouncement({
           listing: listing.id,
@@ -274,7 +264,6 @@ export default function PostAdPage() {
           is_urgent: announcementForm.is_urgent,
         });
         queryClient.invalidateQueries(["announcements"]);
-        queryClient.invalidateQueries(["my-listings"]);
       } else if (listingType === "event") {
         await createEvent({
           listing: listing.id,
@@ -291,8 +280,8 @@ export default function PostAdPage() {
         });
         queryClient.invalidateQueries(["events"]);
         queryClient.invalidateQueries(["home-events"]);
-        queryClient.invalidateQueries(["my-listings"]);
       }
+
       queryClient.invalidateQueries(["listings"]);
       queryClient.invalidateQueries(["my-listings"]);
       setCreatedListingId(listing.id);
@@ -310,7 +299,7 @@ export default function PostAdPage() {
         err.response?.data?.detail?.includes("suspended")
       ) {
         setError(
-          "Your account has been suspended due to multiple violations. Please contact support@nepsaathi.com",
+          "Your account has been suspended. Please contact support@nepsaathi.com",
         );
         return;
       }
@@ -318,8 +307,6 @@ export default function PostAdPage() {
         const firstError = Object.values(errors)[0];
         if (Array.isArray(firstError)) setError(firstError[0]);
         else if (typeof firstError === "string") setError(firstError);
-        else if (typeof firstError === "object")
-          setError(JSON.stringify(firstError));
         else setError("Something went wrong. Please try again.");
       } else {
         setError("Something went wrong. Please try again.");
@@ -330,15 +317,33 @@ export default function PostAdPage() {
   };
 
   const handleImageComplete = () => {
-    if (listingType === "job") navigate(`/jobs/listing/${createdListingId}`);
+    if (listingType === "job") navigate("/jobs/listing/" + createdListingId);
     else if (listingType === "room")
-      navigate(`/rooms/listing/${createdListingId}`);
+      navigate("/rooms/listing/" + createdListingId);
     else if (listingType === "announcement")
-      navigate(`/announcements/listing/${createdListingId}`);
+      navigate("/announcements/listing/" + createdListingId);
     else if (listingType === "event")
-      navigate(`/events/listing/${createdListingId}`);
+      navigate("/events/listing/" + createdListingId);
     else navigate("/");
   };
+
+  const BackBtn = ({ toStep }) => (
+    <button
+      onClick={() => setStep(toStep)}
+      style={{
+        flex: 1,
+        background: "#fff",
+        color: "#555",
+        border: "0.5px solid #ccc",
+        borderRadius: "8px",
+        padding: "12px",
+        fontSize: "14px",
+        cursor: "pointer",
+      }}
+    >
+      Back
+    </button>
+  );
 
   return (
     <div style={{ maxWidth: "620px", margin: "0 auto", padding: "28px" }}>
@@ -358,7 +363,6 @@ export default function PostAdPage() {
         </p>
       </div>
 
-      {/* Step indicator */}
       <div
         style={{
           display: "flex",
@@ -384,7 +388,6 @@ export default function PostAdPage() {
                 justifyContent: "center",
                 fontSize: "13px",
                 fontWeight: 500,
-                transition: "background 0.2s",
               }}
             >
               {s}
@@ -435,7 +438,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 1 ── */}
         {step === 1 && (
           <div>
             <h2
@@ -451,53 +453,56 @@ export default function PostAdPage() {
             <div
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
-              {LISTING_TYPES.map(({ value, label, emoji, desc }) => (
-                <div
-                  key={value}
-                  onClick={() => setListingType(value)}
-                  style={{
-                    border:
-                      listingType === value
-                        ? "1.5px solid #534AB7"
-                        : "0.5px solid #e5e5e5",
-                    background: listingType === value ? "#EEEDFE" : "#fff",
-                    borderRadius: "10px",
-                    padding: "14px 16px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "14px",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  <span style={{ fontSize: "24px" }}>{emoji}</span>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 500,
-                        color: listingType === value ? "#26215C" : "#333",
-                      }}
-                    >
-                      {label}
+              {LISTING_TYPES.map(function (item) {
+                return (
+                  <div
+                    key={item.value}
+                    onClick={() => setListingType(item.value)}
+                    style={{
+                      border:
+                        listingType === item.value
+                          ? "1.5px solid #534AB7"
+                          : "0.5px solid #e5e5e5",
+                      background:
+                        listingType === item.value ? "#EEEDFE" : "#fff",
+                      borderRadius: "10px",
+                      padding: "14px 16px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "14px",
+                    }}
+                  >
+                    <span style={{ fontSize: "24px" }}>{item.emoji}</span>
+                    <div>
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 500,
+                          color:
+                            listingType === item.value ? "#26215C" : "#333",
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#888" }}>
+                        {item.desc}
+                      </div>
                     </div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>
-                      {desc}
-                    </div>
+                    {listingType === item.value && (
+                      <div
+                        style={{
+                          marginLeft: "auto",
+                          color: "#534AB7",
+                          fontWeight: 600,
+                        }}
+                      >
+                        ✓
+                      </div>
+                    )}
                   </div>
-                  {listingType === value && (
-                    <div
-                      style={{
-                        marginLeft: "auto",
-                        color: "#534AB7",
-                        fontWeight: 600,
-                      }}
-                    >
-                      ✓
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
             <button
               onClick={() => {
@@ -526,7 +531,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 2 ── */}
         {step === 2 && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -535,7 +539,6 @@ export default function PostAdPage() {
               Basic details
             </h2>
 
-            {/* Wanted toggle — shown at top of step 2 for jobs and rooms */}
             {(listingType === "job" || listingType === "room") && (
               <WantedToggle
                 isWanted={baseForm.is_wanted}
@@ -550,6 +553,7 @@ export default function PostAdPage() {
               <label style={labelStyle}>Title *</label>
               <input
                 style={inputStyle}
+                value={baseForm.title}
                 placeholder={
                   baseForm.is_wanted && listingType === "job"
                     ? "e.g. Looking for kitchen hand job in Sydney"
@@ -561,7 +565,6 @@ export default function PostAdPage() {
                           ? "e.g. Private room in Parramatta"
                           : "e.g. Community announcement"
                 }
-                value={baseForm.title}
                 onChange={(e) =>
                   setBaseForm({ ...baseForm, title: e.target.value })
                 }
@@ -576,14 +579,14 @@ export default function PostAdPage() {
                   minHeight: "100px",
                   resize: "vertical",
                 }}
+                value={baseForm.description}
                 placeholder={
                   baseForm.is_wanted && listingType === "job"
-                    ? "Tell employers about yourself, your experience and what type of work you're looking for..."
+                    ? "Tell employers about yourself and what work you're looking for..."
                     : baseForm.is_wanted && listingType === "room"
-                      ? "Tell landlords about yourself, your budget and what you're looking for..."
+                      ? "Tell landlords about yourself and what you're looking for..."
                       : "Describe your listing in detail..."
                 }
-                value={baseForm.description}
                 onChange={(e) =>
                   setBaseForm({ ...baseForm, description: e.target.value })
                 }
@@ -591,6 +594,7 @@ export default function PostAdPage() {
             </div>
 
             <div
+              className="base-location-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -617,9 +621,9 @@ export default function PostAdPage() {
                     setBaseForm({ ...baseForm, state: e.target.value })
                   }
                 >
-                  {STATES.map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
+                  {STATES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
                     </option>
                   ))}
                 </select>
@@ -637,7 +641,6 @@ export default function PostAdPage() {
                 }
               />
             </div>
-
             <div>
               <label style={labelStyle}>WhatsApp number</label>
               <input
@@ -649,7 +652,6 @@ export default function PostAdPage() {
                 }
               />
             </div>
-
             <div>
               <label style={labelStyle}>Contact email</label>
               <input
@@ -664,21 +666,7 @@ export default function PostAdPage() {
             </div>
 
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <button
-                onClick={() => setStep(1)}
-                style={{
-                  flex: 1,
-                  background: "#fff",
-                  color: "#555",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                ← Back
-              </button>
+              <BackBtn toStep={1} />
               <button
                 onClick={() => {
                   if (
@@ -710,7 +698,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 3 — Job ── */}
         {step === 3 && listingType === "job" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -719,7 +706,6 @@ export default function PostAdPage() {
               {baseForm.is_wanted ? "Your details" : "Job details"}
             </h2>
 
-            {/* Info banner */}
             {baseForm.is_wanted && (
               <div
                 style={{
@@ -731,12 +717,11 @@ export default function PostAdPage() {
                   color: "#3C3489",
                 }}
               >
-                🔍 You're posting as a <strong>job seeker</strong> — fill in
-                your details and what you're looking for.
+                🔍 You're posting as a job seeker — fill in your details and
+                what you're looking for.
               </div>
             )}
 
-            {/* Company name — only for employers */}
             {!baseForm.is_wanted && (
               <div>
                 <label style={labelStyle}>Company name</label>
@@ -752,6 +737,7 @@ export default function PostAdPage() {
             )}
 
             <div
+              className="job-type-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -760,7 +746,7 @@ export default function PostAdPage() {
             >
               <div>
                 <label style={labelStyle}>
-                  {baseForm.is_wanted ? "Type of work *" : "Job type *"}
+                  {baseForm.is_wanted ? "Type of work" : "Job type *"}
                 </label>
                 <select
                   style={inputStyle}
@@ -769,9 +755,9 @@ export default function PostAdPage() {
                     setJobForm({ ...jobForm, job_type: e.target.value })
                   }
                 >
-                  {JOB_TYPES.map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
+                  {JOB_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
                     </option>
                   ))}
                 </select>
@@ -787,9 +773,9 @@ export default function PostAdPage() {
                     setJobForm({ ...jobForm, salary_type: e.target.value })
                   }
                 >
-                  {SALARY_TYPES.map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
+                  {SALARY_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
                     </option>
                   ))}
                 </select>
@@ -868,26 +854,12 @@ export default function PostAdPage() {
                     setJobForm({ ...jobForm, is_urgent: e.target.checked })
                   }
                 />
-                Mark as urgent — highlights your listing
+                Mark as urgent
               </label>
             )}
 
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <button
-                onClick={() => setStep(2)}
-                style={{
-                  flex: 1,
-                  background: "#fff",
-                  color: "#555",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                ← Back
-              </button>
+              <BackBtn toStep={2} />
               <button
                 onClick={handleSubmit}
                 disabled={loading}
@@ -913,7 +885,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 3 — Room ── */}
         {step === 3 && listingType === "room" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -933,20 +904,19 @@ export default function PostAdPage() {
                   color: "#633806",
                 }}
               >
-                🏘️ You're posting as a <strong>room seeker</strong> — fill in
-                what you're looking for.
+                🏘️ You're posting as a room seeker — fill in what you're looking
+                for.
               </div>
             )}
 
             <div
+              className="room-type-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "12px",
               }}
             >
-            <div 
-            className="room-type-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div>
                 <label style={labelStyle}>
                   {baseForm.is_wanted ? "Room type needed" : "Room type *"}
@@ -958,9 +928,9 @@ export default function PostAdPage() {
                     setRoomForm({ ...roomForm, room_type: e.target.value })
                   }
                 >
-                  {ROOM_TYPES.map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
+                  {ROOM_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
                     </option>
                   ))}
                 </select>
@@ -974,9 +944,9 @@ export default function PostAdPage() {
                     setRoomForm({ ...roomForm, furnishing: e.target.value })
                   }
                 >
-                  {FURNISHING_TYPES.map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
+                  {FURNISHING_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
                     </option>
                   ))}
                 </select>
@@ -984,16 +954,18 @@ export default function PostAdPage() {
             </div>
 
             <div
+              className="room-price-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "12px",
               }}
             >
-              <div className="room-price-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div>
                 <label style={labelStyle}>
-                  {baseForm.is_wanted ? "Max budget/wk (AUD)" : "Weekly rent (AUD) *"}
+                  {baseForm.is_wanted
+                    ? "Max budget/wk (AUD)"
+                    : "Weekly rent (AUD) *"}
                 </label>
                 <input
                   type="number"
@@ -1020,7 +992,6 @@ export default function PostAdPage() {
               </div>
             </div>
 
-            {/* Bond — only for landlords */}
             {!baseForm.is_wanted && (
               <div>
                 <label style={labelStyle}>Bond required</label>
@@ -1093,7 +1064,7 @@ export default function PostAdPage() {
             )}
 
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
             >
               {[
                 {
@@ -1113,36 +1084,39 @@ export default function PostAdPage() {
                     ? "Parking needed"
                     : "Parking available",
                 },
-              ].map(({ key, label }) => (
-                <label key={key} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", fontSize: "14px", color: "#444", padding: "8px 0" }}>
-                  <input
-                    type="checkbox"
-                    checked={roomForm[key]}
-                    onChange={(e) =>
-                      setRoomForm({ ...roomForm, [key]: e.target.checked })
-                    }
-                  />
-                  {label}
-                </label>
-              ))}
+              ].map(function (item) {
+                return (
+                  <label
+                    key={item.key}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      color: "#444",
+                      padding: "8px 0",
+                      borderBottom: "0.5px solid #f5f5f5",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={roomForm[item.key]}
+                      onChange={(e) =>
+                        setRoomForm({
+                          ...roomForm,
+                          [item.key]: e.target.checked,
+                        })
+                      }
+                    />
+                    {item.label}
+                  </label>
+                );
+              })}
             </div>
 
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <button
-                onClick={() => setStep(2)}
-                style={{
-                  flex: 1,
-                  background: "#fff",
-                  color: "#555",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                ← Back
-              </button>
+              <BackBtn toStep={2} />
               <button
                 onClick={handleSubmit}
                 disabled={loading}
@@ -1168,7 +1142,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 3 — Announcement ── */}
         {step === 3 && listingType === "announcement" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -1188,21 +1161,16 @@ export default function PostAdPage() {
                   })
                 }
               >
-                {[
-                  { value: "news", label: "Community news" },
-                  { value: "sale", label: "Item for sale" },
-                  { value: "service", label: "Service offered" },
-                  { value: "lost_found", label: "Lost & found" },
-                  { value: "education", label: "Education" },
-                  { value: "general", label: "General" },
-                ].map(({ value, label }) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <option value="news">Community news</option>
+                <option value="sale">Item for sale</option>
+                <option value="service">Service offered</option>
+                <option value="lost_found">Lost and found</option>
+                <option value="education">Education</option>
+                <option value="general">General</option>
               </select>
             </div>
             <div
+              className="announce-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -1236,18 +1204,12 @@ export default function PostAdPage() {
                     })
                   }
                 >
-                  {[
-                    { value: "na", label: "Not applicable" },
-                    { value: "new", label: "Brand new" },
-                    { value: "like_new", label: "Like new" },
-                    { value: "good", label: "Good" },
-                    { value: "fair", label: "Fair" },
-                    { value: "poor", label: "Poor" },
-                  ].map(({ value, label }) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
+                  <option value="na">Not applicable</option>
+                  <option value="new">Brand new</option>
+                  <option value="like_new">Like new</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="poor">Poor</option>
                 </select>
               </div>
             </div>
@@ -1300,21 +1262,7 @@ export default function PostAdPage() {
               </label>
             </div>
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <button
-                onClick={() => setStep(2)}
-                style={{
-                  flex: 1,
-                  background: "#fff",
-                  color: "#555",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                ← Back
-              </button>
+              <BackBtn toStep={2} />
               <button
                 onClick={handleSubmit}
                 disabled={loading}
@@ -1336,7 +1284,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 3 — Event ── */}
         {step === 3 && listingType === "event" && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -1353,23 +1300,18 @@ export default function PostAdPage() {
                   setEventForm({ ...eventForm, category: e.target.value })
                 }
               >
-                {[
-                  { value: "cultural", label: "Cultural" },
-                  { value: "sports", label: "Sports" },
-                  { value: "food", label: "Food & Dining" },
-                  { value: "music", label: "Music & Entertainment" },
-                  { value: "religious", label: "Religious" },
-                  { value: "community", label: "Community Meetup" },
-                  { value: "education", label: "Education & Workshop" },
-                  { value: "other", label: "Other" },
-                ].map(({ value, label }) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <option value="cultural">Cultural</option>
+                <option value="sports">Sports</option>
+                <option value="food">Food and Dining</option>
+                <option value="music">Music and Entertainment</option>
+                <option value="religious">Religious</option>
+                <option value="community">Community Meetup</option>
+                <option value="education">Education and Workshop</option>
+                <option value="other">Other</option>
               </select>
             </div>
             <div
+              className="event-date-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -1377,7 +1319,7 @@ export default function PostAdPage() {
               }}
             >
               <div>
-                <label style={labelStyle}>Event date & time *</label>
+                <label style={labelStyle}>Event date and time *</label>
                 <input
                   type="datetime-local"
                   style={inputStyle}
@@ -1388,7 +1330,7 @@ export default function PostAdPage() {
                 />
               </div>
               <div>
-                <label style={labelStyle}>End date & time</label>
+                <label style={labelStyle}>End date and time</label>
                 <input
                   type="datetime-local"
                   style={inputStyle}
@@ -1406,7 +1348,7 @@ export default function PostAdPage() {
               <label style={labelStyle}>Venue / Address</label>
               <input
                 style={inputStyle}
-                placeholder="e.g. Parramatta Town Hall, 182 Church St"
+                placeholder="e.g. Parramatta Town Hall"
                 value={eventForm.venue}
                 onChange={(e) =>
                   setEventForm({ ...eventForm, venue: e.target.value })
@@ -1425,6 +1367,7 @@ export default function PostAdPage() {
               />
             </div>
             <div
+              className="event-ticket-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -1461,9 +1404,7 @@ export default function PostAdPage() {
               </div>
             </div>
             <div>
-              <label style={labelStyle}>
-                Event URL (registration / tickets)
-              </label>
+              <label style={labelStyle}>Event URL</label>
               <input
                 type="url"
                 style={inputStyle}
@@ -1517,21 +1458,7 @@ export default function PostAdPage() {
               </label>
             </div>
             <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <button
-                onClick={() => setStep(2)}
-                style={{
-                  flex: 1,
-                  background: "#fff",
-                  color: "#555",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                }}
-              >
-                ← Back
-              </button>
+              <BackBtn toStep={2} />
               <button
                 onClick={() => {
                   if (!eventForm.event_date) {
@@ -1563,7 +1490,6 @@ export default function PostAdPage() {
           </div>
         )}
 
-        {/* ── STEP 4 — Images ── */}
         {step === 4 && createdListingId && (
           <ImageUpload
             listingId={createdListingId}
@@ -1571,17 +1497,17 @@ export default function PostAdPage() {
           />
         )}
       </div>
+
       <style>{`
         @media (max-width: 480px) {
-          .room-beds-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .room-price-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .room-type-grid {
-            grid-template-columns: 1fr !important;
-          }
+          .room-beds-grid { grid-template-columns: 1fr 1fr !important; }
+          .room-price-grid { grid-template-columns: 1fr !important; }
+          .room-type-grid { grid-template-columns: 1fr !important; }
+          .event-date-grid { grid-template-columns: 1fr !important; }
+          .event-ticket-grid { grid-template-columns: 1fr !important; }
+          .announce-grid { grid-template-columns: 1fr !important; }
+          .base-location-grid { grid-template-columns: 1fr !important; }
+          .job-type-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
