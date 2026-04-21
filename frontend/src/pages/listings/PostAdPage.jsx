@@ -1019,6 +1019,27 @@ export default function PostAdPage() {
               </div>
             </div>
 
+            {/* Bond — only for landlords */}
+            {!baseForm.is_wanted && (
+              <div>
+                <label style={labelStyle}>Bond required</label>
+                <select
+                  style={inputStyle}
+                  value={roomForm.bond}
+                  onChange={(e) =>
+                    setRoomForm({ ...roomForm, bond: e.target.value })
+                  }
+                >
+                  <option value="1_week">1 week</option>
+                  <option value="2_weeks">2 weeks</option>
+                  <option value="4_weeks">4 weeks</option>
+                  <option value="6_weeks">6 weeks</option>
+                  <option value="negotiable">Negotiable</option>
+                  <option value="none">No bond</option>
+                </select>
+              </div>
+            )}
+
             {!baseForm.is_wanted && (
               <div
                 style={{
