@@ -34,18 +34,18 @@ class RoomListView(generics.ListAPIView):
     ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):
+        from django.db.models import Count
         queryset = Room.objects.filter(
             listing__status='active'
-        ).select_related('listing', 'listing__user')
-
+        ).select_related('listing', 'listing__user').annotate(
+            view_count_annotated=Count('listing__views')
+        )
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
-
         if min_price:
             queryset = queryset.filter(price__gte=min_price)
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
-
         return queryset
 
 

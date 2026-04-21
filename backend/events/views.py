@@ -36,9 +36,12 @@ class EventListView(generics.ListAPIView):
     ordering = ('-listing__is_featured', 'event_date',)
 
     def get_queryset(self):
+        from django.db.models import Count
         queryset = Event.objects.filter(
             listing__status='active'
-        ).select_related('listing', 'listing__user')
+        ).select_related('listing', 'listing__user').annotate(
+            view_count_annotated=Count('listing__views')
+        )
 
         # Filter upcoming or past events
         upcoming = self.request.query_params.get('upcoming')

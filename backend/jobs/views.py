@@ -27,9 +27,12 @@ class JobListView(generics.ListAPIView):
     ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):
+        from django.db.models import Count
         return Job.objects.filter(
             listing__status='active'
-        ).select_related('listing', 'listing__user')
+        ).select_related('listing', 'listing__user').annotate(
+            view_count_annotated=Count('listing__views')
+        )
 
 
 class JobCreateView(generics.CreateAPIView):
