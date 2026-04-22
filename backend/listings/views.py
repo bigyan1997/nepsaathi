@@ -403,7 +403,14 @@ class ReportListingView(APIView):
         })
 
         if serializer.is_valid():
-            report = serializer.save(user=request.user, listing=listing)
+            try:
+                from django.db import IntegrityError
+                report = serializer.save(user=request.user, listing=listing)
+            except IntegrityError:
+                return Response(
+                    {'detail': 'You have already reported this listing.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             # Mark listing as under review
             listing.is_under_review = True
             listing.save()

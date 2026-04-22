@@ -61,6 +61,9 @@ export const googleLogin = async (accessToken) => {
   if (data.access) {
     try {
       localStorage.setItem("nepsaathi_access_token", data.access);
+      if (data.refresh) {
+        localStorage.setItem("nepsaathi_refresh_token", data.refresh);
+      }
       const profileResponse = await api.get("/api/users/profile/");
       data.user = profileResponse.data;
     } catch (e) {

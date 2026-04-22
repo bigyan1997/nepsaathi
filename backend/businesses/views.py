@@ -31,7 +31,6 @@ class BusinessListView(generics.ListAPIView):
         'state',
         'is_nepalese_owned',
         'is_verified',
-        'is_active',
     )
     search_fields = (
         'business_name',
@@ -72,14 +71,15 @@ class BusinessCreateView(generics.CreateAPIView):
 
         # Check for duplicate business name (exclude own businesses)
         business_name = self.request.data.get('business_name', '').strip()
+        state = self.request.data.get('state', '').strip()
         duplicate = Business.objects.filter(
             business_name__iexact=business_name,
+            state=state,
             is_active=True,
         ).exclude(owner=user).exists()
-
         if duplicate:
             raise ValidationError(
-                f'A business named "{business_name}" is already registered on NepSaathi.'
+                f'A business named "{business_name}" is already registered in {state} on NepSaathi.'
             )
 
         serializer.save(owner=user)

@@ -291,7 +291,14 @@ export default function PostAdPage() {
       if (typeof baseListingId !== "undefined") {
         try {
           await deleteListing(baseListingId);
-        } catch (e) {}
+        } catch (e) {
+          // Rollback failed — log for visibility
+          console.error(
+            "Failed to cleanup orphaned listing:",
+            baseListingId,
+            e,
+          );
+        }
       }
       const errors = err.response?.data;
       if (
