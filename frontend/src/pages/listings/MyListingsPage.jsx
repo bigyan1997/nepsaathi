@@ -7,6 +7,7 @@ import {
   getSavedListings,
   unsaveListing,
   markListingStatus,
+  renewListing,
 } from "../../api/listings";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import { SkeletonCard } from "../../components/ui/Skeleton";
@@ -193,6 +194,16 @@ export default function MyListingsPage() {
     },
     onError: () => {
       addToast("Failed to update status. Please try again.", "error");
+    },
+  });
+  const renewMutation = useMutation({
+    mutationFn: renewListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["my-listings"]);
+      addToast("Listing renewed for 30 more days! ✅", "success");
+    },
+    onError: () => {
+      addToast("Failed to renew listing. Please try again.", "error");
     },
   });
 
@@ -518,18 +529,38 @@ export default function MyListingsPage() {
                           {listing.status}
                         </span>
                         {isExpiringSoon && (
-                          <span
-                            style={{
-                              background: "#FFF1E0",
-                              color: "#633806",
-                              fontSize: "10px",
-                              fontWeight: 500,
-                              padding: "2px 8px",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            ⚠️ Expiring soon
-                          </span>
+                          <>
+                            <span
+                              style={{
+                                background: "#FFF1E0",
+                                color: "#633806",
+                                fontSize: "10px",
+                                fontWeight: 500,
+                                padding: "2px 8px",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              ⚠️ Expiring soon
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                renewMutation.mutate(listing.id);
+                              }}
+                              style={{
+                                background: "#EEEDFE",
+                                color: "#534AB7",
+                                border: "none",
+                                borderRadius: "8px",
+                                padding: "2px 8px",
+                                fontSize: "10px",
+                                fontWeight: 500,
+                                cursor: "pointer",
+                              }}
+                            >
+                              🔄 Renew
+                            </button>
+                          </>
                         )}
                       </div>
 
@@ -668,6 +699,33 @@ export default function MyListingsPage() {
                           >
                             ✏️ Edit listing
                           </button>
+                          {(listing.status === "active" ||
+                            listing.status === "expired") && (
+                            <button
+                              onClick={() => {
+                                setOpenMenu(null);
+                                renewMutation.mutate(listing.id);
+                              }}
+                              disabled={renewMutation.isPending}
+                              style={{
+                                width: "100%",
+                                padding: "12px 16px",
+                                background: "none",
+                                border: "none",
+                                textAlign: "left",
+                                fontSize: "13px",
+                                color: "#534AB7",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                borderTop: "0.5px solid #f5f5f5",
+                                opacity: renewMutation.isPending ? 0.6 : 1,
+                              }}
+                            >
+                              🔄 Renew for 30 days
+                            </button>
+                          )}
                           {listing.status === "active" && (
                             <button
                               onClick={() => {

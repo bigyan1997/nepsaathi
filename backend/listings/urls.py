@@ -49,4 +49,7 @@ urlpatterns = [
 
     # Global Search
     path('search/', views.GlobalSearchView.as_view(), name='global-search'),
+
+    # Renew Listing
+    path('<int:pk>/renew/', views.RenewListingView.as_view(), name='renew-listing'),
 ]

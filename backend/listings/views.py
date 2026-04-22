@@ -633,3 +633,36 @@ class GlobalSearchView(APIView):
             'events': EventSerializer(events, many=True, context={'request': request}).data,
             'announcements': AnnouncementSerializer(announcements, many=True, context={'request': request}).data,
         })
+
+class RenewListingView(APIView):
+    """
+    POST /api/listings/<id>/renew/
+    Extends listing expiry by 30 days from today.
+    Owner only.
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk, user=request.user)
+        except Listing.DoesNotExist:
+            return Response(
+                {'detail': 'Listing not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if listing.status == 'deleted':
+            return Response(
+                {'detail': 'Cannot renew a deleted listing.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Extend expiry by 30 days from today
+        listing.expires_at = timezone.now() + timedelta(days=30)
+        listing.status = 'active'
+        listing.save()
+
+        return Response({
+            'detail': 'Listing renewed successfully!',
+            'expires_at': listing.expires_at,
+        })

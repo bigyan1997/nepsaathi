@@ -112,3 +112,9 @@ export const globalSearch = async (q, state) => {
   const response = await api.get(`/api/listings/search/?${params.toString()}`);
   return response.data;
 };
+
+// Renew Listing
+export const renewListing = async (listingId) => {
+  const response = await api.post(`/api/listings/${listingId}/renew/`);
+  return response.data;
+};
