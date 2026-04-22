@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
+Disallow: /nepsaathi-admin/
 Disallow: /login
 Disallow: /register
 Disallow: /profile
