@@ -90,8 +90,12 @@ class DeleteAccountView(APIView):
             try:
                 # Soft delete all listings
                 from listings.models import Listing
-                Listing.objects.filter(user=user).update(status='deleted')
-                # Delete user
+                # Delete each listing individually to trigger Cloudinary cleanup
+                listings = Listing.objects.filter(user=user)
+                for listing in listings:
+                    for image in listing.images.all():
+                        image.delete()  # triggers Cloudinary cleanup
+                    listing.delete()
                 user.delete()
                 return Response(
                     {'detail': 'Your account has been permanently deleted.'},

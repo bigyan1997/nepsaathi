@@ -75,9 +75,10 @@ class ListingCreateView(generics.CreateAPIView):
 
         # Check if user is banned FIRST
         if user.is_banned:
-            raise ValidationError(
-                'Your account has been suspended due to multiple violations. Contact support@nepsaathi.com'
-            )
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied(
+                    'Your account has been suspended due to multiple violations. Contact support@nepsaathi.com'
+                )
 
         # Check max active listings per user
         active_count = Listing.objects.filter(

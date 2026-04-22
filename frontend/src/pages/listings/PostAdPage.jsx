@@ -1002,12 +1002,10 @@ export default function PostAdPage() {
                     setRoomForm({ ...roomForm, bond: e.target.value })
                   }
                 >
-                  <option value="1_week">1 week</option>
                   <option value="2_weeks">2 weeks</option>
                   <option value="4_weeks">4 weeks</option>
                   <option value="6_weeks">6 weeks</option>
                   <option value="negotiable">Negotiable</option>
-                  <option value="none">No bond</option>
                 </select>
               </div>
             )}

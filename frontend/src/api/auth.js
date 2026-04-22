@@ -20,7 +20,7 @@ export const login = async (email, password) => {
 
 // Logout — blacklists the refresh token on Django
 export const logout = async (refreshToken) => {
-  const response = await api.post("/api/auth/logout/", {
+  const response = await api.post("/api/users/auth/logout/", {
     refresh: refreshToken,
   });
   return response.data;

@@ -33,6 +33,7 @@ class ExchangeRateView(APIView):
             # 1 USD = X NPR, 1 USD = Y AUD → 1 AUD = (X/Y) NPR
             url = 'https://api.exchangerate-api.com/v4/latest/USD'
             response = requests.get(url, timeout=3)
+            response.raise_for_status()
             data = response.json()
             all_rates = data.get('rates', {})
 

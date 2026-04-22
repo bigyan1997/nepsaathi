@@ -152,10 +152,9 @@ def send_contact_email(name, email, subject, message):
     """Send contact form email to hello@nepsaathi.com"""
     import html as html_module
     name = html_module.escape(name)
-    email = html_module.escape(email)
     subject = html_module.escape(subject)
     message = html_module.escape(message)
-    # Note: email is used in href so we validate but don't escape
+    # email used in href — don't escape, validate instead
     try:
         html = f"""
         <div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;">
