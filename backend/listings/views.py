@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.db.models import Q
 from datetime import timedelta
 from rest_framework.exceptions import ValidationError
-from datetime import timedelta
 from businesses.models import Business
 from django.db.models import Count
 
@@ -50,7 +49,9 @@ class ListingListView(generics.ListAPIView):
     def get_queryset(self):
         return Listing.objects.filter(
             status='active'
-        ).select_related('user').prefetch_related('images').annotate(
+        ).select_related('user').prefetch_related(
+            'images', 'job_detail', 'room_detail'
+        ).annotate(
             view_count_annotated=Count('views')
         )
 
@@ -160,8 +161,10 @@ class MyListingsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Listing.objects.filter(
-            user=self.request.user
-        ).select_related('user').prefetch_related('images').annotate(
+            status='active'
+        ).select_related('user').prefetch_related(
+            'images', 'job_detail', 'room_detail'
+        ).annotate(
             view_count_annotated=Count('views')
         )
 

@@ -102,7 +102,7 @@ export default function EditListingPage() {
         contact_whatsapp: listing.contact_whatsapp || "",
       });
     }
-  }, [listing]);
+  }, [listing, navigate]);
 
   // Populate type-specific form
   useEffect(() => {

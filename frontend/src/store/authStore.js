@@ -27,9 +27,10 @@ const useAuthStore = create(
       },
 
       logout: () => {
-        // Clear tokens from localStorage
+        // Clear all token storage locations
         localStorage.removeItem("nepsaathi_access_token");
         localStorage.removeItem("nepsaathi_refresh_token");
+        localStorage.removeItem("nepsaathi-auth");
         set({
           user: null,
           accessToken: null,
