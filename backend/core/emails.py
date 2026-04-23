@@ -8,19 +8,20 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 ADMIN_URL = config('ADMIN_URL', default='https://nepsaathi-production.up.railway.app/admin')
 RESEND_API_KEY = config('RESEND_API_KEY', default='')
 
-resend.api_key = RESEND_API_KEY
-
-
 def _send_resend(params):
     """Send email via Resend API in background."""
-    if not RESEND_API_KEY:
-        print(f'[DEBUG] No API key — skipping email: {params["subject"]}', flush=True)
+    api_key = config('RESEND_API_KEY', default='')
+    if not api_key:
+        print(f'[EMAIL ERROR] RESEND_API_KEY is not set — skipping: {params["subject"]}', flush=True)
         return
+    resend.api_key = api_key
     try:
-        resend.Emails.send(params)
-        print(f'Email sent OK: {params["subject"]} -> {params["to"]}', flush=True)
+        response = resend.Emails.send(params)
+        print(f'[EMAIL OK] {params["subject"]} -> {params["to"]} | id={getattr(response, "id", response)}', flush=True)
     except Exception as e:
-        print(f'Email send FAILED: {e}', flush=True)
+        import traceback
+        print(f'[EMAIL ERROR] Failed to send "{params["subject"]}" to {params["to"]}: {e}', flush=True)
+        print(traceback.format_exc(), flush=True)
 
 
 def send_welcome_email(user):

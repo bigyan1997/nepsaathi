@@ -1,6 +1,21 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
+from dj_rest_auth.serializers import PasswordResetSerializer as BasePasswordResetSerializer
+from allauth.account.utils import user_pk_to_url_str
+from decouple import config
 from .models import User
+
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+
+def _frontend_url_generator(request, user, temp_key):
+    uid = user_pk_to_url_str(user)
+    return f"{FRONTEND_URL}/reset-password/{uid}/{temp_key}/"
+
+
+class PasswordResetSerializer(BasePasswordResetSerializer):
+    def get_email_options(self):
+        return {'url_generator': _frontend_url_generator}
 
 
 class RegisterSerializer(BaseRegisterSerializer):

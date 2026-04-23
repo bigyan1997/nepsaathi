@@ -130,7 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
-PASSWORD_RESET_CONFIRM_URL = 'reset-password/{uid}/{token}/'
 
 # ─── REST Framework ──────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
@@ -179,6 +178,7 @@ REST_AUTH = {
     'JWT_AUTH_RETURN_EXPIRATION': True,
     'JWT_AUTH_HTTPONLY': False,
     'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer',
 }
 
 # ─── Allauth ─────────────────────────────────────────────────────────────────
