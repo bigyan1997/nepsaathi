@@ -48,6 +48,7 @@ export default function SaveButton({ listingId, compact = false }) {
     <button
       onClick={handleClick}
       disabled={saveMutation.isPending}
+      aria-label={isSaved ? "Remove from saved" : "Save listing"}
       style={{
         display: "flex",
         alignItems: "center",

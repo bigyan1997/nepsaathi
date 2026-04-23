@@ -53,6 +53,7 @@ export default function ShareButton({ title, url, compact = false }) {
     <div style={{ position: "relative" }}>
       <button
         onClick={() => setOpen(!open)}
+        aria-label="Share Listing"
         style={{
           display: "flex",
           alignItems: "center",

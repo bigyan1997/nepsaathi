@@ -492,6 +492,7 @@ export default function HomePage() {
               </div>
               <button
                 type="submit"
+                aria-label="Search listings"
                 style={{
                   background: "#534AB7",
                   color: "#fff",

@@ -15,8 +15,8 @@ export default function PageWrapper({ children }) {
   }, [location.pathname]);
 
   return (
-    <div ref={ref} className="page-transition">
+    <main ref={ref} className="page-transition">
       {children}
-    </div>
+    </main>
   );
 }
