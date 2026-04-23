@@ -148,13 +148,42 @@ class ThrottledLoginView(APIView):
     """
     POST /api/auth/login/
     Login with email and password — rate limited to 5/minute.
+    After 5 failed attempts per IP, returns 429 Too Many Requests.
     """
     throttle_classes = [LoginRateThrottle]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         from dj_rest_auth.views import LoginView
-        return LoginView.as_view()(request._request, *args, **kwargs)
+        from django.core.cache import cache
+
+        # Track failed attempts per IP
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
+        if ip:
+            ip = ip.split(',')[0].strip()
+        else:
+            ip = request.META.get('REMOTE_ADDR', '127.0.0.1')
+
+        cache_key = f'login_attempts_{ip}'
+        attempts = cache.get(cache_key, 0)
+
+        if attempts >= 5:
+            return Response(
+                {'detail': 'Too many login attempts. Please try again in 5 minutes.'},
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
+        response = LoginView.as_view()(request._request, *args, **kwargs)
+
+        # If login failed (not 200), increment counter
+        if response.status_code != 200:
+            cache.set(cache_key, attempts + 1, timeout=300)  # 5 minute lockout
+
+        # If login succeeded, clear the counter
+        if response.status_code == 200:
+            cache.delete(cache_key)
+
+        return response
 
 
 class ThrottledRegisterView(APIView):
