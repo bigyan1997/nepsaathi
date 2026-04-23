@@ -8,7 +8,6 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from decouple import config
 from .serializers import UserSerializer
-from dj_rest_auth.views import PasswordResetView as BasePasswordResetView
 
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -170,6 +169,14 @@ class ThrottledRegisterView(APIView):
         from dj_rest_auth.registration.views import RegisterView
         return RegisterView.as_view()(request._request, *args, **kwargs)
 
-class CustomPasswordResetView(BasePasswordResetView):
-    """Override to send password reset email via Resend."""
+class ThrottledPasswordResetView(APIView):
+    """
+    POST /api/auth/password/reset/
+    Password reset — rate limited to 3/hour.
+    """
     throttle_classes = [PasswordResetThrottle]
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        from dj_rest_auth.views import PasswordResetView
+        return PasswordResetView.as_view()(request._request, *args, **kwargs)
