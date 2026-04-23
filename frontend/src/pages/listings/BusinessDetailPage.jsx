@@ -1,13 +1,13 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusiness } from "../../api/businesses";
+import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
-import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
-import ImageGallery from "../../components/ui/ImageGallery";
+import useIsMobile from "../../hooks/useIsMobile";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -23,7 +23,7 @@ const CATEGORY_EMOJIS = {
   finance: "💸",
   freelancer: "🧑‍💻",
   retail: "🏪",
-  other: "📌",
+  other: "🏪",
 };
 
 const CATEGORY_COLORS = {
@@ -40,13 +40,24 @@ const CATEGORY_COLORS = {
   finance: { bg: "#EEEDFE", color: "#3C3489" },
   freelancer: { bg: "#FFF1E0", color: "#633806" },
   retail: { bg: "#FAECE7", color: "#4A1B0C" },
-  other: { bg: "#F1EFE8", color: "#444441" },
+  other: { bg: "#F5F4F0", color: "#444441" },
+};
+
+const formatCategory = (cat) => {
+  if (!cat) return "";
+  return cat.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+};
+
+const truncateUrl = (url) => {
+  if (!url) return "";
+  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 };
 
 export default function BusinessDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const isMobile = useIsMobile();
 
   const {
     data: business,
@@ -56,11 +67,13 @@ export default function BusinessDetailPage() {
     queryKey: ["business", id],
     queryFn: () => getBusiness(id),
   });
+
   const { data: similarListings } = useQuery({
     queryKey: ["similar", business?.listing_id],
     queryFn: () => getSimilarListings(business.listing_id),
     enabled: !!business?.listing_id,
   });
+
   usePageTitle(
     business?.business_name
       ? `${business.business_name} — Business`
@@ -68,7 +81,6 @@ export default function BusinessDetailPage() {
   );
 
   if (isLoading) return <SkeletonDetailPage />;
-
   if (error)
     return (
       <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
@@ -77,11 +89,11 @@ export default function BusinessDetailPage() {
     );
 
   const catColor = CATEGORY_COLORS[business?.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[business?.category] || "📌";
+  const catEmoji = CATEGORY_EMOJIS[business?.category] || "🏪";
 
   return (
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button and share */}
+      {/* Top bar */}
       <div
         style={{
           display: "flex",
@@ -99,14 +111,11 @@ export default function BusinessDetailPage() {
             fontSize: "13px",
             cursor: "pointer",
             padding: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
           }}
         >
           ← Back to Businesses
         </button>
-        <ShareButton title={business?.business_name} />
+        <ShareButton title={business?.business_name} compact={isMobile} />
       </div>
 
       <div
@@ -117,16 +126,17 @@ export default function BusinessDetailPage() {
           overflow: "hidden",
         }}
       >
-        {/* Header banner */}
+        {/* Hero banner */}
         <div
           style={{
             background: catColor.bg,
-            padding: "28px",
+            padding: "24px 28px",
             display: "flex",
             alignItems: "center",
             gap: "20px",
           }}
         >
+          {/* Logo */}
           <div
             style={{
               width: "64px",
@@ -138,11 +148,14 @@ export default function BusinessDetailPage() {
               justifyContent: "center",
               fontSize: "28px",
               flexShrink: 0,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
             }}
           >
             {catEmoji}
           </div>
-          <div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Badges */}
             <div
               style={{
                 display: "flex",
@@ -153,16 +166,15 @@ export default function BusinessDetailPage() {
             >
               <span
                 style={{
-                  background: catColor.bg,
+                  background: "rgba(255,255,255,0.7)",
                   color: catColor.color,
                   fontSize: "11px",
                   fontWeight: 500,
                   padding: "3px 10px",
                   borderRadius: "8px",
-                  border: `0.5px solid ${catColor.color}22`,
                 }}
               >
-                {catEmoji} {business.category?.replace("_", " ")}
+                {catEmoji} {formatCategory(business.category)}
               </span>
               {business.is_verified && (
                 <span
@@ -193,23 +205,26 @@ export default function BusinessDetailPage() {
                 </span>
               )}
             </div>
+
+            {/* Name */}
             <h1
               style={{
                 fontSize: "22px",
-                fontWeight: 600,
+                fontWeight: 700,
                 color: "#26215C",
                 marginBottom: "4px",
+                lineHeight: 1.2,
               }}
             >
               {business.business_name}
             </h1>
-            <p style={{ fontSize: "14px", color: catColor.color }}>
+            <p style={{ fontSize: "13px", color: catColor.color }}>
               📍 {business.suburb}, {business.state}
             </p>
           </div>
         </div>
 
-        <div style={{ padding: "28px" }}>
+        <div style={{ padding: "24px 28px" }}>
           {/* About */}
           <h3
             style={{
@@ -232,7 +247,6 @@ export default function BusinessDetailPage() {
             {business.description}
           </p>
 
-          {/* Divider */}
           <div
             style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
           />
@@ -240,28 +254,29 @@ export default function BusinessDetailPage() {
           {/* Details grid */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              display: "flex",
+              flexDirection: "column",
               gap: "16px",
               marginBottom: "24px",
             }}
           >
             {[
-              business.address && { label: "Address", value: business.address },
+              business.address && { label: "ADDRESS", value: business.address },
               {
-                label: "Location",
-                value: `${business.suburb}, ${business.state} ${business.postcode}`,
+                label: "LOCATION",
+                value:
+                  `${business.suburb}, ${business.state} ${business.postcode || ""}`.trim(),
               },
               business.established_year && {
-                label: "Established",
+                label: "ESTABLISHED",
                 value: business.established_year,
               },
               business.operating_hours && {
-                label: "Hours",
+                label: "HOURS",
                 value: business.operating_hours,
               },
               business.website && {
-                label: "Website",
+                label: "WEBSITE",
                 value: business.website,
                 isLink: true,
               },
@@ -289,9 +304,10 @@ export default function BusinessDetailPage() {
                         fontSize: "14px",
                         color: "#534AB7",
                         fontWeight: 500,
+                        wordBreak: "break-all",
                       }}
                     >
-                      {value}
+                      {truncateUrl(value)}
                     </a>
                   ) : (
                     <div
@@ -308,7 +324,6 @@ export default function BusinessDetailPage() {
               ))}
           </div>
 
-          {/* Divider */}
           <div
             style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
           />
@@ -329,7 +344,7 @@ export default function BusinessDetailPage() {
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
               {business.phone && (
                 <a
-                  href={`tel:${business.phone}`}
+                  href={"tel:" + business.phone}
                   style={{
                     background: "#534AB7",
                     color: "#fff",
@@ -338,14 +353,19 @@ export default function BusinessDetailPage() {
                     textDecoration: "none",
                     fontSize: "13px",
                     fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
                   }}
                 >
-                  Call {business.phone}
+                  📞 Call {business.phone}
                 </a>
               )}
               {business.whatsapp && (
                 <a
-                  href={`https://wa.me/${business.whatsapp?.replace(/\D/g, "")}`}
+                  href={
+                    "https://wa.me/" + business.whatsapp?.replace(/\D/g, "")
+                  }
                   target="_blank"
                   rel="noreferrer"
                   style={{
@@ -356,14 +376,17 @@ export default function BusinessDetailPage() {
                     textDecoration: "none",
                     fontSize: "13px",
                     fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
                   }}
                 >
-                  WhatsApp
+                  💬 WhatsApp
                 </a>
               )}
               {business.email && (
                 <a
-                  href={`mailto:${business.email}`}
+                  href={"mailto:" + business.email}
                   style={{
                     background: "#FFF1E0",
                     color: "#E87722",
@@ -373,9 +396,12 @@ export default function BusinessDetailPage() {
                     fontSize: "13px",
                     fontWeight: 500,
                     border: "0.5px solid #EFD9C0",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
                   }}
                 >
-                  Email
+                  ✉️ Email
                 </a>
               )}
               {business.website && (
@@ -391,9 +417,12 @@ export default function BusinessDetailPage() {
                     textDecoration: "none",
                     fontSize: "13px",
                     fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
                   }}
                 >
-                  Visit website
+                  🌐 Visit website
                 </a>
               )}
             </div>
@@ -403,18 +432,46 @@ export default function BusinessDetailPage() {
                 background: "#FFF1E0",
                 border: "0.5px solid #EFD9C0",
                 borderRadius: "10px",
-                padding: "16px",
-                fontSize: "14px",
-                color: "#633806",
+                padding: "16px 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "16px",
+                flexWrap: "wrap",
               }}
             >
-              Please{" "}
-              <a href="/login" style={{ color: "#E87722", fontWeight: 500 }}>
-                sign in
-              </a>{" "}
-              to view contact details.
+              <div>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    color: "#26215C",
+                    marginBottom: "3px",
+                  }}
+                >
+                  Sign in to view contact details
+                </div>
+                <div style={{ fontSize: "12px", color: "#888" }}>
+                  Create a free account to contact this business
+                </div>
+              </div>
+              <a
+                href="/login"
+                style={{
+                  background: "#E87722",
+                  color: "#fff",
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                }}
+              >
+                Sign in →
+              </a>
             </div>
           )}
+
           {/* Report */}
           <div
             style={{
@@ -427,7 +484,8 @@ export default function BusinessDetailPage() {
           </div>
         </div>
       </div>
-      {/* Similar listings */}
+
+      {/* Similar businesses */}
       {similarListings?.length > 0 && (
         <div style={{ marginTop: "24px" }}>
           <h3
@@ -446,7 +504,7 @@ export default function BusinessDetailPage() {
             {similarListings.map((listing) => (
               <Link
                 key={listing.id}
-                to={`/businesses/listing/${listing.id}`}
+                to={"/businesses/" + listing.id}
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",
@@ -474,7 +532,7 @@ export default function BusinessDetailPage() {
                       width: "36px",
                       height: "36px",
                       borderRadius: "8px",
-                      background: "#EEEDFE",
+                      background: "#FAEEDA",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -482,7 +540,7 @@ export default function BusinessDetailPage() {
                       flexShrink: 0,
                     }}
                   >
-                    💼
+                    🏪
                   </div>
                   <div>
                     <div
