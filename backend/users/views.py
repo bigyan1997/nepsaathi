@@ -1,5 +1,5 @@
 from rest_framework import generics, permissions, status
-from users.throttles import LoginRateThrottle, RegisterRateThrottle
+from users.throttles import LoginRateThrottle, RegisterRateThrottle, PasswordResetThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -8,6 +8,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from decouple import config
 from .serializers import UserSerializer
+from dj_rest_auth.views import PasswordResetView as BasePasswordResetView
 
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -168,3 +169,7 @@ class ThrottledRegisterView(APIView):
     def post(self, request, *args, **kwargs):
         from dj_rest_auth.registration.views import RegisterView
         return RegisterView.as_view()(request._request, *args, **kwargs)
+
+class CustomPasswordResetView(BasePasswordResetView):
+    """Override to send password reset email via Resend."""
+    throttle_classes = [PasswordResetThrottle]

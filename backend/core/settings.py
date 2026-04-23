@@ -129,6 +129,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
+PASSWORD_RESET_CONFIRM_URL = 'reset-password/{uid}/{token}/'
+
 # ─── REST Framework ──────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

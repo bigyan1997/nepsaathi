@@ -44,6 +44,8 @@ import ProfilePage from "./pages/ProfilePage";
 // Auth pages (guest only)
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -181,6 +183,14 @@ function App() {
                             <ProfilePage />
                           </ProtectedRoute>
                         }
+                      />
+                      <Route
+                        path="/forgot-password"
+                        element={<ForgotPasswordPage />}
+                      />
+                      <Route
+                        path="/reset-password/:uid/:token"
+                        element={<ResetPasswordPage />}
                       />
                       {/* 404 — must be last */}
                       <Route path="*" element={<NotFoundPage />} />

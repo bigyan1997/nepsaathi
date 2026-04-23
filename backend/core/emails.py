@@ -41,6 +41,26 @@ def send_welcome_email(user):
     except Exception as e:
         print(f'Welcome email failed: {e}', flush=True)
 
+def send_password_reset_email(user, reset_url):
+    """Send password reset email via Resend."""
+    try:
+        from django.template.loader import render_to_string
+        html = render_to_string('emails/password_reset.html', {
+            'password_reset_url': reset_url,
+            'frontend_url': FRONTEND_URL,
+            'first_name': user.first_name or 'there',
+        })
+        params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [user.email],
+            'subject': 'Reset your NepSaathi password 🔐',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
+        thread.start()
+    except Exception as e:
+        print(f'Password reset email failed: {e}', flush=True)
+
 
 def send_report_emails(report):
     """Send report notifications via Resend."""
