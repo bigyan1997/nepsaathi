@@ -1131,10 +1131,10 @@ export default function MyListingsPage() {
                     background: "#fff",
                     border: "0.5px solid #e5e5e5",
                     borderRadius: "12px",
-                    padding: "16px 20px",
+                    padding: "14px 16px",
                     display: "flex",
-                    alignItems: "center",
-                    gap: "16px",
+                    alignItems: "flex-start",
+                    gap: "12px",
                     transition: "border-color 0.15s",
                   }}
                   onMouseEnter={(e) =>
@@ -1161,26 +1161,15 @@ export default function MyListingsPage() {
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* Badges */}
                     <div
                       style={{
                         display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
+                        gap: "6px",
                         marginBottom: "4px",
+                        flexWrap: "wrap",
                       }}
                     >
-                      <h3
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          color: "#26215C",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {item.listing_title}
-                      </h3>
                       <span
                         style={{
                           background: typeColor.bg,
@@ -1189,7 +1178,6 @@ export default function MyListingsPage() {
                           fontWeight: 500,
                           padding: "2px 8px",
                           borderRadius: "8px",
-                          flexShrink: 0,
                         }}
                       >
                         {item.listing_type}
@@ -1203,51 +1191,74 @@ export default function MyListingsPage() {
                             fontWeight: 500,
                             padding: "2px 8px",
                             borderRadius: "8px",
-                            flexShrink: 0,
                           }}
                         >
                           Expired
                         </span>
                       )}
                     </div>
-                    <p style={{ fontSize: "12px", color: "#888" }}>
+
+                    {/* Title */}
+                    <h3
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "#26215C",
+                        marginBottom: "3px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {item.listing_title}
+                    </h3>
+
+                    {/* Location */}
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#888",
+                        marginBottom: "8px",
+                      }}
+                    >
                       📍 {item.listing_location}, {item.listing_state}
                     </p>
-                  </div>
 
-                  <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-                    <button
-                      onClick={() => navigate(getSavedPath(item))}
-                      style={{
-                        background: "#EEEDFE",
-                        color: "#534AB7",
-                        border: "none",
-                        borderRadius: "7px",
-                        padding: "7px 14px",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                      }}
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => unsaveMutation.mutate(item.listing)}
-                      disabled={unsaveMutation.isPending}
-                      style={{
-                        background: "#FCEBEB",
-                        color: "#A32D2D",
-                        border: "none",
-                        borderRadius: "7px",
-                        padding: "7px 14px",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        opacity: unsaveMutation.isPending ? 0.6 : 1,
-                      }}
-                    >
-                      Remove
-                    </button>
+                    {/* Buttons */}
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button
+                        onClick={() => navigate(getSavedPath(item))}
+                        style={{
+                          background: "#EEEDFE",
+                          color: "#534AB7",
+                          border: "none",
+                          borderRadius: "7px",
+                          padding: "7px 14px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                        }}
+                      >
+                        View →
+                      </button>
+                      <button
+                        onClick={() => unsaveMutation.mutate(item.listing)}
+                        disabled={unsaveMutation.isPending}
+                        style={{
+                          background: "#FCEBEB",
+                          color: "#A32D2D",
+                          border: "none",
+                          borderRadius: "7px",
+                          padding: "7px 14px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          opacity: unsaveMutation.isPending ? 0.6 : 1,
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
