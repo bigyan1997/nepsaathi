@@ -161,7 +161,9 @@ class MyListingsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Listing.objects.filter(
-            status='active'
+            user=self.request.user,
+        ).exclude(
+            status='deleted'
         ).select_related('user').prefetch_related(
             'images', 'job_detail', 'room_detail'
         ).annotate(
