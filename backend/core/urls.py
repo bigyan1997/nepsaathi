@@ -15,6 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+admin.site.site_header = "NepSaathi Admin"
+admin.site.site_title = "NepSaathi Admin Portal"
+admin.site.index_title = "NepSaathi Administration"
 from django.http import HttpResponseRedirect
 from django.urls import path, include
 from django.conf import settings

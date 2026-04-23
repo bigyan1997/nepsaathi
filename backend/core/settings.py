@@ -292,3 +292,8 @@ CSRF_TRUSTED_ORIGINS = config(
     default='http://localhost:5173',
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
+
+# ─── Admin Site Customization ───────────────────────────────────────────────────────────────
+ADMIN_SITE_HEADER = "NepSaathi Admin"
+ADMIN_SITE_TITLE = "NepSaathi Admin Portal"
+ADMIN_INDEX_TITLE = "NepSaathi Administration"
