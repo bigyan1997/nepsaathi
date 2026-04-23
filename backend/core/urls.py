@@ -23,6 +23,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from decouple import config
+from users import views as users_views
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
@@ -33,11 +34,14 @@ urlpatterns = [
     # Redirect root to frontend
     path('', lambda request: HttpResponseRedirect(FRONTEND_URL)),
 
-    # Auth — login, logout, password change
-    path('api/auth/', include('dj_rest_auth.urls')),
+    # Auth — login with rate limiting
+    path('api/auth/login/', users_views.ThrottledLoginView.as_view(), name='throttled-login'),
 
-    # Auth — register new user
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    # Auth — register with rate limiting
+    path('api/auth/registration/', users_views.ThrottledRegisterView.as_view(), name='throttled-register'),
+
+    # Auth — other auth endpoints (logout, password change etc)
+    path('api/auth/', include('dj_rest_auth.urls')),
 
     # Auth — Google OAuth
     path('api/auth/social/', include('allauth.socialaccount.urls')),

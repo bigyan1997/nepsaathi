@@ -148,6 +148,9 @@ REST_FRAMEWORK = {
         'user': '1000/day' if not DEBUG else '10000/day',
         'listing_create': '10/hour',
         'business_create': '3/hour',
+        'login': '5/minute' if not DEBUG else '1000/day',
+        'register': '3/minute' if not DEBUG else '1000/day',
+        'password_reset': '3/hour' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -297,3 +300,5 @@ CSRF_TRUSTED_ORIGINS = config(
 ADMIN_SITE_HEADER = "NepSaathi Admin"
 ADMIN_SITE_TITLE = "NepSaathi Admin Portal"
 ADMIN_INDEX_TITLE = "NepSaathi Administration"
+
+

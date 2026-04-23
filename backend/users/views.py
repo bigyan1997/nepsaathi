@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, status
+from users.throttles import LoginRateThrottle, RegisterRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -7,6 +8,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from decouple import config
 from .serializers import UserSerializer
+
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
@@ -141,3 +143,28 @@ class ContactView(APIView):
                 {'detail': 'Failed to send message. Please email us directly.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+class ThrottledLoginView(APIView):
+    """
+    POST /api/auth/login/
+    Login with email and password — rate limited to 5/minute.
+    """
+    throttle_classes = [LoginRateThrottle]
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        from dj_rest_auth.views import LoginView
+        return LoginView.as_view()(request._request, *args, **kwargs)
+
+
+class ThrottledRegisterView(APIView):
+    """
+    POST /api/auth/registration/
+    Register new user — rate limited to 3/minute.
+    """
+    throttle_classes = [RegisterRateThrottle]
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        from dj_rest_auth.registration.views import RegisterView
+        return RegisterView.as_view()(request._request, *args, **kwargs)
