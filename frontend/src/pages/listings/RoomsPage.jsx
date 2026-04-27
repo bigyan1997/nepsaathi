@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
@@ -34,9 +34,17 @@ export default function RoomsPage() {
     max_price: "",
     ordering: "-listing__created_at",
   });
+  const [page, setPage] = useState(1);
+  const [allResults, setAllResults] = useState([]);
+  const prevKey = useRef(null);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["rooms", filters],
+  const updateFilters = (update) => {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...update }));
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["rooms", filters, page],
     queryFn: () =>
       getRooms({
         search: filters.search || undefined,
@@ -47,14 +55,27 @@ export default function RoomsPage() {
         min_price: filters.min_price || undefined,
         max_price: filters.max_price || undefined,
         ordering: filters.ordering || undefined,
+        page,
       }),
   });
+
+  useEffect(() => {
+    if (!data?.results) return;
+    const key = JSON.stringify(filters);
+    if (key !== prevKey.current || page === 1) {
+      setAllResults(data.results);
+      prevKey.current = key;
+    } else {
+      setAllResults((prev) => [...prev, ...data.results]);
+    }
+  }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchParam = params.get("search");
     const stateParam = params.get("state");
     if (searchParam || stateParam) {
+      setPage(1);
       setFilters((prev) => ({
         ...prev,
         search: searchParam || "",
@@ -63,7 +84,7 @@ export default function RoomsPage() {
     }
   }, [location.search]);
 
-  const filteredResults = data?.results?.filter((room) => {
+  const filteredResults = allResults.filter((room) => {
     if (activeTab === "") return true;
     if (activeTab === "true") return room.is_wanted === true;
     if (activeTab === "false") return room.is_wanted === false;
@@ -101,7 +122,7 @@ export default function RoomsPage() {
         {TABS.map(({ value, label, emoji }) => (
           <button
             key={value}
-            onClick={() => setActiveTab(value)}
+            onClick={() => { setActiveTab(value); setPage(1); setAllResults([]); }}
             style={{
               background: activeTab === value ? "#E87722" : "#fff",
               color: activeTab === value ? "#fff" : "#E87722",
@@ -133,10 +154,10 @@ export default function RoomsPage() {
                 }}
               >
                 {value === ""
-                  ? data.results.length
+                  ? (data?.count ?? allResults.length)
                   : value === "true"
-                    ? data.results.filter((r) => r.is_wanted).length
-                    : data.results.filter((r) => !r.is_wanted).length}
+                    ? allResults.filter((r) => r.is_wanted).length
+                    : allResults.filter((r) => !r.is_wanted).length}
               </span>
             )}
           </button>
@@ -156,7 +177,7 @@ export default function RoomsPage() {
           type="text"
           placeholder="🔍  Search rooms..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          onChange={(e) => updateFilters({ search: e.target.value })}
           style={{
             flex: 1,
             minWidth: "180px",
@@ -171,7 +192,7 @@ export default function RoomsPage() {
         <select
           value={filters.room_type}
           onChange={(e) =>
-            setFilters({ ...filters, room_type: e.target.value })
+            updateFilters({ room_type: e.target.value })
           }
           style={{
             border: "0.5px solid #ddd",
@@ -191,7 +212,7 @@ export default function RoomsPage() {
         </select>
         <select
           value={filters.state}
-          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          onChange={(e) => updateFilters({ state: e.target.value })}
           style={{
             border: "0.5px solid #ddd",
             borderRadius: "8px",
@@ -212,9 +233,7 @@ export default function RoomsPage() {
           type="number"
           placeholder="Min $"
           value={filters.min_price}
-          onChange={(e) =>
-            setFilters({ ...filters, min_price: e.target.value })
-          }
+          onChange={(e) => updateFilters({ min_price: e.target.value })}
           style={{
             width: "80px",
             border: "0.5px solid #ddd",
@@ -229,9 +248,7 @@ export default function RoomsPage() {
           type="number"
           placeholder="Max $"
           value={filters.max_price}
-          onChange={(e) =>
-            setFilters({ ...filters, max_price: e.target.value })
-          }
+          onChange={(e) => updateFilters({ max_price: e.target.value })}
           style={{
             width: "80px",
             border: "0.5px solid #ddd",
@@ -255,12 +272,7 @@ export default function RoomsPage() {
           <input
             type="checkbox"
             checked={filters.bills_included === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                bills_included: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ bills_included: e.target.checked ? "true" : "" })}
           />
           Bills incl.
         </label>
@@ -277,18 +289,13 @@ export default function RoomsPage() {
           <input
             type="checkbox"
             checked={filters.nepalese_household === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                nepalese_household: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ nepalese_household: e.target.checked ? "true" : "" })}
           />
           🇳🇵 Nepalese
         </label>
         <select
           value={filters.ordering}
-          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          onChange={(e) => updateFilters({ ordering: e.target.value })}
           style={{
             border: "0.5px solid #ddd",
             borderRadius: "8px",
@@ -307,7 +314,7 @@ export default function RoomsPage() {
       </div>
 
       {/* Loading */}
-      {isLoading && (
+      {(isLoading || (isFetching && allResults.length === 0)) && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
             <SkeletonCard key={i} />
@@ -332,7 +339,7 @@ export default function RoomsPage() {
       )}
 
       {/* Empty */}
-      {!isLoading && filteredResults?.length === 0 && (
+      {!isLoading && !isFetching && filteredResults.length === 0 && (
         <div
           style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
         >
@@ -360,10 +367,10 @@ export default function RoomsPage() {
           flexDirection: "column",
           gap: "10px",
           transition: "opacity 0.2s ease",
-          opacity: isLoading ? 0.5 : 1,
+          opacity: isFetching && page === 1 ? 0.5 : 1,
         }}
       >
-        {filteredResults?.map((room) => (
+        {filteredResults.map((room) => (
           <Link
             key={room.id}
             to={"/rooms/listing/" + room.listing_id}
@@ -591,17 +598,29 @@ export default function RoomsPage() {
         ))}
       </div>
 
-      {/* Pagination */}
-      {data?.count > 20 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            color: "#aaa",
-            fontSize: "12px",
-          }}
-        >
-          Showing {filteredResults?.length} of {data.count} rooms
+      {/* Load more */}
+      {data?.next && (
+        <div style={{ textAlign: "center", paddingTop: "16px" }}>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={isFetching}
+            style={{
+              background: "#fff",
+              border: "0.5px solid #EFD9C0",
+              borderRadius: "8px",
+              padding: "10px 28px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "#E87722",
+              cursor: isFetching ? "not-allowed" : "pointer",
+              opacity: isFetching ? 0.6 : 1,
+            }}
+          >
+            {isFetching ? "Loading…" : "Load more rooms"}
+          </button>
+          <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
+            Showing {allResults.length} of {data.count}
+          </p>
         </div>
       )}
     </div>

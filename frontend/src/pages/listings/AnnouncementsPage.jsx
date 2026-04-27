@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAnnouncements } from "../../api/announcements";
@@ -36,9 +36,17 @@ export default function AnnouncementsPage() {
     is_urgent: "",
     ordering: "",
   });
+  const [page, setPage] = useState(1);
+  const [allResults, setAllResults] = useState([]);
+  const prevKey = useRef(null);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["announcements", filters],
+  const updateFilters = (update) => {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...update }));
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["announcements", filters, page],
     queryFn: () =>
       getAnnouncements({
         category: filters.category || undefined,
@@ -47,14 +55,27 @@ export default function AnnouncementsPage() {
         is_free: filters.is_free || undefined,
         is_urgent: filters.is_urgent || undefined,
         ordering: filters.ordering || undefined,
+        page,
       }),
   });
+
+  useEffect(() => {
+    if (!data?.results) return;
+    const key = JSON.stringify(filters);
+    if (key !== prevKey.current || page === 1) {
+      setAllResults(data.results);
+      prevKey.current = key;
+    } else {
+      setAllResults((prev) => [...prev, ...data.results]);
+    }
+  }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchParam = params.get("search");
     const stateParam = params.get("state");
     if (searchParam || stateParam) {
+      setPage(1);
       setFilters((prev) => ({
         ...prev,
         search: searchParam || "",
@@ -95,7 +116,7 @@ export default function AnnouncementsPage() {
           type="text"
           placeholder="Search announcements..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          onChange={(e) => updateFilters({ search: e.target.value })}
           style={{
             flex: 1,
             minWidth: "200px",
@@ -109,7 +130,7 @@ export default function AnnouncementsPage() {
         />
         <select
           value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+          onChange={(e) => updateFilters({ category: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -128,7 +149,7 @@ export default function AnnouncementsPage() {
         </select>
         <select
           value={filters.state}
-          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          onChange={(e) => updateFilters({ state: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -147,7 +168,7 @@ export default function AnnouncementsPage() {
         </select>
         <select
           value={filters.ordering}
-          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          onChange={(e) => updateFilters({ ordering: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -176,12 +197,7 @@ export default function AnnouncementsPage() {
           <input
             type="checkbox"
             checked={filters.is_free === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                is_free: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ is_free: e.target.checked ? "true" : "" })}
           />
           Free only
         </label>
@@ -198,19 +214,14 @@ export default function AnnouncementsPage() {
           <input
             type="checkbox"
             checked={filters.is_urgent === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                is_urgent: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ is_urgent: e.target.checked ? "true" : "" })}
           />
           Urgent only
         </label>
       </div>
 
       {/* Loading */}
-      {isLoading && (
+      {(isLoading || (isFetching && allResults.length === 0)) && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
             <SkeletonCard key={i} />
@@ -243,7 +254,7 @@ export default function AnnouncementsPage() {
 
       {/* Announcement cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {data?.results?.map((announcement) => {
+        {allResults.map((announcement) => {
           const catColor =
             CATEGORY_COLORS[announcement.category] || CATEGORY_COLORS.general;
           return (
@@ -374,18 +385,29 @@ export default function AnnouncementsPage() {
         })}
       </div>
 
-      {/* Pagination info */}
-      {data?.count > 20 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            color: "#888",
-            fontSize: "13px",
-          }}
-        >
-          Showing 20 of {data.count} announcements — refine your search to find
-          more
+      {/* Load more */}
+      {data?.next && (
+        <div style={{ textAlign: "center", paddingTop: "16px" }}>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={isFetching}
+            style={{
+              background: "#fff",
+              border: "0.5px solid #B5D4F4",
+              borderRadius: "8px",
+              padding: "10px 28px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "#0C447C",
+              cursor: isFetching ? "not-allowed" : "pointer",
+              opacity: isFetching ? 0.6 : 1,
+            }}
+          >
+            {isFetching ? "Loading…" : "Load more announcements"}
+          </button>
+          <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
+            Showing {allResults.length} of {data.count}
+          </p>
         </div>
       )}
     </div>

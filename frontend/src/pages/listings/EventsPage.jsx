@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../../api/events";
@@ -52,9 +52,17 @@ export default function EventsPage() {
     upcoming: "true",
     ordering: "",
   });
+  const [page, setPage] = useState(1);
+  const [allResults, setAllResults] = useState([]);
+  const prevKey = useRef(null);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["events", filters],
+  const updateFilters = (update) => {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...update }));
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["events", filters, page],
     queryFn: () =>
       getEvents({
         category: filters.category || undefined,
@@ -64,8 +72,20 @@ export default function EventsPage() {
         is_online: filters.is_online || undefined,
         upcoming: filters.upcoming || undefined,
         ordering: filters.ordering || undefined,
+        page,
       }),
   });
+
+  useEffect(() => {
+    if (!data?.results) return;
+    const key = JSON.stringify(filters);
+    if (key !== prevKey.current || page === 1) {
+      setAllResults(data.results);
+      prevKey.current = key;
+    } else {
+      setAllResults((prev) => [...prev, ...data.results]);
+    }
+  }, [data]);
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString("en-AU", {
@@ -128,7 +148,7 @@ export default function EventsPage() {
           type="text"
           placeholder="Search events..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          onChange={(e) => updateFilters({ search: e.target.value })}
           style={{
             flex: 1,
             minWidth: "200px",
@@ -142,7 +162,7 @@ export default function EventsPage() {
         />
         <select
           value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+          onChange={(e) => updateFilters({ category: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -161,7 +181,7 @@ export default function EventsPage() {
         </select>
         <select
           value={filters.state}
-          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          onChange={(e) => updateFilters({ state: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -180,7 +200,7 @@ export default function EventsPage() {
         </select>
         <select
           value={filters.ordering}
-          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          onChange={(e) => updateFilters({ ordering: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -209,12 +229,7 @@ export default function EventsPage() {
           <input
             type="checkbox"
             checked={filters.is_free === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                is_free: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ is_free: e.target.checked ? "true" : "" })}
           />
           Free only
         </label>
@@ -231,19 +246,14 @@ export default function EventsPage() {
           <input
             type="checkbox"
             checked={filters.is_online === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                is_online: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ is_online: e.target.checked ? "true" : "" })}
           />
           Online only
         </label>
         <div style={{ display: "flex", gap: "6px" }}>
           <button
             type="button"
-            onClick={() => setFilters({ ...filters, upcoming: "" })}
+            onClick={() => updateFilters({ upcoming: "" })}
             style={{
               background: filters.upcoming === "" ? "#534AB7" : "#fff",
               color: filters.upcoming === "" ? "#fff" : "#534AB7",
@@ -261,7 +271,7 @@ export default function EventsPage() {
           </button>
           <button
             type="button"
-            onClick={() => setFilters({ ...filters, upcoming: "true" })}
+            onClick={() => updateFilters({ upcoming: "true" })}
             style={{
               background: filters.upcoming === "true" ? "#534AB7" : "#fff",
               color: filters.upcoming === "true" ? "#fff" : "#534AB7",
@@ -281,7 +291,7 @@ export default function EventsPage() {
       </div>
 
       {/* Loading */}
-      {isLoading && (
+      {(isLoading || (isFetching && allResults.length === 0)) && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
             <SkeletonCard key={i} />
@@ -314,7 +324,7 @@ export default function EventsPage() {
 
       {/* Event cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {data?.results?.map((event) => {
+        {allResults.map((event) => {
           const catColor =
             CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
           const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
@@ -475,17 +485,29 @@ export default function EventsPage() {
         })}
       </div>
 
-      {/* Pagination info */}
-      {data?.count > 20 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            color: "#888",
-            fontSize: "13px",
-          }}
-        >
-          Showing 20 of {data.count} events — refine your search to find more
+      {/* Load more */}
+      {data?.next && (
+        <div style={{ textAlign: "center", paddingTop: "16px" }}>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={isFetching}
+            style={{
+              background: "#fff",
+              border: "0.5px solid #9FE1CB",
+              borderRadius: "8px",
+              padding: "10px 28px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "#1D9E75",
+              cursor: isFetching ? "not-allowed" : "pointer",
+              opacity: isFetching ? 0.6 : 1,
+            }}
+          >
+            {isFetching ? "Loading…" : "Load more events"}
+          </button>
+          <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
+            Showing {allResults.length} of {data.count}
+          </p>
         </div>
       )}
     </div>

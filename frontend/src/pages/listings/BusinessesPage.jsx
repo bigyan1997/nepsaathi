@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
@@ -68,9 +68,17 @@ export default function BusinessesPage() {
     is_nepalese_owned: "",
     is_verified: "",
   });
+  const [page, setPage] = useState(1);
+  const [allResults, setAllResults] = useState([]);
+  const prevKey = useRef(null);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["businesses", filters],
+  const updateFilters = (update) => {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...update }));
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["businesses", filters, page],
     queryFn: () =>
       getBusinesses({
         category: filters.category || undefined,
@@ -78,14 +86,27 @@ export default function BusinessesPage() {
         search: filters.search || undefined,
         is_nepalese_owned: filters.is_nepalese_owned || undefined,
         is_verified: filters.is_verified || undefined,
+        page,
       }),
   });
+
+  useEffect(() => {
+    if (!data?.results) return;
+    const key = JSON.stringify(filters);
+    if (key !== prevKey.current || page === 1) {
+      setAllResults(data.results);
+      prevKey.current = key;
+    } else {
+      setAllResults((prev) => [...prev, ...data.results]);
+    }
+  }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchParam = params.get("search");
     const stateParam = params.get("state");
     if (searchParam || stateParam) {
+      setPage(1);
       setFilters((prev) => ({
         ...prev,
         search: searchParam || "",
@@ -126,7 +147,7 @@ export default function BusinessesPage() {
           type="text"
           placeholder="Search businesses..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          onChange={(e) => updateFilters({ search: e.target.value })}
           style={{
             flex: 1,
             minWidth: "200px",
@@ -140,7 +161,7 @@ export default function BusinessesPage() {
         />
         <select
           value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+          onChange={(e) => updateFilters({ category: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -159,7 +180,7 @@ export default function BusinessesPage() {
         </select>
         <select
           value={filters.state}
-          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          onChange={(e) => updateFilters({ state: e.target.value })}
           style={{
             border: "0.5px solid #ccc",
             borderRadius: "8px",
@@ -189,12 +210,7 @@ export default function BusinessesPage() {
           <input
             type="checkbox"
             checked={filters.is_nepalese_owned === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                is_nepalese_owned: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ is_nepalese_owned: e.target.checked ? "true" : "" })}
           />
           Nepalese owned
         </label>
@@ -211,19 +227,14 @@ export default function BusinessesPage() {
           <input
             type="checkbox"
             checked={filters.is_verified === "true"}
-            onChange={(e) =>
-              setFilters({
-                ...filters,
-                is_verified: e.target.checked ? "true" : "",
-              })
-            }
+            onChange={(e) => updateFilters({ is_verified: e.target.checked ? "true" : "" })}
           />
           Verified only
         </label>
       </div>
 
       {/* Loading */}
-      {isLoading && (
+      {(isLoading || (isFetching && allResults.length === 0)) && (
         <div
           style={{
             display: "grid",
@@ -268,7 +279,7 @@ export default function BusinessesPage() {
           gap: "14px",
         }}
       >
-        {data?.results?.map((business) => {
+        {allResults.map((business) => {
           const catColor =
             CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
           const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
@@ -407,18 +418,29 @@ export default function BusinessesPage() {
         })}
       </div>
 
-      {/* Pagination info */}
-      {data?.count > 20 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            color: "#888",
-            fontSize: "13px",
-          }}
-        >
-          Showing 20 of {data.count} businesses — refine your search to find
-          more
+      {/* Load more */}
+      {data?.next && (
+        <div style={{ textAlign: "center", paddingTop: "16px" }}>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={isFetching}
+            style={{
+              background: "#fff",
+              border: "0.5px solid #FAC775",
+              borderRadius: "8px",
+              padding: "10px 28px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "#633806",
+              cursor: isFetching ? "not-allowed" : "pointer",
+              opacity: isFetching ? 0.6 : 1,
+            }}
+          >
+            {isFetching ? "Loading…" : "Load more businesses"}
+          </button>
+          <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
+            Showing {allResults.length} of {data.count}
+          </p>
         </div>
       )}
     </div>

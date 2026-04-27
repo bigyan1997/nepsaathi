@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
@@ -31,23 +31,45 @@ export default function JobsPage() {
     state: "",
     ordering: "-listing__created_at",
   });
+  const [page, setPage] = useState(1);
+  const [allResults, setAllResults] = useState([]);
+  const prevKey = useRef(null);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["jobs", filters],
+  const updateFilters = (update) => {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...update }));
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["jobs", filters, page],
     queryFn: () =>
       getJobs({
         job_type: filters.job_type || undefined,
         search: filters.search || undefined,
         listing__state: filters.state || undefined,
         ordering: filters.ordering || undefined,
+        page,
       }),
   });
+
+  // Accumulate results across pages; reset when filters change
+  useEffect(() => {
+    if (!data?.results) return;
+    const key = JSON.stringify(filters);
+    if (key !== prevKey.current || page === 1) {
+      setAllResults(data.results);
+      prevKey.current = key;
+    } else {
+      setAllResults((prev) => [...prev, ...data.results]);
+    }
+  }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchParam = params.get("search");
     const stateParam = params.get("state");
     if (searchParam || stateParam) {
+      setPage(1);
       setFilters((prev) => ({
         ...prev,
         search: searchParam || "",
@@ -56,8 +78,8 @@ export default function JobsPage() {
     }
   }, [location.search]);
 
-  // Filter by tab on frontend
-  const filteredResults = data?.results?.filter((job) => {
+  // Filter by tab on frontend (across all accumulated results)
+  const filteredResults = allResults.filter((job) => {
     if (activeTab === "") return true;
     if (activeTab === "true") return job.is_wanted === true;
     if (activeTab === "false") return job.is_wanted === false;
@@ -95,7 +117,7 @@ export default function JobsPage() {
         {TABS.map(({ value, label, emoji }) => (
           <button
             key={value}
-            onClick={() => setActiveTab(value)}
+            onClick={() => { setActiveTab(value); setPage(1); setAllResults([]); }}
             style={{
               background: activeTab === value ? "#534AB7" : "#fff",
               color: activeTab === value ? "#fff" : "#534AB7",
@@ -126,10 +148,10 @@ export default function JobsPage() {
                 }}
               >
                 {value === ""
-                  ? data.results.length
+                  ? (data?.count ?? allResults.length)
                   : value === "true"
-                    ? data.results.filter((j) => j.is_wanted).length
-                    : data.results.filter((j) => !j.is_wanted).length}
+                    ? allResults.filter((j) => j.is_wanted).length
+                    : allResults.filter((j) => !j.is_wanted).length}
               </span>
             )}
           </button>
@@ -149,7 +171,7 @@ export default function JobsPage() {
           type="text"
           placeholder="🔍  Search jobs..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          onChange={(e) => updateFilters({ search: e.target.value })}
           style={{
             flex: 1,
             minWidth: "180px",
@@ -163,7 +185,7 @@ export default function JobsPage() {
         />
         <select
           value={filters.job_type}
-          onChange={(e) => setFilters({ ...filters, job_type: e.target.value })}
+          onChange={(e) => updateFilters({ job_type: e.target.value })}
           style={{
             border: "0.5px solid #ddd",
             borderRadius: "8px",
@@ -182,7 +204,7 @@ export default function JobsPage() {
         </select>
         <select
           value={filters.state}
-          onChange={(e) => setFilters({ ...filters, state: e.target.value })}
+          onChange={(e) => updateFilters({ state: e.target.value })}
           style={{
             border: "0.5px solid #ddd",
             borderRadius: "8px",
@@ -201,7 +223,7 @@ export default function JobsPage() {
         </select>
         <select
           value={filters.ordering}
-          onChange={(e) => setFilters({ ...filters, ordering: e.target.value })}
+          onChange={(e) => updateFilters({ ordering: e.target.value })}
           style={{
             border: "0.5px solid #ddd",
             borderRadius: "8px",
@@ -220,7 +242,7 @@ export default function JobsPage() {
       </div>
 
       {/* Loading */}
-      {isLoading && (
+      {(isLoading || (isFetching && allResults.length === 0)) && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {[1, 2, 3, 4, 5].map((i) => (
             <SkeletonCard key={i} />
@@ -245,7 +267,7 @@ export default function JobsPage() {
       )}
 
       {/* Empty */}
-      {!isLoading && filteredResults?.length === 0 && (
+      {!isLoading && !isFetching && filteredResults.length === 0 && (
         <div
           style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
         >
@@ -273,10 +295,10 @@ export default function JobsPage() {
           flexDirection: "column",
           gap: "10px",
           transition: "opacity 0.2s ease",
-          opacity: isLoading ? 0.5 : 1,
+          opacity: isFetching && page === 1 ? 0.5 : 1,
         }}
       >
-        {filteredResults?.map((job) => (
+        {filteredResults.map((job) => (
           <Link
             key={job.id}
             to={`/jobs/listing/${job.listing_id}`}
@@ -479,18 +501,29 @@ export default function JobsPage() {
         ))}
       </div>
 
-      {/* Pagination */}
-      {data?.count > 20 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            color: "#aaa",
-            fontSize: "12px",
-          }}
-        >
-          Showing {filteredResults?.length} of {data.count} jobs — refine your
-          search for better results
+      {/* Load more */}
+      {data?.next && (
+        <div style={{ textAlign: "center", paddingTop: "16px" }}>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={isFetching}
+            style={{
+              background: "#fff",
+              border: "0.5px solid #AFA9EC",
+              borderRadius: "8px",
+              padding: "10px 28px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "#534AB7",
+              cursor: isFetching ? "not-allowed" : "pointer",
+              opacity: isFetching ? 0.6 : 1,
+            }}
+          >
+            {isFetching ? "Loading…" : "Load more jobs"}
+          </button>
+          <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
+            Showing {allResults.length} of {data.count}
+          </p>
         </div>
       )}
     </div>

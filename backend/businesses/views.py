@@ -1,9 +1,10 @@
 from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Business
-from .serializers import BusinessSerializer
+from .models import Business, BusinessReview
+from .serializers import BusinessSerializer, BusinessReviewSerializer
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -122,3 +123,61 @@ class MyBusinessesView(generics.ListAPIView):
         return Business.objects.filter(
             owner=self.request.user
         ).select_related('owner')
+
+
+class BusinessReviewListCreateView(APIView):
+    """
+    GET  /api/businesses/<pk>/reviews/ — list reviews for a business
+    POST /api/businesses/<pk>/reviews/ — submit a review (authenticated, not owner, one per business)
+    """
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get(self, request, pk):
+        try:
+            business = Business.objects.get(pk=pk, is_active=True)
+        except Business.DoesNotExist:
+            return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
+        reviews = business.reviews.select_related('reviewer').all()
+        serializer = BusinessReviewSerializer(reviews, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        try:
+            business = Business.objects.get(pk=pk, is_active=True)
+        except Business.DoesNotExist:
+            return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if business.owner == request.user:
+            return Response(
+                {'detail': 'You cannot review your own business.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if BusinessReview.objects.filter(business=business, reviewer=request.user).exists():
+            return Response(
+                {'detail': 'You have already reviewed this business.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = BusinessReviewSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(business=business, reviewer=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BusinessReviewDeleteView(APIView):
+    """
+    DELETE /api/businesses/<pk>/reviews/<review_pk>/ — delete own review
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def delete(self, request, pk, review_pk):
+        try:
+            review = BusinessReview.objects.get(pk=review_pk, business__pk=pk, reviewer=request.user)
+        except BusinessReview.DoesNotExist:
+            return Response({'detail': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)
+        review.delete()
+        return Response({'detail': 'Review deleted.'}, status=status.HTTP_200_OK)

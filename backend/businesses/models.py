@@ -125,3 +125,29 @@ class Business(models.Model):
 
     def __str__(self):
         return f'{self.business_name} ({self.get_category_display()}) — {self.suburb}'
+
+
+class BusinessReview(models.Model):
+    business = models.ForeignKey(
+        Business,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='business_reviews',
+    )
+    rating = models.PositiveSmallIntegerField(
+        choices=[(i, i) for i in range(1, 6)],
+    )
+    comment = models.TextField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'business_reviews'
+        unique_together = ('business', 'reviewer')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.reviewer} → {self.business.business_name} ({self.rating}★)'

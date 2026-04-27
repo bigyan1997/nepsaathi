@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Business
+from django.db.models import Avg
+from .models import Business, BusinessReview
 
 
 class BusinessSerializer(serializers.ModelSerializer):
@@ -17,6 +18,8 @@ class BusinessSerializer(serializers.ModelSerializer):
     owner_email = serializers.EmailField(
         source='owner.email', read_only=True)
     is_owner = serializers.SerializerMethodField()
+    avg_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Business
@@ -42,6 +45,8 @@ class BusinessSerializer(serializers.ModelSerializer):
             'operating_hours',
             'is_verified',
             'is_active',
+            'avg_rating',
+            'review_count',
             'created_at',
             'updated_at',
         )
@@ -51,11 +56,12 @@ class BusinessSerializer(serializers.ModelSerializer):
             'owner_name',
             'owner_email',
             'is_owner',
+            'avg_rating',
+            'review_count',
             'created_at',
             'updated_at',
         )
         extra_kwargs = {
-            # ABN is write-only — never exposed in API response
             'abn': {'write_only': True},
         }
 
@@ -64,6 +70,14 @@ class BusinessSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.owner == request.user
         return False
+
+    def get_avg_rating(self, obj):
+        result = obj.reviews.aggregate(avg=Avg('rating'))
+        avg = result['avg']
+        return round(avg, 1) if avg is not None else None
+
+    def get_review_count(self, obj):
+        return obj.reviews.count()
 
     def to_representation(self, instance):
         """Hide owner_email from non-owners."""
@@ -77,3 +91,17 @@ class BusinessSerializer(serializers.ModelSerializer):
         if not is_owner:
             data.pop('owner_email', None)
         return data
+
+
+class BusinessReviewSerializer(serializers.ModelSerializer):
+    reviewer_name = serializers.CharField(source='reviewer.full_name', read_only=True)
+    is_own_review = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BusinessReview
+        fields = ('id', 'reviewer_name', 'is_own_review', 'rating', 'comment', 'created_at')
+        read_only_fields = ('id', 'reviewer_name', 'is_own_review', 'created_at')
+
+    def get_is_own_review(self, obj):
+        request = self.context.get('request')
+        return bool(request and request.user.is_authenticated and obj.reviewer == request.user)

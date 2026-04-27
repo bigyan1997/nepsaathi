@@ -15,4 +15,8 @@ urlpatterns = [
 
     # View, edit or delete a single business
     path('<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
+
+    # Reviews
+    path('<int:pk>/reviews/', views.BusinessReviewListCreateView.as_view(), name='business-reviews'),
+    path('<int:pk>/reviews/<int:review_pk>/', views.BusinessReviewDeleteView.as_view(), name='business-review-delete'),
 ]

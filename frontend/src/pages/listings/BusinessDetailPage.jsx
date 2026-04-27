@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getBusiness } from "../../api/businesses";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getBusiness, getBusinessReviews, addBusinessReview, deleteBusinessReview } from "../../api/businesses";
 import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -8,6 +9,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import useIsMobile from "../../hooks/useIsMobile";
+import { useToast } from "../../components/ui/Toast";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -53,11 +55,39 @@ const truncateUrl = (url) => {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 };
 
+function StarRating({ value, onChange, size = 20 }) {
+  const [hovered, setHovered] = useState(0);
+  return (
+    <div style={{ display: "flex", gap: "2px" }}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          onClick={() => onChange && onChange(star)}
+          onMouseEnter={() => onChange && setHovered(star)}
+          onMouseLeave={() => onChange && setHovered(0)}
+          style={{
+            fontSize: size,
+            cursor: onChange ? "pointer" : "default",
+            color: star <= (hovered || value) ? "#E87722" : "#ddd",
+            lineHeight: 1,
+          }}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function BusinessDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const isMobile = useIsMobile();
+  const { addToast } = useToast();
+  const queryClient = useQueryClient();
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
 
   const {
     data: business,
@@ -72,6 +102,34 @@ export default function BusinessDetailPage() {
     queryKey: ["similar", business?.listing_id],
     queryFn: () => getSimilarListings(business.listing_id),
     enabled: !!business?.listing_id,
+  });
+
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["business-reviews", id],
+    queryFn: () => getBusinessReviews(id),
+  });
+
+  const addReviewMutation = useMutation({
+    mutationFn: (data) => addBusinessReview(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["business-reviews", id]);
+      queryClient.invalidateQueries(["business", id]);
+      setReviewRating(0);
+      setReviewComment("");
+      addToast("Review submitted!", "success");
+    },
+    onError: (err) => {
+      addToast(err?.response?.data?.detail || "Failed to submit review.", "error");
+    },
+  });
+
+  const deleteReviewMutation = useMutation({
+    mutationFn: (reviewId) => deleteBusinessReview(id, reviewId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["business-reviews", id]);
+      queryClient.invalidateQueries(["business", id]);
+      addToast("Review deleted.", "info");
+    },
   });
 
   usePageTitle(
@@ -482,6 +540,152 @@ export default function BusinessDetailPage() {
           >
             <ReportButton listingId={business?.listing_id} />
           </div>
+        </div>
+      </div>
+
+      {/* Reviews */}
+      <div style={{ marginTop: "24px" }}>
+        <div
+          style={{
+            background: "#fff",
+            border: "0.5px solid #e5e5e5",
+            borderRadius: "14px",
+            padding: "24px 28px",
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C", margin: 0 }}>
+              Reviews
+            </h3>
+            {business?.review_count > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <StarRating value={Math.round(business.avg_rating)} size={16} />
+                <span style={{ fontSize: "13px", color: "#555", fontWeight: 500 }}>
+                  {business.avg_rating} · {business.review_count} review{business.review_count !== 1 ? "s" : ""}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Write a review */}
+          {isAuthenticated && !business?.is_owner && (() => {
+            const hasReviewed = reviews.some((r) => r.is_own_review);
+            if (hasReviewed) return null;
+            return (
+              <div
+                style={{
+                  background: "#F5F4F0",
+                  borderRadius: "10px",
+                  padding: "16px",
+                  marginBottom: "20px",
+                }}
+              >
+                <div style={{ fontSize: "13px", fontWeight: 500, color: "#26215C", marginBottom: "10px" }}>
+                  Leave a review
+                </div>
+                <StarRating value={reviewRating} onChange={setReviewRating} size={24} />
+                <textarea
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Share your experience (optional)"
+                  maxLength={500}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    marginTop: "10px",
+                    border: "0.5px solid #ddd",
+                    borderRadius: "8px",
+                    padding: "10px 12px",
+                    fontSize: "13px",
+                    color: "#333",
+                    resize: "vertical",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    fontFamily: "inherit",
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    if (!reviewRating) { addToast("Please select a star rating.", "error"); return; }
+                    addReviewMutation.mutate({ rating: reviewRating, comment: reviewComment });
+                  }}
+                  disabled={addReviewMutation.isPending}
+                  style={{
+                    marginTop: "10px",
+                    background: "#534AB7",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    cursor: addReviewMutation.isPending ? "not-allowed" : "pointer",
+                    opacity: addReviewMutation.isPending ? 0.7 : 1,
+                  }}
+                >
+                  {addReviewMutation.isPending ? "Submitting…" : "Submit review"}
+                </button>
+              </div>
+            );
+          })()}
+
+          {!isAuthenticated && (
+            <div style={{ fontSize: "13px", color: "#888", marginBottom: "16px" }}>
+              <Link to="/login" style={{ color: "#534AB7", fontWeight: 500 }}>Sign in</Link> to leave a review.
+            </div>
+          )}
+
+          {/* Review list */}
+          {reviews.length === 0 ? (
+            <p style={{ fontSize: "13px", color: "#aaa" }}>No reviews yet. Be the first!</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  style={{
+                    borderTop: "0.5px solid #f0f0f0",
+                    paddingTop: "14px",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>
+                          {review.reviewer_name}
+                        </span>
+                        <StarRating value={review.rating} size={13} />
+                      </div>
+                      {review.comment && (
+                        <p style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, margin: 0 }}>
+                          {review.comment}
+                        </p>
+                      )}
+                      <p style={{ fontSize: "11px", color: "#aaa", margin: "4px 0 0" }}>
+                        {new Date(review.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
+                    </div>
+                    {review.is_own_review && (
+                      <button
+                        onClick={() => deleteReviewMutation.mutate(review.id)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          color: "#aaa",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          padding: "2px 6px",
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
