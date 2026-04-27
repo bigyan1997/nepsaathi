@@ -44,6 +44,7 @@ import ProfilePage from "./pages/ProfilePage";
 // Auth pages (guest only)
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
@@ -151,6 +152,7 @@ function App() {
                           </GuestRoute>
                         }
                       />
+                      <Route path="/verify-email" element={<VerifyEmailPage />} />
                       {/* Protected routes */}
                       <Route
                         path="/post-ad"

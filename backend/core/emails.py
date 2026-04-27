@@ -42,6 +42,54 @@ def send_welcome_email(user):
     except Exception as e:
         print(f'Welcome email failed: {e}', flush=True)
 
+def send_email_verification_email(user, email, confirm_url):
+    """Send email verification link via Resend."""
+    try:
+        first_name = getattr(user, 'first_name', None) or 'there'
+        html = f"""
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;background:#f5f4f0;">
+            <div style="background:linear-gradient(135deg,#26215C,#534AB7);padding:40px 32px;border-radius:16px 16px 0 0;text-align:center;">
+                <span style="font-size:28px;font-weight:700;color:#fff;">
+                    <span style="color:#E87722;">Nep</span>Saathi
+                </span><br>
+                <span style="font-size:13px;color:#AFA9EC;">नेपसाथी · your Nepali friend, wherever you are</span>
+            </div>
+            <div style="background:#fff;border:0.5px solid #e5e5e5;padding:32px;border-radius:0 0 16px 16px;">
+                <h2 style="font-size:22px;font-weight:700;color:#26215C;margin:0 0 8px;">Verify your email address ✉️</h2>
+                <p style="font-size:14px;color:#555;line-height:1.7;margin:0 0 24px;">
+                    Hi <strong>{first_name}</strong>, thanks for joining NepSaathi!<br>
+                    Click the button below to verify your email and activate your account.
+                </p>
+                <div style="text-align:center;margin:0 0 28px;">
+                    <a href="{confirm_url}" style="background:#E87722;color:#fff;padding:14px 32px;border-radius:9px;text-decoration:none;font-size:15px;font-weight:600;display:inline-block;">
+                        Verify my email →
+                    </a>
+                </div>
+                <p style="font-size:12px;color:#aaa;line-height:1.6;margin:0 0 8px;">
+                    If the button doesn't work, copy and paste this link into your browser:
+                </p>
+                <p style="font-size:12px;color:#534AB7;word-break:break-all;margin:0 0 24px;">
+                    <a href="{confirm_url}" style="color:#534AB7;">{confirm_url}</a>
+                </p>
+                <hr style="border:none;border-top:0.5px solid #e5e5e5;margin:0 0 16px;">
+                <p style="font-size:12px;color:#aaa;margin:0;text-align:center;">
+                    If you didn't create a NepSaathi account, you can safely ignore this email.
+                </p>
+            </div>
+        </div>
+        """
+        params = {
+            'from': 'NepSaathi <noreply@nepsaathi.com>',
+            'to': [email],
+            'subject': 'Verify your NepSaathi email address 📧',
+            'html': html,
+        }
+        thread = threading.Thread(target=_send_resend, args=(params,))
+        thread.start()
+    except Exception as e:
+        print(f'Verification email failed: {e}', flush=True)
+
+
 def send_password_reset_email(user, reset_url):
     """Send password reset email via Resend."""
     try:

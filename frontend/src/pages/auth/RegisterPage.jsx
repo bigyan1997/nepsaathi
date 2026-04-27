@@ -20,6 +20,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
 
   const passwordMatch =
     form.password &&
@@ -54,8 +56,14 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const data = await register(form);
-      setAuth(data.user, data.access, data.refresh);
-      navigate("/");
+      if (data.access) {
+        setAuth(data.user, data.access, data.refresh);
+        navigate("/");
+      } else {
+        // Email verification required — backend returned {"detail": "Verification e-mail sent."}
+        setVerificationEmail(form.email);
+        setVerificationSent(true);
+      }
     } catch (err) {
       const errors = err.response?.data;
       if (errors?.email) {
@@ -91,6 +99,71 @@ export default function RegisterPage() {
     display: "block",
     marginBottom: "6px",
   };
+
+  if (verificationSent) {
+    return (
+      <div
+        style={{
+          minHeight: "80vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "28px",
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            border: "0.5px solid #e5e5e5",
+            borderRadius: "14px",
+            padding: "40px 36px",
+            width: "100%",
+            maxWidth: "420px",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "48px", marginBottom: "16px" }}>📧</div>
+          <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#26215C", marginBottom: "8px" }}>
+            Check your email
+          </h1>
+          <p style={{ fontSize: "14px", color: "#555", lineHeight: 1.7, marginBottom: "24px" }}>
+            We sent a verification link to{" "}
+            <strong style={{ color: "#26215C" }}>{verificationEmail}</strong>.
+            <br />
+            Click the link to activate your account.
+          </p>
+          <div
+            style={{
+              background: "#EEEDFE",
+              border: "0.5px solid #AFA9EC",
+              borderRadius: "10px",
+              padding: "14px 16px",
+              fontSize: "13px",
+              color: "#3C3489",
+              marginBottom: "24px",
+              lineHeight: 1.6,
+            }}
+          >
+            Didn't get it? Check your spam folder or{" "}
+            <Link to="/register" style={{ color: "#534AB7", fontWeight: 600 }}>
+              try again
+            </Link>
+            .
+          </div>
+          <Link
+            to="/login"
+            style={{
+              fontSize: "13px",
+              color: "#888",
+              textDecoration: "none",
+            }}
+          >
+            Already verified? Sign in →
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
