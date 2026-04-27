@@ -1,17 +1,17 @@
 import threading
-from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import User
+from allauth.account.signals import email_confirmed
 
 
-@receiver(post_save, sender=User)
-def send_welcome_on_create(sender, instance, created, **kwargs):
-    """Send welcome email when a new user is created."""
-    if created and instance.email:
+@receiver(email_confirmed)
+def send_welcome_on_verify(sender, request, email_address, **kwargs):
+    """Send welcome email after the user verifies their email address."""
+    user = email_address.user
+    if user and user.email:
         def send():
             try:
                 from core.emails import send_welcome_email
-                send_welcome_email(instance)
+                send_welcome_email(user)
             except Exception as e:
                 print(f'Welcome email signal failed: {e}')
         thread = threading.Thread(target=send)

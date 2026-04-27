@@ -32,10 +32,16 @@ class GoogleLoginView(SocialLoginView):
             if social_account:
                 extra_data = social_account.extra_data
                 picture_url = extra_data.get('picture', '')
+                from django.utils import timezone
+                from datetime import timedelta
+                is_new_user = (timezone.now() - user.date_joined) < timedelta(seconds=30)
                 if picture_url and not user.google_avatar:
                     user.google_avatar = picture_url
                     user.save()
-                    # Send welcome email only on first Google login
+                if is_new_user:
+                    from core.emails import send_welcome_email
+                    import threading
+                    threading.Thread(target=send_welcome_email, args=(user,)).start()
         except Exception:
             pass
         return response
