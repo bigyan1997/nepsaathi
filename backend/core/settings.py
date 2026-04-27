@@ -185,7 +185,7 @@ REST_AUTH = {
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'none' if DEBUG else 'mandatory'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # ─── Google OAuth ─────────────────────────────────────────────────────────────
