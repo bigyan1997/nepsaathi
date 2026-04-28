@@ -1,6 +1,7 @@
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvent, getEventByListing } from "../../api/events";
+import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
@@ -13,16 +14,115 @@ import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
 
 const CATEGORY_COLORS = {
-  cultural: { bg: "#EEEDFE", color: "#3C3489" },
-  sports: { bg: "#E1F5EE", color: "#085041" },
-  food: { bg: "#FFF1E0", color: "#633806" },
-  music: { bg: "#FBEAF0", color: "#4B1528" },
-  religious: { bg: "#FAEEDA", color: "#633806" },
-  community: { bg: "#E6F1FB", color: "#0C447C" },
-  education: { bg: "#EAF3DE", color: "#27500A" },
-  other: { bg: "#F1EFE8", color: "#444441" },
+  cultural: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" },
+  sports: { bg: "#E1F5EE", color: "#085041", border: "#9FE1CB" },
+  food: { bg: "#FFF1E0", color: "#633806", border: "#EFD9C0" },
+  music: { bg: "#FBEAF0", color: "#4B1528", border: "#F4C0D1" },
+  religious: { bg: "#FAEEDA", color: "#633806", border: "#FAC775" },
+  community: { bg: "#E6F1FB", color: "#0C447C", border: "#B5D4F4" },
+  education: { bg: "#EAF3DE", color: "#27500A", border: "#C0DD97" },
+  other: { bg: "#F1EFE8", color: "#444441", border: "#D3D1C7" },
 };
 
+const CATEGORY_EMOJIS = {
+  cultural: "🎭",
+  sports: "⚽",
+  food: "🍛",
+  music: "🎵",
+  religious: "🙏",
+  community: "👥",
+  education: "📚",
+  other: "📌",
+};
+
+const formatDate = (d) =>
+  new Date(d).toLocaleDateString("en-AU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+const formatDateShort = (d) =>
+  new Date(d).toLocaleDateString("en-AU", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+const formatTime = (d) =>
+  new Date(d).toLocaleTimeString("en-AU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+/* ── small inline SVG icons ── */
+const IconBack = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M19 12H5M12 5l-7 7 7 7" />
+  </svg>
+);
+const IconCal = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+const IconClock = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+const IconPin = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+const IconArrow = () => (
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
+
+/* ══════════════════════════════════════════════════ */
 export default function EventDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,22 +139,22 @@ export default function EventDetailPage() {
     queryKey: ["event", id, isListingRoute],
     queryFn: () => (isListingRoute ? getEventByListing(id) : getEvent(id)),
   });
+
   const { data: similarListings } = useQuery({
     queryKey: ["similar", event?.listing_id],
     queryFn: () => getSimilarListings(event.listing_id),
     enabled: !!event?.listing_id,
   });
+
   usePageTitle(
     event?.listing_title ? `${event.listing_title} — Event` : "Event",
   );
+
   useEffect(() => {
-    if (event?.listing_id) {
-      trackView(event.listing_id).catch(() => {});
-    }
+    if (event?.listing_id) trackView(event.listing_id).catch(() => {});
   }, [event?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
-
   if (error)
     return (
       <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
@@ -63,43 +163,38 @@ export default function EventDetailPage() {
     );
 
   const catColor = CATEGORY_COLORS[event?.category] || CATEGORY_COLORS.other;
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString("en-AU", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
-  const formatTime = (dateStr) => {
-    if (!dateStr) return "";
-    return new Date(dateStr).toLocaleTimeString("en-AU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  const catEmoji = CATEGORY_EMOJIS[event?.category] || "📌";
+  const eventDay = new Date(event.event_date).getDate();
+  const eventMonth = new Date(event.event_date)
+    .toLocaleDateString("en-AU", { month: "short" })
+    .toUpperCase();
+  const eventYear = new Date(event.event_date).getFullYear();
 
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Back button, share and save */}
+    <>
+      <style>{`
+        .evt-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
+        @media (max-width: 767px) {
+          .evt-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
+          maxWidth: "900px",
+          margin: "0 auto",
+          padding: "28px",
+          background: "#F5F4F0",
+          minHeight: "100vh",
         }}
       >
-        {/* Left: back + views */}
+        {/* ── Top nav ── */}
         <div
           style={{
             display: "flex",
+            justifyContent: "space-between",
             alignItems: "center",
-            gap: "10px",
-            minWidth: 0,
+            marginBottom: "20px",
           }}
         >
           <button
@@ -111,483 +206,768 @@ export default function EventDetailPage() {
               fontSize: "13px",
               cursor: "pointer",
               padding: 0,
-              whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontWeight: 500,
             }}
           >
-            ← Back to events
+            <IconBack /> Back to events
           </button>
-        </div>
-        {/* Right: save + share */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            flexShrink: 0,
-          }}
-        >
-          {event?.view_count > 0 && (
-            <span
-              style={{ fontSize: "11px", color: "#aaa", whiteSpace: "nowrap" }}
-            >
-              👁️ {event.view_count}
-            </span>
-          )}
-          <SaveButton listingId={event?.listing_id} compact={isMobile} />
-          <ShareButton title={event?.listing_title} compact={isMobile} />
-        </div>
-      </div>
-
-      {/* Under review banner */}
-      {event?.is_under_review && (
-        <div
-          style={{
-            background: "#FFF1E0",
-            border: "0.5px solid #EFD9C0",
-            borderRadius: "10px",
-            padding: "12px 18px",
-            marginBottom: "16px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
-          <span style={{ fontSize: "18px" }}>⚠️</span>
-          <div>
-            <div
-              style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
-            >
-              This listing is under review
-            </div>
-            <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>
-              A report has been submitted and our admin team is reviewing it.
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {event?.view_count > 0 && (
+              <span style={{ fontSize: "12px", color: "#aaa" }}>
+                👁️ {event.view_count}
+              </span>
+            )}
+            <SaveButton listingId={event?.listing_id} compact={isMobile} />
+            <ShareButton title={event?.listing_title} compact={isMobile} />
           </div>
         </div>
-      )}
 
-      {/* Image gallery */}
-      {event?.images?.length > 0 && <ImageGallery images={event.images} />}
+        {/* ── Under review ── */}
+        {event?.is_under_review && (
+          <div
+            style={{
+              background: "#FFF1E0",
+              border: "0.5px solid #EFD9C0",
+              borderRadius: "12px",
+              padding: "12px 18px",
+              marginBottom: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <span>⚠️</span>
+            <div>
+              <div
+                style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
+              >
+                This listing is under review
+              </div>
+              <div
+                style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
+              >
+                A report has been submitted and our admin team is reviewing it.
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Main card */}
-      <div
-        style={{
-          background: "#fff",
-          border: "0.5px solid #e5e5e5",
-          borderRadius: "14px",
-          overflow: "hidden",
-        }}
-      >
-        {/* Hero date banner */}
+        {/* ── Image gallery ── */}
+        {event?.images?.length > 0 && (
+          <div style={{ marginBottom: "14px" }}>
+            <ImageGallery images={event.images} />
+          </div>
+        )}
+
+        {/* ── Hero — full-width coloured banner ── */}
         <div
           style={{
-            background: "#EEEDFE",
-            padding: "28px",
+            background: catColor.bg,
+            border: `1.5px solid ${catColor.border}`,
+            borderRadius: "20px",
+            padding: "32px 28px",
+            marginBottom: "14px",
             display: "flex",
             alignItems: "center",
-            gap: "20px",
+            gap: "24px",
           }}
         >
+          {/* Big date pill */}
           <div
             style={{
               background: "#fff",
-              borderRadius: "12px",
-              padding: "14px 18px",
+              border: `1.5px solid ${catColor.border}`,
+              borderRadius: "16px",
+              padding: "16px 20px",
               textAlign: "center",
-              minWidth: "72px",
+              minWidth: "80px",
+              flexShrink: 0,
+              boxShadow: `0 2px 0 ${catColor.border}`,
             }}
           >
             <div
               style={{
-                fontSize: "32px",
-                fontWeight: 600,
+                fontSize: "38px",
+                fontWeight: 700,
                 color: "#26215C",
                 lineHeight: 1,
               }}
             >
-              {new Date(event.event_date).getDate()}
+              {eventDay}
             </div>
             <div
               style={{
                 fontSize: "14px",
-                color: "#534AB7",
-                fontWeight: 500,
-                marginTop: "2px",
+                color: catColor.color,
+                fontWeight: 700,
+                marginTop: "4px",
+                letterSpacing: "0.06em",
               }}
             >
-              {new Date(event.event_date)
-                .toLocaleDateString("en-AU", { month: "short" })
-                .toUpperCase()}
+              {eventMonth}
+            </div>
+            <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>
+              {eventYear}
             </div>
           </div>
-          <div>
+
+          {/* Title block */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Badges */}
             <div
               style={{
                 display: "flex",
                 gap: "6px",
-                marginBottom: "8px",
                 flexWrap: "wrap",
+                marginBottom: "12px",
               }}
             >
               <span
                 style={{
-                  background: catColor.bg,
+                  background: "#fff",
                   color: catColor.color,
+                  border: `1px solid ${catColor.border}`,
                   fontSize: "11px",
-                  fontWeight: 500,
-                  padding: "3px 10px",
-                  borderRadius: "8px",
+                  fontWeight: 600,
+                  padding: "3px 12px",
+                  borderRadius: "20px",
                 }}
               >
-                {event.category?.replace("_", " ")}
+                {catEmoji} {event.category?.replace("_", " ")}
               </span>
               {event.is_free && (
                 <span
                   style={{
-                    background: "#E1F5EE",
-                    color: "#085041",
+                    background: "#1D9E75",
+                    color: "#fff",
                     fontSize: "11px",
-                    fontWeight: 500,
-                    padding: "3px 10px",
-                    borderRadius: "8px",
+                    fontWeight: 600,
+                    padding: "3px 12px",
+                    borderRadius: "20px",
                   }}
                 >
-                  Free
+                  Free entry
                 </span>
               )}
               {event.is_online && (
                 <span
                   style={{
-                    background: "#E6F1FB",
-                    color: "#0C447C",
+                    background: "#185FA5",
+                    color: "#fff",
                     fontSize: "11px",
-                    fontWeight: 500,
-                    padding: "3px 10px",
-                    borderRadius: "8px",
+                    fontWeight: 600,
+                    padding: "3px 12px",
+                    borderRadius: "20px",
                   }}
                 >
                   Online
                 </span>
               )}
+              {event.is_featured && (
+                <span
+                  style={{
+                    background: "#E87722",
+                    color: "#fff",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    padding: "3px 12px",
+                    borderRadius: "20px",
+                  }}
+                >
+                  ⭐ Featured
+                </span>
+              )}
             </div>
             <h1
               style={{
-                fontSize: "22px",
-                fontWeight: 600,
+                fontSize: "24px",
+                fontWeight: 700,
                 color: "#26215C",
-                marginBottom: "4px",
+                margin: "0 0 10px",
+                lineHeight: 1.25,
               }}
             >
               {event.listing_title}
             </h1>
-            <p style={{ fontSize: "14px", color: "#534AB7" }}>
-              {formatDate(event.event_date)} · {formatTime(event.event_date)}
-            </p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                flexWrap: "wrap",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: catColor.color,
+                  fontWeight: 600,
+                }}
+              >
+                {formatDate(event.event_date)}
+              </span>
+              <span style={{ color: catColor.border, fontSize: "14px" }}>
+                ·
+              </span>
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: catColor.color,
+                  fontWeight: 600,
+                }}
+              >
+                {formatTime(event.event_date)}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div style={{ padding: "28px" }}>
-          {/* Details grid */}
+        {/* ── Two-col grid ── */}
+        <div className="evt-grid">
+          {/* LEFT column */}
           <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "16px",
-              marginBottom: "24px",
-            }}
+            style={{ display: "flex", flexDirection: "column", gap: "14px" }}
           >
-            {[
-              { label: "Date", value: formatDate(event.event_date) },
-              { label: "Time", value: formatTime(event.event_date) },
-              event.event_end_date && {
-                label: "Ends",
-                value: `${formatDate(event.event_end_date)} ${formatTime(event.event_end_date)}`,
-              },
-              {
-                label: "Location",
-                value: event.is_online
-                  ? "Online event"
-                  : `${event.listing_location}, ${event.listing_state}`,
-              },
-              event.venue && { label: "Venue", value: event.venue },
-              event.organiser && { label: "Organiser", value: event.organiser },
-              { label: "Entry", value: event.ticket_display },
-              event.max_attendees && {
-                label: "Capacity",
-                value: `${event.max_attendees} attendees`,
-              },
-            ]
-              .filter(Boolean)
-              .map(({ label, value }) => (
-                <div key={label}>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      color: "#aaa",
-                      marginBottom: "3px",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    {label}
-                  </div>
-                  <div
-                    style={{ fontSize: "14px", color: "#333", fontWeight: 500 }}
-                  >
-                    {value}
-                  </div>
-                </div>
-              ))}
-          </div>
-
-          {/* Divider */}
-          <div
-            style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
-          />
-
-          {/* Description */}
-          <h3
-            style={{
-              fontSize: "15px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "8px",
-            }}
-          >
-            About this event
-          </h3>
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#555",
-              lineHeight: 1.7,
-              marginBottom: "24px",
-            }}
-          >
-            {event.description}
-          </p>
-
-          {/* Event URL */}
-          {event.event_url && (
-            <>
-              <div
-                style={{
-                  borderTop: "0.5px solid #e5e5e5",
-                  marginBottom: "20px",
-                }}
-              />
-
-              <a
-                href={event.event_url}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: "inline-block",
-                  background: "#534AB7",
-                  color: "#fff",
-                  padding: "11px 24px",
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  marginBottom: "24px",
-                }}
-              >
-                Register / Get tickets →
-              </a>
-            </>
-          )}
-
-          {/* Divider */}
-          <div
-            style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
-          />
-
-          {/* Contact */}
-          <h3
-            style={{
-              fontSize: "15px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "12px",
-            }}
-          >
-            Contact organiser
-          </h3>
-
-          {isAuthenticated ? (
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {event.contact_phone && (
-                <a
-                  href={`tel:${event.contact_phone}`}
+            {/* About — dark purple header bar for impact */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "16px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ background: "#26215C", padding: "14px 20px" }}>
+                <h2
                   style={{
-                    background: "#534AB7",
+                    fontSize: "14px",
+                    fontWeight: 700,
                     color: "#fff",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 500,
+                    margin: 0,
+                    letterSpacing: "0.03em",
                   }}
                 >
-                  Call {event.contact_phone}
-                </a>
-              )}
-              {event.contact_whatsapp && (
+                  About this event
+                </h2>
+              </div>
+              <div style={{ padding: "20px" }}>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#444",
+                    lineHeight: 1.8,
+                    margin: 0,
+                  }}
+                >
+                  {event.description}
+                </p>
+                {event.event_url && (
+                  <a
+                    href={event.event_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      marginTop: "18px",
+                      background: "#534AB7",
+                      color: "#fff",
+                      padding: "11px 22px",
+                      borderRadius: "10px",
+                      textDecoration: "none",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Register / Get tickets →
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Event details — category-coloured header */}
+            <div
+              style={{
+                background: "#fff",
+                border: `0.5px solid ${catColor.border}`,
+                borderRadius: "16px",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  background: catColor.bg,
+                  borderBottom: `0.5px solid ${catColor.border}`,
+                  padding: "14px 20px",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: catColor.color,
+                    margin: 0,
+                  }}
+                >
+                  Event details
+                </h3>
+              </div>
+              <div style={{ padding: "20px" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "16px",
+                  }}
+                >
+                  {[
+                    { label: "Date", value: formatDateShort(event.event_date) },
+                    { label: "Time", value: formatTime(event.event_date) },
+                    event.event_end_date && {
+                      label: "Ends",
+                      value: `${formatDateShort(event.event_end_date)} ${formatTime(event.event_end_date)}`,
+                    },
+                    {
+                      label: "Location",
+                      value: event.is_online
+                        ? "Online"
+                        : `${event.listing_location}, ${event.listing_state}`,
+                    },
+                    event.venue && { label: "Venue", value: event.venue },
+                    event.organiser && {
+                      label: "Organiser",
+                      value: event.organiser,
+                    },
+                    { label: "Entry", value: event.ticket_display },
+                    event.max_attendees && {
+                      label: "Capacity",
+                      value: `${event.max_attendees} attendees`,
+                    },
+                  ]
+                    .filter(Boolean)
+                    .map(({ label, value }) => (
+                      <div key={label}>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: catColor.color,
+                            marginBottom: "4px",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.06em",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {label}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            color: "#26215C",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {value}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT sidebar */}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
+            {/* Date & time */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "14px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ background: "#26215C", padding: "10px 16px" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: "#AFA9EC",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  DATE & TIME
+                </div>
+              </div>
+              <div
+                style={{
+                  padding: "14px 16px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    color: "#534AB7",
+                  }}
+                >
+                  <IconCal />
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      color: "#26215C",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {formatDateShort(event.event_date)}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    color: "#534AB7",
+                  }}
+                >
+                  <IconClock />
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      color: "#26215C",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {formatTime(event.event_date)}
+                    {event.event_end_date
+                      ? ` – ${formatTime(event.event_end_date)}`
+                      : ""}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    color: "#534AB7",
+                  }}
+                >
+                  <IconPin />
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      color: "#26215C",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {event.is_online
+                      ? "Online event"
+                      : event.venue ||
+                        `${event.listing_location}, ${event.listing_state}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Ticket / price */}
+            <div
+              style={{
+                background: event.is_free ? "#1D9E75" : "#534AB7",
+                borderRadius: "14px",
+                padding: "18px 16px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "11px",
+                  color: "rgba(255,255,255,0.7)",
+                  marginBottom: "4px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  fontWeight: 700,
+                }}
+              >
+                {event.is_free ? "Free event" : "Tickets"}
+              </div>
+              <div
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 700,
+                  color: "#fff",
+                  marginBottom: event.event_url ? "12px" : 0,
+                }}
+              >
+                {event.ticket_display}
+              </div>
+              {event.event_url && (
                 <a
-                  href={`https://wa.me/${event.contact_whatsapp?.replace(/\D/g, "")}`}
+                  href={event.event_url}
                   target="_blank"
                   rel="noreferrer"
                   style={{
-                    background: "#25D366",
+                    display: "block",
+                    background: "rgba(255,255,255,0.2)",
                     color: "#fff",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
+                    padding: "9px 14px",
+                    borderRadius: "9px",
                     textDecoration: "none",
                     fontSize: "13px",
-                    fontWeight: 500,
+                    fontWeight: 600,
+                    textAlign: "center",
+                    border: "1px solid rgba(255,255,255,0.3)",
                   }}
                 >
-                  WhatsApp
-                </a>
-              )}
-              {event.contact_email && (
-                <a
-                  href={`mailto:${event.contact_email}`}
-                  style={{
-                    background: "#FFF1E0",
-                    color: "#E87722",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    border: "0.5px solid #EFD9C0",
-                  }}
-                >
-                  Email
+                  Get tickets →
                 </a>
               )}
             </div>
-          ) : (
-            <div
-              style={{
-                background: "#FFF1E0",
-                border: "0.5px solid #EFD9C0",
-                borderRadius: "10px",
-                padding: "16px",
-                fontSize: "14px",
-                color: "#633806",
-              }}
-            >
-              Please{" "}
-              <a href="/login" style={{ color: "#E87722", fontWeight: 500 }}>
-                sign in
-              </a>{" "}
-              to view contact details.
-            </div>
-          )}
 
-          {/* Report */}
-          <div
-            style={{
-              marginTop: "16px",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <ReportButton listingId={event?.listing_id} />
-          </div>
-        </div>
-      </div>
-      {/* Similar listings */}
-      {similarListings?.length > 0 && (
-        <div style={{ marginTop: "24px" }}>
-          <h3
-            style={{
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "12px",
-            }}
-          >
-            Similar events
-          </h3>
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-          >
-            {similarListings.map((listing) => (
-              <Link
-                key={listing.id}
-                to={`/events/listing/${listing.id}`}
-                style={{
-                  background: "#fff",
-                  border: "0.5px solid #e5e5e5",
-                  borderRadius: "12px",
-                  padding: "14px 18px",
-                  textDecoration: "none",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "12px",
-                  transition: "border-color 0.15s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#AFA9EC")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor = "#e5e5e5")
-                }
-              >
+            {/* Contact organiser */}
+            {isAuthenticated &&
+              (event.contact_phone ||
+                event.contact_whatsapp ||
+                event.contact_email) && (
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                  style={{
+                    background: "#fff",
+                    border: "0.5px solid #e5e5e5",
+                    borderRadius: "14px",
+                    overflow: "hidden",
+                  }}
                 >
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "8px",
-                      background: "#EEEDFE",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "16px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    💼
-                  </div>
-                  <div>
+                  <div style={{ background: "#E87722", padding: "10px 16px" }}>
                     <div
                       style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#26215C",
-                        marginBottom: "2px",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        color: "#fff",
+                        letterSpacing: "0.06em",
                       }}
                     >
-                      {listing.title}
-                    </div>
-                    <div style={{ fontSize: "11px", color: "#888" }}>
-                      📍 {listing.location}, {listing.state}
+                      CONTACT ORGANISER
                     </div>
                   </div>
+                  <div
+                    style={{
+                      padding: "14px 16px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
+                    {event.contact_phone && (
+                      <a
+                        href={`tel:${event.contact_phone}`}
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#534AB7",
+                          color: "#fff",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        📞 Call organiser
+                      </a>
+                    )}
+                    {event.contact_whatsapp && (
+                      <a
+                        href={`https://wa.me/${event.contact_whatsapp?.replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#25D366",
+                          color: "#fff",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        WhatsApp
+                      </a>
+                    )}
+                    {event.contact_email && (
+                      <a
+                        href={`mailto:${event.contact_email}`}
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#FFF1E0",
+                          color: "#E87722",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          border: "0.5px solid #EFD9C0",
+                        }}
+                      >
+                        ✉️ Email
+                      </a>
+                    )}
+                  </div>
                 </div>
-                <span
-                  style={{
-                    fontSize: "11px",
-                    color: "#534AB7",
-                    fontWeight: 500,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  View →
-                </span>
-              </Link>
-            ))}
+              )}
+
+            {/* Sign in prompt */}
+            {!isAuthenticated && (
+              <div
+                style={{
+                  background: "#FFF1E0",
+                  border: "0.5px solid #EFD9C0",
+                  borderRadius: "14px",
+                  padding: "16px",
+                  fontSize: "13px",
+                  color: "#633806",
+                  textAlign: "center",
+                  lineHeight: 1.7,
+                }}
+              >
+                <a href="/login" style={{ color: "#E87722", fontWeight: 700 }}>
+                  Sign in
+                </a>{" "}
+                to view contact details.
+              </div>
+            )}
+
+            {/* Report — tucked inside sidebar, not floating */}
+            <div style={{ textAlign: "center" }}>
+              <ReportButton listingId={event?.listing_id} />
+            </div>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* ── Similar events ── */}
+        {similarListings?.length > 0 && (
+          <div style={{ marginTop: "14px" }}>
+            {/* Section header */}
+            <div
+              style={{
+                background: "#26215C",
+                borderRadius: "12px 12px 0 0",
+                padding: "14px 20px",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "#fff",
+                  margin: 0,
+                }}
+              >
+                Similar events
+              </h2>
+            </div>
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "0 0 16px 16px",
+                overflow: "hidden",
+              }}
+            >
+              {similarListings.map((listing, i) => {
+                const isLast = i === similarListings.length - 1;
+                const d = new Date(listing.event_date || listing.created_at);
+                return (
+                  <Link
+                    key={listing.id}
+                    to={`/events/listing/${listing.id}`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "14px",
+                      padding: "14px 20px",
+                      borderBottom: isLast ? "none" : "0.5px solid #f5f5f5",
+                      textDecoration: "none",
+                      transition: "background 0.15s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#F5F4F0")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "transparent")
+                    }
+                  >
+                    <div
+                      style={{
+                        background: "#EEEDFE",
+                        border: "0.5px solid #AFA9EC",
+                        borderRadius: "10px",
+                        padding: "8px 12px",
+                        textAlign: "center",
+                        minWidth: "50px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: 700,
+                          color: "#26215C",
+                          lineHeight: 1,
+                        }}
+                      >
+                        {d.getDate()}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          color: "#534AB7",
+                          fontWeight: 700,
+                          marginTop: "2px",
+                        }}
+                      >
+                        {d
+                          .toLocaleDateString("en-AU", { month: "short" })
+                          .toUpperCase()}
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#26215C",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        {listing.title}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#888" }}>
+                        📍 {listing.location}, {listing.state}
+                      </div>
+                    </div>
+                    <span style={{ color: "#534AB7", flexShrink: 0 }}>
+                      <IconArrow />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
