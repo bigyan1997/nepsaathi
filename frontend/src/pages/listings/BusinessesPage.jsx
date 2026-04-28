@@ -202,6 +202,54 @@ function BusinessCard({ business }) {
           {business.business_name}
         </div>
 
+        {/* Rating */}
+        {business.avg_rating > 0 ? (
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            {/* Stars */}
+            <div style={{ display: "flex", gap: "1px" }}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  style={{
+                    fontSize: "12px",
+                    color:
+                      star <= Math.round(business.avg_rating)
+                        ? "#E87722"
+                        : "#ddd",
+                    lineHeight: 1,
+                  }}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <span
+              style={{ fontSize: "12px", fontWeight: 600, color: "#E87722" }}
+            >
+              {Number(business.avg_rating).toFixed(1)}
+            </span>
+            <span style={{ fontSize: "11px", color: "#aaa" }}>
+              ({business.review_count})
+            </span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", gap: "1px" }}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                style={{ fontSize: "12px", color: "#ddd", lineHeight: 1 }}
+              >
+                ★
+              </span>
+            ))}
+            <span
+              style={{ fontSize: "11px", color: "#ccc", marginLeft: "4px" }}
+            >
+              No reviews yet
+            </span>
+          </div>
+        )}
+
         {/* Location */}
         <div style={{ fontSize: "12px", color: "#777" }}>
           📍 {business.suburb}, {business.state}
@@ -256,8 +304,11 @@ function BusinessCard({ business }) {
       >
         {[
           {
-            value: business.category?.replace("_", " ") || "—",
-            label: "Category",
+            value:
+              business.avg_rating > 0
+                ? `★ ${Number(business.avg_rating).toFixed(1)}`
+                : "★ —",
+            label: `${business.review_count || 0} reviews`,
           },
           { value: business.state || "—", label: "State" },
           {
@@ -599,6 +650,45 @@ export default function BusinessesPage() {
                     </span>
                   )}
                 </div>
+                {/* Rating - mobile */}
+                {business.avg_rating > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        style={{
+                          fontSize: "11px",
+                          color:
+                            star <= Math.round(business.avg_rating)
+                              ? "#E87722"
+                              : "#ddd",
+                          lineHeight: 1,
+                        }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: "#E87722",
+                      }}
+                    >
+                      {Number(business.avg_rating).toFixed(1)}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#aaa" }}>
+                      ({business.review_count})
+                    </span>
+                  </div>
+                )}
                 <span
                   style={{
                     background: catColor.bg,

@@ -14,61 +14,114 @@ import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
 
+/* ── constants ── */
 const STATUS_COLORS = {
-  active: { bg: "#E1F5EE", color: "#085041" },
-  expired: { bg: "#F1EFE8", color: "#444441" },
-  filled: { bg: "#FAEEDA", color: "#633806" },
-  deleted: { bg: "#FCEBEB", color: "#A32D2D" },
+  active: { bg: "#E1F5EE", color: "#085041", dot: "#1D9E75" },
+  expired: { bg: "#F1EFE8", color: "#444441", dot: "#aaa" },
+  filled: { bg: "#FAEEDA", color: "#633806", dot: "#E87722" },
+  deleted: { bg: "#FCEBEB", color: "#A32D2D", dot: "#A32D2D" },
 };
 
 const TYPE_COLORS = {
-  job: { bg: "#EEEDFE", color: "#3C3489" },
-  room: { bg: "#FFF1E0", color: "#633806" },
-  event: { bg: "#E1F5EE", color: "#085041" },
-  announcement: { bg: "#E6F1FB", color: "#0C447C" },
+  job: { bg: "#EEEDFE", color: "#3C3489", border: "#1D9E75" },
+  room: { bg: "#FFF1E0", color: "#633806", border: "#E87722" },
+  event: { bg: "#E1F5EE", color: "#085041", border: "#1D9E75" },
+  announcement: { bg: "#E6F1FB", color: "#0C447C", border: "#1D9E75" },
 };
 
-const TYPE_EMOJIS = {
-  job: "💼",
-  room: "🏠",
-  event: "🎉",
-  announcement: "📢",
+const TYPE_EMOJIS = { job: "💼", room: "🏠", event: "🎉", announcement: "📢" };
+
+const CATEGORY_EMOJIS = {
+  restaurant: "🍛",
+  grocery: "🛒",
+  travel: "✈️",
+  beauty: "💇",
+  health: "🏥",
+  legal: "⚖️",
+  education: "📚",
+  religious: "🙏",
+  construction: "🔨",
+  transport: "🚗",
+  finance: "💸",
+  freelancer: "🧑‍💻",
+  retail: "🏪",
+  other: "🏪",
 };
 
-// Confirmation modal component
+const CATEGORY_COLORS = {
+  restaurant: { bg: "#FFF1E0", color: "#633806" },
+  grocery: { bg: "#E1F5EE", color: "#085041" },
+  travel: { bg: "#E6F1FB", color: "#0C447C" },
+  beauty: { bg: "#FBEAF0", color: "#4B1528" },
+  health: { bg: "#EAF3DE", color: "#27500A" },
+  legal: { bg: "#EEEDFE", color: "#3C3489" },
+  education: { bg: "#E6F1FB", color: "#0C447C" },
+  religious: { bg: "#FAEEDA", color: "#633806" },
+  construction: { bg: "#F1EFE8", color: "#444441" },
+  transport: { bg: "#E1F5EE", color: "#085041" },
+  finance: { bg: "#EEEDFE", color: "#3C3489" },
+  freelancer: { bg: "#FFF1E0", color: "#633806" },
+  retail: { bg: "#FAECE7", color: "#4A1B0C" },
+  other: { bg: "#F1EFE8", color: "#444441" },
+};
+
+/* ── helpers ── */
+const isExpiringSoon = (expires_at) =>
+  expires_at && new Date(expires_at) - new Date() < 1000 * 60 * 60 * 24 * 5;
+
+const fmtDate = (d) =>
+  new Date(d).toLocaleDateString("en-AU", { day: "numeric", month: "short" });
+
+const getDetailPath = (listing) => {
+  const map = {
+    job: "jobs",
+    room: "rooms",
+    event: "events",
+    announcement: "announcements",
+  };
+  return `/${map[listing.listing_type] || "listings"}/listing/${listing.id}`;
+};
+
+const getSavedPath = (saved) => {
+  const map = {
+    job: "jobs",
+    room: "rooms",
+    event: "events",
+    announcement: "announcements",
+  };
+  return `/${map[saved.listing_type] || "listings"}/listing/${saved.listing}`;
+};
+
+/* ── Confirm modal ── */
 function ConfirmModal({ message, onConfirm, onCancel }) {
   return (
-    <>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.45)",
+        zIndex: 200,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <div
-        onClick={onCancel}
         style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.4)",
-          zIndex: 200,
-        }}
-      />
-      <div
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
           background: "#fff",
-          borderRadius: "14px",
-          padding: "28px",
+          borderRadius: "16px",
+          padding: "32px 28px",
           width: "100%",
           maxWidth: "380px",
-          zIndex: 201,
-          boxShadow: "0 8px 40px rgba(0,0,0,0.15)",
           textAlign: "center",
+          margin: "0 16px",
         }}
       >
         <div style={{ fontSize: "32px", marginBottom: "12px" }}>⚠️</div>
         <h3
           style={{
             fontSize: "16px",
-            fontWeight: 600,
+            fontWeight: 700,
             color: "#26215C",
             marginBottom: "8px",
           }}
@@ -86,7 +139,7 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
               background: "#fff",
               color: "#555",
               border: "0.5px solid #ccc",
-              borderRadius: "8px",
+              borderRadius: "9px",
               padding: "11px",
               fontSize: "14px",
               cursor: "pointer",
@@ -101,10 +154,10 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
               background: "#A32D2D",
               color: "#fff",
               border: "none",
-              borderRadius: "8px",
+              borderRadius: "9px",
               padding: "11px",
               fontSize: "14px",
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: "pointer",
             }}
           >
@@ -112,10 +165,204 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
+/* ── Three-dot dropdown menu ── */
+function ActionMenu({ items, open, onToggle }) {
+  return (
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <button
+        onClick={onToggle}
+        style={{
+          background: "#F5F4F0",
+          border: "none",
+          borderRadius: "8px",
+          width: "34px",
+          height: "34px",
+          fontSize: "18px",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#555",
+        }}
+      >
+        ⋮
+      </button>
+      {open && (
+        <>
+          <div
+            onClick={onToggle}
+            style={{ position: "fixed", inset: 0, zIndex: 10 }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              top: "40px",
+              background: "#fff",
+              borderRadius: "12px",
+              border: "0.5px solid #e5e5e5",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+              zIndex: 11,
+              minWidth: "170px",
+              overflow: "hidden",
+            }}
+          >
+            {items.map(
+              (item, i) =>
+                item && (
+                  <button
+                    key={i}
+                    onClick={item.onClick}
+                    style={{
+                      width: "100%",
+                      padding: "11px 16px",
+                      background: "none",
+                      border: "none",
+                      textAlign: "left",
+                      fontSize: "13px",
+                      color: item.danger
+                        ? "#A32D2D"
+                        : item.highlight
+                          ? "#534AB7"
+                          : "#333",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      borderTop: i > 0 ? "0.5px solid #f5f5f5" : "none",
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ),
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ── Pagination component ── */
+function Pagination({ page, count, pageSize, onChange }) {
+  const totalPages = Math.ceil(count / pageSize);
+  if (totalPages <= 1) return null;
+
+  const pages = [];
+  // show at most 5 page buttons centered around current page
+  let start = Math.max(1, page - 2);
+  let end = Math.min(totalPages, start + 4);
+  if (end - start < 4) start = Math.max(1, end - 4);
+  for (let i = start; i <= end; i++) pages.push(i);
+
+  const btnStyle = (active) => ({
+    background: active ? "#26215C" : "#fff",
+    color: active ? "#fff" : "#555",
+    border: `0.5px solid ${active ? "#26215C" : "#e5e5e5"}`,
+    borderRadius: "8px",
+    width: "36px",
+    height: "36px",
+    fontSize: "13px",
+    fontWeight: active ? 700 : 400,
+    cursor: active ? "default" : "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.15s",
+  });
+
+  const navStyle = (disabled) => ({
+    background: "#fff",
+    color: disabled ? "#ccc" : "#534AB7",
+    border: "0.5px solid #e5e5e5",
+    borderRadius: "8px",
+    width: "36px",
+    height: "36px",
+    fontSize: "16px",
+    fontWeight: 500,
+    cursor: disabled ? "not-allowed" : "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  });
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "6px",
+        paddingTop: "20px",
+      }}
+    >
+      {/* Prev */}
+      <button
+        onClick={() => onChange(page - 1)}
+        disabled={page === 1}
+        style={navStyle(page === 1)}
+      >
+        ‹
+      </button>
+
+      {start > 1 && (
+        <>
+          <button onClick={() => onChange(1)} style={btnStyle(false)}>
+            1
+          </button>
+          {start > 2 && (
+            <span style={{ color: "#aaa", fontSize: "13px", padding: "0 2px" }}>
+              …
+            </span>
+          )}
+        </>
+      )}
+
+      {pages.map((p) => (
+        <button
+          key={p}
+          onClick={() => onChange(p)}
+          style={btnStyle(p === page)}
+        >
+          {p}
+        </button>
+      ))}
+
+      {end < totalPages && (
+        <>
+          {end < totalPages - 1 && (
+            <span style={{ color: "#aaa", fontSize: "13px", padding: "0 2px" }}>
+              …
+            </span>
+          )}
+          <button onClick={() => onChange(totalPages)} style={btnStyle(false)}>
+            {totalPages}
+          </button>
+        </>
+      )}
+
+      {/* Next */}
+      <button
+        onClick={() => onChange(page + 1)}
+        disabled={page === totalPages}
+        style={navStyle(page === totalPages)}
+      >
+        ›
+      </button>
+
+      <span style={{ fontSize: "12px", color: "#aaa", marginLeft: "8px" }}>
+        {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, count)} of{" "}
+        {count}
+      </span>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════ */
 export default function MyListingsPage() {
   usePageTitle("My Listings");
   const navigate = useNavigate();
@@ -126,38 +373,46 @@ export default function MyListingsPage() {
   const [confirmModal, setConfirmModal] = useState(null);
   const [openMenu, setOpenMenu] = useState(null);
 
+  /* ── pagination state (one per tab) ── */
+  const [listingsPage, setListingsPage] = useState(1);
+  const [businessesPage, setBusinessesPage] = useState(1);
+  const [savedPage, setSavedPage] = useState(1);
+  const PAGE_SIZE = 5;
+
+  /* ── queries — fetch all results, paginate client-side ── */
   const { data: listingsData, isLoading: listingsLoading } = useQuery({
     queryKey: ["my-listings"],
     queryFn: getMyListings,
   });
-
   const { data: businessesData, isLoading: businessesLoading } = useQuery({
     queryKey: ["my-businesses"],
     queryFn: getMyBusinesses,
   });
-
   const { data: savedData, isLoading: savedLoading } = useQuery({
     queryKey: ["saved-listings"],
     queryFn: getSavedListings,
   });
 
+  /* ── mutations ── */
   const deleteListingMutation = useMutation({
     mutationFn: deleteListing,
     onSuccess: () => {
-      queryClient.invalidateQueries(["my-listings"]);
-      queryClient.invalidateQueries(["jobs"]);
-      queryClient.invalidateQueries(["rooms"]);
-      queryClient.invalidateQueries(["events"]);
-      queryClient.invalidateQueries(["announcements"]);
-      queryClient.invalidateQueries(["home-jobs"]);
-      queryClient.invalidateQueries(["home-rooms"]);
-      queryClient.invalidateQueries(["home-events"]);
+      [
+        "my-listings",
+        "jobs",
+        "rooms",
+        "events",
+        "announcements",
+        "home-jobs",
+        "home-rooms",
+        "home-events",
+      ].forEach((k) => queryClient.invalidateQueries([k]));
       setDeletingId(null);
       addToast("Listing deleted successfully!", "success");
     },
     onError: () => {
       setDeletingId(null);
-      addToast("Failed to delete listing. Please try again.", "error");
+      addToast("Failed to delete listing.", "error");
     },
   });
 
@@ -171,7 +426,7 @@ export default function MyListingsPage() {
     },
     onError: () => {
       setDeletingId(null);
-      addToast("Failed to remove business. Please try again.", "error");
+      addToast("Failed to remove business.", "error");
     },
   });
 
@@ -181,9 +436,7 @@ export default function MyListingsPage() {
       queryClient.invalidateQueries(["saved-listings"]);
       addToast("Removed from saved listings.", "info");
     },
-    onError: () => {
-      addToast("Failed to remove. Please try again.", "error");
-    },
+    onError: () => addToast("Failed to remove.", "error"),
   });
 
   const markStatusMutation = useMutation({
@@ -192,301 +445,378 @@ export default function MyListingsPage() {
       queryClient.invalidateQueries(["my-listings"]);
       addToast("Listing status updated!", "success");
     },
-    onError: () => {
-      addToast("Failed to update status. Please try again.", "error");
-    },
+    onError: () => addToast("Failed to update status.", "error"),
   });
+
   const renewMutation = useMutation({
     mutationFn: renewListing,
     onSuccess: () => {
       queryClient.invalidateQueries(["my-listings"]);
       addToast("Listing renewed for 30 more days! ✅", "success");
     },
-    onError: () => {
-      addToast("Failed to renew listing. Please try again.", "error");
-    },
+    onError: () => addToast("Failed to renew listing.", "error"),
   });
 
-  const handleDeleteListing = (id) => {
-    setConfirmModal({
-      message: "This listing will be permanently deleted.",
-      onConfirm: () => {
-        setConfirmModal(null);
-        setDeletingId(id);
-        deleteListingMutation.mutate(id);
-      },
-      onCancel: () => setConfirmModal(null),
-    });
-  };
-
-  const handleDeleteBusiness = (id) => {
-    setConfirmModal({
-      message: "This business will be removed from NepSaathi.",
-      onConfirm: () => {
-        setConfirmModal(null);
-        setDeletingId(id);
-        deleteBusinessMutation.mutate(id);
-      },
-      onCancel: () => setConfirmModal(null),
-    });
-  };
-
-  const getDetailPath = (listing) => {
-    switch (listing.listing_type) {
-      case "job":
-        return `/jobs/listing/${listing.id}`;
-      case "room":
-        return `/rooms/listing/${listing.id}`;
-      case "event":
-        return `/events/listing/${listing.id}`;
-      case "announcement":
-        return `/announcements/listing/${listing.id}`;
-      default:
-        return "/";
-    }
-  };
-
-  const getSavedPath = (saved) => {
-    switch (saved.listing_type) {
-      case "job":
-        return `/jobs/listing/${saved.listing}`;
-      case "room":
-        return `/rooms/listing/${saved.listing}`;
-      case "event":
-        return `/events/listing/${saved.listing}`;
-      case "announcement":
-        return `/announcements/listing/${saved.listing}`;
-      default:
-        return "/";
-    }
-  };
-
-  const listings = (listingsData?.results || []).filter(
+  /* ── derived data ── */
+  const allListings = (listingsData?.results || []).filter(
     (l) => l.status !== "deleted",
   );
-  const businesses = (businessesData?.results || []).filter(
+  const allBusinesses = (businessesData?.results || []).filter(
     (b) => b.is_active !== false,
   );
-  const saved = savedData?.results || [];
+  const allSaved = savedData?.results || [];
+
+  // Stats always computed from ALL results (not just current page)
+  const activeCount = allListings.filter((l) => l.status === "active").length;
+  const expiringCount = allListings.filter(
+    (l) => isExpiringSoon(l.expires_at) && l.status === "active",
+  ).length;
+  const totalViews = allListings.reduce((s, l) => s + (l.view_count || 0), 0);
+
+  // Paginated slices shown in each tab
+  const listings = allListings.slice(
+    (listingsPage - 1) * PAGE_SIZE,
+    listingsPage * PAGE_SIZE,
+  );
+  const businesses = allBusinesses.slice(
+    (businessesPage - 1) * PAGE_SIZE,
+    businessesPage * PAGE_SIZE,
+  );
+  const saved = allSaved.slice(
+    (savedPage - 1) * PAGE_SIZE,
+    savedPage * PAGE_SIZE,
+  );
+
+  /* ── modal helpers ── */
+  const confirmDelete = (message, fn) =>
+    setConfirmModal({
+      message,
+      onConfirm: () => {
+        setConfirmModal(null);
+        fn();
+      },
+      onCancel: () => setConfirmModal(null),
+    });
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>
-      {/* Confirm modal */}
-      {confirmModal && (
-        <ConfirmModal
-          message={confirmModal.message}
-          onConfirm={confirmModal.onConfirm}
-          onCancel={confirmModal.onCancel}
-        />
-      )}
+    <>
+      <style>{`
+        .myl-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        @media (max-width: 600px) { .myl-stats { grid-template-columns: repeat(2, 1fr); } }
+      `}</style>
 
-      {/* Header */}
       <div
         style={{
-          marginBottom: "24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          maxWidth: "900px",
+          margin: "0 auto",
+          padding: "28px",
+          background: "#F5F4F0",
+          minHeight: "100vh",
         }}
       >
-        <div>
-          <h1
-            style={{
-              fontSize: "26px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "6px",
-            }}
-          >
-            My listings
-          </h1>
-          <p style={{ fontSize: "14px", color: "#888" }}>
-            Everything you've posted on NepSaathi
-          </p>
-        </div>
-        <button
-          onClick={() => navigate("/post-ad")}
+        {confirmModal && <ConfirmModal {...confirmModal} />}
+
+        {/* ── Dark header banner ── */}
+        <div
           style={{
-            background: "#E87722",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "10px 20px",
-            fontSize: "13px",
-            fontWeight: 500,
-            cursor: "pointer",
+            background: "#26215C",
+            borderRadius: "16px",
+            padding: "24px 28px",
+            marginBottom: "14px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "12px",
           }}
         >
-          + Post new ad
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div
-        style={{
-          display: "flex",
-          gap: "4px",
-          marginBottom: "24px",
-          background: "#F5F4F0",
-          padding: "4px",
-          borderRadius: "10px",
-          width: "fit-content",
-        }}
-      >
-        {[
-          { key: "listings", label: `Listings (${listings.length})` },
-          { key: "businesses", label: `Businesses (${businesses.length})` },
-          { key: "saved", label: `Saved (${saved.length})` },
-        ].map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            style={{
-              background: activeTab === key ? "#fff" : "transparent",
-              border: activeTab === key ? "0.5px solid #e5e5e5" : "none",
-              borderRadius: "8px",
-              padding: "8px 16px",
-              fontSize: "13px",
-              fontWeight: activeTab === key ? 500 : 400,
-              color: activeTab === key ? "#26215C" : "#888",
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── LISTINGS TAB ── */}
-      {activeTab === "listings" && (
-        <div>
-          {listingsLoading && (
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-            >
-              {[1, 2, 3].map((i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </div>
-          )}
-
-          {!listingsLoading && listings.length === 0 && (
+          <div>
             <div
               style={{
-                textAlign: "center",
-                padding: "48px",
-                background: "#fff",
-                borderRadius: "14px",
-                border: "0.5px solid #e5e5e5",
+                fontSize: "11px",
+                color: "#AFA9EC",
+                letterSpacing: "0.06em",
+                marginBottom: "6px",
               }}
             >
-              <div style={{ fontSize: "32px", marginBottom: "12px" }}>📭</div>
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#26215C",
-                  marginBottom: "6px",
-                }}
-              >
-                No listings yet
-              </h3>
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "#888",
-                  marginBottom: "20px",
-                }}
-              >
-                Post a job, room, event or announcement for free
-              </p>
-              <button
-                onClick={() => navigate("/post-ad")}
-                style={{
-                  background: "#534AB7",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "10px 24px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                }}
-              >
-                Post your first ad →
-              </button>
+              MY ACCOUNT
             </div>
-          )}
-
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            <h1
+              style={{
+                fontSize: "22px",
+                fontWeight: 700,
+                color: "#fff",
+                margin: "0 0 4px",
+              }}
+            >
+              My listings
+            </h1>
+            <p style={{ fontSize: "13px", color: "#AFA9EC", margin: 0 }}>
+              Everything you've posted on NepSaathi
+            </p>
+          </div>
+          <button
+            onClick={() => navigate("/post-ad")}
+            style={{
+              background: "#E87722",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "11px 22px",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
           >
+            + Post new ad
+          </button>
+        </div>
+
+        {/* ── Stat cards ── */}
+        <div className="myl-stats" style={{ marginBottom: "14px" }}>
+          {[
+            {
+              label: "Active",
+              value: activeCount,
+              sub: "listings live",
+              accent: "#1D9E75",
+            },
+            {
+              label: "Expiring",
+              value: expiringCount,
+              sub: "within 5 days",
+              accent: "#E87722",
+            },
+            {
+              label: "Total views",
+              value: totalViews,
+              sub: "across all listings",
+              accent: "#534AB7",
+            },
+            {
+              label: "Saved",
+              value: allSaved.length,
+              sub: "by you",
+              accent: "#26215C",
+            },
+          ].map(({ label, value, sub, accent }) => (
+            <div
+              key={label}
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "12px",
+                padding: "14px 16px",
+                borderTop: `3px solid ${accent}`,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "11px",
+                  color: "#aaa",
+                  marginBottom: "6px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {label}
+              </div>
+              <div
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 700,
+                  color: accent,
+                  lineHeight: 1,
+                }}
+              >
+                {value}
+              </div>
+              <div
+                style={{ fontSize: "11px", color: "#888", marginTop: "4px" }}
+              >
+                {sub}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Tabs ── */}
+        <div
+          style={{
+            display: "flex",
+            gap: "4px",
+            background: "#fff",
+            border: "0.5px solid #e5e5e5",
+            padding: "4px",
+            borderRadius: "12px",
+            width: "fit-content",
+            marginBottom: "16px",
+          }}
+        >
+          {[
+            { key: "listings", label: `Listings (${allListings.length})` },
+            {
+              key: "businesses",
+              label: `Businesses (${allBusinesses.length})`,
+            },
+            { key: "saved", label: `Saved (${allSaved.length})` },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => {
+                setActiveTab(key);
+                setOpenMenu(null);
+              }}
+              style={{
+                background: activeTab === key ? "#26215C" : "transparent",
+                border: "none",
+                borderRadius: "8px",
+                padding: "8px 18px",
+                fontSize: "13px",
+                fontWeight: activeTab === key ? 600 : 400,
+                color: activeTab === key ? "#fff" : "#888",
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* ══ LISTINGS TAB ══ */}
+        {activeTab === "listings" && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+          >
+            {listingsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
+
+            {!listingsLoading && allListings.length === 0 && (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "48px",
+                  background: "#fff",
+                  borderRadius: "16px",
+                  border: "0.5px solid #e5e5e5",
+                }}
+              >
+                <div style={{ fontSize: "36px", marginBottom: "14px" }}>📭</div>
+                <h3
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    color: "#26215C",
+                    marginBottom: "6px",
+                  }}
+                >
+                  No listings yet
+                </h3>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#888",
+                    marginBottom: "20px",
+                  }}
+                >
+                  Post a job, room, event or announcement for free
+                </p>
+                <button
+                  onClick={() => navigate("/post-ad")}
+                  style={{
+                    background: "#534AB7",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "9px",
+                    padding: "11px 24px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Post your first ad →
+                </button>
+              </div>
+            )}
+
             {listings.map((listing) => {
               const typeColor =
                 TYPE_COLORS[listing.listing_type] || TYPE_COLORS.job;
               const statusColor =
                 STATUS_COLORS[listing.status] || STATUS_COLORS.active;
               const typeEmoji = TYPE_EMOJIS[listing.listing_type] || "📌";
-              const isExpiringSoon =
-                listing.expires_at &&
-                new Date(listing.expires_at) - new Date() <
-                  1000 * 60 * 60 * 24 * 5;
+              const expiring =
+                isExpiringSoon(listing.expires_at) &&
+                listing.status === "active";
+              const isExpired = listing.status === "expired";
+
+              const borderLeft = isExpired
+                ? "3px solid #ccc"
+                : expiring
+                  ? "3px solid #E87722"
+                  : listing.status === "filled"
+                    ? "3px solid #E87722"
+                    : `3px solid ${statusColor.dot}`;
 
               return (
                 <div
                   key={listing.id}
                   style={{
-                    background: "#fff",
+                    background: isExpired ? "#F5F4F0" : "#fff",
                     border: "0.5px solid #e5e5e5",
                     borderRadius: "12px",
-                    padding: "14px 16px",
+                    padding: "16px",
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
+                    gap: "12px",
+                    alignItems: "flex-start",
+                    borderLeft,
+                    opacity: isExpired ? 0.75 : 1,
                     transition: "border-color 0.15s",
-                    position: "relative",
                   }}
                   onMouseEnter={(e) =>
+                    !isExpired &&
                     (e.currentTarget.style.borderColor = "#AFA9EC")
                   }
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.borderColor = "#e5e5e5")
                   }
                 >
-                  {/* Row 1: Icon + Title + Menu */}
+                  {/* Type icon */}
                   <div
                     style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "10px",
+                      background: typeColor.bg,
                       display: "flex",
-                      alignItems: "flex-start",
-                      gap: "10px",
-                      width: "100%",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "20px",
+                      flexShrink: 0,
                     }}
                   >
+                    {typeEmoji}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* Title + status */}
                     <div
                       style={{
-                        width: "38px",
-                        height: "38px",
-                        borderRadius: "10px",
-                        background: typeColor.bg,
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "18px",
-                        flexShrink: 0,
+                        gap: "8px",
+                        marginBottom: "5px",
+                        flexWrap: "wrap",
                       }}
                     >
-                      {typeEmoji}
-                    </div>
-
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      {/* Title */}
                       <h3
                         style={{
                           fontSize: "14px",
                           fontWeight: 600,
                           color: "#26215C",
-                          marginBottom: "6px",
+                          margin: 0,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
@@ -494,666 +824,501 @@ export default function MyListingsPage() {
                       >
                         {listing.title}
                       </h3>
-
-                      {/* Badges row */}
-                      <div
+                      <span
                         style={{
-                          display: "flex",
-                          gap: "6px",
-                          marginBottom: "6px",
-                          flexWrap: "wrap",
+                          background: statusColor.bg,
+                          color: statusColor.color,
+                          fontSize: "10px",
+                          fontWeight: 600,
+                          padding: "2px 9px",
+                          borderRadius: "20px",
+                          whiteSpace: "nowrap",
                         }}
                       >
+                        ● {listing.status}
+                      </span>
+                      {expiring && (
                         <span
                           style={{
-                            background: typeColor.bg,
-                            color: typeColor.color,
+                            background: "#FFF1E0",
+                            color: "#633806",
                             fontSize: "10px",
-                            fontWeight: 500,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
+                            fontWeight: 600,
+                            padding: "2px 9px",
+                            borderRadius: "20px",
+                            whiteSpace: "nowrap",
                           }}
                         >
-                          {listing.listing_type}
+                          ⚠️ Expires soon
                         </span>
-                        <span
-                          style={{
-                            background: statusColor.bg,
-                            color: statusColor.color,
-                            fontSize: "10px",
-                            fontWeight: 500,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          {listing.status}
-                        </span>
-                        {isExpiringSoon && (
-                          <>
-                            <span
-                              style={{
-                                background: "#FFF1E0",
-                                color: "#633806",
-                                fontSize: "10px",
-                                fontWeight: 500,
-                                padding: "2px 8px",
-                                borderRadius: "8px",
-                              }}
-                            >
-                              ⚠️ Expiring soon
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                renewMutation.mutate(listing.id);
-                              }}
-                              style={{
-                                background: "#EEEDFE",
-                                color: "#534AB7",
-                                border: "none",
-                                borderRadius: "8px",
-                                padding: "2px 8px",
-                                fontSize: "10px",
-                                fontWeight: 500,
-                                cursor: "pointer",
-                              }}
-                            >
-                              🔄 Renew
-                            </button>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Location + views */}
-                      <p style={{ fontSize: "11px", color: "#888", margin: 0 }}>
-                        📍 {listing.location}, {listing.state}
-                        {listing.view_count > 0 && (
-                          <span style={{ marginLeft: "8px" }}>
-                            · 👁️ {listing.view_count}
-                          </span>
-                        )}
-                      </p>
-
-                      {/* Dates */}
-                      <p
-                        style={{
-                          fontSize: "11px",
-                          color: "#aaa",
-                          margin: "2px 0 0",
-                        }}
-                      >
-                        Posted{" "}
-                        {new Date(listing.created_at).toLocaleDateString(
-                          "en-AU",
-                          { day: "numeric", month: "short" },
-                        )}
-                        {listing.expires_at && (
-                          <span
-                            style={{
-                              color: isExpiringSoon ? "#E87722" : "#aaa",
-                            }}
-                          >
-                            {" "}
-                            · Expires{" "}
-                            {new Date(listing.expires_at).toLocaleDateString(
-                              "en-AU",
-                              { day: "numeric", month: "short" },
-                            )}
-                          </span>
-                        )}
-                      </p>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Three dots menu */}
-                  <div
-                    style={{ position: "absolute", top: "14px", right: "16px" }}
-                  >
-                    <button
-                      onClick={() =>
-                        setOpenMenu(openMenu === listing.id ? null : listing.id)
-                      }
+                    {/* Meta */}
+                    <div
                       style={{
-                        background: "#F5F4F0",
-                        border: "none",
-                        borderRadius: "8px",
-                        width: "36px",
-                        height: "36px",
-                        fontSize: "18px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#555",
+                        fontSize: "12px",
+                        color: "#888",
+                        marginBottom: "6px",
                       }}
                     >
-                      ⋮
-                    </button>
+                      <span
+                        style={{
+                          background: typeColor.bg,
+                          color: typeColor.color,
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          padding: "1px 7px",
+                          borderRadius: "8px",
+                          marginRight: "6px",
+                        }}
+                      >
+                        {listing.listing_type}
+                      </span>
+                      📍 {listing.location}, {listing.state}
+                      {listing.view_count > 0 && (
+                        <span style={{ marginLeft: "8px" }}>
+                          · 👁️ {listing.view_count} views
+                        </span>
+                      )}
+                    </div>
 
-                    {openMenu === listing.id && (
-                      <>
-                        {/* Backdrop */}
-                        <div
-                          onClick={() => setOpenMenu(null)}
-                          style={{
-                            position: "fixed",
-                            inset: 0,
-                            zIndex: 10,
-                          }}
-                        />
-                        {/* Dropdown */}
-                        <div
-                          style={{
-                            position: "absolute",
-                            right: 0,
-                            top: "44px",
-                            background: "#fff",
-                            borderRadius: "12px",
-                            border: "0.5px solid #e5e5e5",
-                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                            zIndex: 11,
-                            minWidth: "160px",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              navigate(getDetailPath(listing));
-                            }}
-                            style={{
-                              width: "100%",
-                              padding: "12px 16px",
-                              background: "none",
-                              border: "none",
-                              textAlign: "left",
-                              fontSize: "13px",
-                              color: "#333",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "10px",
-                            }}
-                          >
-                            👁️ View listing
-                          </button>
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              navigate(`/edit-listing/${listing.id}`);
-                            }}
-                            style={{
-                              width: "100%",
-                              padding: "12px 16px",
-                              background: "none",
-                              border: "none",
-                              textAlign: "left",
-                              fontSize: "13px",
-                              color: "#333",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "10px",
-                              borderTop: "0.5px solid #f5f5f5",
-                            }}
-                          >
-                            ✏️ Edit listing
-                          </button>
-                          {(listing.status === "active" ||
-                            listing.status === "expired") && (
-                            <button
-                              onClick={() => {
-                                setOpenMenu(null);
-                                renewMutation.mutate(listing.id);
-                              }}
-                              disabled={renewMutation.isPending}
-                              style={{
-                                width: "100%",
-                                padding: "12px 16px",
-                                background: "none",
-                                border: "none",
-                                textAlign: "left",
-                                fontSize: "13px",
-                                color: "#534AB7",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                borderTop: "0.5px solid #f5f5f5",
-                                opacity: renewMutation.isPending ? 0.6 : 1,
-                              }}
-                            >
-                              🔄 Renew for 30 days
-                            </button>
-                          )}
-                          {listing.status === "active" && (
-                            <button
-                              onClick={() => {
-                                setOpenMenu(null);
-                                setConfirmModal({
-                                  message: `Mark "${listing.title}" as filled/taken?`,
-                                  onConfirm: () => {
-                                    setConfirmModal(null);
-                                    markStatusMutation.mutate({
-                                      id: listing.id,
-                                      status: "filled",
-                                    });
-                                  },
-                                  onCancel: () => setConfirmModal(null),
-                                });
-                              }}
-                              style={{
-                                width: "100%",
-                                padding: "12px 16px",
-                                background: "none",
-                                border: "none",
-                                textAlign: "left",
-                                fontSize: "13px",
-                                color: "#633806",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                borderTop: "0.5px solid #f5f5f5",
-                              }}
-                            >
-                              ✓ Mark as filled
-                            </button>
-                          )}
-                          {listing.status === "filled" && (
-                            <button
-                              onClick={() => {
-                                setOpenMenu(null);
-                                markStatusMutation.mutate({
-                                  id: listing.id,
-                                  status: "active",
-                                });
-                              }}
-                              style={{
-                                width: "100%",
-                                padding: "12px 16px",
-                                background: "none",
-                                border: "none",
-                                textAlign: "left",
-                                fontSize: "13px",
-                                color: "#085041",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                borderTop: "0.5px solid #f5f5f5",
-                              }}
-                            >
-                              ↺ Reopen listing
-                            </button>
-                          )}
-                          <button
-                            onClick={() => {
-                              setOpenMenu(null);
-                              handleDeleteListing(listing.id);
-                            }}
-                            style={{
-                              width: "100%",
-                              padding: "12px 16px",
-                              background: "none",
-                              border: "none",
-                              textAlign: "left",
-                              fontSize: "13px",
-                              color: "#A32D2D",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "10px",
-                              borderTop: "0.5px solid #f5f5f5",
-                            }}
-                          >
-                            🗑️ Delete listing
-                          </button>
-                        </div>
-                      </>
+                    {/* Dates */}
+                    <div style={{ fontSize: "11px", color: "#aaa" }}>
+                      Posted {fmtDate(listing.created_at)}
+                      {listing.expires_at && (
+                        <span style={{ color: expiring ? "#E87722" : "#aaa" }}>
+                          {" "}
+                          · {isExpired ? "Expired" : "Expires"}{" "}
+                          {fmtDate(listing.expires_at)}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Renew pill — inline for expiring */}
+                    {(expiring || isExpired) && (
+                      <button
+                        onClick={() => renewMutation.mutate(listing.id)}
+                        disabled={renewMutation.isPending}
+                        style={{
+                          marginTop: "8px",
+                          background: "#EEEDFE",
+                          color: "#534AB7",
+                          border: "none",
+                          borderRadius: "20px",
+                          padding: "4px 12px",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          opacity: renewMutation.isPending ? 0.6 : 1,
+                        }}
+                      >
+                        🔄 Renew for 30 days
+                      </button>
                     )}
                   </div>
+
+                  {/* ⋮ menu */}
+                  <ActionMenu
+                    open={openMenu === listing.id}
+                    onToggle={() =>
+                      setOpenMenu(openMenu === listing.id ? null : listing.id)
+                    }
+                    items={[
+                      {
+                        label: "👁️ View listing",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          navigate(getDetailPath(listing));
+                        },
+                      },
+                      {
+                        label: "✏️ Edit listing",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          navigate(`/edit-listing/${listing.id}`);
+                        },
+                      },
+                      (listing.status === "active" ||
+                        listing.status === "expired") && {
+                        label: "🔄 Renew 30 days",
+                        highlight: true,
+                        onClick: () => {
+                          setOpenMenu(null);
+                          renewMutation.mutate(listing.id);
+                        },
+                      },
+                      listing.status === "active" && {
+                        label: "✓ Mark as filled",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          confirmDelete(
+                            `Mark "${listing.title}" as filled/taken?`,
+                            () =>
+                              markStatusMutation.mutate({
+                                id: listing.id,
+                                status: "filled",
+                              }),
+                          );
+                        },
+                      },
+                      listing.status === "filled" && {
+                        label: "↺ Reopen listing",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          markStatusMutation.mutate({
+                            id: listing.id,
+                            status: "active",
+                          });
+                        },
+                      },
+                      {
+                        label: "🗑️ Delete listing",
+                        danger: true,
+                        onClick: () => {
+                          setOpenMenu(null);
+                          confirmDelete(
+                            "This listing will be permanently deleted.",
+                            () => {
+                              setDeletingId(listing.id);
+                              deleteListingMutation.mutate(listing.id);
+                            },
+                          );
+                        },
+                      },
+                    ].filter(Boolean)}
+                  />
                 </div>
               );
             })}
-          </div>
-        </div>
-      )}
-
-      {/* ── BUSINESSES TAB ── */}
-      {activeTab === "businesses" && (
-        <div>
-          {businessesLoading && (
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-            >
-              {[1, 2, 3].map((i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </div>
-          )}
-
-          {!businessesLoading && businesses.length === 0 && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "48px",
-                background: "#fff",
-                borderRadius: "14px",
-                border: "0.5px solid #e5e5e5",
+            <Pagination
+              page={listingsPage}
+              count={allListings.length}
+              pageSize={PAGE_SIZE}
+              onChange={(p) => {
+                setListingsPage(p);
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-            >
-              <div style={{ fontSize: "32px", marginBottom: "12px" }}>🏪</div>
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#26215C",
-                  marginBottom: "6px",
-                }}
-              >
-                No businesses registered yet
-              </h3>
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "#888",
-                  marginBottom: "20px",
-                }}
-              >
-                List your Nepalese business for free
-              </p>
-              <button
-                onClick={() => navigate("/register-business")}
-                style={{
-                  background: "#534AB7",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "10px 24px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                }}
-              >
-                Register your business →
-              </button>
-            </div>
-          )}
-
+            />
+          </div>
+        )}
+        {activeTab === "businesses" && (
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
           >
-            {businesses.map((business) => (
+            {businessesLoading &&
+              [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
+
+            {!businessesLoading && allBusinesses.length === 0 && (
               <div
-                key={business.id}
                 style={{
+                  textAlign: "center",
+                  padding: "48px",
                   background: "#fff",
+                  borderRadius: "16px",
                   border: "0.5px solid #e5e5e5",
-                  borderRadius: "12px",
-                  padding: "16px 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  transition: "border-color 0.15s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#AFA9EC")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor = "#e5e5e5")
-                }
               >
-                <div
+                <div style={{ fontSize: "36px", marginBottom: "14px" }}>🏪</div>
+                <h3
                   style={{
-                    width: "42px",
-                    height: "42px",
-                    borderRadius: "10px",
-                    background: "#FFF1E0",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "18px",
-                    flexShrink: 0,
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    color: "#26215C",
+                    marginBottom: "6px",
                   }}
                 >
-                  🏪
-                </div>
+                  No businesses registered yet
+                </h3>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#888",
+                    marginBottom: "20px",
+                  }}
+                >
+                  List your Nepalese business for free
+                </p>
+                <button
+                  onClick={() => navigate("/register-business")}
+                  style={{
+                    background: "#534AB7",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "9px",
+                    padding: "11px 24px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Register your business →
+                </button>
+              </div>
+            )}
 
-                <div style={{ flex: 1, minWidth: 0 }}>
+            {businesses.map((business) => {
+              const catColor =
+                CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
+              const catEmoji = CATEGORY_EMOJIS[business.category] || "🏪";
+              return (
+                <div
+                  key={business.id}
+                  style={{
+                    background: "#fff",
+                    border: "0.5px solid #e5e5e5",
+                    borderRadius: "12px",
+                    padding: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                    borderLeft: "3px solid #8B5E00",
+                    transition: "border-color 0.15s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.borderColor = "#FAC775")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor = "#e5e5e5")
+                  }
+                >
+                  {/* Category icon */}
                   <div
                     style={{
+                      width: "44px",
+                      height: "44px",
+                      borderRadius: "10px",
+                      background: catColor.bg,
                       display: "flex",
                       alignItems: "center",
-                      gap: "8px",
-                      marginBottom: "4px",
-                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      fontSize: "20px",
+                      flexShrink: 0,
                     }}
                   >
-                    <h3
+                    {catEmoji}
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
                       style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#26215C",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        marginBottom: "4px",
+                        flexWrap: "wrap",
                       }}
                     >
-                      {business.business_name}
-                    </h3>
-                    {business.is_verified ? (
-                      <span
+                      <h3
                         style={{
-                          background: "#E1F5EE",
-                          color: "#085041",
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#26215C",
+                          margin: 0,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        ✓ Verified
-                      </span>
-                    ) : (
+                        {business.business_name}
+                      </h3>
+                      {business.is_verified ? (
+                        <span
+                          style={{
+                            background: "#E1F5EE",
+                            color: "#085041",
+                            fontSize: "10px",
+                            fontWeight: 600,
+                            padding: "2px 8px",
+                            borderRadius: "20px",
+                          }}
+                        >
+                          ✓ Verified
+                        </span>
+                      ) : (
+                        <span
+                          style={{
+                            background: "#FAEEDA",
+                            color: "#633806",
+                            fontSize: "10px",
+                            fontWeight: 600,
+                            padding: "2px 8px",
+                            borderRadius: "20px",
+                          }}
+                        >
+                          Pending verification
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#888" }}>
                       <span
                         style={{
-                          background: "#FAEEDA",
-                          color: "#633806",
+                          background: catColor.bg,
+                          color: catColor.color,
                           fontSize: "10px",
                           fontWeight: 500,
-                          padding: "2px 8px",
+                          padding: "1px 7px",
                           borderRadius: "8px",
+                          marginRight: "6px",
                         }}
                       >
-                        Pending verification
+                        {catEmoji} {business.category?.replace("_", " ")}
                       </span>
+                      📍 {business.suburb}, {business.state}
+                    </div>
+                    {/* Rating if available */}
+                    {business.avg_rating > 0 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          marginTop: "5px",
+                        }}
+                      >
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <span
+                            key={s}
+                            style={{
+                              fontSize: "11px",
+                              color:
+                                s <= Math.round(business.avg_rating)
+                                  ? "#E87722"
+                                  : "#ddd",
+                            }}
+                          >
+                            ★
+                          </span>
+                        ))}
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            color: "#E87722",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {Number(business.avg_rating).toFixed(1)}
+                        </span>
+                        <span style={{ fontSize: "11px", color: "#aaa" }}>
+                          ({business.review_count})
+                        </span>
+                      </div>
                     )}
                   </div>
-                  <p style={{ fontSize: "12px", color: "#888" }}>
-                    {business.category?.replace("_", " ")} · 📍{" "}
-                    {business.suburb}, {business.state}
-                  </p>
-                </div>
 
-                {/* Three dots menu */}
-                <div style={{ position: "relative", flexShrink: 0 }}>
-                  <button
-                    onClick={() =>
+                  <ActionMenu
+                    open={openMenu === `b-${business.id}`}
+                    onToggle={() =>
                       setOpenMenu(
                         openMenu === `b-${business.id}`
                           ? null
                           : `b-${business.id}`,
                       )
                     }
-                    style={{
-                      background: "#F5F4F0",
-                      border: "none",
-                      borderRadius: "8px",
-                      width: "36px",
-                      height: "36px",
-                      fontSize: "18px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#555",
-                    }}
-                  >
-                    ⋮
-                  </button>
-
-                  {openMenu === `b-${business.id}` && (
-                    <>
-                      <div
-                        onClick={() => setOpenMenu(null)}
-                        style={{ position: "fixed", inset: 0, zIndex: 10 }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          right: 0,
-                          top: "44px",
-                          background: "#fff",
-                          borderRadius: "12px",
-                          border: "0.5px solid #e5e5e5",
-                          boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                          zIndex: 11,
-                          minWidth: "160px",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <button
-                          onClick={() => {
-                            setOpenMenu(null);
-                            navigate(`/businesses/${business.id}`);
-                          }}
-                          style={{
-                            width: "100%",
-                            padding: "12px 16px",
-                            background: "none",
-                            border: "none",
-                            textAlign: "left",
-                            fontSize: "13px",
-                            color: "#333",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}
-                        >
-                          👁️ View business
-                        </button>
-                        <button
-                          onClick={() => {
-                            setOpenMenu(null);
-                            handleDeleteBusiness(business.id);
-                          }}
-                          style={{
-                            width: "100%",
-                            padding: "12px 16px",
-                            background: "none",
-                            border: "none",
-                            textAlign: "left",
-                            fontSize: "13px",
-                            color: "#A32D2D",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            borderTop: "0.5px solid #f5f5f5",
-                          }}
-                        >
-                          🗑️ Remove business
-                        </button>
-                      </div>
-                    </>
-                  )}
+                    items={[
+                      {
+                        label: "👁️ View business",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          navigate(`/businesses/${business.id}`);
+                        },
+                      },
+                      {
+                        label: "🗑️ Remove business",
+                        danger: true,
+                        onClick: () => {
+                          setOpenMenu(null);
+                          confirmDelete(
+                            "This business will be removed from NepSaathi.",
+                            () => {
+                              setDeletingId(business.id);
+                              deleteBusinessMutation.mutate(business.id);
+                            },
+                          );
+                        },
+                      },
+                    ]}
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── SAVED TAB ── */}
-      {activeTab === "saved" && (
-        <div>
-          {savedLoading && (
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-            >
-              {[1, 2, 3].map((i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </div>
-          )}
-
-          {!savedLoading && saved.length === 0 && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "48px",
-                background: "#fff",
-                borderRadius: "14px",
-                border: "0.5px solid #e5e5e5",
+              );
+            })}
+            <Pagination
+              page={businessesPage}
+              count={allBusinesses.length}
+              pageSize={PAGE_SIZE}
+              onChange={(p) => {
+                setBusinessesPage(p);
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-            >
-              <div style={{ fontSize: "32px", marginBottom: "12px" }}>🤍</div>
-              <h3
+            />
+          </div>
+        )}
+
+        {/* ══ SAVED TAB ══ */}
+        {activeTab === "saved" && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+          >
+            {savedLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
+
+            {!savedLoading && allSaved.length === 0 && (
+              <div
                 style={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#26215C",
-                  marginBottom: "6px",
+                  textAlign: "center",
+                  padding: "48px",
+                  background: "#fff",
+                  borderRadius: "16px",
+                  border: "0.5px solid #e5e5e5",
                 }}
               >
-                No saved listings yet
-              </h3>
-              <p style={{ fontSize: "14px", color: "#888" }}>
-                Click the heart button on any listing to save it
-              </p>
-            </div>
-          )}
+                <div style={{ fontSize: "36px", marginBottom: "14px" }}>🤍</div>
+                <h3
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    color: "#26215C",
+                    marginBottom: "6px",
+                  }}
+                >
+                  No saved listings yet
+                </h3>
+                <p style={{ fontSize: "14px", color: "#888" }}>
+                  Tap the heart on any listing to save it here
+                </p>
+              </div>
+            )}
 
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-          >
             {saved.map((item) => {
               const typeColor =
                 TYPE_COLORS[item.listing_type] || TYPE_COLORS.job;
               const typeEmoji = TYPE_EMOJIS[item.listing_type] || "📌";
+              const isExpiredSaved = item.listing_status === "expired";
 
               return (
                 <div
                   key={item.id}
                   style={{
-                    background: "#fff",
+                    background: isExpiredSaved ? "#F5F4F0" : "#fff",
                     border: "0.5px solid #e5e5e5",
                     borderRadius: "12px",
-                    padding: "14px 16px",
+                    padding: "16px",
                     display: "flex",
-                    alignItems: "flex-start",
                     gap: "12px",
-                    transition: "border-color 0.15s",
+                    alignItems: "center",
+                    opacity: isExpiredSaved ? 0.7 : 1,
+                    borderLeft: `3px solid ${isExpiredSaved ? "#ccc" : typeColor.dot || "#534AB7"}`,
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.borderColor = "#AFA9EC")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "#e5e5e5")
-                  }
                 >
                   <div
                     style={{
-                      width: "42px",
-                      height: "42px",
+                      width: "40px",
+                      height: "40px",
                       borderRadius: "10px",
                       background: typeColor.bg,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "18px",
+                      fontSize: "20px",
                       flexShrink: 0,
                     }}
                   >
@@ -1161,11 +1326,11 @@ export default function MyListingsPage() {
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    {/* Badges */}
                     <div
                       style={{
                         display: "flex",
-                        gap: "6px",
+                        alignItems: "center",
+                        gap: "7px",
                         marginBottom: "4px",
                         flexWrap: "wrap",
                       }}
@@ -1176,20 +1341,20 @@ export default function MyListingsPage() {
                           color: typeColor.color,
                           fontSize: "10px",
                           fontWeight: 500,
-                          padding: "2px 8px",
+                          padding: "1px 7px",
                           borderRadius: "8px",
                         }}
                       >
                         {item.listing_type}
                       </span>
-                      {item.listing_status === "expired" && (
+                      {isExpiredSaved && (
                         <span
                           style={{
                             background: "#F1EFE8",
                             color: "#444441",
                             fontSize: "10px",
                             fontWeight: 500,
-                            padding: "2px 8px",
+                            padding: "1px 7px",
                             borderRadius: "8px",
                           }}
                         >
@@ -1197,14 +1362,12 @@ export default function MyListingsPage() {
                         </span>
                       )}
                     </div>
-
-                    {/* Title */}
                     <h3
                       style={{
                         fontSize: "14px",
                         fontWeight: 600,
                         color: "#26215C",
-                        marginBottom: "3px",
+                        margin: "0 0 3px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
@@ -1212,60 +1375,61 @@ export default function MyListingsPage() {
                     >
                       {item.listing_title}
                     </h3>
-
-                    {/* Location */}
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#888",
-                        marginBottom: "8px",
-                      }}
-                    >
+                    <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>
                       📍 {item.listing_location}, {item.listing_state}
                     </p>
+                  </div>
 
-                    {/* Buttons */}
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button
-                        onClick={() => navigate(getSavedPath(item))}
-                        style={{
-                          background: "#EEEDFE",
-                          color: "#534AB7",
-                          border: "none",
-                          borderRadius: "7px",
-                          padding: "7px 14px",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                        }}
-                      >
-                        View →
-                      </button>
-                      <button
-                        onClick={() => unsaveMutation.mutate(item.listing)}
-                        disabled={unsaveMutation.isPending}
-                        style={{
-                          background: "#FCEBEB",
-                          color: "#A32D2D",
-                          border: "none",
-                          borderRadius: "7px",
-                          padding: "7px 14px",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          cursor: "pointer",
-                          opacity: unsaveMutation.isPending ? 0.6 : 1,
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </div>
+                  {/* Action buttons */}
+                  <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                    <button
+                      onClick={() => navigate(getSavedPath(item))}
+                      style={{
+                        background: "#EEEDFE",
+                        color: "#534AB7",
+                        border: "none",
+                        borderRadius: "8px",
+                        padding: "8px 14px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      View →
+                    </button>
+                    <button
+                      onClick={() => unsaveMutation.mutate(item.listing)}
+                      disabled={unsaveMutation.isPending}
+                      style={{
+                        background: "#FCEBEB",
+                        color: "#A32D2D",
+                        border: "none",
+                        borderRadius: "8px",
+                        padding: "8px 14px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        opacity: unsaveMutation.isPending ? 0.6 : 1,
+                      }}
+                    >
+                      Remove
+                    </button>
                   </div>
                 </div>
               );
             })}
+            <Pagination
+              page={savedPage}
+              count={allSaved.length}
+              pageSize={PAGE_SIZE}
+              onChange={(p) => {
+                setSavedPage(p);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
