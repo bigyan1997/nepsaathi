@@ -8,4 +8,4 @@ Disallow: /my-listings
 Disallow: /post-ad
 Disallow: /edit-listing/
 
-Sitemap: https://nepsaathi.com/sitemap.xml
+Sitemap: https://www.nepsaathi.com/sitemap.xml
