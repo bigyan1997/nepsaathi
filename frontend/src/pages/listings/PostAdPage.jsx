@@ -10,30 +10,43 @@ import usePageTitle from "../../hooks/usePageTitle";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../components/ui/Toast";
 
+/* ── constants ── */
 const LISTING_TYPES = [
   {
     value: "job",
     label: "Job",
     emoji: "💼",
-    desc: "Post a job vacancy or find work",
+    desc: "Post a vacancy or find work",
+    bg: "#EEEDFE",
+    border: "#AFA9EC",
+    color: "#3C3489",
   },
   {
     value: "room",
     label: "Room",
     emoji: "🏠",
     desc: "List a room or find accommodation",
+    bg: "#FFF1E0",
+    border: "#EFD9C0",
+    color: "#633806",
   },
   {
     value: "event",
     label: "Event",
     emoji: "🎉",
     desc: "Share a community event",
+    bg: "#E1F5EE",
+    border: "#9FE1CB",
+    color: "#085041",
   },
   {
     value: "announcement",
     label: "Announcement",
     emoji: "📢",
-    desc: "Share news or info",
+    desc: "Share news or items for sale",
+    bg: "#E6F1FB",
+    border: "#B5D4F4",
+    color: "#0C447C",
   },
 ];
 
@@ -55,7 +68,6 @@ const JOB_TYPES = [
   { value: "contract", label: "Contract" },
   { value: "internship", label: "Internship" },
 ];
-
 const SALARY_TYPES = [
   { value: "hourly", label: "Per hour" },
   { value: "weekly", label: "Per week" },
@@ -63,76 +75,183 @@ const SALARY_TYPES = [
   { value: "yearly", label: "Per year" },
   { value: "negotiable", label: "Negotiable" },
 ];
-
 const ROOM_TYPES = [
   { value: "private", label: "Private room" },
   { value: "shared", label: "Shared room" },
   { value: "entire", label: "Entire property" },
   { value: "studio", label: "Studio" },
 ];
-
-const FURNISHING_TYPES = [
+const FURNISHINGS = [
   { value: "furnished", label: "Fully furnished" },
   { value: "partial", label: "Partially furnished" },
   { value: "unfurnished", label: "Unfurnished" },
 ];
 
+/* ── style helpers ── */
 const inputStyle = {
   width: "100%",
-  border: "0.5px solid #ccc",
+  border: "0.5px solid #ddd",
   borderRadius: "8px",
   padding: "10px 14px",
-  fontSize: "14px",
+  fontSize: "13px",
   outline: "none",
   background: "#fff",
-  color: "#333",
+  color: "#26215C",
   boxSizing: "border-box",
 };
-
 const labelStyle = {
-  fontSize: "13px",
-  fontWeight: 500,
-  color: "#444",
+  fontSize: "12px",
+  fontWeight: 600,
+  color: "#555",
   display: "block",
-  marginBottom: "6px",
+  marginBottom: "5px",
 };
 
-function WantedToggle({ isWanted, listingType, onChange }) {
+/* ── reusable components ── */
+function SectionCard({ title, accent, accentBg, accentBorder, children }) {
   return (
     <div
       style={{
-        background: isWanted ? "#EEEDFE" : "#F5F4F0",
-        border: isWanted ? "1.5px solid #534AB7" : "1.5px solid #e5e5e5",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+        marginBottom: "12px",
+      }}
+    >
+      <div
+        style={{
+          background: accentBg,
+          borderBottom: `0.5px solid ${accentBorder}`,
+          padding: "12px 20px",
+        }}
+      >
+        <div style={{ fontSize: "13px", fontWeight: 700, color: accent }}>
+          {title}
+        </div>
+      </div>
+      <div
+        style={{
+          padding: "18px 20px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "14px",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function CheckCard({
+  checked,
+  onChange,
+  label,
+  sublabel,
+  color = "#534AB7",
+  bg = "#EEEDFE",
+  border = "#AFA9EC",
+}) {
+  return (
+    <label
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        cursor: "pointer",
+        background: checked ? bg : "#F5F4F0",
+        border: `0.5px solid ${checked ? border : "#e5e5e5"}`,
         borderRadius: "10px",
+        padding: "12px 14px",
+        transition: "all 0.15s",
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        style={{
+          width: "16px",
+          height: "16px",
+          flexShrink: 0,
+          accentColor: color,
+        }}
+      />
+      <div>
+        <div style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>
+          {label}
+        </div>
+        {sublabel && (
+          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+            {sublabel}
+          </div>
+        )}
+      </div>
+    </label>
+  );
+}
+
+function Grid2({ children }) {
+  return (
+    <div
+      className="pa-grid2"
+      style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function WantedToggle({ isWanted, listingType, onChange }) {
+  const cfg =
+    listingType === "job"
+      ? {
+          emoji: "🔍",
+          label: "I'm looking for a job",
+          sub: "Toggle on if you're seeking work, not hiring",
+          bg: "#EEEDFE",
+          border: "#AFA9EC",
+          color: "#534AB7",
+        }
+      : {
+          emoji: "🏘️",
+          label: "I'm looking for a room",
+          sub: "Toggle on if you're seeking accommodation",
+          bg: "#FFF1E0",
+          border: "#EFD9C0",
+          color: "#E87722",
+        };
+
+  return (
+    <div
+      onClick={onChange}
+      style={{
+        background: isWanted ? cfg.bg : "#F5F4F0",
+        border: `1.5px solid ${isWanted ? cfg.border : "#e5e5e5"}`,
+        borderRadius: "12px",
         padding: "14px 16px",
         cursor: "pointer",
         transition: "all 0.15s",
       }}
-      onClick={onChange}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span style={{ fontSize: "20px" }}>
-          {listingType === "job" ? "🔍" : "🏘️"}
-        </span>
-        <div>
-          <div style={{ fontSize: "14px", fontWeight: 500, color: "#26215C" }}>
-            {listingType === "job"
-              ? "I'm looking for a job"
-              : "I'm looking for a room"}
+        <span style={{ fontSize: "22px" }}>{cfg.emoji}</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C" }}>
+            {cfg.label}
           </div>
-          <div style={{ fontSize: "12px", color: "#888" }}>
-            {listingType === "job"
-              ? "Toggle on if you're seeking work, not hiring"
-              : "Toggle on if you're looking for accommodation"}
+          <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+            {cfg.sub}
           </div>
         </div>
+        {/* Toggle pill */}
         <div
           style={{
-            marginLeft: "auto",
             width: "44px",
             height: "24px",
             borderRadius: "12px",
-            background: isWanted ? "#534AB7" : "#ccc",
+            background: isWanted ? cfg.color : "#ccc",
             position: "relative",
             transition: "background 0.2s",
             flexShrink: 0,
@@ -157,15 +276,66 @@ function WantedToggle({ isWanted, listingType, onChange }) {
   );
 }
 
+function NavButtons({
+  onBack,
+  onNext,
+  nextLabel,
+  loading,
+  nextColor = "#E87722",
+}) {
+  return (
+    <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+      {onBack && (
+        <button
+          onClick={onBack}
+          style={{
+            flex: 1,
+            background: "#fff",
+            color: "#555",
+            border: "0.5px solid #ccc",
+            borderRadius: "9px",
+            padding: "12px",
+            fontSize: "13px",
+            cursor: "pointer",
+            fontWeight: 500,
+          }}
+        >
+          ← Back
+        </button>
+      )}
+      <button
+        onClick={onNext}
+        disabled={loading}
+        style={{
+          flex: 2,
+          background: loading ? "#ccc" : nextColor,
+          color: "#fff",
+          border: "none",
+          borderRadius: "9px",
+          padding: "12px",
+          fontSize: "14px",
+          fontWeight: 700,
+          cursor: loading ? "not-allowed" : "pointer",
+        }}
+      >
+        {loading ? "Posting..." : nextLabel}
+      </button>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════ */
 export default function PostAdPage() {
   usePageTitle("Post a Free Ad");
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const queryClient = useQueryClient();
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const queryClient = useQueryClient();
   const [listingType, setListingType] = useState("");
+  const [createdListingId, setCreatedListingId] = useState(null);
 
   const [baseForm, setBaseForm] = useState({
     title: "",
@@ -177,7 +347,6 @@ export default function PostAdPage() {
     contact_whatsapp: "",
     is_wanted: false,
   });
-
   const [jobForm, setJobForm] = useState({
     company_name: "",
     job_type: "casual",
@@ -187,7 +356,6 @@ export default function PostAdPage() {
     qualifications: "",
     is_urgent: false,
   });
-
   const [roomForm, setRoomForm] = useState({
     room_type: "private",
     price: "",
@@ -202,7 +370,6 @@ export default function PostAdPage() {
     pets_allowed: false,
     parking_available: false,
   });
-
   const [announcementForm, setAnnouncementForm] = useState({
     category: "general",
     price: "",
@@ -210,7 +377,6 @@ export default function PostAdPage() {
     is_free: false,
     is_urgent: false,
   });
-
   const [eventForm, setEventForm] = useState({
     category: "community",
     event_date: "",
@@ -224,13 +390,31 @@ export default function PostAdPage() {
     event_url: "",
   });
 
-  const [createdListingId, setCreatedListingId] = useState(null);
+  const setBase = (f) => (e) =>
+    setBaseForm((p) => ({ ...p, [f]: e.target.value }));
+  const setJob = (f) => (e) =>
+    setJobForm((p) => ({ ...p, [f]: e.target.value }));
+  const setRoom = (f) => (e) =>
+    setRoomForm((p) => ({ ...p, [f]: e.target.value }));
+  const setAnn = (f) => (e) =>
+    setAnnouncementForm((p) => ({ ...p, [f]: e.target.value }));
+  const setEvt = (f) => (e) =>
+    setEventForm((p) => ({ ...p, [f]: e.target.value }));
 
+  const typeConfig = LISTING_TYPES.find((t) => t.value === listingType) || {};
+
+  const STEP_LABELS = [
+    "Choose type",
+    "Basic details",
+    "Specific details",
+    "Add photos",
+  ];
+
+  /* ── submit ── */
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
     let baseListingId;
-
     try {
       const listing = await createListing({
         ...baseForm,
@@ -286,21 +470,15 @@ export default function PostAdPage() {
       queryClient.invalidateQueries(["my-listings"]);
       setCreatedListingId(listing.id);
       setStep(4);
-      addToast("Listing created successfully! Now add some photos.", "success");
+      addToast("Listing created! Now add some photos.", "success");
     } catch (err) {
-      if (typeof baseListingId !== "undefined") {
+      if (baseListingId) {
         try {
           await deleteListing(baseListingId);
         } catch (e) {
-          // Rollback failed — log for visibility
-          console.error(
-            "Failed to cleanup orphaned listing:",
-            baseListingId,
-            e,
-          );
+          console.error("Rollback failed:", e);
         }
       }
-      const errors = err.response?.data;
       if (
         err.response?.status === 403 ||
         err.response?.data?.detail?.includes("suspended")
@@ -310,11 +488,16 @@ export default function PostAdPage() {
         );
         return;
       }
+      const errors = err.response?.data;
       if (errors) {
-        const firstError = Object.values(errors)[0];
-        if (Array.isArray(firstError)) setError(firstError[0]);
-        else if (typeof firstError === "string") setError(firstError);
-        else setError("Something went wrong. Please try again.");
+        const first = Object.values(errors)[0];
+        setError(
+          Array.isArray(first)
+            ? first[0]
+            : typeof first === "string"
+              ? first
+              : "Something went wrong.",
+        );
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -324,195 +507,270 @@ export default function PostAdPage() {
   };
 
   const handleImageComplete = () => {
-    if (listingType === "job") navigate("/jobs/listing/" + createdListingId);
-    else if (listingType === "room")
-      navigate("/rooms/listing/" + createdListingId);
-    else if (listingType === "announcement")
-      navigate("/announcements/listing/" + createdListingId);
-    else if (listingType === "event")
-      navigate("/events/listing/" + createdListingId);
-    else navigate("/");
+    const paths = {
+      job: "jobs",
+      room: "rooms",
+      announcement: "announcements",
+      event: "events",
+    };
+    navigate(`/${paths[listingType] || ""}/listing/${createdListingId}`);
   };
 
-  const BackBtn = ({ toStep }) => (
-    <button
-      onClick={() => setStep(toStep)}
-      style={{
-        flex: 1,
-        background: "#fff",
-        color: "#555",
-        border: "0.5px solid #ccc",
-        borderRadius: "8px",
-        padding: "12px",
-        fontSize: "14px",
-        cursor: "pointer",
-      }}
-    >
-      Back
-    </button>
-  );
-
   return (
-    <div style={{ maxWidth: "620px", margin: "0 auto", padding: "28px" }}>
-      <div style={{ marginBottom: "28px" }}>
-        <h1
+    <>
+      <style>{`
+        .pa-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .pa-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .pa-grid21 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+        @media (max-width: 540px) {
+          .pa-grid2  { grid-template-columns: 1fr !important; }
+          .pa-grid3  { grid-template-columns: 1fr 1fr !important; }
+          .pa-grid21 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+      <div
+        style={{
+          maxWidth: "660px",
+          margin: "0 auto",
+          padding: "28px",
+          background: "#F5F4F0",
+          minHeight: "100vh",
+        }}
+      >
+        {/* ── Dark hero ── */}
+        <div
           style={{
-            fontSize: "24px",
-            fontWeight: 600,
-            color: "#26215C",
-            marginBottom: "6px",
+            background: "#26215C",
+            borderRadius: "16px",
+            padding: "24px 28px",
+            marginBottom: "14px",
           }}
         >
-          Post a free ad
-        </h1>
-        <p style={{ fontSize: "13px", color: "#888" }}>
-          Reach thousands of Nepalese Australians instantly
-        </p>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "28px",
-        }}
-      >
-        {[1, 2, 3, 4].map((s) => (
           <div
-            key={s}
-            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            style={{
+              fontSize: "11px",
+              color: "#AFA9EC",
+              letterSpacing: "0.06em",
+              marginBottom: "6px",
+            }}
           >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                background: step >= s ? "#534AB7" : "#e5e5e5",
-                color: step >= s ? "#fff" : "#aaa",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "13px",
-                fontWeight: 500,
-              }}
-            >
-              {s}
-            </div>
-            {s < 4 && (
-              <div
-                style={{
-                  width: "40px",
-                  height: "1px",
-                  background: step > s ? "#534AB7" : "#e5e5e5",
-                }}
-              />
-            )}
+            FREE · ALWAYS
           </div>
-        ))}
-        <span style={{ fontSize: "12px", color: "#888", marginLeft: "8px" }}>
-          {step === 1
-            ? "Choose type"
-            : step === 2
-              ? "Basic details"
-              : step === 3
-                ? "Specific details"
-                : "Add photos"}
-        </span>
-      </div>
+          <h1
+            style={{
+              fontSize: "22px",
+              fontWeight: 700,
+              color: "#fff",
+              margin: "0 0 6px",
+            }}
+          >
+            Post a free ad
+          </h1>
+          <p style={{ fontSize: "13px", color: "#AFA9EC", margin: "0 0 18px" }}>
+            Reach thousands of Nepalese Australians instantly
+          </p>
 
-      <div
-        style={{
-          background: "#fff",
-          border: "0.5px solid #e5e5e5",
-          borderRadius: "14px",
-          padding: "28px",
-        }}
-      >
+          {/* Step indicator inside banner */}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            {STEP_LABELS.map((label, i) => {
+              const s = i + 1;
+              const done = step > s;
+              const current = step === s;
+              return (
+                <div
+                  key={s}
+                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "26px",
+                        height: "26px",
+                        borderRadius: "50%",
+                        flexShrink: 0,
+                        background: done
+                          ? "#1D9E75"
+                          : current
+                            ? "#E87722"
+                            : "rgba(255,255,255,0.15)",
+                        color: done || current ? "#fff" : "#AFA9EC",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {done ? "✓" : s}
+                    </div>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: current ? "#fff" : done ? "#9FE1CB" : "#AFA9EC",
+                        fontWeight: current ? 700 : 400,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                  {s < 4 && (
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "1px",
+                        background: done ? "#1D9E75" : "rgba(255,255,255,0.2)",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Error banner ── */}
         {error && (
           <div
             style={{
               background: "#FCEBEB",
               border: "0.5px solid #F09595",
-              borderRadius: "8px",
-              padding: "10px 14px",
+              borderRadius: "12px",
+              padding: "12px 16px",
               fontSize: "13px",
               color: "#A32D2D",
-              marginBottom: "20px",
+              marginBottom: "12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
-            {error}
+            ⚠️ {error}
           </div>
         )}
 
+        {/* ══ STEP 1 — Choose type ══ */}
         {step === 1 && (
-          <div>
-            <h2
+          <div
+            style={{
+              background: "#fff",
+              border: "0.5px solid #e5e5e5",
+              borderRadius: "16px",
+              padding: "20px",
+            }}
+          >
+            <div
               style={{
-                fontSize: "16px",
-                fontWeight: 600,
+                fontSize: "15px",
+                fontWeight: 700,
                 color: "#26215C",
-                marginBottom: "16px",
+                marginBottom: "14px",
               }}
             >
               What are you posting?
-            </h2>
+            </div>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                marginBottom: "16px",
+              }}
             >
-              {LISTING_TYPES.map(function (item) {
-                return (
+              {LISTING_TYPES.map((item) => (
+                <div
+                  key={item.value}
+                  onClick={() => {
+                    setListingType(item.value);
+                    setError("");
+                  }}
+                  style={{
+                    border:
+                      listingType === item.value
+                        ? `1.5px solid ${item.border}`
+                        : "0.5px solid #e5e5e5",
+                    background: listingType === item.value ? item.bg : "#fff",
+                    borderRadius: "12px",
+                    padding: "14px 16px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                    transition: "all 0.15s",
+                  }}
+                >
                   <div
-                    key={item.value}
-                    onClick={() => setListingType(item.value)}
                     style={{
-                      border:
-                        listingType === item.value
-                          ? "1.5px solid #534AB7"
-                          : "0.5px solid #e5e5e5",
-                      background:
-                        listingType === item.value ? "#EEEDFE" : "#fff",
+                      width: "44px",
+                      height: "44px",
                       borderRadius: "10px",
-                      padding: "14px 16px",
-                      cursor: "pointer",
+                      background: item.bg,
                       display: "flex",
                       alignItems: "center",
-                      gap: "14px",
+                      justifyContent: "center",
+                      fontSize: "22px",
+                      flexShrink: 0,
                     }}
                   >
-                    <span style={{ fontSize: "24px" }}>{item.emoji}</span>
-                    <div>
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 500,
-                          color:
-                            listingType === item.value ? "#26215C" : "#333",
-                        }}
-                      >
-                        {item.label}
-                      </div>
-                      <div style={{ fontSize: "12px", color: "#888" }}>
-                        {item.desc}
-                      </div>
+                    {item.emoji}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#26215C",
+                      }}
+                    >
+                      {item.label}
                     </div>
-                    {listingType === item.value && (
-                      <div
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#888",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {item.desc}
+                    </div>
+                  </div>
+                  {listingType === item.value && (
+                    <div
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "50%",
+                        background: item.border,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <span
                         style={{
-                          marginLeft: "auto",
-                          color: "#534AB7",
-                          fontWeight: 600,
+                          color: "#fff",
+                          fontSize: "12px",
+                          fontWeight: 700,
                         }}
                       >
                         ✓
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-            <button
-              onClick={() => {
+            <NavButtons
+              onNext={() => {
                 if (!listingType) {
                   setError("Please select a listing type.");
                   return;
@@ -520,208 +778,186 @@ export default function PostAdPage() {
                 setError("");
                 setStep(2);
               }}
-              style={{
-                marginTop: "20px",
-                width: "100%",
-                background: "#534AB7",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                padding: "12px",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
-            >
-              Continue →
-            </button>
+              nextLabel="Continue →"
+              nextColor="#534AB7"
+            />
           </div>
         )}
 
+        {/* ══ STEP 2 — Basic details ══ */}
         {step === 2 && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
-            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              Basic details
-            </h2>
-
+          <>
+            {/* Wanted toggle for job/room */}
             {(listingType === "job" || listingType === "room") && (
-              <WantedToggle
-                isWanted={baseForm.is_wanted}
-                listingType={listingType}
-                onChange={() =>
-                  setBaseForm({ ...baseForm, is_wanted: !baseForm.is_wanted })
-                }
-              />
-            )}
-
-            <div>
-              <label style={labelStyle}>Title *</label>
-              <input
-                style={inputStyle}
-                value={baseForm.title}
-                placeholder={
-                  baseForm.is_wanted && listingType === "job"
-                    ? "e.g. Looking for kitchen hand job in Sydney"
-                    : baseForm.is_wanted && listingType === "room"
-                      ? "e.g. Looking for 1 bedroom in Parramatta"
-                      : listingType === "job"
-                        ? "e.g. Kitchen Hand Wanted"
-                        : listingType === "room"
-                          ? "e.g. Private room in Parramatta"
-                          : "e.g. Community announcement"
-                }
-                onChange={(e) =>
-                  setBaseForm({ ...baseForm, title: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>Description *</label>
-              <textarea
-                style={{
-                  ...inputStyle,
-                  minHeight: "100px",
-                  resize: "vertical",
-                }}
-                value={baseForm.description}
-                placeholder={
-                  baseForm.is_wanted && listingType === "job"
-                    ? "Tell employers about yourself and what work you're looking for..."
-                    : baseForm.is_wanted && listingType === "room"
-                      ? "Tell landlords about yourself and what you're looking for..."
-                      : "Describe your listing in detail..."
-                }
-                onChange={(e) =>
-                  setBaseForm({ ...baseForm, description: e.target.value })
-                }
-              />
-            </div>
-
-            <div
-              className="base-location-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}
-            >
-              <div>
-                <label style={labelStyle}>Suburb / City *</label>
-                <input
-                  style={inputStyle}
-                  placeholder="e.g. Parramatta"
-                  value={baseForm.location}
-                  onChange={(e) =>
-                    setBaseForm({ ...baseForm, location: e.target.value })
+              <div style={{ marginBottom: "12px" }}>
+                <WantedToggle
+                  isWanted={baseForm.is_wanted}
+                  listingType={listingType}
+                  onChange={() =>
+                    setBaseForm((p) => ({ ...p, is_wanted: !p.is_wanted }))
                   }
                 />
               </div>
+            )}
+
+            <SectionCard
+              title="Listing details"
+              accent="#26215C"
+              accentBg="#EEEDFE"
+              accentBorder="#AFA9EC"
+            >
               <div>
-                <label style={labelStyle}>State *</label>
-                <select
+                <label style={labelStyle}>Title *</label>
+                <input
                   style={inputStyle}
-                  value={baseForm.state}
-                  onChange={(e) =>
-                    setBaseForm({ ...baseForm, state: e.target.value })
+                  value={baseForm.title}
+                  placeholder={
+                    baseForm.is_wanted && listingType === "job"
+                      ? "e.g. Looking for kitchen hand job in Sydney"
+                      : baseForm.is_wanted && listingType === "room"
+                        ? "e.g. Looking for 1 bedroom in Parramatta"
+                        : listingType === "job"
+                          ? "e.g. Kitchen Hand Wanted"
+                          : listingType === "room"
+                            ? "e.g. Private room in Parramatta"
+                            : "e.g. Community announcement"
                   }
-                >
-                  {STATES.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setBase("title")}
+                />
               </div>
-            </div>
-
-            <div>
-              <label style={labelStyle}>Contact phone</label>
-              <input
-                style={inputStyle}
-                placeholder="e.g. 0412 345 678"
-                value={baseForm.contact_phone}
-                onChange={(e) =>
-                  setBaseForm({ ...baseForm, contact_phone: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>WhatsApp number</label>
-              <input
-                style={inputStyle}
-                placeholder="e.g. 0412 345 678"
-                value={baseForm.contact_whatsapp}
-                onChange={(e) =>
-                  setBaseForm({ ...baseForm, contact_whatsapp: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Contact email</label>
-              <input
-                type="email"
-                style={inputStyle}
-                placeholder="e.g. hello@example.com"
-                value={baseForm.contact_email}
-                onChange={(e) =>
-                  setBaseForm({ ...baseForm, contact_email: e.target.value })
-                }
-              />
-            </div>
-
-            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <BackBtn toStep={1} />
-              <button
-                onClick={() => {
-                  if (
-                    !baseForm.title ||
-                    !baseForm.description ||
-                    !baseForm.location
-                  ) {
-                    setError("Please fill in title, description and location.");
-                    return;
+              <div>
+                <label style={labelStyle}>Description *</label>
+                <textarea
+                  style={{
+                    ...inputStyle,
+                    minHeight: "100px",
+                    resize: "vertical",
+                  }}
+                  value={baseForm.description}
+                  placeholder={
+                    baseForm.is_wanted && listingType === "job"
+                      ? "Tell employers about yourself and what work you're looking for..."
+                      : baseForm.is_wanted && listingType === "room"
+                        ? "Tell landlords about yourself and what you're looking for..."
+                        : "Describe your listing in detail..."
                   }
-                  setError("");
-                  setStep(3);
-                }}
+                  onChange={setBase("description")}
+                />
+              </div>
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>Suburb / City *</label>
+                  <input
+                    style={inputStyle}
+                    placeholder="e.g. Parramatta"
+                    value={baseForm.location}
+                    onChange={setBase("location")}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>State *</label>
+                  <select
+                    style={inputStyle}
+                    value={baseForm.state}
+                    onChange={setBase("state")}
+                  >
+                    {STATES.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </Grid2>
+            </SectionCard>
+
+            <SectionCard
+              title="Contact details"
+              accent="#633806"
+              accentBg="#FFF1E0"
+              accentBorder="#EFD9C0"
+            >
+              <div
                 style={{
-                  flex: 2,
-                  background: "#534AB7",
-                  color: "#fff",
-                  border: "none",
+                  background: "#FFF1E0",
+                  border: "0.5px solid #EFD9C0",
                   borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: "pointer",
+                  padding: "10px 12px",
+                  fontSize: "12px",
+                  color: "#633806",
                 }}
               >
-                Continue →
-              </button>
-            </div>
-          </div>
+                💡 Only shown to logged-in NepSaathi members
+              </div>
+              <div>
+                <label style={labelStyle}>Phone</label>
+                <input
+                  style={inputStyle}
+                  placeholder="e.g. 0412 345 678"
+                  value={baseForm.contact_phone}
+                  onChange={setBase("contact_phone")}
+                />
+              </div>
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>WhatsApp</label>
+                  <input
+                    style={inputStyle}
+                    placeholder="e.g. 0412 345 678"
+                    value={baseForm.contact_whatsapp}
+                    onChange={setBase("contact_whatsapp")}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <input
+                    type="email"
+                    style={inputStyle}
+                    placeholder="e.g. hello@example.com"
+                    value={baseForm.contact_email}
+                    onChange={setBase("contact_email")}
+                  />
+                </div>
+              </Grid2>
+            </SectionCard>
+
+            <NavButtons
+              onBack={() => {
+                setError("");
+                setStep(1);
+              }}
+              onNext={() => {
+                if (
+                  !baseForm.title ||
+                  !baseForm.description ||
+                  !baseForm.location
+                ) {
+                  setError("Please fill in title, description and location.");
+                  return;
+                }
+                setError("");
+                setStep(3);
+              }}
+              nextLabel="Continue →"
+              nextColor="#534AB7"
+            />
+          </>
         )}
 
+        {/* ══ STEP 3 — Job details ══ */}
         {step === 3 && listingType === "job" && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
-            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              {baseForm.is_wanted ? "Your details" : "Job details"}
-            </h2>
-
+          <>
             {baseForm.is_wanted && (
               <div
                 style={{
                   background: "#EEEDFE",
                   border: "0.5px solid #AFA9EC",
-                  borderRadius: "10px",
+                  borderRadius: "12px",
                   padding: "12px 16px",
                   fontSize: "13px",
                   color: "#3C3489",
+                  fontWeight: 500,
+                  marginBottom: "12px",
                 }}
               >
                 🔍 You're posting as a job seeker — fill in your details and
@@ -729,186 +965,140 @@ export default function PostAdPage() {
               </div>
             )}
 
-            {!baseForm.is_wanted && (
+            <SectionCard
+              title="Job details"
+              accent="#3C3489"
+              accentBg="#EEEDFE"
+              accentBorder="#AFA9EC"
+            >
+              {!baseForm.is_wanted && (
+                <div>
+                  <label style={labelStyle}>Company name</label>
+                  <input
+                    style={inputStyle}
+                    placeholder="e.g. Himalayan Cafe"
+                    value={jobForm.company_name}
+                    onChange={setJob("company_name")}
+                  />
+                </div>
+              )}
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>
+                    {baseForm.is_wanted ? "Type of work" : "Job type *"}
+                  </label>
+                  <select
+                    style={inputStyle}
+                    value={jobForm.job_type}
+                    onChange={setJob("job_type")}
+                  >
+                    {JOB_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>
+                    {baseForm.is_wanted ? "Expected pay" : "Pay type"}
+                  </label>
+                  <select
+                    style={inputStyle}
+                    value={jobForm.salary_type}
+                    onChange={setJob("salary_type")}
+                  >
+                    {SALARY_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </Grid2>
               <div>
-                <label style={labelStyle}>Company name</label>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted
+                    ? "Expected salary (AUD)"
+                    : "Salary (AUD)"}
+                </label>
                 <input
+                  type="number"
                   style={inputStyle}
-                  placeholder="e.g. Himalayan Cafe"
-                  value={jobForm.company_name}
-                  onChange={(e) =>
-                    setJobForm({ ...jobForm, company_name: e.target.value })
-                  }
+                  placeholder="e.g. 23.50"
+                  value={jobForm.salary}
+                  onChange={setJob("salary")}
                 />
               </div>
-            )}
-
-            <div
-              className="job-type-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}
-            >
               <div>
                 <label style={labelStyle}>
-                  {baseForm.is_wanted ? "Type of work" : "Job type *"}
+                  {baseForm.is_wanted ? "My experience" : "Experience required"}
                 </label>
-                <select
-                  style={inputStyle}
-                  value={jobForm.job_type}
-                  onChange={(e) =>
-                    setJobForm({ ...jobForm, job_type: e.target.value })
-                  }
-                >
-                  {JOB_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>
-                  {baseForm.is_wanted ? "Expected pay type" : "Salary type"}
-                </label>
-                <select
-                  style={inputStyle}
-                  value={jobForm.salary_type}
-                  onChange={(e) =>
-                    setJobForm({ ...jobForm, salary_type: e.target.value })
-                  }
-                >
-                  {SALARY_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label style={labelStyle}>
-                {baseForm.is_wanted ? "Expected salary (AUD)" : "Salary (AUD)"}
-              </label>
-              <input
-                type="number"
-                style={inputStyle}
-                placeholder={baseForm.is_wanted ? "e.g. 25.00" : "e.g. 23.50"}
-                value={jobForm.salary}
-                onChange={(e) =>
-                  setJobForm({ ...jobForm, salary: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>
-                {baseForm.is_wanted ? "My experience" : "Experience required"}
-              </label>
-              <input
-                style={inputStyle}
-                placeholder={
-                  baseForm.is_wanted
-                    ? "e.g. 2 years kitchen experience"
-                    : "e.g. 1 year kitchen experience"
-                }
-                value={jobForm.experience_required}
-                onChange={(e) =>
-                  setJobForm({
-                    ...jobForm,
-                    experience_required: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div>
-              <label style={labelStyle}>
-                {baseForm.is_wanted ? "My qualifications" : "Qualifications"}
-              </label>
-              <textarea
-                style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }}
-                placeholder={
-                  baseForm.is_wanted
-                    ? "e.g. Food handler certificate, RSA certified"
-                    : "e.g. Food handler certificate preferred"
-                }
-                value={jobForm.qualifications}
-                onChange={(e) =>
-                  setJobForm({ ...jobForm, qualifications: e.target.value })
-                }
-              />
-            </div>
-
-            {!baseForm.is_wanted && (
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  color: "#444",
-                }}
-              >
                 <input
-                  type="checkbox"
+                  style={inputStyle}
+                  placeholder="e.g. 1 year kitchen experience"
+                  value={jobForm.experience_required}
+                  onChange={setJob("experience_required")}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>
+                  {baseForm.is_wanted ? "My qualifications" : "Qualifications"}
+                </label>
+                <textarea
+                  style={{
+                    ...inputStyle,
+                    minHeight: "80px",
+                    resize: "vertical",
+                  }}
+                  placeholder="e.g. Food handler certificate, RSA certified"
+                  value={jobForm.qualifications}
+                  onChange={setJob("qualifications")}
+                />
+              </div>
+              {!baseForm.is_wanted && (
+                <CheckCard
                   checked={jobForm.is_urgent}
                   onChange={(e) =>
-                    setJobForm({ ...jobForm, is_urgent: e.target.checked })
+                    setJobForm((p) => ({ ...p, is_urgent: e.target.checked }))
                   }
+                  label="🔴 Mark as urgent"
+                  sublabel="Adds an urgent badge to your listing"
+                  color="#A32D2D"
+                  bg="#FCEBEB"
+                  border="#F09595"
                 />
-                Mark as urgent
-              </label>
-            )}
+              )}
+            </SectionCard>
 
-            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <BackBtn toStep={2} />
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                style={{
-                  flex: 2,
-                  background: loading ? "#ccc" : "#E87722",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: loading ? "not-allowed" : "pointer",
-                }}
-              >
-                {loading
-                  ? "Posting..."
-                  : baseForm.is_wanted
-                    ? "Post job wanted →"
-                    : "Post job →"}
-              </button>
-            </div>
-          </div>
+            <NavButtons
+              onBack={() => {
+                setError("");
+                setStep(2);
+              }}
+              onNext={handleSubmit}
+              loading={loading}
+              nextLabel={
+                baseForm.is_wanted ? "Post job wanted →" : "Post job →"
+              }
+            />
+          </>
         )}
 
+        {/* ══ STEP 3 — Room details ══ */}
         {step === 3 && listingType === "room" && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
-            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              {baseForm.is_wanted ? "What you're looking for" : "Room details"}
-            </h2>
-
+          <>
             {baseForm.is_wanted && (
               <div
                 style={{
                   background: "#FFF1E0",
                   border: "0.5px solid #EFD9C0",
-                  borderRadius: "10px",
+                  borderRadius: "12px",
                   padding: "12px 16px",
                   fontSize: "13px",
                   color: "#633806",
+                  fontWeight: 500,
+                  marginBottom: "12px",
                 }}
               >
                 🏘️ You're posting as a room seeker — fill in what you're looking
@@ -916,605 +1106,481 @@ export default function PostAdPage() {
               </div>
             )}
 
-            <div
-              className="room-type-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}
+            <SectionCard
+              title="Room details"
+              accent="#633806"
+              accentBg="#FFF1E0"
+              accentBorder="#EFD9C0"
             >
-              <div>
-                <label style={labelStyle}>
-                  {baseForm.is_wanted ? "Room type needed" : "Room type *"}
-                </label>
-                <select
-                  style={inputStyle}
-                  value={roomForm.room_type}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, room_type: e.target.value })
-                  }
-                >
-                  {ROOM_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Furnishing preference</label>
-                <select
-                  style={inputStyle}
-                  value={roomForm.furnishing}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, furnishing: e.target.value })
-                  }
-                >
-                  {FURNISHING_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div
-              className="room-price-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}
-            >
-              <div>
-                <label style={labelStyle}>
-                  {baseForm.is_wanted
-                    ? "Max budget/wk (AUD)"
-                    : "Weekly rent (AUD) *"}
-                </label>
-                <input
-                  type="number"
-                  style={inputStyle}
-                  placeholder={baseForm.is_wanted ? "e.g. 300" : "e.g. 250"}
-                  value={roomForm.price}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, price: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>
-                  {baseForm.is_wanted ? "Move in date" : "Available from"}
-                </label>
-                <input
-                  type="date"
-                  style={inputStyle}
-                  value={roomForm.available_from}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, available_from: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            {!baseForm.is_wanted && (
-              <div>
-                <label style={labelStyle}>Bond required</label>
-                <select
-                  style={inputStyle}
-                  value={roomForm.bond}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, bond: e.target.value })
-                  }
-                >
-                  <option value="2_weeks">2 weeks</option>
-                  <option value="4_weeks">4 weeks</option>
-                  <option value="6_weeks">6 weeks</option>
-                  <option value="negotiable">Negotiable</option>
-                </select>
-              </div>
-            )}
-
-            {!baseForm.is_wanted && (
-              <div
-                className="room-beds-grid"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  gap: "12px",
-                }}
-              >
+              <Grid2>
                 <div>
-                  <label style={labelStyle}>Bedrooms</label>
-                  <input
-                    type="number"
-                    min="1"
-                    style={inputStyle}
-                    value={roomForm.bedrooms}
-                    onChange={(e) =>
-                      setRoomForm({ ...roomForm, bedrooms: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Bathrooms</label>
-                  <input
-                    type="number"
-                    min="1"
-                    style={inputStyle}
-                    value={roomForm.bathrooms}
-                    onChange={(e) =>
-                      setRoomForm({ ...roomForm, bathrooms: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Max occupants</label>
-                  <input
-                    type="number"
-                    min="1"
-                    style={inputStyle}
-                    value={roomForm.max_occupants}
-                    onChange={(e) =>
-                      setRoomForm({
-                        ...roomForm,
-                        max_occupants: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            )}
-
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
-            >
-              {[
-                {
-                  key: "bills_included",
-                  label: baseForm.is_wanted
-                    ? "Bills included preferred"
-                    : "Bills included (electricity, water, internet)",
-                },
-                { key: "nepalese_household", label: "🇳🇵 Nepalese household" },
-                {
-                  key: "pets_allowed",
-                  label: baseForm.is_wanted ? "I have pets" : "Pets allowed",
-                },
-                {
-                  key: "parking_available",
-                  label: baseForm.is_wanted
-                    ? "Parking needed"
-                    : "Parking available",
-                },
-              ].map(function (item) {
-                return (
-                  <label
-                    key={item.key}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      color: "#444",
-                      padding: "8px 0",
-                      borderBottom: "0.5px solid #f5f5f5",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={roomForm[item.key]}
-                      onChange={(e) =>
-                        setRoomForm({
-                          ...roomForm,
-                          [item.key]: e.target.checked,
-                        })
-                      }
-                    />
-                    {item.label}
+                  <label style={labelStyle}>
+                    {baseForm.is_wanted ? "Room type needed" : "Room type *"}
                   </label>
-                );
-              })}
-            </div>
+                  <select
+                    style={inputStyle}
+                    value={roomForm.room_type}
+                    onChange={setRoom("room_type")}
+                  >
+                    {ROOM_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Furnishing</label>
+                  <select
+                    style={inputStyle}
+                    value={roomForm.furnishing}
+                    onChange={setRoom("furnishing")}
+                  >
+                    {FURNISHINGS.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </Grid2>
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>
+                    {baseForm.is_wanted
+                      ? "Max budget/wk (AUD)"
+                      : "Weekly rent (AUD) *"}
+                  </label>
+                  <input
+                    type="number"
+                    style={inputStyle}
+                    placeholder="e.g. 250"
+                    value={roomForm.price}
+                    onChange={setRoom("price")}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>
+                    {baseForm.is_wanted ? "Move in date" : "Available from"}
+                  </label>
+                  <input
+                    type="date"
+                    style={inputStyle}
+                    value={roomForm.available_from}
+                    onChange={setRoom("available_from")}
+                  />
+                </div>
+              </Grid2>
+              {!baseForm.is_wanted && (
+                <>
+                  <div>
+                    <label style={labelStyle}>Bond required</label>
+                    <select
+                      style={inputStyle}
+                      value={roomForm.bond}
+                      onChange={setRoom("bond")}
+                    >
+                      <option value="2_weeks">2 weeks</option>
+                      <option value="4_weeks">4 weeks</option>
+                      <option value="6_weeks">6 weeks</option>
+                      <option value="negotiable">Negotiable</option>
+                    </select>
+                  </div>
+                  <div className="pa-grid3">
+                    <div>
+                      <label style={labelStyle}>Bedrooms</label>
+                      <input
+                        type="number"
+                        min="1"
+                        style={inputStyle}
+                        value={roomForm.bedrooms}
+                        onChange={setRoom("bedrooms")}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Bathrooms</label>
+                      <input
+                        type="number"
+                        min="1"
+                        style={inputStyle}
+                        value={roomForm.bathrooms}
+                        onChange={setRoom("bathrooms")}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Max occupants</label>
+                      <input
+                        type="number"
+                        min="1"
+                        style={inputStyle}
+                        value={roomForm.max_occupants}
+                        onChange={setRoom("max_occupants")}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </SectionCard>
 
-            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <BackBtn toStep={2} />
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                style={{
-                  flex: 2,
-                  background: loading ? "#ccc" : "#E87722",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: loading ? "not-allowed" : "pointer",
-                }}
-              >
-                {loading
-                  ? "Posting..."
-                  : baseForm.is_wanted
-                    ? "Post room wanted →"
-                    : "Post room →"}
-              </button>
-            </div>
-          </div>
+            <SectionCard
+              title="Features"
+              accent="#085041"
+              accentBg="#E1F5EE"
+              accentBorder="#9FE1CB"
+            >
+              <CheckCard
+                checked={roomForm.bills_included}
+                onChange={(e) =>
+                  setRoomForm((p) => ({
+                    ...p,
+                    bills_included: e.target.checked,
+                  }))
+                }
+                label="💡 Bills included"
+                sublabel={
+                  baseForm.is_wanted
+                    ? "I prefer bills included"
+                    : "Electricity, water, internet included"
+                }
+                color="#085041"
+                bg="#E1F5EE"
+                border="#9FE1CB"
+              />
+              <CheckCard
+                checked={roomForm.nepalese_household}
+                onChange={(e) =>
+                  setRoomForm((p) => ({
+                    ...p,
+                    nepalese_household: e.target.checked,
+                  }))
+                }
+                label="🇳🇵 Nepalese household"
+                sublabel="The household is Nepalese"
+                color="#534AB7"
+                bg="#EEEDFE"
+                border="#AFA9EC"
+              />
+              <CheckCard
+                checked={roomForm.pets_allowed}
+                onChange={(e) =>
+                  setRoomForm((p) => ({ ...p, pets_allowed: e.target.checked }))
+                }
+                label="🐾 Pets"
+                sublabel={
+                  baseForm.is_wanted ? "I have pets" : "Pets are welcome"
+                }
+                color="#633806"
+                bg="#FFF1E0"
+                border="#EFD9C0"
+              />
+              <CheckCard
+                checked={roomForm.parking_available}
+                onChange={(e) =>
+                  setRoomForm((p) => ({
+                    ...p,
+                    parking_available: e.target.checked,
+                  }))
+                }
+                label="🚗 Parking"
+                sublabel={
+                  baseForm.is_wanted ? "I need parking" : "Parking is available"
+                }
+                color="#444"
+                bg="#F5F4F0"
+                border="#e5e5e5"
+              />
+            </SectionCard>
+
+            <NavButtons
+              onBack={() => {
+                setError("");
+                setStep(2);
+              }}
+              onNext={handleSubmit}
+              loading={loading}
+              nextLabel={
+                baseForm.is_wanted ? "Post room wanted →" : "Post room →"
+              }
+            />
+          </>
         )}
 
+        {/* ══ STEP 3 — Announcement details ══ */}
         {step === 3 && listingType === "announcement" && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
-            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              Announcement details
-            </h2>
-            <div>
-              <label style={labelStyle}>Category *</label>
-              <select
-                style={inputStyle}
-                value={announcementForm.category}
-                onChange={(e) =>
-                  setAnnouncementForm({
-                    ...announcementForm,
-                    category: e.target.value,
-                  })
-                }
-              >
-                <option value="news">Community news</option>
-                <option value="sale">Item for sale</option>
-                <option value="service">Service offered</option>
-                <option value="lost_found">Lost and found</option>
-                <option value="education">Education</option>
-                <option value="general">General</option>
-              </select>
-            </div>
-            <div
-              className="announce-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
-              }}
+          <>
+            <SectionCard
+              title="Announcement details"
+              accent="#0C447C"
+              accentBg="#E6F1FB"
+              accentBorder="#B5D4F4"
             >
               <div>
-                <label style={labelStyle}>Price (AUD)</label>
-                <input
-                  type="number"
-                  style={inputStyle}
-                  placeholder="e.g. 50"
-                  value={announcementForm.price}
-                  onChange={(e) =>
-                    setAnnouncementForm({
-                      ...announcementForm,
-                      price: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Condition</label>
+                <label style={labelStyle}>Category *</label>
                 <select
                   style={inputStyle}
-                  value={announcementForm.condition}
-                  onChange={(e) =>
-                    setAnnouncementForm({
-                      ...announcementForm,
-                      condition: e.target.value,
-                    })
-                  }
+                  value={announcementForm.category}
+                  onChange={setAnn("category")}
                 >
-                  <option value="na">Not applicable</option>
-                  <option value="new">Brand new</option>
-                  <option value="like_new">Like new</option>
-                  <option value="good">Good</option>
-                  <option value="fair">Fair</option>
-                  <option value="poor">Poor</option>
+                  <option value="news">📰 Community news</option>
+                  <option value="sale">🏷️ Item for sale</option>
+                  <option value="service">🛠️ Service offered</option>
+                  <option value="lost_found">🔎 Lost and found</option>
+                  <option value="education">📚 Education</option>
+                  <option value="general">📢 General</option>
                 </select>
               </div>
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  color: "#444",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={announcementForm.is_free}
-                  onChange={(e) =>
-                    setAnnouncementForm({
-                      ...announcementForm,
-                      is_free: e.target.checked,
-                    })
-                  }
-                />
-                This is free
-              </label>
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  color: "#444",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={announcementForm.is_urgent}
-                  onChange={(e) =>
-                    setAnnouncementForm({
-                      ...announcementForm,
-                      is_urgent: e.target.checked,
-                    })
-                  }
-                />
-                Mark as urgent
-              </label>
-            </div>
-            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <BackBtn toStep={2} />
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                style={{
-                  flex: 2,
-                  background: loading ? "#ccc" : "#E87722",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: loading ? "not-allowed" : "pointer",
-                }}
-              >
-                {loading ? "Posting..." : "Post announcement →"}
-              </button>
-            </div>
-          </div>
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>Price (AUD)</label>
+                  <input
+                    type="number"
+                    style={inputStyle}
+                    placeholder="e.g. 50"
+                    value={announcementForm.price}
+                    onChange={setAnn("price")}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Condition</label>
+                  <select
+                    style={inputStyle}
+                    value={announcementForm.condition}
+                    onChange={setAnn("condition")}
+                  >
+                    <option value="na">Not applicable</option>
+                    <option value="new">Brand new</option>
+                    <option value="like_new">Like new</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="poor">Poor</option>
+                  </select>
+                </div>
+              </Grid2>
+              <CheckCard
+                checked={announcementForm.is_free}
+                onChange={(e) =>
+                  setAnnouncementForm((p) => ({
+                    ...p,
+                    is_free: e.target.checked,
+                  }))
+                }
+                label="🎁 This is free"
+                sublabel="Marks this listing as a free item or service"
+                color="#085041"
+                bg="#E1F5EE"
+                border="#9FE1CB"
+              />
+              <CheckCard
+                checked={announcementForm.is_urgent}
+                onChange={(e) =>
+                  setAnnouncementForm((p) => ({
+                    ...p,
+                    is_urgent: e.target.checked,
+                  }))
+                }
+                label="🔴 Mark as urgent"
+                sublabel="Adds an urgent badge to your listing"
+                color="#A32D2D"
+                bg="#FCEBEB"
+                border="#F09595"
+              />
+            </SectionCard>
+
+            <NavButtons
+              onBack={() => {
+                setError("");
+                setStep(2);
+              }}
+              onNext={handleSubmit}
+              loading={loading}
+              nextLabel="Post announcement →"
+            />
+          </>
         )}
 
+        {/* ══ STEP 3 — Event details ══ */}
         {step === 3 && listingType === "event" && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
-            <h2 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C" }}>
-              Event details
-            </h2>
-            <div>
-              <label style={labelStyle}>Category *</label>
-              <select
-                style={inputStyle}
-                value={eventForm.category}
+          <>
+            <SectionCard
+              title="Event details"
+              accent="#085041"
+              accentBg="#E1F5EE"
+              accentBorder="#9FE1CB"
+            >
+              <div>
+                <label style={labelStyle}>Category *</label>
+                <select
+                  style={inputStyle}
+                  value={eventForm.category}
+                  onChange={setEvt("category")}
+                >
+                  <option value="cultural">🎭 Cultural</option>
+                  <option value="sports">⚽ Sports</option>
+                  <option value="food">🍛 Food and Dining</option>
+                  <option value="music">🎵 Music and Entertainment</option>
+                  <option value="religious">🙏 Religious</option>
+                  <option value="community">👥 Community Meetup</option>
+                  <option value="education">📚 Education and Workshop</option>
+                  <option value="other">📌 Other</option>
+                </select>
+              </div>
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>Event date and time *</label>
+                  <input
+                    type="datetime-local"
+                    style={inputStyle}
+                    value={eventForm.event_date}
+                    onChange={setEvt("event_date")}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>End date and time</label>
+                  <input
+                    type="datetime-local"
+                    style={inputStyle}
+                    value={eventForm.event_end_date}
+                    onChange={setEvt("event_end_date")}
+                  />
+                </div>
+              </Grid2>
+              <div>
+                <label style={labelStyle}>Venue / Address</label>
+                <input
+                  style={inputStyle}
+                  placeholder="e.g. Parramatta Town Hall"
+                  value={eventForm.venue}
+                  onChange={setEvt("venue")}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Organiser</label>
+                <input
+                  style={inputStyle}
+                  placeholder="e.g. Nepalese Community Association"
+                  value={eventForm.organiser}
+                  onChange={setEvt("organiser")}
+                />
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              title="Tickets"
+              accent="#633806"
+              accentBg="#FFF1E0"
+              accentBorder="#EFD9C0"
+            >
+              <CheckCard
+                checked={eventForm.is_free}
                 onChange={(e) =>
-                  setEventForm({ ...eventForm, category: e.target.value })
+                  setEventForm((p) => ({ ...p, is_free: e.target.checked }))
                 }
-              >
-                <option value="cultural">Cultural</option>
-                <option value="sports">Sports</option>
-                <option value="food">Food and Dining</option>
-                <option value="music">Music and Entertainment</option>
-                <option value="religious">Religious</option>
-                <option value="community">Community Meetup</option>
-                <option value="education">Education and Workshop</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div
-              className="event-date-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
+                label="🎟️ Free event"
+                sublabel="No ticket price required"
+                color="#085041"
+                bg="#E1F5EE"
+                border="#9FE1CB"
+              />
+              <CheckCard
+                checked={eventForm.is_online}
+                onChange={(e) =>
+                  setEventForm((p) => ({ ...p, is_online: e.target.checked }))
+                }
+                label="💻 Online / virtual event"
+                sublabel="This event takes place online"
+                color="#0C447C"
+                bg="#E6F1FB"
+                border="#B5D4F4"
+              />
+              <Grid2>
+                <div>
+                  <label style={labelStyle}>Ticket price (AUD)</label>
+                  <input
+                    type="number"
+                    style={{
+                      ...inputStyle,
+                      opacity: eventForm.is_free ? 0.5 : 1,
+                    }}
+                    placeholder="e.g. 20"
+                    value={eventForm.ticket_price}
+                    disabled={eventForm.is_free}
+                    onChange={setEvt("ticket_price")}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Max attendees</label>
+                  <input
+                    type="number"
+                    style={inputStyle}
+                    placeholder="e.g. 100"
+                    value={eventForm.max_attendees}
+                    onChange={setEvt("max_attendees")}
+                  />
+                </div>
+              </Grid2>
+              <div>
+                <label style={labelStyle}>Event URL</label>
+                <input
+                  type="url"
+                  style={inputStyle}
+                  placeholder="e.g. https://eventbrite.com/..."
+                  value={eventForm.event_url}
+                  onChange={setEvt("event_url")}
+                />
+              </div>
+            </SectionCard>
+
+            <NavButtons
+              onBack={() => {
+                setError("");
+                setStep(2);
               }}
-            >
-              <div>
-                <label style={labelStyle}>Event date and time *</label>
-                <input
-                  type="datetime-local"
-                  style={inputStyle}
-                  value={eventForm.event_date}
-                  onChange={(e) =>
-                    setEventForm({ ...eventForm, event_date: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>End date and time</label>
-                <input
-                  type="datetime-local"
-                  style={inputStyle}
-                  value={eventForm.event_end_date}
-                  onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      event_end_date: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div>
-              <label style={labelStyle}>Venue / Address</label>
-              <input
-                style={inputStyle}
-                placeholder="e.g. Parramatta Town Hall"
-                value={eventForm.venue}
-                onChange={(e) =>
-                  setEventForm({ ...eventForm, venue: e.target.value })
+              onNext={() => {
+                if (!eventForm.event_date) {
+                  setError("Please set an event date.");
+                  return;
                 }
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Organiser</label>
-              <input
-                style={inputStyle}
-                placeholder="e.g. Nepalese Community Association"
-                value={eventForm.organiser}
-                onChange={(e) =>
-                  setEventForm({ ...eventForm, organiser: e.target.value })
+                if (new Date(eventForm.event_date) < new Date()) {
+                  setError("Event date must be in the future.");
+                  return;
                 }
-              />
-            </div>
-            <div
-              className="event-ticket-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "12px",
+                handleSubmit();
               }}
-            >
-              <div>
-                <label style={labelStyle}>Ticket price (AUD)</label>
-                <input
-                  type="number"
-                  style={inputStyle}
-                  placeholder="e.g. 20"
-                  value={eventForm.ticket_price}
-                  disabled={eventForm.is_free}
-                  onChange={(e) =>
-                    setEventForm({ ...eventForm, ticket_price: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>Max attendees</label>
-                <input
-                  type="number"
-                  style={inputStyle}
-                  placeholder="e.g. 100"
-                  value={eventForm.max_attendees}
-                  onChange={(e) =>
-                    setEventForm({
-                      ...eventForm,
-                      max_attendees: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div>
-              <label style={labelStyle}>Event URL</label>
-              <input
-                type="url"
-                style={inputStyle}
-                placeholder="e.g. https://eventbrite.com/..."
-                value={eventForm.event_url}
-                onChange={(e) =>
-                  setEventForm({ ...eventForm, event_url: e.target.value })
-                }
-              />
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  color: "#444",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={eventForm.is_free}
-                  onChange={(e) =>
-                    setEventForm({ ...eventForm, is_free: e.target.checked })
-                  }
-                />
-                Free event
-              </label>
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  color: "#444",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={eventForm.is_online}
-                  onChange={(e) =>
-                    setEventForm({ ...eventForm, is_online: e.target.checked })
-                  }
-                />
-                Online / virtual event
-              </label>
-            </div>
-            <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-              <BackBtn toStep={2} />
-              <button
-                onClick={() => {
-                  if (!eventForm.event_date) {
-                    setError("Please set an event date.");
-                    return;
-                  }
-                  if (new Date(eventForm.event_date) < new Date()) {
-                    setError("Event date must be in the future.");
-                    return;
-                  }
-                  handleSubmit();
-                }}
-                disabled={loading}
-                style={{
-                  flex: 2,
-                  background: loading ? "#ccc" : "#E87722",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: loading ? "not-allowed" : "pointer",
-                }}
-              >
-                {loading ? "Posting..." : "Post event →"}
-              </button>
-            </div>
-          </div>
+              loading={loading}
+              nextLabel="Post event →"
+            />
+          </>
         )}
 
+        {/* ══ STEP 4 — Photos ══ */}
         {step === 4 && createdListingId && (
-          <ImageUpload
-            listingId={createdListingId}
-            onComplete={handleImageComplete}
-          />
+          <div
+            style={{
+              background: "#fff",
+              border: "0.5px solid #e5e5e5",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div style={{ background: "#26215C", padding: "14px 20px" }}>
+              <div style={{ fontSize: "14px", fontWeight: 700, color: "#fff" }}>
+                Add photos
+              </div>
+              <div
+                style={{ fontSize: "12px", color: "#AFA9EC", marginTop: "2px" }}
+              >
+                Photos help your listing stand out — you can skip this step
+              </div>
+            </div>
+            <div style={{ padding: "20px" }}>
+              <ImageUpload
+                listingId={createdListingId}
+                onComplete={handleImageComplete}
+              />
+            </div>
+          </div>
         )}
       </div>
-
-      <style>{`
-        @media (max-width: 480px) {
-          .room-beds-grid { grid-template-columns: 1fr 1fr !important; }
-          .room-price-grid { grid-template-columns: 1fr !important; }
-          .room-type-grid { grid-template-columns: 1fr !important; }
-          .event-date-grid { grid-template-columns: 1fr !important; }
-          .event-ticket-grid { grid-template-columns: 1fr !important; }
-          .announce-grid { grid-template-columns: 1fr !important; }
-          .base-location-grid { grid-template-columns: 1fr !important; }
-          .job-type-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
-    </div>
+    </>
   );
 }
