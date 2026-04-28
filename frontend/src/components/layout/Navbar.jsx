@@ -43,11 +43,14 @@ export default function Navbar() {
         await logoutApi(refreshToken);
       }
     } catch (e) {
-      // Even if API call fails, clear local state
+      console.error("Logout API failed, continuing with local cleanup");
     } finally {
+      // 1. Perform the logout (clears state, localStorage, and persist-key)
       logout();
-      navigate("/");
-      setDropdownOpen(false);
+
+      // 2. Force a hard navigation to /login to ensure the UI
+      // re-initializes from a clean state without stale objects
+      window.location.href = "/login";
     }
   };
 
