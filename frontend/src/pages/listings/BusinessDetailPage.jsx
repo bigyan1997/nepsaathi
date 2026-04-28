@@ -1,7 +1,12 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getBusiness, getBusinessReviews, addBusinessReview, deleteBusinessReview } from "../../api/businesses";
+import {
+  getBusiness,
+  getBusinessReviews,
+  addBusinessReview,
+  deleteBusinessReview,
+} from "../../api/businesses";
 import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -29,31 +34,86 @@ const CATEGORY_EMOJIS = {
 };
 
 const CATEGORY_COLORS = {
-  restaurant: { bg: "#FFF1E0", color: "#633806" },
-  grocery: { bg: "#E1F5EE", color: "#085041" },
-  travel: { bg: "#E6F1FB", color: "#0C447C" },
-  beauty: { bg: "#FBEAF0", color: "#4B1528" },
-  health: { bg: "#EAF3DE", color: "#27500A" },
-  legal: { bg: "#EEEDFE", color: "#3C3489" },
-  education: { bg: "#E6F1FB", color: "#0C447C" },
-  religious: { bg: "#FAEEDA", color: "#633806" },
-  construction: { bg: "#F1EFE8", color: "#444441" },
-  transport: { bg: "#E1F5EE", color: "#085041" },
-  finance: { bg: "#EEEDFE", color: "#3C3489" },
-  freelancer: { bg: "#FFF1E0", color: "#633806" },
-  retail: { bg: "#FAECE7", color: "#4A1B0C" },
-  other: { bg: "#F5F4F0", color: "#444441" },
+  restaurant: { bg: "#FFF1E0", color: "#633806", border: "#EFD9C0" },
+  grocery: { bg: "#E1F5EE", color: "#085041", border: "#9FE1CB" },
+  travel: { bg: "#E6F1FB", color: "#0C447C", border: "#B5D4F4" },
+  beauty: { bg: "#FBEAF0", color: "#4B1528", border: "#F4C0D1" },
+  health: { bg: "#EAF3DE", color: "#27500A", border: "#C0DD97" },
+  legal: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" },
+  education: { bg: "#E6F1FB", color: "#0C447C", border: "#B5D4F4" },
+  religious: { bg: "#FAEEDA", color: "#633806", border: "#FAC775" },
+  construction: { bg: "#F1EFE8", color: "#444441", border: "#D3D1C7" },
+  transport: { bg: "#E1F5EE", color: "#085041", border: "#9FE1CB" },
+  finance: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" },
+  freelancer: { bg: "#FFF1E0", color: "#633806", border: "#EFD9C0" },
+  retail: { bg: "#FAECE7", color: "#4A1B0C", border: "#F5C4B3" },
+  other: { bg: "#F5F4F0", color: "#444441", border: "#D3D1C7" },
 };
 
-const formatCategory = (cat) => {
-  if (!cat) return "";
-  return cat.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
-};
-
-const truncateUrl = (url) => {
-  if (!url) return "";
-  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-};
+const IconBack = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M19 12H5M12 5l-7 7 7 7" />
+  </svg>
+);
+const IconPin = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+const IconClock = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+const IconGlobe = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+const IconArrow = () => (
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
 
 function StarRating({ value, onChange, size = 20 }) {
   const [hovered, setHovered] = useState(0);
@@ -62,7 +122,7 @@ function StarRating({ value, onChange, size = 20 }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={star}
-          onClick={() => onChange && onChange(star)}
+          onClick={() => onChange?.(star)}
           onMouseEnter={() => onChange && setHovered(star)}
           onMouseLeave={() => onChange && setHovered(0)}
           style={{
@@ -118,9 +178,11 @@ export default function BusinessDetailPage() {
       setReviewComment("");
       addToast("Review submitted!", "success");
     },
-    onError: (err) => {
-      addToast(err?.response?.data?.detail || "Failed to submit review.", "error");
-    },
+    onError: (err) =>
+      addToast(
+        err?.response?.data?.detail || "Failed to submit review.",
+        "error",
+      ),
   });
 
   const deleteReviewMutation = useMutation({
@@ -148,635 +210,970 @@ export default function BusinessDetailPage() {
 
   const catColor = CATEGORY_COLORS[business?.category] || CATEGORY_COLORS.other;
   const catEmoji = CATEGORY_EMOJIS[business?.category] || "🏪";
+  const footerBg = "#8B5E00";
+  const hasReviewed = reviews.some((r) => r.is_own_review);
 
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
-      {/* Top bar */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <button
-          onClick={() => navigate("/businesses")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#534AB7",
-            fontSize: "13px",
-            cursor: "pointer",
-            padding: 0,
-          }}
-        >
-          ← Back to Businesses
-        </button>
-        <ShareButton title={business?.business_name} compact={isMobile} />
-      </div>
+    <>
+      <style>{`
+        .biz-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
+        @media (max-width: 767px) { .biz-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
 
       <div
         style={{
-          background: "#fff",
-          border: "0.5px solid #e5e5e5",
-          borderRadius: "14px",
-          overflow: "hidden",
+          maxWidth: "900px",
+          margin: "0 auto",
+          padding: "28px",
+          background: "#F5F4F0",
+          minHeight: "100vh",
         }}
       >
-        {/* Hero banner */}
+        {/* ── Top nav ── */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <button
+            onClick={() => navigate("/businesses")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#534AB7",
+              fontSize: "13px",
+              cursor: "pointer",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontWeight: 500,
+            }}
+          >
+            <IconBack /> Back to businesses
+          </button>
+          <ShareButton title={business?.business_name} compact={isMobile} />
+        </div>
+
+        {/* ── Hero banner ── */}
         <div
           style={{
             background: catColor.bg,
-            padding: "24px 28px",
+            border: `1.5px solid ${catColor.border}`,
+            borderRadius: "20px",
+            padding: "32px 28px",
+            marginBottom: "14px",
             display: "flex",
             alignItems: "center",
-            gap: "20px",
+            gap: "24px",
           }}
         >
-          {/* Logo */}
+          {/* Logo block */}
           <div
             style={{
-              width: "64px",
-              height: "64px",
-              borderRadius: "14px",
+              width: "80px",
+              height: "80px",
+              borderRadius: "16px",
               background: "#fff",
+              border: `1.5px solid ${catColor.border}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "28px",
+              fontSize: "36px",
               flexShrink: 0,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              boxShadow: `0 2px 0 ${catColor.border}`,
             }}
           >
             {catEmoji}
           </div>
 
+          {/* Title block */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Badges */}
             <div
               style={{
                 display: "flex",
                 gap: "6px",
-                marginBottom: "8px",
                 flexWrap: "wrap",
+                marginBottom: "12px",
               }}
             >
               <span
                 style={{
-                  background: "rgba(255,255,255,0.7)",
+                  background: "#fff",
                   color: catColor.color,
+                  border: `1px solid ${catColor.border}`,
                   fontSize: "11px",
-                  fontWeight: 500,
-                  padding: "3px 10px",
-                  borderRadius: "8px",
+                  fontWeight: 600,
+                  padding: "3px 12px",
+                  borderRadius: "20px",
                 }}
               >
-                {catEmoji} {formatCategory(business.category)}
+                {catEmoji} {business.category?.replace(/_/g, " ")}
               </span>
               {business.is_verified && (
                 <span
                   style={{
-                    background: "#E1F5EE",
-                    color: "#085041",
+                    background: "#1D9E75",
+                    color: "#fff",
                     fontSize: "11px",
-                    fontWeight: 500,
-                    padding: "3px 10px",
-                    borderRadius: "8px",
+                    fontWeight: 600,
+                    padding: "3px 12px",
+                    borderRadius: "20px",
                   }}
                 >
-                  ✓ Verified by NepSaathi
+                  ✓ Verified
                 </span>
               )}
               {business.is_nepalese_owned && (
                 <span
                   style={{
-                    background: "#EEEDFE",
-                    color: "#3C3489",
+                    background: "#534AB7",
+                    color: "#fff",
                     fontSize: "11px",
-                    fontWeight: 500,
-                    padding: "3px 10px",
-                    borderRadius: "8px",
+                    fontWeight: 600,
+                    padding: "3px 12px",
+                    borderRadius: "20px",
                   }}
                 >
                   🇳🇵 Nepalese owned
                 </span>
               )}
             </div>
-
-            {/* Name */}
             <h1
               style={{
-                fontSize: "22px",
+                fontSize: "24px",
                 fontWeight: 700,
                 color: "#26215C",
-                marginBottom: "4px",
-                lineHeight: 1.2,
+                margin: "0 0 8px",
+                lineHeight: 1.25,
               }}
             >
               {business.business_name}
             </h1>
-            <p style={{ fontSize: "13px", color: catColor.color }}>
-              📍 {business.suburb}, {business.state}
-            </p>
-          </div>
-        </div>
-
-        <div style={{ padding: "24px 28px" }}>
-          {/* About */}
-          <h3
-            style={{
-              fontSize: "15px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "8px",
-            }}
-          >
-            About
-          </h3>
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#555",
-              lineHeight: 1.7,
-              marginBottom: "24px",
-            }}
-          >
-            {business.description}
-          </p>
-
-          <div
-            style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
-          />
-
-          {/* Details grid */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              marginBottom: "24px",
-            }}
-          >
-            {[
-              business.address && { label: "ADDRESS", value: business.address },
-              {
-                label: "LOCATION",
-                value:
-                  `${business.suburb}, ${business.state} ${business.postcode || ""}`.trim(),
-              },
-              business.established_year && {
-                label: "ESTABLISHED",
-                value: business.established_year,
-              },
-              business.operating_hours && {
-                label: "HOURS",
-                value: business.operating_hours,
-              },
-              business.website && {
-                label: "WEBSITE",
-                value: business.website,
-                isLink: true,
-              },
-            ]
-              .filter(Boolean)
-              .map(({ label, value, isLink }) => (
-                <div key={label}>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      color: "#aaa",
-                      marginBottom: "3px",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    {label}
-                  </div>
-                  {isLink ? (
-                    <a
-                      href={value}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        fontSize: "14px",
-                        color: "#534AB7",
-                        fontWeight: 500,
-                        wordBreak: "break-all",
-                      }}
-                    >
-                      {truncateUrl(value)}
-                    </a>
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        color: "#333",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {value}
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-
-          <div
-            style={{ borderTop: "0.5px solid #e5e5e5", marginBottom: "20px" }}
-          />
-
-          {/* Contact */}
-          <h3
-            style={{
-              fontSize: "15px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "12px",
-            }}
-          >
-            Contact
-          </h3>
-
-          {isAuthenticated ? (
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {business.phone && (
-                <a
-                  href={"tel:" + business.phone}
-                  style={{
-                    background: "#534AB7",
-                    color: "#fff",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  📞 Call {business.phone}
-                </a>
-              )}
-              {business.whatsapp && (
-                <a
-                  href={
-                    "https://wa.me/" + business.whatsapp?.replace(/\D/g, "")
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    background: "#25D366",
-                    color: "#fff",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  💬 WhatsApp
-                </a>
-              )}
-              {business.email && (
-                <a
-                  href={"mailto:" + business.email}
-                  style={{
-                    background: "#FFF1E0",
-                    color: "#E87722",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    border: "0.5px solid #EFD9C0",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  ✉️ Email
-                </a>
-              )}
-              {business.website && (
-                <a
-                  href={business.website}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    background: "#EEEDFE",
-                    color: "#534AB7",
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  🌐 Visit website
-                </a>
-              )}
-            </div>
-          ) : (
-            <div
-              style={{
-                background: "#FFF1E0",
-                border: "0.5px solid #EFD9C0",
-                borderRadius: "10px",
-                padding: "16px 20px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "16px",
-                flexWrap: "wrap",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    color: "#26215C",
-                    marginBottom: "3px",
-                  }}
-                >
-                  Sign in to view contact details
-                </div>
-                <div style={{ fontSize: "12px", color: "#888" }}>
-                  Create a free account to contact this business
-                </div>
-              </div>
-              <a
-                href="/login"
+            {business.avg_rating > 0 && (
+              <div
                 style={{
-                  background: "#E87722",
-                  color: "#fff",
-                  padding: "10px 20px",
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  fontSize: "13px",
-                  fontWeight: 500,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginBottom: "6px",
                 }}
               >
-                Sign in →
-              </a>
-            </div>
-          )}
-
-          {/* Report */}
-          <div
-            style={{
-              marginTop: "16px",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <ReportButton listingId={business?.listing_id} />
-          </div>
-        </div>
-      </div>
-
-      {/* Reviews */}
-      <div style={{ marginTop: "24px" }}>
-        <div
-          style={{
-            background: "#fff",
-            border: "0.5px solid #e5e5e5",
-            borderRadius: "14px",
-            padding: "24px 28px",
-          }}
-        >
-          {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-            <h3 style={{ fontSize: "16px", fontWeight: 600, color: "#26215C", margin: 0 }}>
-              Reviews
-            </h3>
-            {business?.review_count > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <StarRating value={Math.round(business.avg_rating)} size={16} />
-                <span style={{ fontSize: "13px", color: "#555", fontWeight: 500 }}>
-                  {business.avg_rating} · {business.review_count} review{business.review_count !== 1 ? "s" : ""}
+                <span
+                  style={{
+                    fontSize: "13px",
+                    color: catColor.color,
+                    fontWeight: 600,
+                  }}
+                >
+                  {business.avg_rating} · {business.review_count} review
+                  {business.review_count !== 1 ? "s" : ""}
                 </span>
               </div>
             )}
+            <span
+              style={{
+                fontSize: "14px",
+                color: catColor.color,
+                fontWeight: 600,
+              }}
+            >
+              📍 {business.suburb}, {business.state}
+            </span>
           </div>
+        </div>
 
-          {/* Write a review */}
-          {isAuthenticated && !business?.is_owner && (() => {
-            const hasReviewed = reviews.some((r) => r.is_own_review);
-            if (hasReviewed) return null;
-            return (
+        {/* ── Two-col grid ── */}
+        <div className="biz-grid">
+          {/* LEFT */}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "14px" }}
+          >
+            {/* About */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "16px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ background: "#26215C", padding: "14px 20px" }}>
+                <h2
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: "#fff",
+                    margin: 0,
+                  }}
+                >
+                  About this business
+                </h2>
+              </div>
+              <div style={{ padding: "20px" }}>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#444",
+                    lineHeight: 1.8,
+                    margin: 0,
+                  }}
+                >
+                  {business.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Business details — category tinted */}
+            <div
+              style={{
+                background: "#fff",
+                border: `0.5px solid ${catColor.border}`,
+                borderRadius: "16px",
+                overflow: "hidden",
+              }}
+            >
               <div
                 style={{
-                  background: "#F5F4F0",
-                  borderRadius: "10px",
-                  padding: "16px",
-                  marginBottom: "20px",
+                  background: catColor.bg,
+                  borderBottom: `0.5px solid ${catColor.border}`,
+                  padding: "14px 20px",
                 }}
               >
-                <div style={{ fontSize: "13px", fontWeight: 500, color: "#26215C", marginBottom: "10px" }}>
-                  Leave a review
-                </div>
-                <StarRating value={reviewRating} onChange={setReviewRating} size={24} />
-                <textarea
-                  value={reviewComment}
-                  onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Share your experience (optional)"
-                  maxLength={500}
-                  rows={3}
+                <h3
                   style={{
-                    width: "100%",
-                    marginTop: "10px",
-                    border: "0.5px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "10px 12px",
-                    fontSize: "13px",
-                    color: "#333",
-                    resize: "vertical",
-                    outline: "none",
-                    boxSizing: "border-box",
-                    fontFamily: "inherit",
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    if (!reviewRating) { addToast("Please select a star rating.", "error"); return; }
-                    addReviewMutation.mutate({ rating: reviewRating, comment: reviewComment });
-                  }}
-                  disabled={addReviewMutation.isPending}
-                  style={{
-                    marginTop: "10px",
-                    background: "#534AB7",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                    padding: "9px 20px",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    cursor: addReviewMutation.isPending ? "not-allowed" : "pointer",
-                    opacity: addReviewMutation.isPending ? 0.7 : 1,
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: catColor.color,
+                    margin: 0,
                   }}
                 >
-                  {addReviewMutation.isPending ? "Submitting…" : "Submit review"}
-                </button>
+                  Business details
+                </h3>
               </div>
-            );
-          })()}
-
-          {!isAuthenticated && (
-            <div style={{ fontSize: "13px", color: "#888", marginBottom: "16px" }}>
-              <Link to="/login" style={{ color: "#534AB7", fontWeight: 500 }}>Sign in</Link> to leave a review.
-            </div>
-          )}
-
-          {/* Review list */}
-          {reviews.length === 0 ? (
-            <p style={{ fontSize: "13px", color: "#aaa" }}>No reviews yet. Be the first!</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  style={{
-                    borderTop: "0.5px solid #f0f0f0",
-                    paddingTop: "14px",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                        <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>
-                          {review.reviewer_name}
-                        </span>
-                        <StarRating value={review.rating} size={13} />
-                      </div>
-                      {review.comment && (
-                        <p style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, margin: 0 }}>
-                          {review.comment}
-                        </p>
-                      )}
-                      <p style={{ fontSize: "11px", color: "#aaa", margin: "4px 0 0" }}>
-                        {new Date(review.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
-                      </p>
-                    </div>
-                    {review.is_own_review && (
-                      <button
-                        onClick={() => deleteReviewMutation.mutate(review.id)}
+              <div
+                style={{
+                  padding: "20px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                }}
+              >
+                {[
+                  business.address && {
+                    label: "Address",
+                    value: business.address,
+                  },
+                  {
+                    label: "Location",
+                    value: `${business.suburb}, ${business.state}${business.postcode ? ` ${business.postcode}` : ""}`,
+                  },
+                  business.established_year && {
+                    label: "Established",
+                    value: business.established_year,
+                  },
+                  business.operating_hours && {
+                    label: "Hours",
+                    value: business.operating_hours,
+                  },
+                  business.website && {
+                    label: "Website",
+                    value: business.website,
+                    isLink: true,
+                  },
+                ]
+                  .filter(Boolean)
+                  .map(({ label, value, isLink }) => (
+                    <div key={label}>
+                      <div
                         style={{
-                          background: "transparent",
-                          border: "none",
-                          color: "#aaa",
-                          fontSize: "12px",
-                          cursor: "pointer",
-                          padding: "2px 6px",
+                          fontSize: "10px",
+                          color: catColor.color,
+                          marginBottom: "4px",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.06em",
+                          fontWeight: 700,
                         }}
                       >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                        {label}
+                      </div>
+                      {isLink ? (
+                        <a
+                          href={value}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            fontSize: "13px",
+                            color: "#534AB7",
+                            fontWeight: 600,
+                            wordBreak: "break-all",
+                          }}
+                        >
+                          {value.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        </a>
+                      ) : (
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            color: "#26215C",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {value}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Similar businesses */}
-      {similarListings?.length > 0 && (
-        <div style={{ marginTop: "24px" }}>
-          <h3
-            style={{
-              fontSize: "16px",
-              fontWeight: 600,
-              color: "#26215C",
-              marginBottom: "12px",
-            }}
-          >
-            Similar businesses
-          </h3>
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-          >
-            {similarListings.map((listing) => (
-              <Link
-                key={listing.id}
-                to={"/businesses/" + listing.id}
+            {/* Reviews */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "16px",
+                overflow: "hidden",
+              }}
+            >
+              <div
                 style={{
-                  background: "#fff",
-                  border: "0.5px solid #e5e5e5",
-                  borderRadius: "12px",
-                  padding: "14px 18px",
-                  textDecoration: "none",
+                  background: "#26215C",
+                  padding: "14px 20px",
                   display: "flex",
-                  justifyContent: "space-between",
                   alignItems: "center",
                   gap: "12px",
-                  transition: "border-color 0.15s",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#AFA9EC")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor = "#e5e5e5")
-                }
               >
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                <h2
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: "#fff",
+                    margin: 0,
+                  }}
                 >
+                  Reviews
+                </h2>
+                {business?.review_count > 0 && (
                   <div
                     style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "8px",
-                      background: "#FAEEDA",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "16px",
-                      flexShrink: 0,
+                      gap: "6px",
                     }}
                   >
-                    🏪
+                    <StarRating
+                      value={Math.round(business.avg_rating)}
+                      size={13}
+                    />
+                    <span style={{ fontSize: "12px", color: "#AFA9EC" }}>
+                      {business.avg_rating} ({business.review_count})
+                    </span>
                   </div>
-                  <div>
+                )}
+              </div>
+              <div style={{ padding: "20px" }}>
+                {/* Write review */}
+                {isAuthenticated && !business?.is_owner && !hasReviewed && (
+                  <div
+                    style={{
+                      background: "#F5F4F0",
+                      borderRadius: "12px",
+                      padding: "16px",
+                      marginBottom: "20px",
+                    }}
+                  >
                     <div
                       style={{
                         fontSize: "13px",
                         fontWeight: 600,
                         color: "#26215C",
-                        marginBottom: "2px",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Leave a review
+                    </div>
+                    <StarRating
+                      value={reviewRating}
+                      onChange={setReviewRating}
+                      size={24}
+                    />
+                    <textarea
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder="Share your experience (optional)"
+                      maxLength={500}
+                      rows={3}
+                      style={{
+                        width: "100%",
+                        marginTop: "10px",
+                        border: "0.5px solid #ddd",
+                        borderRadius: "8px",
+                        padding: "10px 12px",
+                        fontSize: "13px",
+                        color: "#333",
+                        resize: "vertical",
+                        outline: "none",
+                        boxSizing: "border-box",
+                        fontFamily: "inherit",
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        if (!reviewRating) {
+                          addToast("Please select a star rating.", "error");
+                          return;
+                        }
+                        addReviewMutation.mutate({
+                          rating: reviewRating,
+                          comment: reviewComment,
+                        });
+                      }}
+                      disabled={addReviewMutation.isPending}
+                      style={{
+                        marginTop: "10px",
+                        background: "#534AB7",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "8px",
+                        padding: "9px 20px",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        cursor: addReviewMutation.isPending
+                          ? "not-allowed"
+                          : "pointer",
+                        opacity: addReviewMutation.isPending ? 0.7 : 1,
+                      }}
+                    >
+                      {addReviewMutation.isPending
+                        ? "Submitting…"
+                        : "Submit review"}
+                    </button>
+                  </div>
+                )}
+
+                {!isAuthenticated && (
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      color: "#888",
+                      marginBottom: "16px",
+                    }}
+                  >
+                    <Link
+                      to="/login"
+                      style={{ color: "#534AB7", fontWeight: 500 }}
+                    >
+                      Sign in
+                    </Link>{" "}
+                    to leave a review.
+                  </div>
+                )}
+
+                {reviews.length === 0 ? (
+                  <p style={{ fontSize: "13px", color: "#aaa", margin: 0 }}>
+                    No reviews yet. Be the first!
+                  </p>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "14px",
+                    }}
+                  >
+                    {reviews.map((review) => (
+                      <div
+                        key={review.id}
+                        style={{
+                          borderTop: "0.5px solid #f0f0f0",
+                          paddingTop: "14px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                marginBottom: "4px",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontSize: "13px",
+                                  fontWeight: 600,
+                                  color: "#26215C",
+                                }}
+                              >
+                                {review.reviewer_name}
+                              </span>
+                              <StarRating value={review.rating} size={13} />
+                            </div>
+                            {review.comment && (
+                              <p
+                                style={{
+                                  fontSize: "13px",
+                                  color: "#555",
+                                  lineHeight: 1.6,
+                                  margin: 0,
+                                }}
+                              >
+                                {review.comment}
+                              </p>
+                            )}
+                            <p
+                              style={{
+                                fontSize: "11px",
+                                color: "#aaa",
+                                margin: "4px 0 0",
+                              }}
+                            >
+                              {new Date(review.created_at).toLocaleDateString(
+                                "en-AU",
+                                {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                },
+                              )}
+                            </p>
+                          </div>
+                          {review.is_own_review && (
+                            <button
+                              onClick={() =>
+                                deleteReviewMutation.mutate(review.id)
+                              }
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                color: "#aaa",
+                                fontSize: "12px",
+                                cursor: "pointer",
+                                padding: "2px 6px",
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT sidebar */}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
+            {/* Category card */}
+            <div
+              style={{
+                background: catColor.bg,
+                border: `1.5px solid ${catColor.border}`,
+                borderRadius: "14px",
+                padding: "18px",
+              }}
+            >
+              <div style={{ fontSize: "32px", marginBottom: "8px" }}>
+                {catEmoji}
+              </div>
+              <div
+                style={{
+                  fontSize: "11px",
+                  color: catColor.color,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  marginBottom: "4px",
+                }}
+              >
+                Category
+              </div>
+              <div
+                style={{ fontSize: "15px", fontWeight: 700, color: "#26215C" }}
+              >
+                {business.category?.replace(/_/g, " ")}
+              </div>
+              {business.established_year && (
+                <div
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "12px",
+                    color: catColor.color,
+                    fontWeight: 500,
+                  }}
+                >
+                  Est. {business.established_year}
+                </div>
+              )}
+            </div>
+
+            {/* Quick info */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "14px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ background: "#26215C", padding: "10px 16px" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: "#AFA9EC",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  QUICK INFO
+                </div>
+              </div>
+              <div
+                style={{
+                  padding: "14px 16px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    color: catColor.color,
+                  }}
+                >
+                  <IconPin />
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      color: "#26215C",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {business.suburb}, {business.state}
+                  </span>
+                </div>
+                {business.operating_hours && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      color: catColor.color,
+                    }}
+                  >
+                    <IconClock />
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        color: "#26215C",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {business.operating_hours}
+                    </span>
+                  </div>
+                )}
+                {business.website && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      color: catColor.color,
+                    }}
+                  >
+                    <IconGlobe />
+                    <a
+                      href={business.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        fontSize: "13px",
+                        color: "#534AB7",
+                        fontWeight: 500,
+                        textDecoration: "none",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {business.website
+                        .replace(/^https?:\/\//, "")
+                        .replace(/\/$/, "")}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "14px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ background: "#E87722", padding: "10px 16px" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: "#fff",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  CONTACT
+                </div>
+              </div>
+              <div style={{ padding: "14px 16px" }}>
+                {isAuthenticated ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
+                    {business.phone && (
+                      <a
+                        href={`tel:${business.phone}`}
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#534AB7",
+                          color: "#fff",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        📞 Call {business.phone}
+                      </a>
+                    )}
+                    {business.whatsapp && (
+                      <a
+                        href={`https://wa.me/${business.whatsapp?.replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#25D366",
+                          color: "#fff",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        WhatsApp
+                      </a>
+                    )}
+                    {business.email && (
+                      <a
+                        href={`mailto:${business.email}`}
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#FFF1E0",
+                          color: "#E87722",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          border: "0.5px solid #EFD9C0",
+                        }}
+                      >
+                        ✉️ Email
+                      </a>
+                    )}
+                    {business.website && (
+                      <a
+                        href={business.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#EEEDFE",
+                          color: "#534AB7",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        🌐 Visit website
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "#666",
+                        margin: 0,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      Sign in to view contact details
+                    </p>
+                    <a
+                      href="/login"
+                      style={{
+                        display: "block",
+                        textAlign: "center",
+                        background: "#E87722",
+                        color: "#fff",
+                        padding: "10px",
+                        borderRadius: "9px",
+                        textDecoration: "none",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Sign in →
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div style={{ textAlign: "center" }}>
+              <ReportButton listingId={business?.listing_id} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Similar businesses ── */}
+        {similarListings?.length > 0 && (
+          <div style={{ marginTop: "14px" }}>
+            <div
+              style={{
+                background: "#26215C",
+                borderRadius: "12px 12px 0 0",
+                padding: "14px 20px",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "#fff",
+                  margin: 0,
+                }}
+              >
+                Similar businesses
+              </h2>
+            </div>
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "0 0 16px 16px",
+                overflow: "hidden",
+              }}
+            >
+              {similarListings.map((listing, i) => (
+                <Link
+                  key={listing.id}
+                  to={`/businesses/${listing.id}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                    padding: "14px 20px",
+                    borderBottom:
+                      i === similarListings.length - 1
+                        ? "none"
+                        : "0.5px solid #f5f5f5",
+                    textDecoration: "none",
+                    transition: "background 0.15s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background = "#F5F4F0")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = "transparent")
+                  }
+                >
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "10px",
+                      background: "#FAEEDA",
+                      border: "0.5px solid #FAC775",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "18px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    🏪
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "#26215C",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        marginBottom: "3px",
                       }}
                     >
                       {listing.title}
                     </div>
-                    <div style={{ fontSize: "11px", color: "#888" }}>
+                    <div style={{ fontSize: "12px", color: "#888" }}>
                       📍 {listing.location}, {listing.state}
                     </div>
                   </div>
-                </div>
-                <span
-                  style={{
-                    fontSize: "11px",
-                    color: "#534AB7",
-                    fontWeight: 500,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  View →
-                </span>
-              </Link>
-            ))}
+                  <span style={{ color: "#534AB7", flexShrink: 0 }}>
+                    <IconArrow />
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
