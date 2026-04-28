@@ -4,11 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { getJobs } from "../api/jobs";
 import { getRooms } from "../api/rooms";
 import { getEvents } from "../api/events";
-import { getStats } from "../api/listings";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
-import { getSearchSuggestions } from "../api/listings";
+import {
+  getSearchSuggestions,
+  getStats,
+  getFeaturedListings,
+} from "../api/listings";
 
 const CATEGORIES = [
   {
@@ -96,6 +99,11 @@ export default function HomePage() {
   const debounceRef = useRef(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { data: featuredData } = useQuery({
+    queryKey: ["home-featured"],
+    queryFn: getFeaturedListings,
+    staleTime: 1000 * 60 * 5,
+  });
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -667,6 +675,183 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+
+        {/* ── FEATURED POSTS ── */}
+        {featuredData?.results?.length > 0 && (
+          <div
+            className="home-section"
+            style={{
+              padding: "0 28px 32px",
+              maxWidth: "1000px",
+              margin: "0 auto",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <span style={{ fontSize: "20px" }}>⭐</span>
+                <h2
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "#26215C",
+                    margin: 0,
+                  }}
+                >
+                  Featured posts
+                </h2>
+              </div>
+            </div>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            >
+              {featuredData.results.map((listing) => {
+                const typeEmoji =
+                  { job: "💼", room: "🏠", event: "🎉", announcement: "📢" }[
+                    listing.listing_type
+                  ] || "📌";
+                const typeBg =
+                  {
+                    job: "#EEEDFE",
+                    room: "#FFF1E0",
+                    event: "#E1F5EE",
+                    announcement: "#E6F1FB",
+                  }[listing.listing_type] || "#F5F4F0";
+                const typeColor =
+                  {
+                    job: "#3C3489",
+                    room: "#633806",
+                    event: "#085041",
+                    announcement: "#0C447C",
+                  }[listing.listing_type] || "#444";
+                const typePath =
+                  {
+                    job: "jobs",
+                    room: "rooms",
+                    event: "events",
+                    announcement: "announcements",
+                  }[listing.listing_type] || "listings";
+                return (
+                  <Link
+                    key={listing.id}
+                    to={`/${typePath}/listing/${listing.id}`}
+                    style={{
+                      background: "#fff",
+                      border: "1.5px solid #E87722",
+                      borderRadius: "12px",
+                      padding: "16px 20px",
+                      textDecoration: "none",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "16px",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#534AB7";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#E87722";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "14px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "10px",
+                          background: typeBg,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "18px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {typeEmoji}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            marginBottom: "3px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #E87722, #534AB7)",
+                              color: "#fff",
+                              fontSize: "9px",
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            ⭐ FEATURED
+                          </span>
+                          <span
+                            style={{
+                              background: typeBg,
+                              color: typeColor,
+                              fontSize: "9px",
+                              fontWeight: 600,
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            {listing.listing_type?.toUpperCase()}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: 600,
+                            color: "#26215C",
+                            marginBottom: "2px",
+                          }}
+                        >
+                          {listing.title}
+                        </div>
+                        <div style={{ fontSize: "12px", color: "#888" }}>
+                          📍 {listing.location}, {listing.state}
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        color: "#534AB7",
+                        fontWeight: 500,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      View →
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* ── LATEST JOBS ── */}
         {jobsData?.results?.length > 0 && (

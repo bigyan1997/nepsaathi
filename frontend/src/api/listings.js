@@ -118,3 +118,8 @@ export const renewListing = async (listingId) => {
   const response = await api.post(`/api/listings/${listingId}/renew/`);
   return response.data;
 };
+
+export const getFeaturedListings = async () => {
+  const response = await api.get("/api/listings/?is_featured=true&page_size=6");
+  return response.data;
+};
