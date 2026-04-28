@@ -40,6 +40,291 @@ const CATEGORY_EMOJIS = {
   other: "📌",
 };
 
+/* ── helpers ─────────────────────────────────────── */
+const formatDate = (d) =>
+  new Date(d).toLocaleDateString("en-AU", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+const formatTime = (d) =>
+  new Date(d).toLocaleTimeString("en-AU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+/* ── Desktop card ────────────────────────────────── */
+function EventCard({ event }) {
+  const [hovered, setHovered] = useState(false);
+  const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
+  const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
+  const footerBg = event.is_free ? "#1D9E75" : "#534AB7";
+
+  return (
+    <Link
+      to={`/events/${event.id}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        borderRadius: "16px",
+        overflow: "hidden",
+        textDecoration: "none",
+        border: `0.5px solid ${hovered ? "#9FE1CB" : "#e5e5e5"}`,
+        boxShadow: hovered
+          ? "0 8px 28px rgba(29,158,117,0.13)"
+          : "0 2px 8px rgba(0,0,0,0.05)",
+        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "all 0.2s",
+        minHeight: "300px",
+      }}
+    >
+      {/* Header strip */}
+      <div
+        style={{
+          background: catColor.bg,
+          height: "100px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          flexShrink: 0,
+        }}
+      >
+        {/* Big date box centred */}
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontSize: "32px",
+              fontWeight: 800,
+              color: "#26215C",
+              lineHeight: 1,
+            }}
+          >
+            {new Date(event.event_date).getDate()}
+          </div>
+          <div
+            style={{
+              fontSize: "13px",
+              color: catColor.color,
+              fontWeight: 600,
+              marginTop: "2px",
+            }}
+          >
+            {new Date(event.event_date)
+              .toLocaleDateString("en-AU", { month: "short" })
+              .toUpperCase()}{" "}
+            {new Date(event.event_date).getFullYear()}
+          </div>
+        </div>
+
+        {/* Category badge top-left */}
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "10px",
+            display: "flex",
+            gap: "4px",
+          }}
+        >
+          <span
+            style={{
+              background: catColor.bg,
+              color: catColor.color,
+              border: `0.5px solid ${catColor.color}30`,
+              fontSize: "9px",
+              fontWeight: 600,
+              padding: "2px 7px",
+              borderRadius: "6px",
+            }}
+          >
+            {catEmoji} {event.category?.replace("_", " ")}
+          </span>
+          {event.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg,#E87722,#534AB7)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 7px",
+                borderRadius: "6px",
+              }}
+            >
+              ⭐
+            </span>
+          )}
+        </div>
+
+        {/* Ticket badge top-right */}
+        <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+          <span
+            style={{
+              background: event.is_free ? "#E1F5EE" : "#FFF1E0",
+              color: event.is_free ? "#085041" : "#633806",
+              fontSize: "11px",
+              fontWeight: 600,
+              padding: "3px 10px",
+              borderRadius: "20px",
+            }}
+          >
+            {event.ticket_display}
+          </span>
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "3px",
+            background: footerBg,
+            opacity: 0.35,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "14px 16px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px",
+        }}
+      >
+        {/* Time */}
+        <div style={{ fontSize: "11px", fontWeight: 600, color: footerBg }}>
+          {formatDate(event.event_date)} · {formatTime(event.event_date)}
+        </div>
+
+        {/* Title */}
+        <div
+          style={{
+            fontSize: "15px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.25,
+          }}
+        >
+          {event.listing_title}
+        </div>
+
+        {/* Venue */}
+        {event.venue && (
+          <div style={{ fontSize: "12px", color: "#777" }}>
+            📍 {event.venue}
+          </div>
+        )}
+
+        {/* Tags */}
+        <div
+          style={{
+            display: "flex",
+            gap: "4px",
+            flexWrap: "wrap",
+            marginTop: "2px",
+          }}
+        >
+          {event.is_free && (
+            <span
+              style={{
+                background: "#E1F5EE",
+                color: "#085041",
+                fontSize: "11px",
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: "8px",
+              }}
+            >
+              Free
+            </span>
+          )}
+          {event.is_online && (
+            <span
+              style={{
+                background: "#E6F1FB",
+                color: "#0C447C",
+                fontSize: "11px",
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: "8px",
+              }}
+            >
+              Online
+            </span>
+          )}
+          {event.listing_state && (
+            <span
+              style={{
+                background: "#F5F4F0",
+                color: "#555",
+                fontSize: "11px",
+                fontWeight: 500,
+                padding: "2px 8px",
+                borderRadius: "8px",
+              }}
+            >
+              {event.listing_state}
+            </span>
+          )}
+        </div>
+
+        {event.description && (
+          <div
+            style={{
+              fontSize: "12px",
+              color: "#555",
+              lineHeight: 1.5,
+              marginTop: "4px",
+              flex: 1,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {event.description}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          background: footerBg,
+          display: "flex",
+          justifyContent: "space-around",
+          padding: "10px 12px",
+          flexShrink: 0,
+        }}
+      >
+        {[
+          { value: event.ticket_display || "—", label: "Tickets" },
+          { value: event.is_free ? "Free" : "Paid", label: "Entry" },
+          { value: event.listing_state || "—", label: "State" },
+        ].map(({ value, label }) => (
+          <div key={label} style={{ textAlign: "center", color: "#fff" }}>
+            <div style={{ fontSize: "13px", fontWeight: 700, lineHeight: 1 }}>
+              {value}
+            </div>
+            <div style={{ fontSize: "10px", opacity: 0.8, marginTop: "2px" }}>
+              {label}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Link>
+  );
+}
+
+/* ══════════════════════════════════════════════════ */
 export default function EventsPage() {
   usePageTitle("Community Events");
   const location = useLocation();
@@ -82,434 +367,423 @@ export default function EventsPage() {
     if (key !== prevKey.current || page === 1) {
       setAllResults(data.results);
       prevKey.current = key;
-    } else {
-      setAllResults((prev) => [...prev, ...data.results]);
-    }
+    } else setAllResults((prev) => [...prev, ...data.results]);
   }, [data]);
-
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString("en-AU", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const formatTime = (dateStr) => {
-    return new Date(dateStr).toLocaleTimeString("en-AU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchParam = params.get("search");
     const stateParam = params.get("state");
-    if (searchParam || stateParam) {
+    if (searchParam || stateParam)
       setFilters((prev) => ({
         ...prev,
         search: searchParam || "",
         state: stateParam || "",
       }));
-    }
   }, [location.search]);
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "24px" }}>
-        <h1
-          style={{
-            fontSize: "26px",
-            fontWeight: 600,
-            color: "#26215C",
-            marginBottom: "6px",
-          }}
-        >
-          Community events
-        </h1>
-        <p style={{ fontSize: "14px", color: "#888" }}>
-          Nepalese events, celebrations and meetups across Australia
-        </p>
-      </div>
+    <>
+      <style>{`
+        @media (max-width: 767px)  { .events-desktop { display: none !important; } .events-mobile { display: flex !important; } }
+        @media (min-width: 768px)  { .events-mobile  { display: none !important; } .events-desktop { display: grid !important; } }
+      `}</style>
 
-      {/* Filters */}
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          marginBottom: "24px",
-          flexWrap: "wrap",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={filters.search}
-          onChange={(e) => updateFilters({ search: e.target.value })}
-          style={{
-            flex: 1,
-            minWidth: "200px",
-            border: "0.5px solid #ccc",
-            borderRadius: "8px",
-            padding: "10px 14px",
-            fontSize: "14px",
-            outline: "none",
-            background: "#fff",
-          }}
-        />
-        <select
-          value={filters.category}
-          onChange={(e) => updateFilters({ category: e.target.value })}
-          style={{
-            border: "0.5px solid #ccc",
-            borderRadius: "8px",
-            padding: "10px 14px",
-            fontSize: "14px",
-            outline: "none",
-            background: "#fff",
-            color: "#444",
-          }}
-        >
-          {CATEGORIES.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filters.state}
-          onChange={(e) => updateFilters({ state: e.target.value })}
-          style={{
-            border: "0.5px solid #ccc",
-            borderRadius: "8px",
-            padding: "10px 14px",
-            fontSize: "14px",
-            outline: "none",
-            background: "#fff",
-            color: "#444",
-          }}
-        >
-          {STATES.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filters.ordering}
-          onChange={(e) => updateFilters({ ordering: e.target.value })}
-          style={{
-            border: "0.5px solid #ccc",
-            borderRadius: "8px",
-            padding: "10px 14px",
-            fontSize: "14px",
-            outline: "none",
-            background: "#fff",
-            color: "#444",
-          }}
-        >
-          <option value="-listing__created_at">Newest first</option>
-          <option value="listing__created_at">Oldest first</option>
-          <option value="event_date">Date: earliest first</option>
-          <option value="-event_date">Date: latest first</option>
-        </select>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            fontSize: "13px",
-            color: "#444",
-            cursor: "pointer",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={filters.is_free === "true"}
-            onChange={(e) => updateFilters({ is_free: e.target.checked ? "true" : "" })}
-          />
-          Free only
-        </label>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            fontSize: "13px",
-            color: "#444",
-            cursor: "pointer",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={filters.is_online === "true"}
-            onChange={(e) => updateFilters({ is_online: e.target.checked ? "true" : "" })}
-          />
-          Online only
-        </label>
-        <div style={{ display: "flex", gap: "6px" }}>
-          <button
-            type="button"
-            onClick={() => updateFilters({ upcoming: "" })}
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
+        {/* Header */}
+        <div style={{ marginBottom: "24px" }}>
+          <h1
             style={{
-              background: filters.upcoming === "" ? "#534AB7" : "#fff",
-              color: filters.upcoming === "" ? "#fff" : "#534AB7",
-              border: "0.5px solid #AFA9EC",
-              borderRadius: "20px",
-              padding: "10px 16px",
-              fontSize: "13px",
-              fontWeight: 500,
-              cursor: "pointer",
-              transition: "all 0.15s",
-              whiteSpace: "nowrap",
+              fontSize: "26px",
+              fontWeight: 600,
+              color: "#26215C",
+              marginBottom: "6px",
             }}
           >
-            📅 All events
-          </button>
-          <button
-            type="button"
-            onClick={() => updateFilters({ upcoming: "true" })}
-            style={{
-              background: filters.upcoming === "true" ? "#534AB7" : "#fff",
-              color: filters.upcoming === "true" ? "#fff" : "#534AB7",
-              border: "0.5px solid #AFA9EC",
-              borderRadius: "20px",
-              padding: "10px 16px",
-              fontSize: "13px",
-              fontWeight: 500,
-              cursor: "pointer",
-              transition: "all 0.15s",
-              whiteSpace: "nowrap",
-            }}
-          >
-            🔜 Upcoming only
-          </button>
-        </div>
-      </div>
-
-      {/* Loading */}
-      {(isLoading || (isFetching && allResults.length === 0)) && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      )}
-
-      {/* Error */}
-      {error && (
-        <div
-          style={{
-            background: "#FCEBEB",
-            border: "0.5px solid #F09595",
-            borderRadius: "8px",
-            padding: "14px",
-            color: "#A32D2D",
-            fontSize: "14px",
-          }}
-        >
-          Failed to load events. Please try again.
-        </div>
-      )}
-
-      {/* Empty */}
-      {data && data.results?.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-          No events found. Try a different search.
-        </div>
-      )}
-
-      {/* Event cards */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {allResults.map((event) => {
-          const catColor =
-            CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
-          const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
-          return (
-            <Link
-              key={event.id}
-              to={`/events/${event.id}`}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #e5e5e5",
-                borderRadius: "12px",
-                padding: "18px 20px",
-                cursor: "pointer",
-                transition: "border-color 0.15s",
-                display: "flex",
-                gap: "16px",
-                alignItems: "flex-start",
-                textDecoration: "none",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "#AFA9EC")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "#e5e5e5")
-              }
-            >
-              {/* Date box */}
-              <div
-                style={{
-                  background: "#EEEDFE",
-                  borderRadius: "10px",
-                  padding: "10px 14px",
-                  textAlign: "center",
-                  minWidth: "60px",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: 600,
-                    color: "#26215C",
-                    lineHeight: 1,
-                  }}
-                >
-                  {new Date(event.event_date).getDate()}
-                </div>
-                <div
-                  style={{
-                    fontSize: "11px",
-                    color: "#534AB7",
-                    fontWeight: 500,
-                    marginTop: "2px",
-                  }}
-                >
-                  {new Date(event.event_date)
-                    .toLocaleDateString("en-AU", { month: "short" })
-                    .toUpperCase()}
-                </div>
-              </div>
-
-              {/* Content */}
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "6px",
-                    marginBottom: "6px",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <span
-                    style={{
-                      background: catColor.bg,
-                      color: catColor.color,
-                      fontSize: "10px",
-                      fontWeight: 500,
-                      padding: "2px 8px",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    {catEmoji} {event.category?.replace("_", " ")}
-                  </span>
-                  {event.is_free && (
-                    <span
-                      style={{
-                        background: "#E1F5EE",
-                        color: "#085041",
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        padding: "2px 8px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      Free
-                    </span>
-                  )}
-                  {event.is_online && (
-                    <span
-                      style={{
-                        background: "#E6F1FB",
-                        color: "#0C447C",
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        padding: "2px 8px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      Online
-                    </span>
-                  )}
-                </div>
-
-                <h3
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "#26215C",
-                    marginBottom: "4px",
-                  }}
-                >
-                  {event.listing_title}
-                </h3>
-                <div
-                  style={{
-                    fontSize: "13px",
-                    color: "#666",
-                    marginBottom: "4px",
-                  }}
-                >
-                  {formatDate(event.event_date)} at{" "}
-                  {formatTime(event.event_date)}
-                </div>
-                {event.venue && (
-                  <div style={{ fontSize: "12px", color: "#888" }}>
-                    📍 {event.venue}
-                  </div>
-                )}
-              </div>
-
-              {/* Ticket price */}
-              <div
-                style={{
-                  background: event.is_free ? "#E1F5EE" : "#FFF1E0",
-                  color: event.is_free ? "#085041" : "#633806",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  padding: "6px 14px",
-                  borderRadius: "20px",
-                  whiteSpace: "nowrap",
-                  alignSelf: "center",
-                }}
-              >
-                {event.ticket_display}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Load more */}
-      {data?.next && (
-        <div style={{ textAlign: "center", paddingTop: "16px" }}>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={isFetching}
-            style={{
-              background: "#fff",
-              border: "0.5px solid #9FE1CB",
-              borderRadius: "8px",
-              padding: "10px 28px",
-              fontSize: "13px",
-              fontWeight: 500,
-              color: "#1D9E75",
-              cursor: isFetching ? "not-allowed" : "pointer",
-              opacity: isFetching ? 0.6 : 1,
-            }}
-          >
-            {isFetching ? "Loading…" : "Load more events"}
-          </button>
-          <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
-            Showing {allResults.length} of {data.count}
+            Community events
+          </h1>
+          <p style={{ fontSize: "14px", color: "#888" }}>
+            Nepalese events, celebrations and meetups across Australia
           </p>
         </div>
-      )}
-    </div>
+
+        {/* Filters */}
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            marginBottom: "24px",
+            flexWrap: "wrap",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={filters.search}
+            onChange={(e) => updateFilters({ search: e.target.value })}
+            style={{
+              flex: 1,
+              minWidth: "200px",
+              border: "0.5px solid #ccc",
+              borderRadius: "8px",
+              padding: "10px 14px",
+              fontSize: "14px",
+              outline: "none",
+              background: "#fff",
+            }}
+          />
+          <select
+            value={filters.category}
+            onChange={(e) => updateFilters({ category: e.target.value })}
+            style={{
+              border: "0.5px solid #ccc",
+              borderRadius: "8px",
+              padding: "10px 14px",
+              fontSize: "14px",
+              outline: "none",
+              background: "#fff",
+              color: "#444",
+            }}
+          >
+            {CATEGORIES.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filters.state}
+            onChange={(e) => updateFilters({ state: e.target.value })}
+            style={{
+              border: "0.5px solid #ccc",
+              borderRadius: "8px",
+              padding: "10px 14px",
+              fontSize: "14px",
+              outline: "none",
+              background: "#fff",
+              color: "#444",
+            }}
+          >
+            {STATES.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filters.ordering}
+            onChange={(e) => updateFilters({ ordering: e.target.value })}
+            style={{
+              border: "0.5px solid #ccc",
+              borderRadius: "8px",
+              padding: "10px 14px",
+              fontSize: "14px",
+              outline: "none",
+              background: "#fff",
+              color: "#444",
+            }}
+          >
+            <option value="-listing__created_at">Newest first</option>
+            <option value="listing__created_at">Oldest first</option>
+            <option value="event_date">Date: earliest first</option>
+            <option value="-event_date">Date: latest first</option>
+          </select>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "13px",
+              color: "#444",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={filters.is_free === "true"}
+              onChange={(e) =>
+                updateFilters({ is_free: e.target.checked ? "true" : "" })
+              }
+            />
+            Free only
+          </label>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "13px",
+              color: "#444",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={filters.is_online === "true"}
+              onChange={(e) =>
+                updateFilters({ is_online: e.target.checked ? "true" : "" })
+              }
+            />
+            Online only
+          </label>
+          <div style={{ display: "flex", gap: "6px" }}>
+            {[
+              { v: "", label: "📅 All events" },
+              { v: "true", label: "🔜 Upcoming only" },
+            ].map(({ v, label }) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => updateFilters({ upcoming: v })}
+                style={{
+                  background: filters.upcoming === v ? "#534AB7" : "#fff",
+                  color: filters.upcoming === v ? "#fff" : "#534AB7",
+                  border: "0.5px solid #AFA9EC",
+                  borderRadius: "20px",
+                  padding: "10px 16px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Loading */}
+        {(isLoading || (isFetching && allResults.length === 0)) && (
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
+            {[1, 2, 3, 4, 5].map((i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div
+            style={{
+              background: "#FCEBEB",
+              border: "0.5px solid #F09595",
+              borderRadius: "8px",
+              padding: "14px",
+              color: "#A32D2D",
+              fontSize: "14px",
+            }}
+          >
+            Failed to load events. Please try again.
+          </div>
+        )}
+
+        {/* Empty */}
+        {data && data.results?.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
+            No events found. Try a different search.
+          </div>
+        )}
+
+        {/* ── Mobile: list rows ── */}
+        <div
+          className="events-mobile"
+          style={{ flexDirection: "column", gap: "12px" }}
+        >
+          {allResults.map((event) => {
+            const catColor =
+              CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
+            const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
+            return (
+              <Link
+                key={event.id}
+                to={`/events/${event.id}`}
+                style={{
+                  background: "#fff",
+                  border: "0.5px solid #e5e5e5",
+                  borderRadius: "12px",
+                  padding: "18px 20px",
+                  cursor: "pointer",
+                  transition: "border-color 0.15s",
+                  display: "flex",
+                  gap: "16px",
+                  alignItems: "flex-start",
+                  textDecoration: "none",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = "#AFA9EC")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.borderColor = "#e5e5e5")
+                }
+              >
+                <div
+                  style={{
+                    background: "#EEEDFE",
+                    borderRadius: "10px",
+                    padding: "10px 14px",
+                    textAlign: "center",
+                    minWidth: "60px",
+                    flexShrink: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "22px",
+                      fontWeight: 600,
+                      color: "#26215C",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {new Date(event.event_date).getDate()}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "#534AB7",
+                      fontWeight: 500,
+                      marginTop: "2px",
+                    }}
+                  >
+                    {new Date(event.event_date)
+                      .toLocaleDateString("en-AU", { month: "short" })
+                      .toUpperCase()}
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "6px",
+                      marginBottom: "6px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        background: catColor.bg,
+                        color: catColor.color,
+                        fontSize: "10px",
+                        fontWeight: 500,
+                        padding: "2px 8px",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      {catEmoji} {event.category?.replace("_", " ")}
+                    </span>
+                    {event.is_free && (
+                      <span
+                        style={{
+                          background: "#E1F5EE",
+                          color: "#085041",
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          padding: "2px 8px",
+                          borderRadius: "8px",
+                        }}
+                      >
+                        Free
+                      </span>
+                    )}
+                    {event.is_online && (
+                      <span
+                        style={{
+                          background: "#E6F1FB",
+                          color: "#0C447C",
+                          fontSize: "10px",
+                          fontWeight: 500,
+                          padding: "2px 8px",
+                          borderRadius: "8px",
+                        }}
+                      >
+                        Online
+                      </span>
+                    )}
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      color: "#26215C",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {event.listing_title}
+                  </h3>
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      color: "#666",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {formatDate(event.event_date)} at{" "}
+                    {formatTime(event.event_date)}
+                  </div>
+                  {event.venue && (
+                    <div style={{ fontSize: "12px", color: "#888" }}>
+                      📍 {event.venue}
+                    </div>
+                  )}
+                </div>
+                <div
+                  style={{
+                    background: event.is_free ? "#E1F5EE" : "#FFF1E0",
+                    color: event.is_free ? "#085041" : "#633806",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    padding: "6px 14px",
+                    borderRadius: "20px",
+                    whiteSpace: "nowrap",
+                    alignSelf: "center",
+                  }}
+                >
+                  {event.ticket_display}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* ── Desktop: card grid ── */}
+        <div
+          className="events-desktop"
+          style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
+        >
+          {allResults.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
+
+        {/* Load more */}
+        {data?.next && (
+          <div style={{ textAlign: "center", paddingTop: "20px" }}>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={isFetching}
+              style={{
+                background: "#fff",
+                border: "0.5px solid #9FE1CB",
+                borderRadius: "8px",
+                padding: "10px 28px",
+                fontSize: "13px",
+                fontWeight: 500,
+                color: "#1D9E75",
+                cursor: isFetching ? "not-allowed" : "pointer",
+                opacity: isFetching ? 0.6 : 1,
+              }}
+            >
+              {isFetching ? "Loading…" : "Load more events"}
+            </button>
+            <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
+              Showing {allResults.length} of {data.count}
+            </p>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

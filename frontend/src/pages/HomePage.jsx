@@ -85,8 +85,433 @@ const SEARCH_TYPES = [
   { value: "businesses", emoji: "🏪", label: "Businesses" },
 ];
 
+/* ─── helpers ─────────────────────────────────────────── */
+
+/** Relative time string */
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return "Today";
+  if (days === 1) return "1 day ago";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks === 1) return "1 week ago";
+  if (weeks < 5) return `${weeks} weeks ago`;
+  const months = Math.floor(days / 30);
+  return months === 1 ? "1 month ago" : `${months} months ago`;
+}
+
+/** Card accent colours per listing type */
+const CARD_ACCENT = {
+  job: { footer: "#534AB7", time: "#534AB7", bg: "#EEEDFE" },
+  room: { footer: "#E87722", time: "#E87722", bg: "#FFF1E0" },
+  event: { footer: "#1D9E75", time: "#1D9E75", bg: "#E1F5EE" },
+  announcement: { footer: "#0C447C", time: "#2176AE", bg: "#E6F1FB" },
+  business: { footer: "#8B5E00", time: "#B47D00", bg: "#FAEEDA" },
+  default: { footer: "#26215C", time: "#534AB7", bg: "#F5F4F0" },
+};
+
+/**
+ * Desktop card — matches the image: coloured top strip + thumbnail emoji,
+ * timestamp, bold title, description, coloured stats footer.
+ */
+function DesktopCard({
+  to,
+  accentType,
+  emoji,
+  timeStr,
+  title,
+  subtitle,
+  description,
+  stats,
+}) {
+  const accent = CARD_ACCENT[accentType] || CARD_ACCENT.default;
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Link
+      to={to}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        borderRadius: "16px",
+        overflow: "hidden",
+        textDecoration: "none",
+        border: "0.5px solid #e5e5e5",
+        boxShadow: hovered
+          ? "0 8px 28px rgba(0,0,0,0.13)"
+          : "0 2px 8px rgba(0,0,0,0.06)",
+        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "box-shadow 0.2s, transform 0.2s",
+        minHeight: "320px",
+      }}
+    >
+      {/* Coloured top strip / thumbnail */}
+      <div
+        style={{
+          background: accent.bg,
+          height: "110px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "48px",
+          position: "relative",
+          flexShrink: 0,
+        }}
+      >
+        {emoji}
+        {/* subtle corner accent bar */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "3px",
+            background: accent.footer,
+            opacity: 0.35,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "16px 18px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        {/* Timestamp */}
+        {timeStr && (
+          <div
+            style={{ fontSize: "12px", fontWeight: 600, color: accent.time }}
+          >
+            {timeStr}
+          </div>
+        )}
+
+        {/* Title */}
+        <div
+          style={{
+            fontSize: "17px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.25,
+          }}
+        >
+          {title}
+        </div>
+
+        {/* Subtitle / location */}
+        {subtitle && (
+          <div style={{ fontSize: "12px", color: "#888", marginTop: "1px" }}>
+            {subtitle}
+          </div>
+        )}
+
+        {/* Description */}
+        {description && (
+          <div
+            style={{
+              fontSize: "13px",
+              color: "#555",
+              lineHeight: 1.55,
+              marginTop: "4px",
+              flex: 1,
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {description}
+          </div>
+        )}
+      </div>
+
+      {/* Coloured stats footer */}
+      <div
+        style={{
+          background: accent.footer,
+          display: "flex",
+          justifyContent: "space-around",
+          padding: "10px 12px",
+          flexShrink: 0,
+        }}
+      >
+        {stats.map(({ value, label }) => (
+          <div key={label} style={{ textAlign: "center", color: "#fff" }}>
+            <div style={{ fontSize: "16px", fontWeight: 700, lineHeight: 1 }}>
+              {value}
+            </div>
+            <div style={{ fontSize: "10px", opacity: 0.82, marginTop: "2px" }}>
+              {label}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Link>
+  );
+}
+
+/**
+ * Featured variant — same card shape but with a gradient ⭐ FEATURED badge
+ * in the header strip and an orange/purple gradient footer instead of stats.
+ */
+function FeaturedDesktopCard({
+  to,
+  emoji,
+  accentBg,
+  accentFooter,
+  accentTime,
+  typeBg,
+  typeColor,
+  typeLabel,
+  timeStr,
+  title,
+  subtitle,
+  description,
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Link
+      to={to}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        borderRadius: "16px",
+        overflow: "hidden",
+        textDecoration: "none",
+        border: `1.5px solid ${hovered ? "#534AB7" : "#E87722"}`,
+        boxShadow: hovered
+          ? "0 8px 28px rgba(0,0,0,0.13)"
+          : "0 2px 8px rgba(0,0,0,0.06)",
+        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "box-shadow 0.2s, transform 0.2s, border-color 0.2s",
+        minHeight: "300px",
+      }}
+    >
+      {/* Coloured top strip */}
+      <div
+        style={{
+          background: accentBg,
+          height: "110px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "48px",
+          position: "relative",
+          flexShrink: 0,
+        }}
+      >
+        {emoji}
+        {/* ⭐ FEATURED badge pinned to top-left */}
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "10px",
+            background: "linear-gradient(135deg, #E87722, #534AB7)",
+            color: "#fff",
+            fontSize: "9px",
+            fontWeight: 700,
+            padding: "3px 8px",
+            borderRadius: "6px",
+            letterSpacing: "0.04em",
+          }}
+        >
+          ⭐ FEATURED
+        </div>
+        {/* Type badge top-right */}
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            background: typeBg,
+            color: typeColor,
+            fontSize: "9px",
+            fontWeight: 600,
+            padding: "3px 8px",
+            borderRadius: "6px",
+          }}
+        >
+          {typeLabel}
+        </div>
+        {/* bottom accent line */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "3px",
+            background: accentFooter,
+            opacity: 0.4,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "16px 18px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        {timeStr && (
+          <div style={{ fontSize: "12px", fontWeight: 600, color: accentTime }}>
+            {timeStr}
+          </div>
+        )}
+        <div
+          style={{
+            fontSize: "17px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.25,
+          }}
+        >
+          {title}
+        </div>
+        {subtitle && (
+          <div style={{ fontSize: "12px", color: "#888", marginTop: "1px" }}>
+            {subtitle}
+          </div>
+        )}
+        {description && (
+          <div
+            style={{
+              fontSize: "13px",
+              color: "#555",
+              lineHeight: 1.55,
+              marginTop: "4px",
+              flex: 1,
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {description}
+          </div>
+        )}
+      </div>
+
+      {/* Gradient footer */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, #E87722, #534AB7)",
+          padding: "10px 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            color: "#fff",
+            fontSize: "11px",
+            fontWeight: 600,
+            opacity: 0.9,
+          }}
+        >
+          Featured listing
+        </span>
+        <span style={{ color: "#fff", fontSize: "13px", fontWeight: 600 }}>
+          View →
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+/* ─── Section wrapper that switches mobile list ↔ desktop grid ─── */
+function ListingSection({
+  title,
+  viewAllTo,
+  viewAllColor,
+  items,
+  renderRow,
+  renderCard,
+}) {
+  if (!items?.length) return null;
+  return (
+    <div
+      className="home-section"
+      style={{ padding: "0 28px 32px", maxWidth: "1000px", margin: "0 auto" }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "16px",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "20px",
+            fontWeight: 600,
+            color: "#26215C",
+            margin: 0,
+          }}
+        >
+          {title}
+        </h2>
+        <Link
+          to={viewAllTo}
+          style={{
+            fontSize: "13px",
+            color: viewAllColor,
+            textDecoration: "none",
+            fontWeight: 500,
+          }}
+        >
+          View all →
+        </Link>
+      </div>
+
+      {/* Mobile list */}
+      <div
+        className="listing-mobile"
+        style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+      >
+        {items.map((item) => renderRow(item))}
+      </div>
+
+      {/* Desktop grid */}
+      <div
+        className="listing-desktop"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "16px",
+        }}
+      >
+        {items.map((item) => renderCard(item))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════ */
 export default function HomePage() {
-  usePageTitle(null); // uses default NepSaathi title
+  usePageTitle(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [search, setSearch] = useState("");
@@ -99,6 +524,7 @@ export default function HomePage() {
   const debounceRef = useRef(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
   const { data: featuredData } = useQuery({
     queryKey: ["home-featured"],
     queryFn: getFeaturedListings,
@@ -107,37 +533,32 @@ export default function HomePage() {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-
     if (search.trim().length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
-
     debounceRef.current = setTimeout(async () => {
       setSuggestionsLoading(true);
       try {
         const data = await getSearchSuggestions(search);
         setSuggestions(data);
         setShowSuggestions(true);
-      } catch (e) {
+      } catch {
         setSuggestions([]);
       } finally {
         setSuggestionsLoading(false);
       }
     }, 300);
-
     return () => clearTimeout(debounceRef.current);
   }, [search]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
+      if (searchRef.current && !searchRef.current.contains(e.target))
         setShowSuggestions(false);
-      }
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setDropdownOpen(false);
-      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -146,22 +567,14 @@ export default function HomePage() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!search.trim() && !state) return;
-
     const params = new URLSearchParams();
     if (search.trim()) params.set("search", search);
     if (state) params.set("state", state);
-
-    if (searchType === "all") {
-      navigate(`/search?${params.toString()}`);
-    } else if (searchType === "jobs") {
-      navigate(`/jobs?${params.toString()}`);
-    } else if (searchType === "rooms") {
-      navigate(`/rooms?${params.toString()}`);
-    } else if (searchType === "events") {
-      navigate(`/events?${params.toString()}`);
-    } else if (searchType === "businesses") {
-      navigate(`/businesses?${params.toString()}`);
-    }
+    if (searchType === "all") navigate(`/search?${params}`);
+    else if (searchType === "jobs") navigate(`/jobs?${params}`);
+    else if (searchType === "rooms") navigate(`/rooms?${params}`);
+    else if (searchType === "events") navigate(`/events?${params}`);
+    else if (searchType === "businesses") navigate(`/businesses?${params}`);
   };
 
   const highlightMatch = (text, query) => {
@@ -181,42 +594,56 @@ export default function HomePage() {
 
   const { data: jobsData } = useQuery({
     queryKey: ["home-jobs"],
-    queryFn: () => getJobs({ page_size: 3 }),
+    queryFn: () => getJobs({ page_size: 6 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: roomsData } = useQuery({
     queryKey: ["home-rooms"],
-    queryFn: () => getRooms({ page_size: 3 }),
+    queryFn: () => getRooms({ page_size: 6 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: eventsData } = useQuery({
     queryKey: ["home-events"],
-    queryFn: () => getEvents({ upcoming: "true", page_size: 3 }),
+    queryFn: () => getEvents({ upcoming: "true", page_size: 6 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: statsData } = useQuery({
     queryKey: ["stats"],
-    queryFn: getStats,
+    queryFn: () => getStats({ page_size: 6 }),
     staleTime: 1000 * 60 * 10,
   });
 
   return (
     <>
       <style>{`
-         @media (max-width: 480px) {
-            .hero-section { padding: 40px 16px 32px !important; }
-            .hero-title { font-size: 28px !important; letter-spacing: -0.3px !important; }
-            .home-section { padding-left: 16px !important; padding-right: 16px !important; }
-            .cta-inner { padding: 24px 20px !important; }
-            .stats-grid { gap: 8px !important; }
-            .stat-num { font-size: 18px !important; }
-            .search-btn-text { display: none !important; }
+        /* ── mobile-only: hide desktop grid ── */
+        @media (max-width: 767px) {
+          .listing-desktop { display: none !important; }
+          .listing-mobile  { display: flex !important; }
+          .hero-section    { padding: 40px 16px 32px !important; }
+          .hero-title      { font-size: 28px !important; letter-spacing: -0.3px !important; }
+          .home-section    { padding-left: 16px !important; padding-right: 16px !important; }
+          .cta-inner       { padding: 24px 20px !important; }
+          .stats-grid      { gap: 8px !important; }
+          .stat-num        { font-size: 18px !important; }
+          .search-btn-text { display: none !important; }
         }
-        @media (min-width: 481px) {
-            .search-btn-text { display: inline !important; }
+
+        /* ── desktop: hide mobile list ── */
+        @media (min-width: 768px) {
+          .listing-mobile  { display: none !important; }
+          .listing-desktop { display: grid !important; }
+          .search-btn-text { display: inline !important; }
+        }
+
+        @media (max-width: 480px) {
+          .search-btn-text { display: none !important; }
+        }
+        @media (min-width: 481px) and (max-width: 767px) {
+          .search-btn-text { display: inline !important; }
         }
       `}</style>
 
@@ -290,7 +717,6 @@ export default function HomePage() {
               zIndex: 50,
             }}
           >
-            {/* Top row — type + search + button */}
             <div
               style={{
                 display: "flex",
@@ -301,7 +727,7 @@ export default function HomePage() {
                 position: "relative",
               }}
             >
-              {/* Custom dropdown */}
+              {/* Type dropdown */}
               <div
                 style={{ position: "relative", flexShrink: 0 }}
                 ref={dropdownRef}
@@ -388,6 +814,8 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
+
+              {/* Input */}
               <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
                 <input
                   type="text"
@@ -444,9 +872,7 @@ export default function HomePage() {
                           setSearch(suggestion.label);
                           const params = new URLSearchParams();
                           params.set("search", suggestion.label);
-                          navigate(
-                            `/${suggestion.listing_type}s?${params.toString()}`,
-                          );
+                          navigate(`/${suggestion.listing_type}s?${params}`);
                         }}
                         style={{
                           padding: "10px 16px",
@@ -498,6 +924,7 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
+
               <button
                 type="submit"
                 aria-label="Search listings"
@@ -531,7 +958,7 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Bottom row — state filter */}
+            {/* State filters */}
             <div
               style={{
                 display: "flex",
@@ -652,7 +1079,6 @@ export default function HomePage() {
           ].map(({ num, label, color }) => (
             <div
               key={label}
-              className="stat-card"
               style={{
                 background: "#fff",
                 borderRadius: "12px",
@@ -710,7 +1136,10 @@ export default function HomePage() {
                 </h2>
               </div>
             </div>
+
+            {/* Mobile: list rows */}
             <div
+              className="listing-mobile"
               style={{ display: "flex", flexDirection: "column", gap: "10px" }}
             >
               {featuredData.results.map((listing) => {
@@ -850,388 +1279,405 @@ export default function HomePage() {
                 );
               })}
             </div>
+
+            {/* Desktop: cards grid */}
+            <div
+              className="listing-desktop"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "16px",
+              }}
+            >
+              {featuredData.results.map((listing) => {
+                const typeEmoji =
+                  { job: "💼", room: "🏠", event: "🎉", announcement: "📢" }[
+                    listing.listing_type
+                  ] || "📌";
+                const typeBg =
+                  {
+                    job: "#EEEDFE",
+                    room: "#FFF1E0",
+                    event: "#E1F5EE",
+                    announcement: "#E6F1FB",
+                  }[listing.listing_type] || "#F5F4F0";
+                const typeColor =
+                  {
+                    job: "#3C3489",
+                    room: "#633806",
+                    event: "#085041",
+                    announcement: "#0C447C",
+                  }[listing.listing_type] || "#444";
+                const typePath =
+                  {
+                    job: "jobs",
+                    room: "rooms",
+                    event: "events",
+                    announcement: "announcements",
+                  }[listing.listing_type] || "listings";
+                const accent =
+                  CARD_ACCENT[listing.listing_type] || CARD_ACCENT.default;
+                return (
+                  <FeaturedDesktopCard
+                    key={listing.id}
+                    to={`/${typePath}/listing/${listing.id}`}
+                    emoji={typeEmoji}
+                    accentBg={typeBg}
+                    accentFooter={accent.footer}
+                    accentTime={accent.time}
+                    typeBg={typeBg}
+                    typeColor={typeColor}
+                    typeLabel={listing.listing_type?.toUpperCase()}
+                    timeStr={timeAgo(listing.created_at || listing.date_posted)}
+                    title={listing.title}
+                    subtitle={`📍 ${listing.location}, ${listing.state}`}
+                    description={
+                      listing.description || listing.listing_description
+                    }
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
 
         {/* ── LATEST JOBS ── */}
-        {jobsData?.results?.length > 0 && (
-          <div
-            className="home-section"
-            style={{
-              padding: "0 28px 32px",
-              maxWidth: "1000px",
-              margin: "0 auto",
-            }}
-          >
-            <div
+        <ListingSection
+          title="Latest jobs"
+          viewAllTo="/jobs"
+          viewAllColor="#534AB7"
+          items={jobsData?.results}
+          /* Mobile row (unchanged) */
+          renderRow={(job) => (
+            <Link
+              key={job.id}
+              to={`/jobs/${job.id}`}
               style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "12px",
+                padding: "16px 20px",
+                textDecoration: "none",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "16px",
+                gap: "16px",
+                transition: "border-color 0.15s",
               }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = "#AFA9EC")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "#e5e5e5")
+              }
             >
-              <h2
-                style={{ fontSize: "20px", fontWeight: 600, color: "#26215C" }}
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "14px" }}
               >
-                Latest jobs
-              </h2>
-              <Link
-                to="/jobs"
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                    background: "#EEEDFE",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    flexShrink: 0,
+                  }}
+                >
+                  💼
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#26215C",
+                      marginBottom: "3px",
+                    }}
+                  >
+                    {job.listing_title}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#888" }}>
+                    {job.company_name} · {job.listing_location},{" "}
+                    {job.listing_state}
+                  </div>
+                </div>
+              </div>
+              <div
                 style={{
+                  background: "#EEEDFE",
+                  color: "#3C3489",
                   fontSize: "13px",
-                  color: "#534AB7",
-                  textDecoration: "none",
                   fontWeight: 500,
+                  padding: "4px 12px",
+                  borderRadius: "20px",
+                  whiteSpace: "nowrap",
                 }}
               >
-                View all →
-              </Link>
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {jobsData.results.map((job) => (
-                <Link
-                  key={job.id}
-                  to={`/jobs/${job.id}`}
-                  style={{
-                    background: "#fff",
-                    border: "0.5px solid #e5e5e5",
-                    borderRadius: "12px",
-                    padding: "16px 20px",
-                    textDecoration: "none",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "16px",
-                    transition: "border-color 0.15s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.borderColor = "#AFA9EC")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "#e5e5e5")
-                  }
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "14px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "10px",
-                        background: "#EEEDFE",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "18px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      💼
-                    </div>
-                    <div>
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          color: "#26215C",
-                          marginBottom: "3px",
-                        }}
-                      >
-                        {job.listing_title}
-                      </div>
-                      <div style={{ fontSize: "12px", color: "#888" }}>
-                        {job.company_name} · {job.listing_location},{" "}
-                        {job.listing_state}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      background: "#EEEDFE",
-                      color: "#3C3489",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      padding: "4px 12px",
-                      borderRadius: "20px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {job.salary_display}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+                {job.salary_display}
+              </div>
+            </Link>
+          )}
+          /* Desktop card */
+          renderCard={(job) => (
+            <DesktopCard
+              key={job.id}
+              to={`/jobs/${job.id}`}
+              accentType="job"
+              emoji="💼"
+              timeStr={timeAgo(job.created_at || job.date_posted)}
+              title={job.listing_title}
+              subtitle={`${job.company_name} · ${job.listing_location}, ${job.listing_state}`}
+              description={job.description || job.listing_description}
+              stats={[
+                { value: job.salary_display || "—", label: "Salary" },
+                { value: job.job_type || "—", label: "Type" },
+                { value: job.listing_state || "—", label: "State" },
+              ]}
+            />
+          )}
+        />
 
         {/* ── LATEST ROOMS ── */}
-        {roomsData?.results?.length > 0 && (
-          <div
-            className="home-section"
-            style={{
-              padding: "0 28px 32px",
-              maxWidth: "1000px",
-              margin: "0 auto",
-            }}
-          >
-            <div
+        <ListingSection
+          title="Rooms available"
+          viewAllTo="/rooms"
+          viewAllColor="#E87722"
+          items={roomsData?.results}
+          renderRow={(room) => (
+            <Link
+              key={room.id}
+              to={`/rooms/${room.id}`}
               style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "12px",
+                padding: "16px 20px",
+                textDecoration: "none",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "16px",
+                gap: "16px",
+                transition: "border-color 0.15s",
               }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = "#EFD9C0")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "#e5e5e5")
+              }
             >
-              <h2
-                style={{ fontSize: "20px", fontWeight: 600, color: "#26215C" }}
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "14px" }}
               >
-                Rooms available
-              </h2>
-              <Link
-                to="/rooms"
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                    background: "#FFF1E0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    flexShrink: 0,
+                  }}
+                >
+                  🏠
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#26215C",
+                      marginBottom: "3px",
+                    }}
+                  >
+                    {room.listing_title}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#888",
+                      display: "flex",
+                      gap: "6px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span>
+                      📍 {room.listing_location}, {room.listing_state}
+                    </span>
+                    {room.nepalese_household && <span>· 🇳🇵 Nepalese home</span>}
+                    {room.room_type && (
+                      <span>· {room.room_type.replace("_", " ")}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div
                 style={{
+                  background: "#FFF1E0",
+                  color: "#633806",
                   fontSize: "13px",
-                  color: "#E87722",
-                  textDecoration: "none",
-                  fontWeight: 500,
+                  fontWeight: 600,
+                  padding: "4px 12px",
+                  borderRadius: "20px",
+                  whiteSpace: "nowrap",
                 }}
               >
-                View all →
-              </Link>
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {roomsData.results.map((room) => (
-                <Link
-                  key={room.id}
-                  to={`/rooms/${room.id}`}
-                  style={{
-                    background: "#fff",
-                    border: "0.5px solid #e5e5e5",
-                    borderRadius: "12px",
-                    padding: "16px 20px",
-                    textDecoration: "none",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "16px",
-                    transition: "border-color 0.15s",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.borderColor = "#EFD9C0")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "#e5e5e5")
-                  }
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "14px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "10px",
-                        background: "#FFF1E0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "18px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      🏠
-                    </div>
-                    <div>
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          color: "#26215C",
-                          marginBottom: "3px",
-                        }}
-                      >
-                        {room.listing_title}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "12px",
-                          color: "#888",
-                          display: "flex",
-                          gap: "6px",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <span>
-                          📍 {room.listing_location}, {room.listing_state}
-                        </span>
-                        {room.nepalese_household && (
-                          <span>· 🇳🇵 Nepalese home</span>
-                        )}
-                        {room.room_type && (
-                          <span>· {room.room_type.replace("_", " ")}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      background: "#FFF1E0",
-                      color: "#633806",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      padding: "4px 12px",
-                      borderRadius: "20px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {room.price_display}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+                {room.price_display}
+              </div>
+            </Link>
+          )}
+          renderCard={(room) => (
+            <DesktopCard
+              key={room.id}
+              to={`/rooms/${room.id}`}
+              accentType="room"
+              emoji="🏠"
+              timeStr={timeAgo(room.created_at || room.date_posted)}
+              title={room.listing_title}
+              subtitle={`📍 ${room.listing_location}, ${room.listing_state}`}
+              description={room.description || room.listing_description}
+              stats={[
+                { value: room.price_display || "—", label: "Price" },
+                {
+                  value: room.room_type?.replace("_", " ") || "—",
+                  label: "Type",
+                },
+                {
+                  value: room.nepalese_household ? "🇳🇵 Yes" : "No",
+                  label: "Nepali home",
+                },
+              ]}
+            />
+          )}
+        />
 
         {/* ── UPCOMING EVENTS ── */}
-        {eventsData?.results?.length > 0 && (
-          <div
-            className="home-section"
-            style={{
-              padding: "0 28px 32px",
-              maxWidth: "1000px",
-              margin: "0 auto",
-            }}
-          >
-            <div
+        <ListingSection
+          title="Upcoming events"
+          viewAllTo="/events"
+          viewAllColor="#1D9E75"
+          items={eventsData?.results}
+          renderRow={(event) => (
+            <Link
+              key={event.id}
+              to={`/events/${event.id}`}
               style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "12px",
+                padding: "14px 18px",
+                textDecoration: "none",
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "16px",
+                gap: "16px",
+                transition: "border-color 0.15s",
               }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = "#9FE1CB")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "#e5e5e5")
+              }
             >
-              <h2
-                style={{ fontSize: "20px", fontWeight: 600, color: "#26215C" }}
-              >
-                Upcoming events
-              </h2>
-              <Link
-                to="/events"
+              <div
                 style={{
-                  fontSize: "13px",
-                  color: "#1D9E75",
-                  textDecoration: "none",
-                  fontWeight: 500,
+                  background: "#EEEDFE",
+                  borderRadius: "10px",
+                  padding: "8px 12px",
+                  textAlign: "center",
+                  minWidth: "48px",
+                  flexShrink: 0,
                 }}
               >
-                View all →
-              </Link>
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {eventsData.results.map((event) => (
-                <Link
-                  key={event.id}
-                  to={`/events/${event.id}`}
+                <div
                   style={{
-                    background: "#fff",
-                    border: "0.5px solid #e5e5e5",
-                    borderRadius: "12px",
-                    padding: "14px 18px",
-                    textDecoration: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "16px",
-                    transition: "border-color 0.15s",
+                    fontSize: "18px",
+                    fontWeight: 700,
+                    color: "#26215C",
+                    lineHeight: 1,
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.borderColor = "#9FE1CB")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "#e5e5e5")
-                  }
                 >
-                  <div
-                    style={{
-                      background: "#EEEDFE",
-                      borderRadius: "10px",
-                      padding: "8px 12px",
-                      textAlign: "center",
-                      minWidth: "48px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: 700,
-                        color: "#26215C",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {new Date(event.event_date).getDate()}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "10px",
-                        color: "#534AB7",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {new Date(event.event_date)
-                        .toLocaleDateString("en-AU", { month: "short" })
-                        .toUpperCase()}
-                    </div>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#26215C",
-                        marginBottom: "3px",
-                      }}
-                    >
-                      {event.listing_title}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>
-                      {event.venue ||
-                        `${event.listing_location}, ${event.listing_state}`}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      background: event.is_free ? "#E1F5EE" : "#FFF1E0",
-                      color: event.is_free ? "#085041" : "#633806",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      padding: "4px 10px",
-                      borderRadius: "20px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {event.ticket_display}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+                  {new Date(event.event_date).getDate()}
+                </div>
+                <div
+                  style={{
+                    fontSize: "10px",
+                    color: "#534AB7",
+                    fontWeight: 500,
+                  }}
+                >
+                  {new Date(event.event_date)
+                    .toLocaleDateString("en-AU", { month: "short" })
+                    .toUpperCase()}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#26215C",
+                    marginBottom: "3px",
+                  }}
+                >
+                  {event.listing_title}
+                </div>
+                <div style={{ fontSize: "12px", color: "#888" }}>
+                  {event.venue ||
+                    `${event.listing_location}, ${event.listing_state}`}
+                </div>
+              </div>
+              <div
+                style={{
+                  background: event.is_free ? "#E1F5EE" : "#FFF1E0",
+                  color: event.is_free ? "#085041" : "#633806",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {event.ticket_display}
+              </div>
+            </Link>
+          )}
+          renderCard={(event) => (
+            <DesktopCard
+              key={event.id}
+              to={`/events/${event.id}`}
+              accentType="event"
+              emoji="🎉"
+              timeStr={
+                event.event_date
+                  ? new Date(event.event_date).toLocaleDateString("en-AU", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : ""
+              }
+              title={event.listing_title}
+              subtitle={
+                event.venue ||
+                `${event.listing_location}, ${event.listing_state}`
+              }
+              description={event.description || event.listing_description}
+              stats={[
+                { value: event.ticket_display || "—", label: "Tickets" },
+                { value: event.is_free ? "Free" : "Paid", label: "Entry" },
+                { value: event.listing_state || "—", label: "State" },
+              ]}
+            />
+          )}
+        />
 
         {/* ── CTA BANNER ── */}
         <div
