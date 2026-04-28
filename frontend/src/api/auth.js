@@ -20,10 +20,16 @@ export const login = async (email, password) => {
 
 // Logout — blacklists the refresh token on Django
 export const logout = async (refreshToken) => {
-  const response = await api.post("/api/users/auth/logout/", {
-    refresh: refreshToken,
-  });
-  return response.data;
+  try {
+    const response = await api.post("/api/users/auth/logout/", {
+      refresh: refreshToken,
+    });
+    return response.data;
+  } finally {
+    // ALWAYS remove tokens, even if the API call fails (e.g., token already invalid)
+    localStorage.removeItem("nepsaathi_access_token");
+    localStorage.removeItem("nepsaathi_refresh_token");
+  }
 };
 
 // Get the logged in user's profile

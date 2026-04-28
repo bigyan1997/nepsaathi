@@ -37,6 +37,8 @@ const useAuthStore = create(
           refreshToken: null,
           isAuthenticated: false,
         });
+        // Force a hard navigation to login to ensure memory is wiped
+        window.location.href = "/login";
       },
 
       updateUser: (user) => set({ user }),
