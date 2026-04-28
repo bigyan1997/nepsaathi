@@ -7,7 +7,6 @@ export default function NotFoundPage() {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
 
-  // Auto redirect after 10 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -25,106 +24,95 @@ export default function NotFoundPage() {
   return (
     <div
       style={{
-        minHeight: "80vh",
+        minHeight: "100vh",
+        background: "#F5F4F0",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "28px",
-        background: "#F5F4F0",
       }}
     >
-      <div style={{ textAlign: "center", maxWidth: "520px" }}>
-        {/* Logo */}
+      <div style={{ textAlign: "center", maxWidth: "520px", width: "100%" }}>
+        {/* Dark card */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            marginBottom: "32px",
+            background: "#26215C",
+            borderRadius: "20px",
+            padding: "48px 32px",
+            marginBottom: "14px",
           }}
         >
-          <div style={{ position: "relative", width: "48px", height: "36px" }}>
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 2,
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                background: "#E87722",
-                opacity: 0.3,
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                left: "15px",
-                top: 2,
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                background: "#534AB7",
-                opacity: 0.3,
-              }}
-            />
+          {/* Big 404 */}
+          <div
+            style={{
+              fontSize: "96px",
+              fontWeight: 800,
+              lineHeight: 1,
+              marginBottom: "8px",
+              color: "#AFA9EC",
+              letterSpacing: "-4px",
+            }}
+          >
+            404
           </div>
+
+          {/* Nepali text */}
+          <div
+            style={{
+              fontSize: "15px",
+              color: "#534AB7",
+              fontWeight: 500,
+              marginBottom: "12px",
+              letterSpacing: "0.05em",
+            }}
+          >
+            पृष्ठ फेला परेन
+          </div>
+
+          <h1
+            style={{
+              fontSize: "22px",
+              fontWeight: 700,
+              color: "#fff",
+              marginBottom: "10px",
+            }}
+          >
+            Page not found
+          </h1>
+
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#AFA9EC",
+              lineHeight: 1.7,
+              marginBottom: "28px",
+            }}
+          >
+            The page you're looking for doesn't exist or has been moved.
+            Redirecting in{" "}
+            <span style={{ color: "#E87722", fontWeight: 700 }}>
+              {countdown}
+            </span>
+            s…
+          </p>
+
+          {/* Home button */}
+          <Link
+            to="/"
+            style={{
+              display: "inline-block",
+              background: "#E87722",
+              color: "#fff",
+              padding: "12px 28px",
+              borderRadius: "10px",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: 600,
+            }}
+          >
+            ← Back to NepSaathi
+          </Link>
         </div>
-
-        {/* 404 */}
-        <div
-          style={{
-            fontSize: "120px",
-            fontWeight: 800,
-            lineHeight: 1,
-            marginBottom: "16px",
-            background: "linear-gradient(135deg, #E87722, #534AB7)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          404
-        </div>
-
-        {/* Nepali text */}
-        <div
-          style={{
-            fontSize: "16px",
-            color: "#534AB7",
-            fontWeight: 500,
-            marginBottom: "8px",
-            letterSpacing: "0.05em",
-          }}
-        >
-          पृष्ठ फेला परेन
-        </div>
-
-        <h1
-          style={{
-            fontSize: "24px",
-            fontWeight: 700,
-            color: "#26215C",
-            marginBottom: "12px",
-          }}
-        >
-          Page not found
-        </h1>
-
-        <p
-          style={{
-            fontSize: "15px",
-            color: "#888",
-            lineHeight: 1.7,
-            marginBottom: "32px",
-          }}
-        >
-          The page you're looking for doesn't exist or has been moved. You'll be
-          redirected to the homepage in{" "}
-          <span style={{ color: "#E87722", fontWeight: 600 }}>{countdown}</span>{" "}
-          seconds.
-        </p>
 
         {/* Quick links */}
         <div
@@ -132,61 +120,70 @@ export default function NotFoundPage() {
             display: "grid",
             gridTemplateColumns: "repeat(2, 1fr)",
             gap: "10px",
-            marginBottom: "28px",
           }}
         >
           {[
-            { to: "/jobs", emoji: "💼", label: "Browse jobs" },
-            { to: "/rooms", emoji: "🏠", label: "Find rooms" },
-            { to: "/events", emoji: "🎉", label: "See events" },
-            { to: "/businesses", emoji: "🏪", label: "Businesses" },
-          ].map(({ to, emoji, label }) => (
+            {
+              to: "/jobs",
+              emoji: "💼",
+              label: "Browse jobs",
+              bg: "#EEEDFE",
+              border: "#AFA9EC",
+              color: "#3C3489",
+            },
+            {
+              to: "/rooms",
+              emoji: "🏠",
+              label: "Find rooms",
+              bg: "#FFF1E0",
+              border: "#EFD9C0",
+              color: "#633806",
+            },
+            {
+              to: "/events",
+              emoji: "🎉",
+              label: "See events",
+              bg: "#E1F5EE",
+              border: "#9FE1CB",
+              color: "#085041",
+            },
+            {
+              to: "/businesses",
+              emoji: "🏪",
+              label: "Businesses",
+              bg: "#FAEEDA",
+              border: "#FAC775",
+              color: "#633806",
+            },
+          ].map(({ to, emoji, label, bg, border, color }) => (
             <Link
               key={to}
               to={to}
               style={{
-                background: "#fff",
-                border: "0.5px solid #e5e5e5",
-                borderRadius: "10px",
-                padding: "12px 16px",
+                background: bg,
+                border: `0.5px solid ${border}`,
+                borderRadius: "12px",
+                padding: "14px 16px",
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
-                fontSize: "13px",
-                color: "#333",
-                fontWeight: 500,
-                transition: "border-color 0.15s",
+                gap: "10px",
+                transition: "transform 0.15s",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "#AFA9EC")
+                (e.currentTarget.style.transform = "translateY(-2px)")
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "#e5e5e5")
+                (e.currentTarget.style.transform = "translateY(0)")
               }
             >
-              <span style={{ fontSize: "18px" }}>{emoji}</span>
-              {label}
+              <span style={{ fontSize: "20px" }}>{emoji}</span>
+              <span style={{ fontSize: "13px", fontWeight: 600, color }}>
+                {label}
+              </span>
             </Link>
           ))}
         </div>
-
-        {/* Home button */}
-        <Link
-          to="/"
-          style={{
-            display: "inline-block",
-            background: "#534AB7",
-            color: "#fff",
-            padding: "12px 32px",
-            borderRadius: "9px",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: 500,
-          }}
-        >
-          ← Back to NepSaathi
-        </Link>
       </div>
     </div>
   );

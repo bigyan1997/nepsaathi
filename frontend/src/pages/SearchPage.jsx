@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { globalSearch } from "../api/listings";
 import { SkeletonCard } from "../components/ui/Skeleton";
@@ -10,6 +10,7 @@ const TYPE_CONFIG = {
     label: "Jobs",
     color: "#EEEDFE",
     textColor: "#3C3489",
+    border: "#AFA9EC",
     path: "jobs",
   },
   rooms: {
@@ -17,6 +18,7 @@ const TYPE_CONFIG = {
     label: "Rooms",
     color: "#FFF1E0",
     textColor: "#633806",
+    border: "#EFD9C0",
     path: "rooms",
   },
   events: {
@@ -24,6 +26,7 @@ const TYPE_CONFIG = {
     label: "Events",
     color: "#E1F5EE",
     textColor: "#085041",
+    border: "#9FE1CB",
     path: "events",
   },
   announcements: {
@@ -31,13 +34,13 @@ const TYPE_CONFIG = {
     label: "Announcements",
     color: "#E6F1FB",
     textColor: "#0C447C",
+    border: "#B5D4F4",
     path: "announcements",
   },
 };
 
 export default function SearchPage() {
   const location = useLocation();
-  const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const query = params.get("q") || params.get("search") || "";
   const state = params.get("state") || "";
@@ -55,67 +58,137 @@ export default function SearchPage() {
     : 0;
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "28px" }}>
-      {/* Header */}
-      <div style={{ marginBottom: "24px" }}>
+    <div
+      style={{
+        maxWidth: "900px",
+        margin: "0 auto",
+        padding: "28px",
+        background: "#F5F4F0",
+        minHeight: "100vh",
+      }}
+    >
+      {/* ── Header banner ── */}
+      <div
+        style={{
+          background: "#26215C",
+          borderRadius: "16px",
+          padding: "24px 28px",
+          marginBottom: "14px",
+        }}
+      >
         <h1
           style={{
-            fontSize: "24px",
-            fontWeight: 600,
-            color: "#26215C",
-            marginBottom: "6px",
+            fontSize: "20px",
+            fontWeight: 700,
+            color: "#fff",
+            margin: "0 0 4px",
           }}
         >
           Search results
         </h1>
-        {query && (
-          <p style={{ fontSize: "14px", color: "#888" }}>
-            {isLoading
-              ? "Searching..."
-              : `${totalResults} results for "${query}"`}
-            {state && ` in ${state}`}
-          </p>
-        )}
+        <p style={{ fontSize: "13px", color: "#AFA9EC", margin: 0 }}>
+          {isLoading
+            ? "Searching..."
+            : query
+              ? `${totalResults} result${totalResults !== 1 ? "s" : ""} for "${query}"${state ? ` in ${state}` : ""}`
+              : "Enter a search term to find listings"}
+        </p>
       </div>
 
-      {/* No query */}
+      {/* ── No query ── */}
       {!query && (
-        <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-          <div style={{ fontSize: "32px", marginBottom: "12px" }}>🔍</div>
-          <p>Enter a search term to find listings</p>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "64px 28px",
+            background: "#fff",
+            borderRadius: "16px",
+            border: "0.5px solid #e5e5e5",
+          }}
+        >
+          <div style={{ fontSize: "40px", marginBottom: "14px" }}>🔍</div>
+          <h2
+            style={{
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#26215C",
+              marginBottom: "6px",
+            }}
+          >
+            What are you looking for?
+          </h2>
+          <p style={{ fontSize: "14px", color: "#888" }}>
+            Enter a search term in the bar above to find listings
+          </p>
         </div>
       )}
 
-      {/* Loading */}
+      {/* ── Loading ── */}
       {isLoading && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {[1, 2, 3].map((i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
       )}
 
-      {/* No results */}
+      {/* ── No results ── */}
       {!isLoading && query && totalResults === 0 && (
-        <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-          <div style={{ fontSize: "32px", marginBottom: "12px" }}>😕</div>
-          <h3
+        <div
+          style={{
+            textAlign: "center",
+            padding: "64px 28px",
+            background: "#fff",
+            borderRadius: "16px",
+            border: "0.5px solid #e5e5e5",
+          }}
+        >
+          <div style={{ fontSize: "40px", marginBottom: "14px" }}>😕</div>
+          <h2
             style={{
               fontSize: "16px",
-              fontWeight: 600,
+              fontWeight: 700,
               color: "#26215C",
-              marginBottom: "8px",
+              marginBottom: "6px",
             }}
           >
             No results found
-          </h3>
-          <p style={{ fontSize: "14px" }}>
+          </h2>
+          <p style={{ fontSize: "14px", color: "#888" }}>
             Try a different search term or browse by category
           </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginTop: "20px",
+            }}
+          >
+            {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
+              <Link
+                key={key}
+                to={`/${cfg.path}`}
+                style={{
+                  background: cfg.color,
+                  border: `0.5px solid ${cfg.border}`,
+                  color: cfg.textColor,
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  padding: "8px 16px",
+                  borderRadius: "20px",
+                  textDecoration: "none",
+                }}
+              >
+                {cfg.emoji} {cfg.label}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Results by category */}
+      {/* ── Results by category ── */}
       {!isLoading &&
         data &&
         Object.entries(TYPE_CONFIG).map(([key, config]) => {
@@ -123,21 +196,25 @@ export default function SearchPage() {
           if (results.length === 0) return null;
 
           return (
-            <div key={key} style={{ marginBottom: "32px" }}>
-              {/* Section header */}
+            <div key={key} style={{ marginBottom: "14px" }}>
+              {/* Section header — coloured bar */}
               <div
                 style={{
+                  background: config.color,
+                  border: `0.5px solid ${config.border}`,
+                  borderRadius: "12px 12px 0 0",
+                  padding: "12px 20px",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  marginBottom: "12px",
                 }}
               >
                 <h2
                   style={{
-                    fontSize: "17px",
-                    fontWeight: 600,
-                    color: "#26215C",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: config.textColor,
+                    margin: 0,
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
@@ -147,12 +224,12 @@ export default function SearchPage() {
                   {config.label}
                   <span
                     style={{
-                      background: config.color,
+                      background: "#fff",
                       color: config.textColor,
-                      fontSize: "11px",
-                      fontWeight: 500,
+                      fontSize: "10px",
+                      fontWeight: 700,
                       padding: "2px 8px",
-                      borderRadius: "10px",
+                      borderRadius: "20px",
                     }}
                   >
                     {results.length}
@@ -161,45 +238,46 @@ export default function SearchPage() {
                 <Link
                   to={`/${config.path}?search=${encodeURIComponent(query)}${state ? `&state=${state}` : ""}`}
                   style={{
-                    fontSize: "13px",
-                    color: "#534AB7",
+                    fontSize: "12px",
+                    color: config.textColor,
                     textDecoration: "none",
-                    fontWeight: 500,
+                    fontWeight: 600,
                   }}
                 >
                   View all →
                 </Link>
               </div>
 
-              {/* Result cards */}
+              {/* Result rows */}
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
+                  background: "#fff",
+                  border: `0.5px solid ${config.border}`,
+                  borderTop: "none",
+                  borderRadius: "0 0 12px 12px",
+                  overflow: "hidden",
                 }}
               >
-                {results.map((item) => (
+                {results.map((item, i) => (
                   <Link
                     key={item.id}
                     to={`/${config.path}/listing/${item.listing_id}`}
                     style={{
-                      background: "#fff",
-                      border: "0.5px solid #e5e5e5",
-                      borderRadius: "12px",
-                      padding: "14px 18px",
-                      textDecoration: "none",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
                       gap: "12px",
-                      transition: "border-color 0.15s",
+                      padding: "14px 20px",
+                      textDecoration: "none",
+                      borderTop: i > 0 ? "0.5px solid #f5f5f5" : "none",
+                      borderLeft: `3px solid ${config.border}`,
+                      transition: "background 0.15s",
                     }}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.borderColor = "#AFA9EC")
+                      (e.currentTarget.style.background = "#F5F4F0")
                     }
                     onMouseLeave={(e) =>
-                      (e.currentTarget.style.borderColor = "#e5e5e5")
+                      (e.currentTarget.style.background = "transparent")
                     }
                   >
                     <div
@@ -213,12 +291,12 @@ export default function SearchPage() {
                         style={{
                           width: "38px",
                           height: "38px",
-                          borderRadius: "8px",
+                          borderRadius: "9px",
                           background: config.color,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontSize: "16px",
+                          fontSize: "18px",
                           flexShrink: 0,
                         }}
                       >
@@ -241,7 +319,6 @@ export default function SearchPage() {
                         </div>
                       </div>
                     </div>
-                    {/* Price/salary badge */}
                     {(item.salary_display ||
                       item.price_display ||
                       item.ticket_display) && (
