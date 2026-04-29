@@ -120,6 +120,7 @@ function SectionCard({ title, accent, accentBg, accentBorder, children }) {
       }}
     >
       <div
+        className="pa-section-header"
         style={{
           background: accentBg,
           borderBottom: `0.5px solid ${accentBorder}`,
@@ -131,6 +132,7 @@ function SectionCard({ title, accent, accentBg, accentBorder, children }) {
         </div>
       </div>
       <div
+        className="pa-section-body"
         style={{
           padding: "18px 20px",
           display: "flex",
@@ -519,17 +521,29 @@ export default function PostAdPage() {
   return (
     <>
       <style>{`
-        .pa-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .pa-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .pa-grid2  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .pa-grid3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         .pa-grid21 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
         @media (max-width: 540px) {
           .pa-grid2  { grid-template-columns: 1fr !important; }
           .pa-grid3  { grid-template-columns: 1fr 1fr !important; }
           .pa-grid21 { grid-template-columns: 1fr !important; }
+          .pa-hero   { padding: 16px 16px 14px !important; border-radius: 12px !important; }
+          .pa-hero h1 { font-size: 18px !important; }
+          .pa-hero p  { font-size: 12px !important; margin-bottom: 14px !important; }
+          .pa-wrap   { padding: 12px !important; }
+          .pa-card   { padding: 14px !important; border-radius: 12px !important; }
+          .pa-type-icon { width: 36px !important; height: 36px !important; font-size: 18px !important; border-radius: 9px !important; }
+          .pa-type-label { font-size: 13px !important; }
+          .pa-type-desc  { font-size: 11px !important; }
+          .pa-section-header { padding: 10px 14px !important; }
+          .pa-section-body   { padding: 14px !important; }
+          input, select, textarea { font-size: 16px !important; }
         }
       `}</style>
 
       <div
+        className="pa-wrap"
         style={{
           maxWidth: "660px",
           margin: "0 auto",
@@ -540,6 +554,7 @@ export default function PostAdPage() {
       >
         {/* ── Dark hero ── */}
         <div
+          className="pa-hero"
           style={{
             background: "#26215C",
             borderRadius: "16px",
@@ -571,69 +586,66 @@ export default function PostAdPage() {
             Reach thousands of Nepalese Australians instantly
           </p>
 
-          {/* Step indicator inside banner */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            {STEP_LABELS.map((label, i) => {
-              const s = i + 1;
+          {/* Step indicator — circles + connector lines only, label below */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {[1, 2, 3, 4].map((s) => {
               const done = step > s;
               const current = step === s;
               return (
                 <div
                   key={s}
-                  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flex: s < 4 ? 1 : "none",
+                  }}
                 >
                   <div
                     style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "50%",
+                      flexShrink: 0,
+                      background: done
+                        ? "#1D9E75"
+                        : current
+                          ? "#E87722"
+                          : "rgba(255,255,255,0.15)",
+                      color: done || current ? "#fff" : "#AFA9EC",
                       display: "flex",
                       alignItems: "center",
-                      gap: "6px",
+                      justifyContent: "center",
+                      fontSize: "12px",
+                      fontWeight: 700,
                     }}
                   >
-                    <div
-                      style={{
-                        width: "26px",
-                        height: "26px",
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                        background: done
-                          ? "#1D9E75"
-                          : current
-                            ? "#E87722"
-                            : "rgba(255,255,255,0.15)",
-                        color: done || current ? "#fff" : "#AFA9EC",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {done ? "✓" : s}
-                    </div>
-                    <span
-                      style={{
-                        fontSize: "11px",
-                        color: current ? "#fff" : done ? "#9FE1CB" : "#AFA9EC",
-                        fontWeight: current ? 700 : 400,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {label}
-                    </span>
+                    {done ? "✓" : s}
                   </div>
                   {s < 4 && (
                     <div
                       style={{
-                        width: "20px",
-                        height: "1px",
+                        flex: 1,
+                        height: "2px",
                         background: done ? "#1D9E75" : "rgba(255,255,255,0.2)",
-                        flexShrink: 0,
+                        margin: "0 4px",
                       }}
                     />
                   )}
                 </div>
               );
             })}
+          </div>
+          {/* Current step label — single line below circles */}
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#E87722",
+              fontWeight: 700,
+              marginTop: "8px",
+              letterSpacing: "0.02em",
+            }}
+          >
+            Step {step} — {STEP_LABELS[step - 1]}
           </div>
         </div>
 
@@ -660,6 +672,7 @@ export default function PostAdPage() {
         {/* ══ STEP 1 — Choose type ══ */}
         {step === 1 && (
           <div
+            className="pa-card"
             style={{
               background: "#fff",
               border: "0.5px solid #e5e5e5",
@@ -699,15 +712,16 @@ export default function PostAdPage() {
                         : "0.5px solid #e5e5e5",
                     background: listingType === item.value ? item.bg : "#fff",
                     borderRadius: "12px",
-                    padding: "14px 16px",
+                    padding: "12px 14px",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: "14px",
+                    gap: "12px",
                     transition: "all 0.15s",
                   }}
                 >
                   <div
+                    className="pa-type-icon"
                     style={{
                       width: "44px",
                       height: "44px",
@@ -724,6 +738,7 @@ export default function PostAdPage() {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div
+                      className="pa-type-label"
                       style={{
                         fontSize: "14px",
                         fontWeight: 700,
@@ -733,6 +748,7 @@ export default function PostAdPage() {
                       {item.label}
                     </div>
                     <div
+                      className="pa-type-desc"
                       style={{
                         fontSize: "12px",
                         color: "#888",

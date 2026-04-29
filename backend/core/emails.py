@@ -4,7 +4,7 @@ import threading
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
-ADMIN_URL    = config('ADMIN_URL',    default='https://nepsaathi-production.up.railway.app/admin')
+ADMIN_URL    = config('ADMIN_URL',    default='https://nepsaathi-production.up.railway.app/nepsaathi-admin')
 
 # ─────────────────────────────────────────────────────────────
 # SHARED BASE COMPONENTS
