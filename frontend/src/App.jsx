@@ -18,6 +18,7 @@ import { ProgressProvider } from "./components/ui/ProgressBar";
 
 // Public pages
 import HomePage from "./pages/HomePage";
+import FeaturedPage from "./pages/FeaturedPage";
 import JobsPage from "./pages/listings/JobsPage";
 import RoomsPage from "./pages/listings/RoomsPage";
 import JobDetailPage from "./pages/listings/JobDetailPage";
@@ -79,6 +80,8 @@ function App() {
                     <Routes>
                       {/* Public routes */}
                       <Route path="/" element={<HomePage />} />
+                      {/* Featured Posts */}
+                      <Route path="/featured" element={<FeaturedPage />} />
                       {/* Jobs */}
                       <Route path="/jobs" element={<JobsPage />} />
                       <Route
@@ -152,7 +155,10 @@ function App() {
                           </GuestRoute>
                         }
                       />
-                      <Route path="/verify-email" element={<VerifyEmailPage />} />
+                      <Route
+                        path="/verify-email"
+                        element={<VerifyEmailPage />}
+                      />
                       {/* Protected routes */}
                       <Route
                         path="/post-ad"

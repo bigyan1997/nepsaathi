@@ -278,6 +278,7 @@ function FeaturedDesktopCard({
   title,
   subtitle,
   description,
+  scrollCard,
 }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -299,6 +300,12 @@ function FeaturedDesktopCard({
         transform: hovered ? "translateY(-4px)" : "translateY(0)",
         transition: "box-shadow 0.2s, transform 0.2s, border-color 0.2s",
         minHeight: "300px",
+        // Scroll row: fixed width + snap
+        ...(scrollCard && {
+          width: "260px",
+          flexShrink: 0,
+          scrollSnapAlign: "start",
+        }),
       }}
     >
       {/* Coloured top strip */}
@@ -437,6 +444,240 @@ function FeaturedDesktopCard({
         </span>
       </div>
     </Link>
+  );
+}
+
+/* ─── JB Hi-Fi style featured carousel ─── */
+function FeaturedCarousel({ listings }) {
+  const scrollRef = useRef(null);
+  const [scrollPct, setScrollPct] = useState(0);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(true);
+
+  const CARD_W = 264; // card width + gap
+
+  const onScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setScrollPct(max > 0 ? el.scrollLeft / max : 0);
+    setCanLeft(el.scrollLeft > 4);
+    setCanRight(el.scrollLeft < max - 4);
+  };
+
+  const scroll = (dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * CARD_W * 3, behavior: "smooth" });
+  };
+
+  return (
+    <div
+      className="home-section"
+      style={{ padding: "0 0 32px", maxWidth: "1000px", margin: "0 auto" }}
+    >
+      {/* Header row */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "14px",
+          padding: "0 28px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "20px" }}>⭐</span>
+          <h2
+            style={{
+              fontSize: "20px",
+              fontWeight: 600,
+              color: "#26215C",
+              margin: 0,
+            }}
+          >
+            Featured posts
+          </h2>
+          <span
+            style={{
+              background: "#FFF1E0",
+              color: "#633806",
+              fontSize: "11px",
+              fontWeight: 600,
+              padding: "2px 8px",
+              borderRadius: "20px",
+            }}
+          >
+            {listings.length}
+          </span>
+        </div>
+        {/* Desktop arrows */}
+        <div
+          className="feat-arrows"
+          style={{ display: "flex", alignItems: "center", gap: "8px" }}
+        >
+          <button
+            onClick={() => scroll(-1)}
+            disabled={!canLeft}
+            style={{
+              width: "34px",
+              height: "34px",
+              borderRadius: "50%",
+              border: `1.5px solid ${canLeft ? "#AFA9EC" : "#e5e5e5"}`,
+              background: canLeft ? "#EEEDFE" : "#F5F4F0",
+              color: canLeft ? "#534AB7" : "#ccc",
+              fontSize: "16px",
+              cursor: canLeft ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.15s",
+            }}
+          >
+            ‹
+          </button>
+          <button
+            onClick={() => scroll(1)}
+            disabled={!canRight}
+            style={{
+              width: "34px",
+              height: "34px",
+              borderRadius: "50%",
+              border: `1.5px solid ${canRight ? "#AFA9EC" : "#e5e5e5"}`,
+              background: canRight ? "#EEEDFE" : "#F5F4F0",
+              color: canRight ? "#534AB7" : "#ccc",
+              fontSize: "16px",
+              cursor: canRight ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.15s",
+            }}
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      {/* Scroll row */}
+      <div
+        ref={scrollRef}
+        onScroll={onScroll}
+        className="feat-scroll"
+        style={{
+          display: "flex",
+          overflowX: "auto",
+          gap: "14px",
+          padding: "4px 28px 12px",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+        }}
+      >
+        {listings.map((listing) => {
+          const typeEmoji =
+            { job: "💼", room: "🏠", event: "🎉", announcement: "📢" }[
+              listing.listing_type
+            ] || "📌";
+          const typeBg =
+            {
+              job: "#EEEDFE",
+              room: "#FFF1E0",
+              event: "#E1F5EE",
+              announcement: "#E6F1FB",
+            }[listing.listing_type] || "#F5F4F0";
+          const typeColor =
+            {
+              job: "#3C3489",
+              room: "#633806",
+              event: "#085041",
+              announcement: "#0C447C",
+            }[listing.listing_type] || "#444";
+          const typePath =
+            {
+              job: "jobs",
+              room: "rooms",
+              event: "events",
+              announcement: "announcements",
+            }[listing.listing_type] || "listings";
+          const accent =
+            CARD_ACCENT[listing.listing_type] || CARD_ACCENT.default;
+          return (
+            <FeaturedDesktopCard
+              key={listing.id}
+              to={`/${typePath}/listing/${listing.id}`}
+              emoji={typeEmoji}
+              accentBg={typeBg}
+              accentFooter={accent.footer}
+              accentTime={accent.time}
+              typeBg={typeBg}
+              typeColor={typeColor}
+              typeLabel={listing.listing_type?.toUpperCase()}
+              timeStr={timeAgo(listing.created_at || listing.date_posted)}
+              title={listing.title}
+              subtitle={`📍 ${listing.location}, ${listing.state}`}
+              description={listing.description || listing.listing_description}
+              scrollCard
+            />
+          );
+        })}
+      </div>
+
+      {/* Progress bar + View all button */}
+      <div
+        style={{
+          padding: "0 28px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "14px",
+        }}
+      >
+        {/* Track */}
+        <div
+          style={{
+            width: "100%",
+            height: "3px",
+            background: "#e5e5e5",
+            borderRadius: "2px",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              width: "30%",
+              borderRadius: "2px",
+              background: "linear-gradient(90deg, #E87722, #534AB7)",
+              transform: `translateX(${scrollPct * 233}%)`,
+              transition: "transform 0.15s",
+            }}
+          />
+        </div>
+        {/* View all button */}
+        <Link
+          to="/featured"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "#26215C",
+            color: "#fff",
+            padding: "11px 28px",
+            borderRadius: "10px",
+            textDecoration: "none",
+            fontSize: "13px",
+            fontWeight: 700,
+            transition: "opacity 0.15s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+        >
+          ⭐ View all featured listings
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -594,25 +835,25 @@ export default function HomePage() {
 
   const { data: jobsData } = useQuery({
     queryKey: ["home-jobs"],
-    queryFn: () => getJobs({ page_size: 6 }),
+    queryFn: () => getJobs({ page_size: 3 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: roomsData } = useQuery({
     queryKey: ["home-rooms"],
-    queryFn: () => getRooms({ page_size: 6 }),
+    queryFn: () => getRooms({ page_size: 3 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: eventsData } = useQuery({
     queryKey: ["home-events"],
-    queryFn: () => getEvents({ upcoming: "true", page_size: 6 }),
+    queryFn: () => getEvents({ upcoming: "true", page_size: 3 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: statsData } = useQuery({
     queryKey: ["stats"],
-    queryFn: () => getStats({ page_size: 6 }),
+    queryFn: getStats,
     staleTime: 1000 * 60 * 10,
   });
 
@@ -630,6 +871,8 @@ export default function HomePage() {
           .stats-grid      { gap: 8px !important; }
           .stat-num        { font-size: 18px !important; }
           .search-btn-text { display: none !important; }
+          .feat-scroll     { padding-left: 16px !important; padding-right: 16px !important; }
+          .feat-arrows     { display: none !important; }
         }
 
         /* ── desktop: hide mobile list ── */
@@ -638,6 +881,10 @@ export default function HomePage() {
           .listing-desktop { display: grid !important; }
           .search-btn-text { display: inline !important; }
         }
+
+        /* ── Featured scroll: always flex, never grid, hide scrollbar ── */
+        .feat-scroll                      { display: flex !important; overflow-x: auto; }
+        .feat-scroll::-webkit-scrollbar   { display: none; }
 
         @media (max-width: 480px) {
           .search-btn-text { display: none !important; }
@@ -1104,241 +1351,7 @@ export default function HomePage() {
 
         {/* ── FEATURED POSTS ── */}
         {featuredData?.results?.length > 0 && (
-          <div
-            className="home-section"
-            style={{
-              padding: "0 28px 32px",
-              maxWidth: "1000px",
-              margin: "0 auto",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "16px",
-              }}
-            >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <span style={{ fontSize: "20px" }}>⭐</span>
-                <h2
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "#26215C",
-                    margin: 0,
-                  }}
-                >
-                  Featured posts
-                </h2>
-              </div>
-            </div>
-
-            {/* Mobile: list rows */}
-            <div
-              className="listing-mobile"
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {featuredData.results.map((listing) => {
-                const typeEmoji =
-                  { job: "💼", room: "🏠", event: "🎉", announcement: "📢" }[
-                    listing.listing_type
-                  ] || "📌";
-                const typeBg =
-                  {
-                    job: "#EEEDFE",
-                    room: "#FFF1E0",
-                    event: "#E1F5EE",
-                    announcement: "#E6F1FB",
-                  }[listing.listing_type] || "#F5F4F0";
-                const typeColor =
-                  {
-                    job: "#3C3489",
-                    room: "#633806",
-                    event: "#085041",
-                    announcement: "#0C447C",
-                  }[listing.listing_type] || "#444";
-                const typePath =
-                  {
-                    job: "jobs",
-                    room: "rooms",
-                    event: "events",
-                    announcement: "announcements",
-                  }[listing.listing_type] || "listings";
-                return (
-                  <Link
-                    key={listing.id}
-                    to={`/${typePath}/listing/${listing.id}`}
-                    style={{
-                      background: "#fff",
-                      border: "1.5px solid #E87722",
-                      borderRadius: "12px",
-                      padding: "16px 20px",
-                      textDecoration: "none",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "16px",
-                      transition: "all 0.15s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "#534AB7";
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "#E87722";
-                      e.currentTarget.style.transform = "translateY(0)";
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "14px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          borderRadius: "10px",
-                          background: typeBg,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "18px",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {typeEmoji}
-                      </div>
-                      <div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            marginBottom: "3px",
-                          }}
-                        >
-                          <span
-                            style={{
-                              background:
-                                "linear-gradient(135deg, #E87722, #534AB7)",
-                              color: "#fff",
-                              fontSize: "9px",
-                              fontWeight: 700,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            ⭐ FEATURED
-                          </span>
-                          <span
-                            style={{
-                              background: typeBg,
-                              color: typeColor,
-                              fontSize: "9px",
-                              fontWeight: 600,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            {listing.listing_type?.toUpperCase()}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#26215C",
-                            marginBottom: "2px",
-                          }}
-                        >
-                          {listing.title}
-                        </div>
-                        <div style={{ fontSize: "12px", color: "#888" }}>
-                          📍 {listing.location}, {listing.state}
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        color: "#534AB7",
-                        fontWeight: 500,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      View →
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Desktop: cards grid */}
-            <div
-              className="listing-desktop"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "16px",
-              }}
-            >
-              {featuredData.results.map((listing) => {
-                const typeEmoji =
-                  { job: "💼", room: "🏠", event: "🎉", announcement: "📢" }[
-                    listing.listing_type
-                  ] || "📌";
-                const typeBg =
-                  {
-                    job: "#EEEDFE",
-                    room: "#FFF1E0",
-                    event: "#E1F5EE",
-                    announcement: "#E6F1FB",
-                  }[listing.listing_type] || "#F5F4F0";
-                const typeColor =
-                  {
-                    job: "#3C3489",
-                    room: "#633806",
-                    event: "#085041",
-                    announcement: "#0C447C",
-                  }[listing.listing_type] || "#444";
-                const typePath =
-                  {
-                    job: "jobs",
-                    room: "rooms",
-                    event: "events",
-                    announcement: "announcements",
-                  }[listing.listing_type] || "listings";
-                const accent =
-                  CARD_ACCENT[listing.listing_type] || CARD_ACCENT.default;
-                return (
-                  <FeaturedDesktopCard
-                    key={listing.id}
-                    to={`/${typePath}/listing/${listing.id}`}
-                    emoji={typeEmoji}
-                    accentBg={typeBg}
-                    accentFooter={accent.footer}
-                    accentTime={accent.time}
-                    typeBg={typeBg}
-                    typeColor={typeColor}
-                    typeLabel={listing.listing_type?.toUpperCase()}
-                    timeStr={timeAgo(listing.created_at || listing.date_posted)}
-                    title={listing.title}
-                    subtitle={`📍 ${listing.location}, ${listing.state}`}
-                    description={
-                      listing.description || listing.listing_description
-                    }
-                  />
-                );
-              })}
-            </div>
-          </div>
+          <FeaturedCarousel listings={featuredData.results.slice(0, 8)} />
         )}
 
         {/* ── LATEST JOBS ── */}
