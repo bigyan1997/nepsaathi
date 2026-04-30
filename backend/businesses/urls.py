@@ -19,4 +19,7 @@ urlpatterns = [
     # Reviews
     path('<int:pk>/reviews/', views.BusinessReviewListCreateView.as_view(), name='business-reviews'),
     path('<int:pk>/reviews/<int:review_pk>/', views.BusinessReviewDeleteView.as_view(), name='business-review-delete'),
+
+    # Report
+    path('<int:pk>/report/', views.ReportBusinessView.as_view(), name='business-report'),
 ]

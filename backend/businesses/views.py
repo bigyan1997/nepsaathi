@@ -3,7 +3,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Business, BusinessReview
+from .models import Business, BusinessReport, BusinessReview
 from .serializers import BusinessSerializer, BusinessReviewSerializer
 
 
@@ -181,3 +181,37 @@ class BusinessReviewDeleteView(APIView):
             return Response({'detail': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)
         review.delete()
         return Response({'detail': 'Review deleted.'}, status=status.HTTP_200_OK)
+
+
+class ReportBusinessView(APIView):
+    """
+    POST /api/businesses/<pk>/report/
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, pk):
+        try:
+            business = Business.objects.get(pk=pk)
+        except Business.DoesNotExist:
+            return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if business.owner == request.user:
+            return Response({'detail': 'You cannot report your own business.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if BusinessReport.objects.filter(user=request.user, business=business).exists():
+            return Response({'detail': 'You have already reported this business.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        import zoneinfo
+        from django.utils import timezone
+        sydney_tz = zoneinfo.ZoneInfo('Australia/Sydney')
+        today_start = timezone.now().astimezone(sydney_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+        if BusinessReport.objects.filter(user=request.user, created_at__gte=today_start).count() >= 5:
+            return Response({'detail': 'You have reached the maximum of 5 reports per day.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        BusinessReport.objects.create(
+            user=request.user,
+            business=business,
+            reason=request.data.get('reason', 'spam'),
+            details=request.data.get('details', ''),
+        )
+        return Response({'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'}, status=status.HTTP_201_CREATED)

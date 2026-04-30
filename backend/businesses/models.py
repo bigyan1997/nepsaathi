@@ -127,6 +127,39 @@ class Business(models.Model):
         return f'{self.business_name} ({self.get_category_display()}) — {self.suburb}'
 
 
+class BusinessReport(models.Model):
+    class Reason(models.TextChoices):
+        SPAM = 'spam', 'Spam or duplicate'
+        FAKE = 'fake', 'Fake or misleading'
+        INAPPROPRIATE = 'inappropriate', 'Inappropriate content'
+        SCAM = 'scam', 'Scam or fraud'
+        WRONG_CATEGORY = 'wrong_category', 'Wrong category'
+        OTHER = 'other', 'Other'
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='business_reports',
+    )
+    business = models.ForeignKey(
+        Business,
+        on_delete=models.CASCADE,
+        related_name='reports',
+    )
+    reason = models.CharField(max_length=20, choices=Reason.choices, default=Reason.SPAM)
+    details = models.TextField(blank=True)
+    is_reviewed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'business_reports'
+        unique_together = ('user', 'business')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user} reported {self.business.business_name} ({self.reason})'
+
+
 class BusinessReview(models.Model):
     business = models.ForeignKey(
         Business,

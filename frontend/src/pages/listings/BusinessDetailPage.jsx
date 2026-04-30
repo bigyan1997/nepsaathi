@@ -1074,7 +1074,7 @@ export default function BusinessDetailPage() {
             </div>
 
             <div style={{ textAlign: "center" }}>
-              <ReportButton listingId={business?.listing_id} />
+              <ReportButton endpoint={`/api/businesses/${business?.id}/report/`} />
             </div>
           </div>
         </div>

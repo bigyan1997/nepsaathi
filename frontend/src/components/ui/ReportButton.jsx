@@ -13,7 +13,7 @@ const REASONS = [
   { value: "other", label: "Other" },
 ];
 
-export default function ReportButton({ listingId }) {
+export default function ReportButton({ listingId, endpoint }) {
   const { isAuthenticated } = useAuthStore();
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -30,7 +30,8 @@ export default function ReportButton({ listingId }) {
     }
     setLoading(true);
     try {
-      await api.post(`/api/listings/${listingId}/report/`, { reason, details });
+      const url = endpoint ?? `/api/listings/${listingId}/report/`;
+      await api.post(url, { reason, details });
       setSubmitted(true);
       addToast("Report submitted. Thank you! 🙏", "success");
       setTimeout(() => {
