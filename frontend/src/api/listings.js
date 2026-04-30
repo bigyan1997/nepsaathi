@@ -119,6 +119,7 @@ export const renewListing = async (listingId) => {
   return response.data;
 };
 
+// Get Featured Listings
 export const getFeaturedListings = async () => {
   const response = await api.get("/api/listings/?is_featured=true&page_size=6");
   return response.data;
