@@ -192,6 +192,12 @@ export default function EditListingPage() {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
       queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["listing", id] });
+      // Invalidate detail page caches (both by event/job/room id and by listing id)
+      queryClient.invalidateQueries({ queryKey: ["job", id] });
+      queryClient.invalidateQueries({ queryKey: ["room", id] });
+      queryClient.invalidateQueries({ queryKey: ["event", id] });
+      queryClient.invalidateQueries({ queryKey: ["announcement", id] });
 
       addToast("Listing updated successfully!", "success");
       navigate(`/${listingType}s/listing/${id}`);
