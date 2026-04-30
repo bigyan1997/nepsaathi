@@ -598,3 +598,215 @@ def send_contact_email(name, email, subject, message):
         })
     except Exception as e:
         print(f'Contact email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 9. BUSINESS REPORT EMAILS (admin + owner)
+# ─────────────────────────────────────────────────────────────
+
+def send_business_report_emails(report):
+    business = report.business
+    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    admin_review_url = f"{ADMIN_URL}/businesses/businessreport/{report.id}/change/"
+
+    try:
+        # — Admin notification —
+        admin_body = f"""
+<h1 {_H1}>New business report &#9888;</h1>
+<p {_P}>A business has been reported and requires your review.</p>
+
+{_listing_card(
+    business.business_name,
+    business_url,
+    f"Reported by: {report.user.email} &middot; Owner: {business.owner.email}",
+    emoji="&#127981;",
+    bg="#FCEBEB"
+)}
+
+{_info_box(
+    f"<strong>Reason:</strong> {report.get_reason_display()}<br>"
+    f"<strong>Details:</strong> {html_module.escape(report.details or 'No details provided')}",
+    bg="#FCEBEB", border="#F09595", color="#A32D2D"
+)}
+
+{_btn("Review in admin panel &rarr;", admin_review_url, color="#26215C")}
+
+{_DIVIDER}
+<p {_SMALL}>This is an automated message from NepSaathi.</p>"""
+
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      ['hello@nepsaathi.com'],
+            'subject': f'[NepSaathi] New business report — {business.business_name}',
+            'html':    _wrap(admin_body),
+        })
+
+        # — Owner notification —
+        first_name = business.owner.first_name or 'there'
+        owner_body = f"""
+<h1 {_H1}>Your business has been reported</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, we wanted to let you know that your business
+  has received a report from another NepSaathi member. Our team is reviewing it.
+</p>
+
+{_listing_card(business.business_name, business_url, f"Report ID: #{report.id}", emoji="&#127981;", bg="#FFF1E0")}
+
+{_info_box(
+    "&#9989; If your business follows our community guidelines, no action will be taken "
+    "and it will remain live. We typically review reports within 24 hours.",
+    bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
+)}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Questions? Contact us at
+  <a href="mailto:support@nepsaathi.com" style="color:#534AB7;text-decoration:none;">support@nepsaathi.com</a>
+</p>"""
+
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [business.owner.email],
+            'subject': '[NepSaathi] Your business has been reported',
+            'html':    _wrap(owner_body),
+        })
+    except Exception as e:
+        print(f'Business report email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 10. BUSINESS CLEARED (report dismissed)
+# ─────────────────────────────────────────────────────────────
+
+def send_business_cleared_email(report):
+    business = report.business
+    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    try:
+        first_name = business.owner.first_name or 'there'
+        body = f"""
+<h1 {_H1}>Your business has been cleared &#9989;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, good news! Our team has reviewed the report on your business
+  and found that it complies with our community guidelines. Your business remains active.
+</p>
+
+{_listing_card(
+    business.business_name,
+    business_url,
+    "Status: Active &middot; No action required",
+    emoji="&#127981;",
+    bg="#E1F5EE"
+)}
+
+{_info_box(
+    "&#9989; No action is required from you. Your business continues to be visible "
+    "to the NepSaathi community.",
+    bg="#E1F5EE", border="#9FE1CB", color="#085041"
+)}
+
+{_btn("View your business &rarr;", business_url, color="#1D9E75")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Thank you for being a valued member of NepSaathi. If you have any questions,
+  contact us at <a href="mailto:support@nepsaathi.com" style="color:#534AB7;text-decoration:none;">support@nepsaathi.com</a>
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [business.owner.email],
+            'subject': f'[NepSaathi] Your business has been reviewed and cleared — {business.business_name}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Business cleared email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 11. BUSINESS VERIFIED
+# ─────────────────────────────────────────────────────────────
+
+def send_business_verified_email(business):
+    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    try:
+        first_name = business.owner.first_name or 'there'
+        body = f"""
+<h1 {_H1}>Your business is now verified &#9989;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, great news! Our team has reviewed and verified
+  <strong>{html_module.escape(business.business_name)}</strong> on NepSaathi.
+  Your business now displays a verified badge, giving customers more confidence.
+</p>
+
+{_listing_card(
+    business.business_name,
+    business_url,
+    f"{business.get_category_display()} &middot; {business.suburb}, {business.state}",
+    emoji="&#127981;",
+    bg="#E1F5EE"
+)}
+
+{_info_box(
+    "&#11088; Verified businesses appear higher in search results and display a trusted badge "
+    "to the NepSaathi community.",
+    bg="#E1F5EE", border="#9FE1CB", color="#085041"
+)}
+
+{_btn("View your business &rarr;", business_url, color="#1D9E75")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Thank you for being part of NepSaathi. If you have any questions,
+  contact us at <a href="mailto:hello@nepsaathi.com" style="color:#534AB7;text-decoration:none;">hello@nepsaathi.com</a>
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [business.owner.email],
+            'subject': f'[NepSaathi] {business.business_name} is now verified!',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Business verified email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 11. BUSINESS REMOVED BY ADMIN
+# ─────────────────────────────────────────────────────────────
+
+def send_business_removed_email(business, reason=''):
+    try:
+        first_name = business.owner.first_name or 'there'
+        safe_reason = html_module.escape(str(reason)) if reason else 'Violation of community guidelines'
+        body = f"""
+<h1 {_H1}>Your business has been removed</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, after reviewing your business listing, our team has
+  determined that it does not comply with NepSaathi's community guidelines and has been removed.
+</p>
+
+{_info_box(
+    f"<strong>Business:</strong> {html_module.escape(business.business_name)}<br>"
+    f"<strong>Reason for removal:</strong> {safe_reason}",
+    bg="#FCEBEB", border="#F09595", color="#A32D2D"
+)}
+
+<p {_P}>
+  If you believe this decision was made in error, please contact our support team
+  and we will review your case as soon as possible.
+</p>
+
+{_btn("Contact support &rarr;", "mailto:support@nepsaathi.com", color="#26215C")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Please review our
+  <a href="{FRONTEND_URL}/terms" style="color:#534AB7;text-decoration:none;">Terms of Use</a>
+  before registering again. Thank you for your understanding.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [business.owner.email],
+            'subject': f'[NepSaathi] Your business has been removed — {business.business_name}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Business removed email failed: {e}', flush=True)
