@@ -1,8 +1,10 @@
 from rest_framework import generics, permissions, filters
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
-from .models import Event
+from .models import Event, EventRSVP
 from .serializers import EventSerializer
 
 
@@ -114,6 +116,50 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
                 raise PermissionDenied(
                     'You do not own this listing.'
                 )
+
+
+class EventRSVPToggleView(APIView):
+    """
+    POST /api/events/<id>/rsvp/
+    Toggle RSVP for the authenticated user on a free event.
+    Returns { rsvped, rsvp_count, spots_left }.
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, pk):
+        try:
+            event = Event.objects.get(pk=pk, listing__status='active')
+        except Event.DoesNotExist:
+            raise NotFound('Event not found.')
+
+        if not event.is_free:
+            raise ValidationError('RSVP is only available for free events.')
+
+        if not event.is_upcoming:
+            raise ValidationError('This event has already passed.')
+
+        rsvp, created = EventRSVP.objects.get_or_create(
+            event=event, user=request.user
+        )
+
+        if not created:
+            rsvp.delete()
+            rsvped = False
+        else:
+            spots_left = event.spots_left
+            if spots_left is not None and spots_left <= 0:
+                rsvp.delete()
+                raise ValidationError('Sorry, this event is sold out.')
+            rsvped = True
+
+        rsvp_count = event.rsvps.count()
+        spots_left = event.spots_left
+
+        return Response({
+            'rsvped': rsvped,
+            'rsvp_count': rsvp_count,
+            'spots_left': spots_left,
+        })
 
 
 class EventDetailByListingView(generics.RetrieveAPIView):

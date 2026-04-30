@@ -29,3 +29,8 @@ export const deleteEvent = async (id) => {
   const response = await api.delete(`/api/events/${id}/`);
   return response.data;
 };
+
+export const toggleRSVP = async (id) => {
+  const response = await api.post(`/api/events/${id}/rsvp/`);
+  return response.data;
+};

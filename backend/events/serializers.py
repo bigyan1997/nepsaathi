@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event
+from .models import Event, EventRSVP
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -34,6 +34,26 @@ class EventSerializer(serializers.ModelSerializer):
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
+    rsvp_count = serializers.SerializerMethodField()
+    spots_left = serializers.SerializerMethodField()
+    user_has_rsvp = serializers.SerializerMethodField()
+
+    def get_rsvp_count(self, obj):
+        if hasattr(obj, 'rsvp_count_annotated'):
+            return obj.rsvp_count_annotated
+        return obj.rsvps.count()
+
+    def get_spots_left(self, obj):
+        if obj.max_attendees is None:
+            return None
+        rsvp_count = self.get_rsvp_count(obj)
+        return max(0, obj.max_attendees - rsvp_count)
+
+    def get_user_has_rsvp(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        return obj.rsvps.filter(user=request.user).exists()
 
     def get_view_count(self, obj):
         if hasattr(obj.listing, 'view_count_annotated'):
@@ -88,6 +108,9 @@ class EventSerializer(serializers.ModelSerializer):
             'expires_at',
             'view_count',
             'images',
+            'rsvp_count',
+            'spots_left',
+            'user_has_rsvp',
         )
         read_only_fields = (
             'id',
@@ -108,4 +131,7 @@ class EventSerializer(serializers.ModelSerializer):
             'is_under_review',
             'view_count',
             'description',
+            'rsvp_count',
+            'spots_left',
+            'user_has_rsvp',
         )

@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getEvent, getEventByListing } from "../../api/events";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getEvent, getEventByListing, toggleRSVP } from "../../api/events";
 import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -9,7 +9,7 @@ import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView } from "../../api/listings";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
 
@@ -130,6 +130,7 @@ export default function EventDetailPage() {
   const { isAuthenticated } = useAuthStore();
   const isListingRoute = location.pathname.includes("/listing/");
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
   const {
     data: event,
@@ -144,6 +145,49 @@ export default function EventDetailPage() {
     queryKey: ["similar", event?.listing_id],
     queryFn: () => getSimilarListings(event.listing_id),
     enabled: !!event?.listing_id,
+  });
+
+  // Optimistic local state for RSVP so the UI responds instantly
+  const [rsvpState, setRsvpState] = useState(null);
+
+  useEffect(() => {
+    if (event) {
+      setRsvpState({
+        rsvped: event.user_has_rsvp,
+        rsvp_count: event.rsvp_count,
+        spots_left: event.spots_left,
+      });
+    }
+  }, [event]);
+
+  const rsvpMutation = useMutation({
+    mutationFn: () => toggleRSVP(event.id),
+    onMutate: () => {
+      // Optimistic update
+      setRsvpState((prev) => {
+        if (!prev) return prev;
+        const willRsvp = !prev.rsvped;
+        const delta = willRsvp ? 1 : -1;
+        return {
+          rsvped: willRsvp,
+          rsvp_count: prev.rsvp_count + delta,
+          spots_left:
+            prev.spots_left !== null ? prev.spots_left - delta : null,
+        };
+      });
+    },
+    onSuccess: (data) => {
+      setRsvpState(data);
+      queryClient.invalidateQueries({ queryKey: ["event", id, isListingRoute] });
+    },
+    onError: () => {
+      // Roll back on error
+      setRsvpState({
+        rsvped: event.user_has_rsvp,
+        rsvp_count: event.rsvp_count,
+        spots_left: event.spots_left,
+      });
+    },
   });
 
   usePageTitle(
@@ -545,7 +589,10 @@ export default function EventDetailPage() {
                     { label: "Entry", value: event.ticket_display },
                     event.max_attendees && {
                       label: "Capacity",
-                      value: `${event.max_attendees} attendees`,
+                      value:
+                        rsvpState?.rsvp_count != null
+                          ? `${rsvpState.rsvp_count} / ${event.max_attendees} attending`
+                          : `${event.max_attendees} max`,
                     },
                   ]
                     .filter(Boolean)
@@ -678,58 +725,198 @@ export default function EventDetailPage() {
               </div>
             </div>
 
-            {/* Ticket / price */}
-            <div
-              style={{
-                background: event.is_free ? "#1D9E75" : "#534AB7",
-                borderRadius: "14px",
-                padding: "18px 16px",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "11px",
-                  color: "rgba(255,255,255,0.7)",
-                  marginBottom: "4px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  fontWeight: 700,
-                }}
-              >
-                {event.is_free ? "Free event" : "Tickets"}
-              </div>
-              <div
-                style={{
-                  fontSize: "26px",
-                  fontWeight: 700,
-                  color: "#fff",
-                  marginBottom: event.event_url ? "12px" : 0,
-                }}
-              >
-                {event.ticket_display}
-              </div>
-              {event.event_url && (
-                <a
-                  href={event.event_url}
-                  target="_blank"
-                  rel="noreferrer"
+            {/* Ticket / price + RSVP */}
+            {(() => {
+              const isSoldOut =
+                rsvpState?.spots_left !== null &&
+                rsvpState?.spots_left !== undefined &&
+                rsvpState.spots_left <= 0 &&
+                !rsvpState.rsvped;
+              const fillPct =
+                event.max_attendees && rsvpState?.rsvp_count != null
+                  ? Math.min(
+                      100,
+                      Math.round(
+                        (rsvpState.rsvp_count / event.max_attendees) * 100
+                      )
+                    )
+                  : null;
+              const barColor =
+                fillPct >= 85
+                  ? "#E74C3C"
+                  : fillPct >= 60
+                  ? "#E87722"
+                  : "#1D9E75";
+
+              return (
+                <div
                   style={{
-                    display: "block",
-                    background: "rgba(255,255,255,0.2)",
-                    color: "#fff",
-                    padding: "9px 14px",
-                    borderRadius: "9px",
-                    textDecoration: "none",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    textAlign: "center",
-                    border: "1px solid rgba(255,255,255,0.3)",
+                    background: event.is_free ? "#1D9E75" : "#534AB7",
+                    borderRadius: "14px",
+                    padding: "18px 16px",
                   }}
                 >
-                  Get tickets →
-                </a>
-              )}
-            </div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "rgba(255,255,255,0.7)",
+                      marginBottom: "4px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {event.is_free ? "Free event" : "Tickets"}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "26px",
+                      fontWeight: 700,
+                      color: "#fff",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    {event.ticket_display}
+                  </div>
+
+                  {/* Capacity bar — shown when max_attendees is set */}
+                  {event.max_attendees && rsvpState && (
+                    <div style={{ marginBottom: "12px" }}>
+                      <div
+                        style={{
+                          height: "6px",
+                          background: "rgba(255,255,255,0.2)",
+                          borderRadius: "99px",
+                          overflow: "hidden",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: "100%",
+                            width: `${fillPct}%`,
+                            background: "#fff",
+                            borderRadius: "99px",
+                            transition: "width 0.3s ease",
+                          }}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "rgba(255,255,255,0.85)",
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <span>
+                          {isSoldOut
+                            ? "Sold out"
+                            : fillPct >= 85
+                            ? `⚠️ Almost full — ${rsvpState.spots_left} left`
+                            : `${rsvpState.spots_left} spot${rsvpState.spots_left === 1 ? "" : "s"} left`}
+                        </span>
+                        <span style={{ opacity: 0.7 }}>
+                          {rsvpState.rsvp_count} / {event.max_attendees}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* RSVP button — free events only */}
+                  {event.is_free && event.is_upcoming && (
+                    <>
+                      {isAuthenticated ? (
+                        <button
+                          onClick={() =>
+                            !rsvpMutation.isPending && rsvpMutation.mutate()
+                          }
+                          disabled={
+                            rsvpMutation.isPending ||
+                            (isSoldOut && !rsvpState?.rsvped)
+                          }
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            background: rsvpState?.rsvped
+                              ? "rgba(255,255,255,0.15)"
+                              : isSoldOut
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(255,255,255,0.25)",
+                            color: "#fff",
+                            padding: "10px 14px",
+                            borderRadius: "9px",
+                            border: rsvpState?.rsvped
+                              ? "1px solid rgba(255,255,255,0.5)"
+                              : "1px solid rgba(255,255,255,0.3)",
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            textAlign: "center",
+                            cursor:
+                              rsvpMutation.isPending ||
+                              (isSoldOut && !rsvpState?.rsvped)
+                                ? "not-allowed"
+                                : "pointer",
+                            opacity:
+                              isSoldOut && !rsvpState?.rsvped ? 0.5 : 1,
+                            transition: "background 0.15s",
+                          }}
+                        >
+                          {rsvpMutation.isPending
+                            ? "..."
+                            : isSoldOut
+                            ? "Sold out"
+                            : rsvpState?.rsvped
+                            ? "✓ You're going — Cancel RSVP"
+                            : "RSVP — it's free"}
+                        </button>
+                      ) : (
+                        <a
+                          href="/login"
+                          style={{
+                            display: "block",
+                            background: "rgba(255,255,255,0.2)",
+                            color: "#fff",
+                            padding: "10px 14px",
+                            borderRadius: "9px",
+                            textDecoration: "none",
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            textAlign: "center",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                          }}
+                        >
+                          Sign in to RSVP
+                        </a>
+                      )}
+                    </>
+                  )}
+
+                  {/* External tickets link — paid events */}
+                  {!event.is_free && event.event_url && (
+                    <a
+                      href={event.event_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: "block",
+                        background: "rgba(255,255,255,0.2)",
+                        color: "#fff",
+                        padding: "9px 14px",
+                        borderRadius: "9px",
+                        textDecoration: "none",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        textAlign: "center",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                      }}
+                    >
+                      Get tickets →
+                    </a>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Contact organiser */}
             {isAuthenticated &&

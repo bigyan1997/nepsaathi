@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from listings.models import Listing
@@ -90,3 +91,35 @@ class Event(models.Model):
     @property
     def is_upcoming(self):
         return self.event_date >= timezone.now()
+
+    @property
+    def rsvp_count(self):
+        return self.rsvps.count()
+
+    @property
+    def spots_left(self):
+        if self.max_attendees is None:
+            return None
+        return max(0, self.max_attendees - self.rsvps.count())
+
+
+class EventRSVP(models.Model):
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name='rsvps',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='event_rsvps',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'event_rsvps'
+        unique_together = ('event', 'user')
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'{self.user} → {self.event}'
