@@ -20,7 +20,13 @@ const TABS = [
   { value: "true", label: "Room Seekers", emoji: "🏘️" },
 ];
 
-/* ── helpers ─────────────────────────────────────── */
+const SORT_OPTIONS = [
+  { value: "-listing__created_at", label: "Newest first" },
+  { value: "listing__created_at", label: "Oldest first" },
+  { value: "price", label: "Price ↑" },
+  { value: "-price", label: "Price ↓" },
+];
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const days = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
@@ -34,11 +40,291 @@ function timeAgo(dateStr) {
   return m === 1 ? "1 month ago" : `${m} months ago`;
 }
 
-/* ── Desktop card ────────────────────────────────── */
+/* ── Mobile filter drawer ────────────────────────── */
+function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
+  const [draft, setDraft] = useState({ ...filters });
+  const set = (k, v) => setDraft((p) => ({ ...p, [k]: v }));
+  const sel = {
+    width: "100%",
+    border: "0.5px solid #ddd",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    fontSize: "16px",
+    background: "#F5F4F0",
+    color: "#444",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+  const lbl = {
+    fontSize: "11px",
+    fontWeight: 700,
+    color: "#aaa",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    marginBottom: "6px",
+  };
+
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.45)",
+          zIndex: 100,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "#fff",
+          borderRadius: "20px 20px 0 0",
+          zIndex: 101,
+          maxHeight: "88vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        {/* Handle */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "12px 0 0",
+          }}
+        >
+          <div
+            style={{
+              width: "40px",
+              height: "4px",
+              borderRadius: "2px",
+              background: "#e5e5e5",
+            }}
+          />
+        </div>
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "12px 20px",
+            borderBottom: "0.5px solid #f0f0f0",
+          }}
+        >
+          <div style={{ fontSize: "16px", fontWeight: 700, color: "#26215C" }}>
+            Filters
+          </div>
+          <button
+            onClick={() =>
+              setDraft((p) => ({
+                ...p,
+                room_type: "",
+                state: "",
+                min_price: "",
+                max_price: "",
+                bills_included: "",
+                nepalese_household: "",
+                ordering: "-listing__created_at",
+              }))
+            }
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "13px",
+              color: "#534AB7",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+        <div
+          style={{
+            padding: "16px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          {/* Room type */}
+          <div>
+            <div style={lbl}>Room type</div>
+            <select
+              value={draft.room_type}
+              onChange={(e) => set("room_type", e.target.value)}
+              style={sel}
+            >
+              {ROOM_TYPES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* State */}
+          <div>
+            <div style={lbl}>State</div>
+            <select
+              value={draft.state}
+              onChange={(e) => set("state", e.target.value)}
+              style={sel}
+            >
+              {STATES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Price range */}
+          <div>
+            <div style={lbl}>Price range ($/wk)</div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "8px",
+              }}
+            >
+              <input
+                type="number"
+                placeholder="Min $"
+                value={draft.min_price}
+                onChange={(e) => set("min_price", e.target.value)}
+                style={{ ...sel, width: "100%", minWidth: 0 }}
+              />
+              <input
+                type="number"
+                placeholder="Max $"
+                value={draft.max_price}
+                onChange={(e) => set("max_price", e.target.value)}
+                style={{ ...sel, width: "100%", minWidth: 0 }}
+              />
+            </div>
+          </div>
+          {/* Checkboxes */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              {
+                key: "bills_included",
+                label: "💡 Bills included",
+                sub: "Electricity, water, internet",
+                color: "#1D9E75",
+                bg: "#E1F5EE",
+                border: "#9FE1CB",
+              },
+              {
+                key: "nepalese_household",
+                label: "🇳🇵 Nepalese household",
+                sub: "Nepalese family home",
+                color: "#534AB7",
+                bg: "#EEEDFE",
+                border: "#AFA9EC",
+              },
+            ].map(({ key, label, sub, color, bg, border }) => {
+              const on = draft[key] === "true";
+              return (
+                <label
+                  key={key}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    background: on ? bg : "#F5F4F0",
+                    border: `0.5px solid ${on ? border : "#e5e5e5"}`,
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={on}
+                    onChange={(e) => set(key, e.target.checked ? "true" : "")}
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      flexShrink: 0,
+                      accentColor: color,
+                    }}
+                  />
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#26215C",
+                      }}
+                    >
+                      {label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#888",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {sub}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+          {/* Sort */}
+          <div>
+            <div style={lbl}>Sort by</div>
+            <select
+              value={draft.ordering}
+              onChange={(e) => set("ordering", e.target.value)}
+              style={sel}
+            >
+              {SORT_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Apply */}
+          <button
+            onClick={() => {
+              onApply(draft);
+              onClose();
+            }}
+            style={{
+              width: "100%",
+              background: "#E87722",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "14px",
+              fontSize: "14px",
+              fontWeight: 700,
+              cursor: "pointer",
+              marginBottom: "8px",
+            }}
+          >
+            Apply filters
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── Desktop card ─────────────────────────────────── */
 function RoomCard({ room }) {
   const [hovered, setHovered] = useState(false);
   const isWanted = room.is_wanted;
-
   return (
     <Link
       to={`/rooms/listing/${room.listing_id}`}
@@ -60,7 +346,6 @@ function RoomCard({ room }) {
         minHeight: "300px",
       }}
     >
-      {/* Header strip — image if available, else emoji */}
       <div
         style={{
           background: "#FFF1E0",
@@ -91,8 +376,6 @@ function RoomCard({ room }) {
         ) : (
           "🏠"
         )}
-
-        {/* Badges top-left */}
         <div
           style={{
             position: "absolute",
@@ -132,8 +415,6 @@ function RoomCard({ room }) {
             </span>
           )}
         </div>
-
-        {/* Price badge top-right */}
         <div
           style={{
             position: "absolute",
@@ -155,7 +436,6 @@ function RoomCard({ room }) {
             {isWanted ? `Up to ${room.price_display}` : room.price_display}
           </span>
         </div>
-
         <div
           style={{
             position: "absolute",
@@ -168,8 +448,6 @@ function RoomCard({ room }) {
           }}
         />
       </div>
-
-      {/* Body */}
       <div
         style={{
           padding: "14px 16px",
@@ -195,8 +473,6 @@ function RoomCard({ room }) {
         <div style={{ fontSize: "12px", color: "#777" }}>
           📍 {room.listing_location}, {room.listing_state}
         </div>
-
-        {/* Tags */}
         <div
           style={{
             display: "flex",
@@ -248,7 +524,6 @@ function RoomCard({ room }) {
             </span>
           )}
         </div>
-
         {room.description && (
           <div
             style={{
@@ -267,8 +542,6 @@ function RoomCard({ room }) {
           </div>
         )}
       </div>
-
-      {/* Footer */}
       <div
         style={{
           background: "#E87722",
@@ -300,11 +573,12 @@ function RoomCard({ room }) {
   );
 }
 
-/* ══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════ */
 export default function RoomsPage() {
   usePageTitle("Rooms for Rent");
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({
     room_type: "",
     search: "",
@@ -319,9 +593,9 @@ export default function RoomsPage() {
   const [allResults, setAllResults] = useState([]);
   const prevKey = useRef(null);
 
-  const updateFilters = (update) => {
+  const updateFilters = (u) => {
     setPage(1);
-    setFilters((prev) => ({ ...prev, ...update }));
+    setFilters((p) => ({ ...p, ...u }));
   };
 
   const { data, isLoading, isFetching, error } = useQuery({
@@ -346,40 +620,111 @@ export default function RoomsPage() {
     if (key !== prevKey.current || page === 1) {
       setAllResults(data.results);
       prevKey.current = key;
-    } else setAllResults((prev) => [...prev, ...data.results]);
+    } else setAllResults((p) => [...p, ...data.results]);
   }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const searchParam = params.get("search");
-    const stateParam = params.get("state");
-    if (searchParam || stateParam) {
+    const s = params.get("search"),
+      st = params.get("state");
+    if (s || st) {
       setPage(1);
-      setFilters((prev) => ({
-        ...prev,
-        search: searchParam || "",
-        state: stateParam || "",
-      }));
+      setFilters((p) => ({ ...p, search: s || "", state: st || "" }));
     }
   }, [location.search]);
 
-  const filteredResults = allResults.filter((room) => {
-    if (activeTab === "") return true;
-    if (activeTab === "true") return room.is_wanted === true;
-    if (activeTab === "false") return room.is_wanted === false;
+  const filteredResults = allResults.filter((r) => {
+    if (activeTab === "true") return r.is_wanted === true;
+    if (activeTab === "false") return r.is_wanted === false;
     return true;
   });
+
+  const activeFilterCount = [
+    filters.room_type,
+    filters.state,
+    filters.min_price,
+    filters.max_price,
+    filters.bills_included,
+    filters.nepalese_household,
+    filters.ordering !== "-listing__created_at" ? "1" : "",
+  ].filter(Boolean).length;
+
+  const activeChips = [
+    filters.room_type && {
+      key: "room_type",
+      label: ROOM_TYPES.find((t) => t.value === filters.room_type)?.label,
+      color: "#633806",
+      bg: "#FFF1E0",
+      border: "#EFD9C0",
+    },
+    filters.state && {
+      key: "state",
+      label: filters.state,
+      color: "#3C3489",
+      bg: "#EEEDFE",
+      border: "#AFA9EC",
+    },
+    filters.bills_included && {
+      key: "bills_included",
+      label: "Bills incl.",
+      color: "#085041",
+      bg: "#E1F5EE",
+      border: "#9FE1CB",
+    },
+    filters.nepalese_household && {
+      key: "nepalese_household",
+      label: "🇳🇵 Nepalese",
+      color: "#3C3489",
+      bg: "#EEEDFE",
+      border: "#AFA9EC",
+    },
+    filters.min_price && {
+      key: "min_price",
+      label: `Min $${filters.min_price}`,
+      color: "#633806",
+      bg: "#FFF1E0",
+      border: "#EFD9C0",
+    },
+    filters.max_price && {
+      key: "max_price",
+      label: `Max $${filters.max_price}`,
+      color: "#633806",
+      bg: "#FFF1E0",
+      border: "#EFD9C0",
+    },
+  ].filter(Boolean);
 
   return (
     <>
       <style>{`
-        @media (max-width: 767px)  { .rooms-desktop { display: none !important; } .rooms-mobile { display: flex !important; } }
-        @media (min-width: 768px)  { .rooms-mobile  { display: none !important; } .rooms-desktop { display: grid !important; } }
+        .rm-desktop { display: none !important; }
+        .rm-mobile  { display: flex !important; }
+        .rm-fdesk   { display: none !important; }
+        .rm-fmob    { display: flex !important; }
+        .rm-tabs::-webkit-scrollbar { display: none; }
+        @media (min-width: 768px) {
+          .rm-mobile { display: none !important; }
+          .rm-desktop{ display: grid !important; }
+          .rm-fmob   { display: none !important; }
+          .rm-fdesk  { display: flex !important; }
+        }
       `}</style>
+
+      {drawerOpen && (
+        <MobileFilterDrawer
+          filters={filters}
+          resultCount={filteredResults.length}
+          onApply={(d) => {
+            setPage(1);
+            setFilters(d);
+          }}
+          onClose={() => setDrawerOpen(false)}
+        />
+      )}
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
         {/* Header */}
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "18px" }}>
           <h1
             style={{
               fontSize: "26px",
@@ -395,72 +740,187 @@ export default function RoomsPage() {
           </p>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs: horizontal scroll */}
         <div
+          className="rm-tabs"
           style={{
-            display: "flex",
-            gap: "8px",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
             marginBottom: "16px",
-            flexWrap: "wrap",
           }}
         >
-          {TABS.map(({ value, label, emoji }) => (
-            <button
-              key={value}
-              onClick={() => {
-                setActiveTab(value);
-                setPage(1);
-              }}
-              style={{
-                background: activeTab === value ? "#E87722" : "#fff",
-                color: activeTab === value ? "#fff" : "#E87722",
-                border: `1.5px solid ${activeTab === value ? "#E87722" : "#EFD9C0"}`,
-                borderRadius: "20px",
-                padding: "7px 18px",
-                fontSize: "13px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.15s",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <span>{emoji}</span>
-              {label}
-              {data?.results && (
-                <span
-                  style={{
-                    background:
-                      activeTab === value
-                        ? "rgba(255,255,255,0.25)"
-                        : "#FFF1E0",
-                    color: activeTab === value ? "#fff" : "#E87722",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    padding: "1px 6px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  {value === ""
-                    ? (data?.count ?? allResults.length)
-                    : value === "true"
-                      ? allResults.filter((r) => r.is_wanted).length
-                      : allResults.filter((r) => !r.is_wanted).length}
-                </span>
-              )}
-            </button>
-          ))}
+          <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
+            {TABS.map(({ value, label, emoji }) => (
+              <button
+                key={value}
+                onClick={() => {
+                  setActiveTab(value);
+                  setPage(1);
+                }}
+                style={{
+                  background: activeTab === value ? "#E87722" : "#fff",
+                  color: activeTab === value ? "#fff" : "#E87722",
+                  border: `1.5px solid ${activeTab === value ? "#E87722" : "#EFD9C0"}`,
+                  borderRadius: "20px",
+                  padding: "7px 18px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span>{emoji}</span>
+                {label}
+                {data && (
+                  <span
+                    style={{
+                      background:
+                        activeTab === value
+                          ? "rgba(255,255,255,0.25)"
+                          : "#FFF1E0",
+                      color: activeTab === value ? "#fff" : "#E87722",
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      padding: "1px 6px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {value === ""
+                      ? (data?.count ?? allResults.length)
+                      : value === "true"
+                        ? allResults.filter((r) => r.is_wanted).length
+                        : allResults.filter((r) => !r.is_wanted).length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Filters */}
+        {/* Mobile: search + filter button */}
+        <div className="rm-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="🔍  Search rooms..."
+            value={filters.search}
+            onChange={(e) => updateFilters({ search: e.target.value })}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: "0.5px solid #ddd",
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "16px",
+              outline: "none",
+              background: "#fff",
+            }}
+          />
+          <button
+            onClick={() => setDrawerOpen(true)}
+            style={{
+              background: activeFilterCount > 0 ? "#EEEDFE" : "#fff",
+              border: `0.5px solid ${activeFilterCount > 0 ? "#AFA9EC" : "#ddd"}`,
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "13px",
+              fontWeight: 700,
+              color: activeFilterCount > 0 ? "#534AB7" : "#555",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              minWidth: "90px",
+            }}
+          >
+            ⚙️ Filters
+            {activeFilterCount > 0 && (
+              <span
+                style={{
+                  background: "#534AB7",
+                  color: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Active filter chips (mobile) */}
+        {activeChips.length > 0 && (
+          <div
+            className="rm-fmob"
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+          >
+            {activeChips.map(({ key, label, color, bg, border }) => (
+              <button
+                key={key}
+                onClick={() => updateFilters({ [key]: "" })}
+                style={{
+                  background: bg,
+                  border: `0.5px solid ${border}`,
+                  color,
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                {label}{" "}
+                <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                updateFilters({
+                  room_type: "",
+                  state: "",
+                  min_price: "",
+                  max_price: "",
+                  bills_included: "",
+                  nepalese_household: "",
+                  ordering: "-listing__created_at",
+                })
+              }
+              style={{
+                background: "#FCEBEB",
+                border: "0.5px solid #F09595",
+                color: "#A32D2D",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: "20px",
+                cursor: "pointer",
+              }}
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        {/* Desktop: full filter bar */}
         <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-          }}
+          className="rm-fdesk"
+          style={{ gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}
         >
           <input
             type="text"
@@ -546,48 +1006,31 @@ export default function RoomsPage() {
               background: "#fff",
             }}
           />
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#444",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={filters.bills_included === "true"}
-              onChange={(e) =>
-                updateFilters({
-                  bills_included: e.target.checked ? "true" : "",
-                })
-              }
-            />
-            Bills incl.
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#444",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={filters.nepalese_household === "true"}
-              onChange={(e) =>
-                updateFilters({
-                  nepalese_household: e.target.checked ? "true" : "",
-                })
-              }
-            />
-            🇳🇵 Nepalese
-          </label>
+          {[
+            { key: "bills_included", label: "Bills incl." },
+            { key: "nepalese_household", label: "🇳🇵 Nepalese" },
+          ].map(({ key, label }) => (
+            <label
+              key={key}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13px",
+                color: "#444",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={filters[key] === "true"}
+                onChange={(e) =>
+                  updateFilters({ [key]: e.target.checked ? "true" : "" })
+                }
+              />
+              {label}
+            </label>
+          ))}
           <select
             value={filters.ordering}
             onChange={(e) => updateFilters({ ordering: e.target.value })}
@@ -601,10 +1044,11 @@ export default function RoomsPage() {
               color: "#444",
             }}
           >
-            <option value="-listing__created_at">Newest first</option>
-            <option value="listing__created_at">Oldest first</option>
-            <option value="price">Price ↑</option>
-            <option value="-price">Price ↓</option>
+            {SORT_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -619,7 +1063,6 @@ export default function RoomsPage() {
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -635,7 +1078,6 @@ export default function RoomsPage() {
           </div>
         )}
 
-        {/* Empty */}
         {!isLoading && !isFetching && filteredResults.length === 0 && (
           <div
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
@@ -657,9 +1099,9 @@ export default function RoomsPage() {
           </div>
         )}
 
-        {/* ── Mobile: list rows ── */}
+        {/* Mobile list rows */}
         <div
-          className="rooms-mobile"
+          className="rm-mobile"
           style={{
             flexDirection: "column",
             gap: "10px",
@@ -673,27 +1115,21 @@ export default function RoomsPage() {
               to={`/rooms/listing/${room.listing_id}`}
               style={{
                 background: "#fff",
-                border: `0.5px solid ${room.is_wanted ? "#EFD9C0" : "#e5e5e5"}`,
-                borderLeft: room.is_wanted
-                  ? "3px solid #E87722"
-                  : room.is_featured
+                border: "0.5px solid #e5e5e5",
+                borderLeft:
+                  room.is_wanted || room.is_featured
                     ? "3px solid #E87722"
                     : "0.5px solid #e5e5e5",
                 borderRadius: "12px",
                 padding: "14px 16px",
                 textDecoration: "none",
                 display: "block",
-                transition: "all 0.15s",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow =
-                  "0 2px 12px rgba(232,119,34,0.1)";
-                e.currentTarget.style.transform = "translateY(-1px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 2px 12px rgba(232,119,34,0.1)")
+              }
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
             >
               <div
                 style={{
@@ -717,9 +1153,7 @@ export default function RoomsPage() {
                       width: "44px",
                       height: "44px",
                       borderRadius: "10px",
-                      background: room.images?.[0]?.url
-                        ? "transparent"
-                        : "#FFF1E0",
+                      background: "#FFF1E0",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -772,7 +1206,6 @@ export default function RoomsPage() {
                               fontWeight: 700,
                               padding: "2px 7px",
                               borderRadius: "6px",
-                              whiteSpace: "nowrap",
                             }}
                           >
                             🏘️ Room Seeker
@@ -787,9 +1220,10 @@ export default function RoomsPage() {
                         color: "#26215C",
                         marginBottom: "2px",
                         lineHeight: 1.3,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
                       }}
                     >
                       {room.listing_title}
@@ -806,27 +1240,22 @@ export default function RoomsPage() {
                     >
                       📍 {room.listing_location}, {room.listing_state}
                     </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "4px",
-                        flexWrap: "nowrap",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <span
-                        style={{
-                          background: "#FFF1E0",
-                          color: "#633806",
-                          fontSize: "11px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {room.room_type?.replace("_", " ")}
-                      </span>
+                    <div style={{ display: "flex", gap: "4px" }}>
+                      {room.room_type && (
+                        <span
+                          style={{
+                            background: "#FFF1E0",
+                            color: "#633806",
+                            fontSize: "11px",
+                            fontWeight: 500,
+                            padding: "2px 8px",
+                            borderRadius: "8px",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {room.room_type?.replace("_", " ")}
+                        </span>
+                      )}
                       {room.bills_included && (
                         <span
                           style={{
@@ -860,31 +1289,30 @@ export default function RoomsPage() {
                     </div>
                   </div>
                 </div>
-                <div style={{ flexShrink: 0 }}>
-                  <div
-                    style={{
-                      background: "#FFF1E0",
-                      color: "#633806",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      padding: "4px 10px",
-                      borderRadius: "20px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {room.is_wanted
-                      ? `Up to ${room.price_display}`
-                      : room.price_display}
-                  </div>
+                <div
+                  style={{
+                    background: "#FFF1E0",
+                    color: "#633806",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    padding: "4px 10px",
+                    borderRadius: "20px",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
+                  {room.is_wanted
+                    ? `Up to ${room.price_display}`
+                    : room.price_display}
                 </div>
               </div>
             </Link>
           ))}
         </div>
 
-        {/* ── Desktop: card grid ── */}
+        {/* Desktop card grid */}
         <div
-          className="rooms-desktop"
+          className="rm-desktop"
           style={{
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: "16px",

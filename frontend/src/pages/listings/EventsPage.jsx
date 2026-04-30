@@ -40,7 +40,13 @@ const CATEGORY_EMOJIS = {
   other: "📌",
 };
 
-/* ── helpers ─────────────────────────────────────── */
+const SORT_OPTIONS = [
+  { value: "-listing__created_at", label: "Newest first" },
+  { value: "listing__created_at", label: "Oldest first" },
+  { value: "event_date", label: "Date: earliest" },
+  { value: "-event_date", label: "Date: latest" },
+];
+
 const formatDate = (d) =>
   new Date(d).toLocaleDateString("en-AU", {
     weekday: "short",
@@ -54,13 +60,289 @@ const formatTime = (d) =>
     minute: "2-digit",
   });
 
-/* ── Desktop card ────────────────────────────────── */
+/* ── Mobile filter drawer ────────────────────────── */
+function MobileFilterDrawer({ filters, onApply, onClose }) {
+  const [draft, setDraft] = useState({ ...filters });
+  const set = (k, v) => setDraft((p) => ({ ...p, [k]: v }));
+  const sel = {
+    width: "100%",
+    border: "0.5px solid #ddd",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    fontSize: "16px",
+    background: "#F5F4F0",
+    color: "#444",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+  const lbl = {
+    fontSize: "11px",
+    fontWeight: 700,
+    color: "#aaa",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    marginBottom: "6px",
+  };
+
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.45)",
+          zIndex: 100,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "#fff",
+          borderRadius: "20px 20px 0 0",
+          zIndex: 101,
+          maxHeight: "88vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "12px 0 0",
+          }}
+        >
+          <div
+            style={{
+              width: "40px",
+              height: "4px",
+              borderRadius: "2px",
+              background: "#e5e5e5",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "12px 20px",
+            borderBottom: "0.5px solid #f0f0f0",
+          }}
+        >
+          <div style={{ fontSize: "16px", fontWeight: 700, color: "#26215C" }}>
+            Filters
+          </div>
+          <button
+            onClick={() =>
+              setDraft((p) => ({
+                ...p,
+                category: "",
+                state: "",
+                is_free: "",
+                is_online: "",
+                ordering: "-listing__created_at",
+                upcoming: "true",
+              }))
+            }
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "13px",
+              color: "#1D9E75",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+        <div
+          style={{
+            padding: "16px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          <div>
+            <div style={lbl}>Category</div>
+            <select
+              value={draft.category}
+              onChange={(e) => set("category", e.target.value)}
+              style={sel}
+            >
+              {CATEGORIES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <div style={lbl}>State</div>
+            <select
+              value={draft.state}
+              onChange={(e) => set("state", e.target.value)}
+              style={sel}
+            >
+              {STATES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <div style={lbl}>Sort by</div>
+            <select
+              value={draft.ordering}
+              onChange={(e) => set("ordering", e.target.value)}
+              style={sel}
+            >
+              {SORT_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Upcoming toggle */}
+          <div>
+            <div style={lbl}>Show</div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              {[
+                { v: "true", label: "🔜 Upcoming" },
+                { v: "", label: "📅 All events" },
+              ].map(({ v, label }) => (
+                <button
+                  key={v}
+                  onClick={() => set("upcoming", v)}
+                  style={{
+                    flex: 1,
+                    background: draft.upcoming === v ? "#1D9E75" : "#F5F4F0",
+                    color: draft.upcoming === v ? "#fff" : "#555",
+                    border: "none",
+                    borderRadius: "9px",
+                    padding: "10px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Checkboxes */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              {
+                key: "is_free",
+                label: "🎟️ Free events only",
+                sub: "No ticket price",
+                color: "#1D9E75",
+                bg: "#E1F5EE",
+                border: "#9FE1CB",
+              },
+              {
+                key: "is_online",
+                label: "💻 Online events only",
+                sub: "Virtual / remote events",
+                color: "#0C447C",
+                bg: "#E6F1FB",
+                border: "#B5D4F4",
+              },
+            ].map(({ key, label, sub, color, bg, border }) => {
+              const on = draft[key] === "true";
+              return (
+                <label
+                  key={key}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    background: on ? bg : "#F5F4F0",
+                    border: `0.5px solid ${on ? border : "#e5e5e5"}`,
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={on}
+                    onChange={(e) => set(key, e.target.checked ? "true" : "")}
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      flexShrink: 0,
+                      accentColor: color,
+                    }}
+                  />
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#26215C",
+                      }}
+                    >
+                      {label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#888",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {sub}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => {
+              onApply(draft);
+              onClose();
+            }}
+            style={{
+              width: "100%",
+              background: "#1D9E75",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "14px",
+              fontSize: "14px",
+              fontWeight: 700,
+              cursor: "pointer",
+              marginBottom: "8px",
+            }}
+          >
+            Apply filters
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── Desktop card ─────────────────────────────────── */
 function EventCard({ event }) {
   const [hovered, setHovered] = useState(false);
   const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
   const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
   const footerBg = event.is_free ? "#1D9E75" : "#534AB7";
-
   return (
     <Link
       to={`/events/${event.id}`}
@@ -82,7 +364,6 @@ function EventCard({ event }) {
         minHeight: "300px",
       }}
     >
-      {/* Header strip */}
       <div
         style={{
           background: catColor.bg,
@@ -94,7 +375,6 @@ function EventCard({ event }) {
           flexShrink: 0,
         }}
       >
-        {/* Big date box centred */}
         <div style={{ textAlign: "center" }}>
           <div
             style={{
@@ -120,8 +400,6 @@ function EventCard({ event }) {
             {new Date(event.event_date).getFullYear()}
           </div>
         </div>
-
-        {/* Category badge top-left */}
         <div
           style={{
             position: "absolute",
@@ -159,8 +437,6 @@ function EventCard({ event }) {
             </span>
           )}
         </div>
-
-        {/* Ticket badge top-right */}
         <div style={{ position: "absolute", top: "10px", right: "10px" }}>
           <span
             style={{
@@ -175,7 +451,6 @@ function EventCard({ event }) {
             {event.ticket_display}
           </span>
         </div>
-
         <div
           style={{
             position: "absolute",
@@ -188,8 +463,6 @@ function EventCard({ event }) {
           }}
         />
       </div>
-
-      {/* Body */}
       <div
         style={{
           padding: "14px 16px",
@@ -199,12 +472,9 @@ function EventCard({ event }) {
           gap: "5px",
         }}
       >
-        {/* Time */}
         <div style={{ fontSize: "11px", fontWeight: 600, color: footerBg }}>
           {formatDate(event.event_date)} · {formatTime(event.event_date)}
         </div>
-
-        {/* Title */}
         <div
           style={{
             fontSize: "15px",
@@ -215,15 +485,11 @@ function EventCard({ event }) {
         >
           {event.listing_title}
         </div>
-
-        {/* Venue */}
         {event.venue && (
           <div style={{ fontSize: "12px", color: "#777" }}>
             📍 {event.venue}
           </div>
         )}
-
-        {/* Tags */}
         <div
           style={{
             display: "flex",
@@ -275,7 +541,6 @@ function EventCard({ event }) {
             </span>
           )}
         </div>
-
         {event.description && (
           <div
             style={{
@@ -294,8 +559,6 @@ function EventCard({ event }) {
           </div>
         )}
       </div>
-
-      {/* Footer */}
       <div
         style={{
           background: footerBg,
@@ -324,10 +587,11 @@ function EventCard({ event }) {
   );
 }
 
-/* ══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════ */
 export default function EventsPage() {
   usePageTitle("Community Events");
   const location = useLocation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({
     category: "",
     search: "",
@@ -335,15 +599,15 @@ export default function EventsPage() {
     is_free: "",
     is_online: "",
     upcoming: "true",
-    ordering: "",
+    ordering: "-listing__created_at",
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
   const prevKey = useRef(null);
 
-  const updateFilters = (update) => {
+  const updateFilters = (u) => {
     setPage(1);
-    setFilters((prev) => ({ ...prev, ...update }));
+    setFilters((p) => ({ ...p, ...u }));
   };
 
   const { data, isLoading, isFetching, error } = useQuery({
@@ -367,37 +631,91 @@ export default function EventsPage() {
     if (key !== prevKey.current || page === 1) {
       setAllResults(data.results);
       prevKey.current = key;
-    } else setAllResults((prev) => [...prev, ...data.results]);
+    } else setAllResults((p) => [...p, ...data.results]);
   }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const searchParam = params.get("search");
-    const stateParam = params.get("state");
-    if (searchParam || stateParam)
-      setFilters((prev) => ({
-        ...prev,
-        search: searchParam || "",
-        state: stateParam || "",
-      }));
+    const s = params.get("search"),
+      st = params.get("state");
+    if (s || st)
+      setFilters((p) => ({ ...p, search: s || "", state: st || "" }));
   }, [location.search]);
+
+  const activeFilterCount = [
+    filters.category,
+    filters.state,
+    filters.is_free,
+    filters.is_online,
+    filters.upcoming !== "true" ? "1" : "",
+    filters.ordering !== "-listing__created_at" ? "1" : "",
+  ].filter(Boolean).length;
+
+  const activeChips = [
+    filters.category && {
+      key: "category",
+      label: CATEGORIES.find((c) => c.value === filters.category)?.label,
+      color: CATEGORY_COLORS[filters.category]?.color || "#444",
+      bg: CATEGORY_COLORS[filters.category]?.bg || "#F5F4F0",
+      border: "#e5e5e5",
+    },
+    filters.state && {
+      key: "state",
+      label: filters.state,
+      color: "#085041",
+      bg: "#E1F5EE",
+      border: "#9FE1CB",
+    },
+    filters.is_free && {
+      key: "is_free",
+      label: "Free only",
+      color: "#085041",
+      bg: "#E1F5EE",
+      border: "#9FE1CB",
+    },
+    filters.is_online && {
+      key: "is_online",
+      label: "Online only",
+      color: "#0C447C",
+      bg: "#E6F1FB",
+      border: "#B5D4F4",
+    },
+  ].filter(Boolean);
 
   return (
     <>
       <style>{`
-        @media (max-width: 767px)  { .events-desktop { display: none !important; } .events-mobile { display: flex !important; } }
-        @media (min-width: 768px)  { .events-mobile  { display: none !important; } .events-desktop { display: grid !important; } }
+        .ev-desktop { display: none !important; }
+        .ev-mobile  { display: flex !important; }
+        .ev-fdesk   { display: none !important; }
+        .ev-fmob    { display: flex !important; }
+        @media (min-width: 768px) {
+          .ev-mobile { display: none !important; }
+          .ev-desktop{ display: grid !important; }
+          .ev-fmob   { display: none !important; }
+          .ev-fdesk  { display: flex !important; }
+        }
       `}</style>
 
+      {drawerOpen && (
+        <MobileFilterDrawer
+          filters={filters}
+          onApply={(d) => {
+            setPage(1);
+            setFilters(d);
+          }}
+          onClose={() => setDrawerOpen(false)}
+        />
+      )}
+
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: "24px" }}>
+        <div style={{ marginBottom: "18px" }}>
           <h1
             style={{
               fontSize: "26px",
-              fontWeight: 600,
+              fontWeight: 700,
               color: "#26215C",
-              marginBottom: "6px",
+              marginBottom: "4px",
             }}
           >
             Community events
@@ -407,14 +725,150 @@ export default function EventsPage() {
           </p>
         </div>
 
-        {/* Filters */}
+        {/* Upcoming toggle — always visible, above filter row */}
+        <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
+          {[
+            { v: "true", label: "🔜 Upcoming" },
+            { v: "", label: "📅 All events" },
+          ].map(({ v, label }) => (
+            <button
+              key={v}
+              onClick={() => updateFilters({ upcoming: v })}
+              style={{
+                background: filters.upcoming === v ? "#1D9E75" : "#fff",
+                color: filters.upcoming === v ? "#fff" : "#1D9E75",
+                border: `1.5px solid ${filters.upcoming === v ? "#1D9E75" : "#9FE1CB"}`,
+                borderRadius: "20px",
+                padding: "7px 18px",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.15s",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Mobile: search + filter button */}
+        <div className="ev-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="🔍  Search events..."
+            value={filters.search}
+            onChange={(e) => updateFilters({ search: e.target.value })}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: "0.5px solid #ddd",
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "16px",
+              outline: "none",
+              background: "#fff",
+            }}
+          />
+          <button
+            onClick={() => setDrawerOpen(true)}
+            style={{
+              background: activeFilterCount > 0 ? "#E1F5EE" : "#fff",
+              border: `0.5px solid ${activeFilterCount > 0 ? "#9FE1CB" : "#ddd"}`,
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "13px",
+              fontWeight: 700,
+              color: activeFilterCount > 0 ? "#1D9E75" : "#555",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              minWidth: "90px",
+            }}
+          >
+            ⚙️ Filters
+            {activeFilterCount > 0 && (
+              <span
+                style={{
+                  background: "#1D9E75",
+                  color: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Active chips (mobile) */}
+        {activeChips.length > 0 && (
+          <div
+            className="ev-fmob"
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+          >
+            {activeChips.map(({ key, label, color, bg, border }) => (
+              <button
+                key={key}
+                onClick={() => updateFilters({ [key]: "" })}
+                style={{
+                  background: bg,
+                  border: `0.5px solid ${border}`,
+                  color,
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                {label}{" "}
+                <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                updateFilters({
+                  category: "",
+                  state: "",
+                  is_free: "",
+                  is_online: "",
+                  ordering: "-listing__created_at",
+                })
+              }
+              style={{
+                background: "#FCEBEB",
+                border: "0.5px solid #F09595",
+                color: "#A32D2D",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: "20px",
+                cursor: "pointer",
+              }}
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        {/* Desktop filters */}
         <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-          }}
+          className="ev-fdesk"
+          style={{ gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}
         >
           <input
             type="text"
@@ -424,10 +878,10 @@ export default function EventsPage() {
             style={{
               flex: 1,
               minWidth: "200px",
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
-              padding: "10px 14px",
-              fontSize: "14px",
+              padding: "9px 14px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
             }}
@@ -436,10 +890,10 @@ export default function EventsPage() {
             value={filters.category}
             onChange={(e) => updateFilters({ category: e.target.value })}
             style={{
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
-              padding: "10px 14px",
-              fontSize: "14px",
+              padding: "9px 12px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
               color: "#444",
@@ -455,10 +909,10 @@ export default function EventsPage() {
             value={filters.state}
             onChange={(e) => updateFilters({ state: e.target.value })}
             style={{
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
-              padding: "10px 14px",
-              fontSize: "14px",
+              padding: "9px 12px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
               color: "#444",
@@ -474,87 +928,48 @@ export default function EventsPage() {
             value={filters.ordering}
             onChange={(e) => updateFilters({ ordering: e.target.value })}
             style={{
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
-              padding: "10px 14px",
-              fontSize: "14px",
+              padding: "9px 12px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
               color: "#444",
             }}
           >
-            <option value="-listing__created_at">Newest first</option>
-            <option value="listing__created_at">Oldest first</option>
-            <option value="event_date">Date: earliest first</option>
-            <option value="-event_date">Date: latest first</option>
-          </select>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#444",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={filters.is_free === "true"}
-              onChange={(e) =>
-                updateFilters({ is_free: e.target.checked ? "true" : "" })
-              }
-            />
-            Free only
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#444",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={filters.is_online === "true"}
-              onChange={(e) =>
-                updateFilters({ is_online: e.target.checked ? "true" : "" })
-              }
-            />
-            Online only
-          </label>
-          <div style={{ display: "flex", gap: "6px" }}>
-            {[
-              { v: "", label: "📅 All events" },
-              { v: "true", label: "🔜 Upcoming only" },
-            ].map(({ v, label }) => (
-              <button
-                key={v}
-                type="button"
-                onClick={() => updateFilters({ upcoming: v })}
-                style={{
-                  background: filters.upcoming === v ? "#534AB7" : "#fff",
-                  color: filters.upcoming === v ? "#fff" : "#534AB7",
-                  border: "0.5px solid #AFA9EC",
-                  borderRadius: "20px",
-                  padding: "10px 16px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                  whiteSpace: "nowrap",
-                }}
-              >
+            {SORT_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
                 {label}
-              </button>
+              </option>
             ))}
-          </div>
+          </select>
+          {[
+            { key: "is_free", label: "Free only" },
+            { key: "is_online", label: "Online only" },
+          ].map(({ key, label }) => (
+            <label
+              key={key}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13px",
+                color: "#444",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={filters[key] === "true"}
+                onChange={(e) =>
+                  updateFilters({ [key]: e.target.checked ? "true" : "" })
+                }
+              />
+              {label}
+            </label>
+          ))}
         </div>
 
-        {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "12px" }}
@@ -564,8 +979,6 @@ export default function EventsPage() {
             ))}
           </div>
         )}
-
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -580,17 +993,26 @@ export default function EventsPage() {
             Failed to load events. Please try again.
           </div>
         )}
-
-        {/* Empty */}
-        {data && data.results?.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
-            No events found. Try a different search.
+        {!isLoading && !isFetching && allResults.length === 0 && (
+          <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
+            <div style={{ fontSize: "36px", marginBottom: "12px" }}>🎉</div>
+            <p
+              style={{
+                fontSize: "15px",
+                fontWeight: 500,
+                color: "#555",
+                marginBottom: "6px",
+              }}
+            >
+              No events found
+            </p>
+            <p style={{ fontSize: "13px" }}>Try a different search or filter</p>
           </div>
         )}
 
-        {/* ── Mobile: list rows ── */}
+        {/* Mobile list rows */}
         <div
-          className="events-mobile"
+          className="ev-mobile"
           style={{ flexDirection: "column", gap: "12px" }}
         >
           {allResults.map((event) => {
@@ -604,36 +1026,37 @@ export default function EventsPage() {
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",
+                  borderLeft: event.is_featured
+                    ? "3px solid #E87722"
+                    : "0.5px solid #e5e5e5",
                   borderRadius: "12px",
-                  padding: "18px 20px",
-                  cursor: "pointer",
-                  transition: "border-color 0.15s",
-                  display: "flex",
-                  gap: "16px",
-                  alignItems: "flex-start",
+                  padding: "14px 16px",
                   textDecoration: "none",
+                  display: "flex",
+                  gap: "14px",
+                  alignItems: "flex-start",
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#AFA9EC")
+                  (e.currentTarget.style.boxShadow =
+                    "0 2px 12px rgba(29,158,117,0.1)")
                 }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor = "#e5e5e5")
-                }
+                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
               >
+                {/* Date block */}
                 <div
                   style={{
-                    background: "#EEEDFE",
+                    background: catColor.bg,
                     borderRadius: "10px",
-                    padding: "10px 14px",
+                    padding: "10px 12px",
                     textAlign: "center",
-                    minWidth: "60px",
+                    minWidth: "52px",
                     flexShrink: 0,
                   }}
                 >
                   <div
                     style={{
-                      fontSize: "22px",
-                      fontWeight: 600,
+                      fontSize: "20px",
+                      fontWeight: 800,
                       color: "#26215C",
                       lineHeight: 1,
                     }}
@@ -642,9 +1065,9 @@ export default function EventsPage() {
                   </div>
                   <div
                     style={{
-                      fontSize: "11px",
-                      color: "#534AB7",
-                      fontWeight: 500,
+                      fontSize: "10px",
+                      color: catColor.color,
+                      fontWeight: 600,
                       marginTop: "2px",
                     }}
                   >
@@ -653,13 +1076,13 @@ export default function EventsPage() {
                       .toUpperCase()}
                   </div>
                 </div>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div
                     style={{
                       display: "flex",
-                      gap: "6px",
-                      marginBottom: "6px",
+                      gap: "5px",
                       flexWrap: "wrap",
+                      marginBottom: "4px",
                     }}
                   >
                     <span
@@ -705,19 +1128,24 @@ export default function EventsPage() {
                   </div>
                   <h3
                     style={{
-                      fontSize: "15px",
+                      fontSize: "14px",
                       fontWeight: 600,
                       color: "#26215C",
-                      marginBottom: "4px",
+                      marginBottom: "3px",
+                      lineHeight: 1.3,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
                     }}
                   >
                     {event.listing_title}
                   </h3>
                   <div
                     style={{
-                      fontSize: "13px",
+                      fontSize: "12px",
                       color: "#666",
-                      marginBottom: "4px",
+                      marginBottom: "2px",
                     }}
                   >
                     {formatDate(event.event_date)} at{" "}
@@ -733,11 +1161,12 @@ export default function EventsPage() {
                   style={{
                     background: event.is_free ? "#E1F5EE" : "#FFF1E0",
                     color: event.is_free ? "#085041" : "#633806",
-                    fontSize: "13px",
+                    fontSize: "12px",
                     fontWeight: 600,
-                    padding: "6px 14px",
+                    padding: "5px 10px",
                     borderRadius: "20px",
                     whiteSpace: "nowrap",
+                    flexShrink: 0,
                     alignSelf: "center",
                   }}
                 >
@@ -748,9 +1177,9 @@ export default function EventsPage() {
           })}
         </div>
 
-        {/* ── Desktop: card grid ── */}
+        {/* Desktop card grid */}
         <div
-          className="events-desktop"
+          className="ev-desktop"
           style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
         >
           {allResults.map((event) => (
@@ -758,7 +1187,6 @@ export default function EventsPage() {
           ))}
         </div>
 
-        {/* Load more */}
         {data?.next && (
           <div style={{ textAlign: "center", paddingTop: "20px" }}>
             <button

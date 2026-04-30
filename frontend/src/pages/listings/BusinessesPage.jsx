@@ -58,13 +58,242 @@ const CATEGORY_COLORS = {
   other: { bg: "#F1EFE8", color: "#444441" },
 };
 
-/* ── Desktop card ────────────────────────────────── */
+/* ── Mobile filter drawer ────────────────────────── */
+function MobileFilterDrawer({ filters, onApply, onClose }) {
+  const [draft, setDraft] = useState({ ...filters });
+  const set = (k, v) => setDraft((p) => ({ ...p, [k]: v }));
+  const sel = {
+    width: "100%",
+    border: "0.5px solid #ddd",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    fontSize: "16px",
+    background: "#F5F4F0",
+    color: "#444",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+  const lbl = {
+    fontSize: "11px",
+    fontWeight: 700,
+    color: "#aaa",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    marginBottom: "6px",
+  };
+
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.45)",
+          zIndex: 100,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "#fff",
+          borderRadius: "20px 20px 0 0",
+          zIndex: 101,
+          maxHeight: "88vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "12px 0 0",
+          }}
+        >
+          <div
+            style={{
+              width: "40px",
+              height: "4px",
+              borderRadius: "2px",
+              background: "#e5e5e5",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "12px 20px",
+            borderBottom: "0.5px solid #f0f0f0",
+          }}
+        >
+          <div style={{ fontSize: "16px", fontWeight: 700, color: "#26215C" }}>
+            Filters
+          </div>
+          <button
+            onClick={() =>
+              setDraft((p) => ({
+                ...p,
+                category: "",
+                state: "",
+                is_nepalese_owned: "",
+                is_verified: "",
+              }))
+            }
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "13px",
+              color: "#633806",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+        <div
+          style={{
+            padding: "16px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          <div>
+            <div style={lbl}>Category</div>
+            <select
+              value={draft.category}
+              onChange={(e) => set("category", e.target.value)}
+              style={sel}
+            >
+              {CATEGORIES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <div style={lbl}>State</div>
+            <select
+              value={draft.state}
+              onChange={(e) => set("state", e.target.value)}
+              style={sel}
+            >
+              {STATES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              {
+                key: "is_nepalese_owned",
+                label: "🇳🇵 Nepalese-owned",
+                sub: "Owned by Nepalese people",
+                color: "#3C3489",
+                bg: "#EEEDFE",
+                border: "#AFA9EC",
+              },
+              {
+                key: "is_verified",
+                label: "✓ Verified only",
+                sub: "Verified by NepSaathi admin",
+                color: "#085041",
+                bg: "#E1F5EE",
+                border: "#9FE1CB",
+              },
+            ].map(({ key, label, sub, color, bg, border }) => {
+              const on = draft[key] === "true";
+              return (
+                <label
+                  key={key}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    background: on ? bg : "#F5F4F0",
+                    border: `0.5px solid ${on ? border : "#e5e5e5"}`,
+                    borderRadius: "10px",
+                    padding: "12px 14px",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={on}
+                    onChange={(e) => set(key, e.target.checked ? "true" : "")}
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      flexShrink: 0,
+                      accentColor: color,
+                    }}
+                  />
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#26215C",
+                      }}
+                    >
+                      {label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#888",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {sub}
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => {
+              onApply(draft);
+              onClose();
+            }}
+            style={{
+              width: "100%",
+              background: "#8B5E00",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "14px",
+              fontSize: "14px",
+              fontWeight: 700,
+              cursor: "pointer",
+              marginBottom: "8px",
+            }}
+          >
+            Apply filters
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── Desktop card ─────────────────────────────────── */
 function BusinessCard({ business }) {
   const [hovered, setHovered] = useState(false);
   const catColor = CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
   const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
-  const footerBg = "#8B5E00";
-
   return (
     <Link
       to={`/businesses/${business.id}`}
@@ -86,7 +315,6 @@ function BusinessCard({ business }) {
         minHeight: "300px",
       }}
     >
-      {/* Header strip */}
       <div
         style={{
           background: catColor.bg,
@@ -100,7 +328,6 @@ function BusinessCard({ business }) {
           overflow: "hidden",
         }}
       >
-        {/* Logo image if available, else emoji */}
         {business.logo_url ? (
           <img
             src={business.logo_url}
@@ -115,8 +342,6 @@ function BusinessCard({ business }) {
         ) : (
           catEmoji
         )}
-
-        {/* Verified badge top-right */}
         {business.is_verified && (
           <div style={{ position: "absolute", top: "10px", right: "10px" }}>
             <span
@@ -133,8 +358,6 @@ function BusinessCard({ business }) {
             </span>
           </div>
         )}
-
-        {/* Featured badge top-left */}
         {business.is_featured && (
           <div style={{ position: "absolute", top: "10px", left: "10px" }}>
             <span
@@ -151,7 +374,6 @@ function BusinessCard({ business }) {
             </span>
           </div>
         )}
-
         <div
           style={{
             position: "absolute",
@@ -159,13 +381,11 @@ function BusinessCard({ business }) {
             left: 0,
             right: 0,
             height: "3px",
-            background: footerBg,
+            background: "#8B5E00",
             opacity: 0.3,
           }}
         />
       </div>
-
-      {/* Body */}
       <div
         style={{
           padding: "14px 16px",
@@ -175,7 +395,6 @@ function BusinessCard({ business }) {
           gap: "6px",
         }}
       >
-        {/* Category tag */}
         <span
           style={{
             background: catColor.bg,
@@ -189,8 +408,6 @@ function BusinessCard({ business }) {
         >
           {catEmoji} {business.category?.replace("_", " ")}
         </span>
-
-        {/* Business name */}
         <div
           style={{
             fontSize: "15px",
@@ -201,28 +418,21 @@ function BusinessCard({ business }) {
         >
           {business.business_name}
         </div>
-
-        {/* Rating */}
         {business.avg_rating > 0 ? (
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            {/* Stars */}
-            <div style={{ display: "flex", gap: "1px" }}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  style={{
-                    fontSize: "12px",
-                    color:
-                      star <= Math.round(business.avg_rating)
-                        ? "#E87722"
-                        : "#ddd",
-                    lineHeight: 1,
-                  }}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
+            {[1, 2, 3, 4, 5].map((s) => (
+              <span
+                key={s}
+                style={{
+                  fontSize: "12px",
+                  color:
+                    s <= Math.round(business.avg_rating) ? "#E87722" : "#ddd",
+                  lineHeight: 1,
+                }}
+              >
+                ★
+              </span>
+            ))}
             <span
               style={{ fontSize: "12px", fontWeight: 600, color: "#E87722" }}
             >
@@ -234,9 +444,9 @@ function BusinessCard({ business }) {
           </div>
         ) : (
           <div style={{ display: "flex", gap: "1px" }}>
-            {[1, 2, 3, 4, 5].map((star) => (
+            {[1, 2, 3, 4, 5].map((s) => (
               <span
-                key={star}
+                key={s}
                 style={{ fontSize: "12px", color: "#ddd", lineHeight: 1 }}
               >
                 ★
@@ -249,13 +459,9 @@ function BusinessCard({ business }) {
             </span>
           </div>
         )}
-
-        {/* Location */}
         <div style={{ fontSize: "12px", color: "#777" }}>
           📍 {business.suburb}, {business.state}
         </div>
-
-        {/* Description */}
         {business.description && (
           <div
             style={{
@@ -272,8 +478,6 @@ function BusinessCard({ business }) {
             {business.description}
           </div>
         )}
-
-        {/* Nepalese owned */}
         {business.is_nepalese_owned && (
           <span
             style={{
@@ -291,11 +495,9 @@ function BusinessCard({ business }) {
           </span>
         )}
       </div>
-
-      {/* Footer */}
       <div
         style={{
-          background: footerBg,
+          background: "#8B5E00",
           display: "flex",
           justifyContent: "space-around",
           padding: "10px 12px",
@@ -330,10 +532,11 @@ function BusinessCard({ business }) {
   );
 }
 
-/* ══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════ */
 export default function BusinessesPage() {
   usePageTitle("Nepalese Businesses");
   const location = useLocation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({
     category: "",
     state: "",
@@ -345,9 +548,9 @@ export default function BusinessesPage() {
   const [allResults, setAllResults] = useState([]);
   const prevKey = useRef(null);
 
-  const updateFilters = (update) => {
+  const updateFilters = (u) => {
     setPage(1);
-    setFilters((prev) => ({ ...prev, ...update }));
+    setFilters((p) => ({ ...p, ...u }));
   };
 
   const { data, isLoading, isFetching, error } = useQuery({
@@ -369,41 +572,91 @@ export default function BusinessesPage() {
     if (key !== prevKey.current || page === 1) {
       setAllResults(data.results);
       prevKey.current = key;
-    } else {
-      setAllResults((prev) => [...prev, ...data.results]);
-    }
+    } else setAllResults((p) => [...p, ...data.results]);
   }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const searchParam = params.get("search");
-    const stateParam = params.get("state");
-    if (searchParam || stateParam) {
+    const s = params.get("search"),
+      st = params.get("state");
+    if (s || st) {
       setPage(1);
-      setFilters((prev) => ({
-        ...prev,
-        search: searchParam || "",
-        state: stateParam || "",
-      }));
+      setFilters((p) => ({ ...p, search: s || "", state: st || "" }));
     }
   }, [location.search]);
+
+  const activeFilterCount = [
+    filters.category,
+    filters.state,
+    filters.is_nepalese_owned,
+    filters.is_verified,
+  ].filter(Boolean).length;
+
+  const activeChips = [
+    filters.category && {
+      key: "category",
+      label: CATEGORIES.find((c) => c.value === filters.category)?.label,
+      color: CATEGORY_COLORS[filters.category]?.color || "#633806",
+      bg: CATEGORY_COLORS[filters.category]?.bg || "#FFF1E0",
+      border: "#EFD9C0",
+    },
+    filters.state && {
+      key: "state",
+      label: filters.state,
+      color: "#633806",
+      bg: "#FFF1E0",
+      border: "#EFD9C0",
+    },
+    filters.is_nepalese_owned && {
+      key: "is_nepalese_owned",
+      label: "🇳🇵 Nepalese owned",
+      color: "#3C3489",
+      bg: "#EEEDFE",
+      border: "#AFA9EC",
+    },
+    filters.is_verified && {
+      key: "is_verified",
+      label: "✓ Verified",
+      color: "#085041",
+      bg: "#E1F5EE",
+      border: "#9FE1CB",
+    },
+  ].filter(Boolean);
 
   return (
     <>
       <style>{`
-        @media (max-width: 767px)  { .biz-desktop { display: none !important; } .biz-mobile { display: grid !important; } }
-        @media (min-width: 768px)  { .biz-mobile  { display: none !important; } .biz-desktop { display: grid !important; } }
+        .bz-desktop { display: none !important; }
+        .bz-mobile  { display: grid !important; }
+        .bz-fdesk   { display: none !important; }
+        .bz-fmob    { display: flex !important; }
+        @media (min-width: 768px) {
+          .bz-mobile { display: none !important; }
+          .bz-desktop{ display: grid !important; }
+          .bz-fmob   { display: none !important; }
+          .bz-fdesk  { display: flex !important; }
+        }
       `}</style>
 
+      {drawerOpen && (
+        <MobileFilterDrawer
+          filters={filters}
+          onApply={(d) => {
+            setPage(1);
+            setFilters(d);
+          }}
+          onClose={() => setDrawerOpen(false)}
+        />
+      )}
+
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: "24px" }}>
+        <div style={{ marginBottom: "18px" }}>
           <h1
             style={{
               fontSize: "26px",
-              fontWeight: 600,
+              fontWeight: 700,
               color: "#26215C",
-              marginBottom: "6px",
+              marginBottom: "4px",
             }}
           >
             Nepalese businesses
@@ -413,14 +666,122 @@ export default function BusinessesPage() {
           </p>
         </div>
 
-        {/* Filters */}
+        {/* Mobile: search + filter button */}
+        <div className="bz-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="🔍  Search businesses..."
+            value={filters.search}
+            onChange={(e) => updateFilters({ search: e.target.value })}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: "0.5px solid #ddd",
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "16px",
+              outline: "none",
+              background: "#fff",
+            }}
+          />
+          <button
+            onClick={() => setDrawerOpen(true)}
+            style={{
+              background: activeFilterCount > 0 ? "#FFF1E0" : "#fff",
+              border: `0.5px solid ${activeFilterCount > 0 ? "#EFD9C0" : "#ddd"}`,
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "13px",
+              fontWeight: 700,
+              color: activeFilterCount > 0 ? "#633806" : "#555",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              minWidth: "90px",
+            }}
+          >
+            ⚙️ Filters
+            {activeFilterCount > 0 && (
+              <span
+                style={{
+                  background: "#8B5E00",
+                  color: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Active chips (mobile) */}
+        {activeChips.length > 0 && (
+          <div
+            className="bz-fmob"
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+          >
+            {activeChips.map(({ key, label, color, bg, border }) => (
+              <button
+                key={key}
+                onClick={() => updateFilters({ [key]: "" })}
+                style={{
+                  background: bg,
+                  border: `0.5px solid ${border}`,
+                  color,
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                {label}{" "}
+                <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                updateFilters({
+                  category: "",
+                  state: "",
+                  is_nepalese_owned: "",
+                  is_verified: "",
+                })
+              }
+              style={{
+                background: "#FCEBEB",
+                border: "0.5px solid #F09595",
+                color: "#A32D2D",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: "20px",
+                cursor: "pointer",
+              }}
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        {/* Desktop filters */}
         <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-          }}
+          className="bz-fdesk"
+          style={{ gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}
         >
           <input
             type="text"
@@ -430,10 +791,10 @@ export default function BusinessesPage() {
             style={{
               flex: 1,
               minWidth: "200px",
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
               padding: "10px 14px",
-              fontSize: "14px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
             }}
@@ -442,10 +803,10 @@ export default function BusinessesPage() {
             value={filters.category}
             onChange={(e) => updateFilters({ category: e.target.value })}
             style={{
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
               padding: "10px 14px",
-              fontSize: "14px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
               color: "#444",
@@ -461,10 +822,10 @@ export default function BusinessesPage() {
             value={filters.state}
             onChange={(e) => updateFilters({ state: e.target.value })}
             style={{
-              border: "0.5px solid #ccc",
+              border: "0.5px solid #ddd",
               borderRadius: "8px",
               padding: "10px 14px",
-              fontSize: "14px",
+              fontSize: "13px",
               outline: "none",
               background: "#fff",
               color: "#444",
@@ -476,49 +837,33 @@ export default function BusinessesPage() {
               </option>
             ))}
           </select>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#444",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={filters.is_nepalese_owned === "true"}
-              onChange={(e) =>
-                updateFilters({
-                  is_nepalese_owned: e.target.checked ? "true" : "",
-                })
-              }
-            />
-            Nepalese owned
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              color: "#444",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={filters.is_verified === "true"}
-              onChange={(e) =>
-                updateFilters({ is_verified: e.target.checked ? "true" : "" })
-              }
-            />
-            Verified only
-          </label>
+          {[
+            { key: "is_nepalese_owned", label: "Nepalese owned" },
+            { key: "is_verified", label: "Verified only" },
+          ].map(({ key, label }) => (
+            <label
+              key={key}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13px",
+                color: "#444",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={filters[key] === "true"}
+                onChange={(e) =>
+                  updateFilters({ [key]: e.target.checked ? "true" : "" })
+                }
+              />
+              {label}
+            </label>
+          ))}
         </div>
 
-        {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
             style={{
@@ -532,8 +877,6 @@ export default function BusinessesPage() {
             ))}
           </div>
         )}
-
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -548,10 +891,8 @@ export default function BusinessesPage() {
             Failed to load businesses. Please try again.
           </div>
         )}
-
-        {/* Empty */}
-        {data && data.results?.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px", color: "#888" }}>
+        {!isLoading && !isFetching && allResults.length === 0 && (
+          <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
             <div style={{ fontSize: "36px", marginBottom: "12px" }}>🏪</div>
             <p
               style={{
@@ -567,34 +908,32 @@ export default function BusinessesPage() {
           </div>
         )}
 
-        {/* ── Mobile: original 2-col grid (compact cards) ── */}
+        {/* Mobile: 2-col compact cards */}
         <div
-          className="biz-mobile"
+          className="bz-mobile"
           style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: "14px",
+            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+            gap: "12px",
           }}
         >
-          {allResults.map((business) => {
+          {allResults.map((biz) => {
             const catColor =
-              CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
-            const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
+              CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
+            const catEmoji = CATEGORY_EMOJIS[biz.category] || "📌";
             return (
               <Link
-                key={business.id}
-                to={`/businesses/${business.id}`}
+                key={biz.id}
+                to={`/businesses/${biz.id}`}
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",
                   borderRadius: "12px",
-                  padding: "18px",
-                  cursor: "pointer",
-                  transition: "border-color 0.15s",
+                  padding: "14px",
                   textDecoration: "none",
                   display: "block",
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#AFA9EC")
+                  (e.currentTarget.style.borderColor = "#FAC775")
                 }
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.borderColor = "#e5e5e5")
@@ -602,74 +941,77 @@ export default function BusinessesPage() {
               >
                 <div
                   style={{
-                    width: "44px",
-                    height: "44px",
+                    width: "40px",
+                    height: "40px",
                     borderRadius: "10px",
                     background: catColor.bg,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: "20px",
-                    marginBottom: "12px",
+                    marginBottom: "10px",
                   }}
                 >
                   {catEmoji}
                 </div>
                 <div
                   style={{
-                    marginBottom: "6px",
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "space-between",
-                    gap: "8px",
+                    gap: "6px",
+                    marginBottom: "4px",
                   }}
                 >
                   <h3
                     style={{
-                      fontSize: "14px",
+                      fontSize: "13px",
                       fontWeight: 600,
                       color: "#26215C",
+                      lineHeight: 1.3,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
                     }}
                   >
-                    {business.business_name}
+                    {biz.business_name}
                   </h3>
-                  {business.is_verified && (
+                  {biz.is_verified && (
                     <span
                       style={{
                         background: "#E1F5EE",
                         color: "#085041",
-                        fontSize: "10px",
+                        fontSize: "9px",
                         fontWeight: 500,
-                        padding: "2px 7px",
-                        borderRadius: "8px",
+                        padding: "2px 5px",
+                        borderRadius: "6px",
                         whiteSpace: "nowrap",
                         flexShrink: 0,
                       }}
                     >
-                      ✓ Verified
+                      ✓
                     </span>
                   )}
                 </div>
-                {/* Rating - mobile */}
-                {business.avg_rating > 0 && (
+                {biz.avg_rating > 0 && (
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "4px",
-                      marginBottom: "6px",
+                      gap: "3px",
+                      marginBottom: "4px",
                     }}
                   >
-                    {[1, 2, 3, 4, 5].map((star) => (
+                    {[1, 2, 3, 4, 5].map((s) => (
                       <span
-                        key={star}
+                        key={s}
                         style={{
-                          fontSize: "11px",
+                          fontSize: "10px",
                           color:
-                            star <= Math.round(business.avg_rating)
+                            s <= Math.round(biz.avg_rating)
                               ? "#E87722"
                               : "#ddd",
-                          lineHeight: 1,
                         }}
                       >
                         ★
@@ -677,15 +1019,12 @@ export default function BusinessesPage() {
                     ))}
                     <span
                       style={{
-                        fontSize: "11px",
-                        fontWeight: 600,
+                        fontSize: "10px",
                         color: "#E87722",
+                        fontWeight: 600,
                       }}
                     >
-                      {Number(business.avg_rating).toFixed(1)}
-                    </span>
-                    <span style={{ fontSize: "11px", color: "#aaa" }}>
-                      ({business.review_count})
+                      {Number(biz.avg_rating).toFixed(1)}
                     </span>
                   </div>
                 )}
@@ -693,70 +1032,54 @@ export default function BusinessesPage() {
                   style={{
                     background: catColor.bg,
                     color: catColor.color,
-                    fontSize: "11px",
+                    fontSize: "10px",
                     fontWeight: 500,
-                    padding: "2px 8px",
-                    borderRadius: "8px",
+                    padding: "2px 7px",
+                    borderRadius: "7px",
                     display: "inline-block",
-                    marginBottom: "8px",
-                  }}
-                >
-                  {catEmoji} {business.category?.replace("_", " ")}
-                </span>
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "#888",
                     marginBottom: "6px",
                   }}
                 >
-                  📍 {business.suburb}, {business.state}
-                </p>
+                  {catEmoji} {biz.category?.replace("_", " ")}
+                </span>
                 <p
                   style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    lineHeight: 1.5,
-                    overflow: "hidden",
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
+                    fontSize: "11px",
+                    color: "#888",
+                    marginBottom: "4px",
                   }}
                 >
-                  {business.description}
+                  📍 {biz.suburb}, {biz.state}
                 </p>
-                {business.is_nepalese_owned && (
-                  <div style={{ marginTop: "10px" }}>
-                    <span
-                      style={{
-                        background: "#EEEDFE",
-                        color: "#3C3489",
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        padding: "2px 8px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      🇳🇵 Nepalese owned
-                    </span>
-                  </div>
+                {biz.is_nepalese_owned && (
+                  <span
+                    style={{
+                      background: "#EEEDFE",
+                      color: "#3C3489",
+                      fontSize: "10px",
+                      fontWeight: 500,
+                      padding: "2px 7px",
+                      borderRadius: "7px",
+                    }}
+                  >
+                    🇳🇵 Nepalese
+                  </span>
                 )}
               </Link>
             );
           })}
         </div>
 
-        {/* ── Desktop: enhanced card grid ── */}
+        {/* Desktop 3-col card grid */}
         <div
-          className="biz-desktop"
+          className="bz-desktop"
           style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
         >
-          {allResults.map((business) => (
-            <BusinessCard key={business.id} business={business} />
+          {allResults.map((biz) => (
+            <BusinessCard key={biz.id} business={biz} />
           ))}
         </div>
 
-        {/* Load more */}
         {data?.next && (
           <div style={{ textAlign: "center", paddingTop: "20px" }}>
             <button

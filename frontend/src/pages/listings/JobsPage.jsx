@@ -21,7 +21,13 @@ const TABS = [
   { value: "true", label: "Job Seekers", emoji: "🔍" },
 ];
 
-/* ── helpers ─────────────────────────────────────── */
+const SORT_OPTIONS = [
+  { value: "-listing__created_at", label: "Newest first" },
+  { value: "listing__created_at", label: "Oldest first" },
+  { value: "salary", label: "Salary ↑" },
+  { value: "-salary", label: "Salary ↓" },
+];
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const days = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
@@ -35,13 +41,184 @@ function timeAgo(dateStr) {
   return m === 1 ? "1 month ago" : `${m} months ago`;
 }
 
-/* ── Desktop card ────────────────────────────────── */
+/* ── Mobile filter drawer ────────────────────────── */
+function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
+  const [draft, setDraft] = useState({ ...filters });
+  const set = (k, v) => setDraft((p) => ({ ...p, [k]: v }));
+  const sel = {
+    width: "100%",
+    border: "0.5px solid #ddd",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    fontSize: "16px",
+    background: "#F5F4F0",
+    color: "#444",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+  const lbl = {
+    fontSize: "11px",
+    fontWeight: 700,
+    color: "#aaa",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    marginBottom: "6px",
+  };
+
+  return (
+    <>
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.45)",
+          zIndex: 100,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "#fff",
+          borderRadius: "20px 20px 0 0",
+          zIndex: 101,
+          maxHeight: "88vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "12px 0 0",
+          }}
+        >
+          <div
+            style={{
+              width: "40px",
+              height: "4px",
+              borderRadius: "2px",
+              background: "#e5e5e5",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "12px 20px",
+            borderBottom: "0.5px solid #f0f0f0",
+          }}
+        >
+          <div style={{ fontSize: "16px", fontWeight: 700, color: "#26215C" }}>
+            Filters
+          </div>
+          <button
+            onClick={() =>
+              setDraft((p) => ({
+                ...p,
+                job_type: "",
+                state: "",
+                ordering: "-listing__created_at",
+              }))
+            }
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "13px",
+              color: "#534AB7",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+        <div
+          style={{
+            padding: "16px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          <div>
+            <div style={lbl}>Job type</div>
+            <select
+              value={draft.job_type}
+              onChange={(e) => set("job_type", e.target.value)}
+              style={sel}
+            >
+              {JOB_TYPES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <div style={lbl}>State</div>
+            <select
+              value={draft.state}
+              onChange={(e) => set("state", e.target.value)}
+              style={sel}
+            >
+              {STATES.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <div style={lbl}>Sort by</div>
+            <select
+              value={draft.ordering}
+              onChange={(e) => set("ordering", e.target.value)}
+              style={sel}
+            >
+              {SORT_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={() => {
+              onApply(draft);
+              onClose();
+            }}
+            style={{
+              width: "100%",
+              background: "#534AB7",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "14px",
+              fontSize: "14px",
+              fontWeight: 700,
+              cursor: "pointer",
+              marginBottom: "8px",
+            }}
+          >
+            Apply filters
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── Desktop card ─────────────────────────────────── */
 function JobCard({ job }) {
   const [hovered, setHovered] = useState(false);
   const isWanted = job.is_wanted;
-  const accentColor = isWanted ? "#534AB7" : "#534AB7";
-  const headerBg = isWanted ? "#EEEDFE" : "#F0EFF9";
-
   return (
     <Link
       to={`/jobs/listing/${job.listing_id}`}
@@ -63,10 +240,9 @@ function JobCard({ job }) {
         minHeight: "300px",
       }}
     >
-      {/* Coloured header strip */}
       <div
         style={{
-          background: headerBg,
+          background: isWanted ? "#EEEDFE" : "#F0EFF9",
           height: "100px",
           display: "flex",
           alignItems: "center",
@@ -77,8 +253,6 @@ function JobCard({ job }) {
         }}
       >
         {isWanted ? "🔍" : "💼"}
-
-        {/* Badges top-left */}
         <div
           style={{
             position: "absolute",
@@ -132,8 +306,6 @@ function JobCard({ job }) {
             </span>
           )}
         </div>
-
-        {/* Salary badge top-right */}
         <div style={{ position: "absolute", top: "10px", right: "10px" }}>
           <span
             style={{
@@ -148,8 +320,6 @@ function JobCard({ job }) {
             {job.salary_display}
           </span>
         </div>
-
-        {/* bottom accent */}
         <div
           style={{
             position: "absolute",
@@ -157,13 +327,11 @@ function JobCard({ job }) {
             left: 0,
             right: 0,
             height: "3px",
-            background: accentColor,
+            background: "#534AB7",
             opacity: 0.3,
           }}
         />
       </div>
-
-      {/* Body */}
       <div
         style={{
           padding: "14px 16px",
@@ -173,12 +341,9 @@ function JobCard({ job }) {
           gap: "5px",
         }}
       >
-        {/* Timestamp */}
         <div style={{ fontSize: "11px", fontWeight: 600, color: "#534AB7" }}>
           {timeAgo(job.created_at || job.date_posted)}
         </div>
-
-        {/* Title */}
         <div
           style={{
             fontSize: "15px",
@@ -189,15 +354,11 @@ function JobCard({ job }) {
         >
           {job.listing_title}
         </div>
-
-        {/* Company / location */}
         <div style={{ fontSize: "12px", color: "#777" }}>
           {isWanted
             ? `📍 ${job.listing_location}, ${job.listing_state}`
             : `${job.company_name ? `${job.company_name} · ` : ""}📍 ${job.listing_location}, ${job.listing_state}`}
         </div>
-
-        {/* Description */}
         {job.description && (
           <div
             style={{
@@ -216,11 +377,9 @@ function JobCard({ job }) {
           </div>
         )}
       </div>
-
-      {/* Footer */}
       <div
         style={{
-          background: accentColor,
+          background: "#534AB7",
           display: "flex",
           justifyContent: "space-around",
           padding: "10px 12px",
@@ -246,11 +405,12 @@ function JobCard({ job }) {
   );
 }
 
-/* ══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════ */
 export default function JobsPage() {
   usePageTitle("Jobs in Australia");
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({
     job_type: "",
     search: "",
@@ -261,9 +421,9 @@ export default function JobsPage() {
   const [allResults, setAllResults] = useState([]);
   const prevKey = useRef(null);
 
-  const updateFilters = (update) => {
+  const updateFilters = (u) => {
     setPage(1);
-    setFilters((prev) => ({ ...prev, ...update }));
+    setFilters((p) => ({ ...p, ...u }));
   };
 
   const { data, isLoading, isFetching, error } = useQuery({
@@ -284,42 +444,78 @@ export default function JobsPage() {
     if (key !== prevKey.current || page === 1) {
       setAllResults(data.results);
       prevKey.current = key;
-    } else {
-      setAllResults((prev) => [...prev, ...data.results]);
-    }
+    } else setAllResults((p) => [...p, ...data.results]);
   }, [data]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const searchParam = params.get("search");
-    const stateParam = params.get("state");
-    if (searchParam || stateParam) {
+    const s = params.get("search"),
+      st = params.get("state");
+    if (s || st) {
       setPage(1);
-      setFilters((prev) => ({
-        ...prev,
-        search: searchParam || "",
-        state: stateParam || "",
-      }));
+      setFilters((p) => ({ ...p, search: s || "", state: st || "" }));
     }
   }, [location.search]);
 
-  const filteredResults = allResults.filter((job) => {
-    if (activeTab === "") return true;
-    if (activeTab === "true") return job.is_wanted === true;
-    if (activeTab === "false") return job.is_wanted === false;
+  const filteredResults = allResults.filter((j) => {
+    if (activeTab === "true") return j.is_wanted === true;
+    if (activeTab === "false") return j.is_wanted === false;
     return true;
   });
+
+  const activeFilterCount = [
+    filters.job_type,
+    filters.state,
+    filters.ordering !== "-listing__created_at" ? "1" : "",
+  ].filter(Boolean).length;
+
+  const activeChips = [
+    filters.job_type && {
+      key: "job_type",
+      label: JOB_TYPES.find((t) => t.value === filters.job_type)?.label,
+      color: "#3C3489",
+      bg: "#EEEDFE",
+      border: "#AFA9EC",
+    },
+    filters.state && {
+      key: "state",
+      label: filters.state,
+      color: "#3C3489",
+      bg: "#EEEDFE",
+      border: "#AFA9EC",
+    },
+  ].filter(Boolean);
 
   return (
     <>
       <style>{`
-        @media (max-width: 767px)  { .jobs-desktop { display: none !important; } .jobs-mobile { display: flex !important; } }
-        @media (min-width: 768px)  { .jobs-mobile  { display: none !important; } .jobs-desktop { display: grid !important; } }
+        .jb-desktop { display: none !important; }
+        .jb-mobile  { display: flex !important; }
+        .jb-fdesk   { display: none !important; }
+        .jb-fmob    { display: flex !important; }
+        .jb-tabs::-webkit-scrollbar { display: none; }
+        @media (min-width: 768px) {
+          .jb-mobile { display: none !important; }
+          .jb-desktop{ display: grid !important; }
+          .jb-fmob   { display: none !important; }
+          .jb-fdesk  { display: flex !important; }
+        }
       `}</style>
 
+      {drawerOpen && (
+        <MobileFilterDrawer
+          filters={filters}
+          resultCount={filteredResults.length}
+          onApply={(d) => {
+            setPage(1);
+            setFilters(d);
+          }}
+          onClose={() => setDrawerOpen(false)}
+        />
+      )}
+
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "18px" }}>
           <h1
             style={{
               fontSize: "26px",
@@ -335,72 +531,183 @@ export default function JobsPage() {
           </p>
         </div>
 
-        {/* Tab pills */}
+        {/* Tabs: horizontal scroll */}
         <div
+          className="jb-tabs"
           style={{
-            display: "flex",
-            gap: "8px",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
             marginBottom: "16px",
-            flexWrap: "wrap",
           }}
         >
-          {TABS.map(({ value, label, emoji }) => (
-            <button
-              key={value}
-              onClick={() => {
-                setActiveTab(value);
-                setPage(1);
-              }}
-              style={{
-                background: activeTab === value ? "#534AB7" : "#fff",
-                color: activeTab === value ? "#fff" : "#534AB7",
-                border: `1.5px solid ${activeTab === value ? "#534AB7" : "#AFA9EC"}`,
-                borderRadius: "20px",
-                padding: "7px 18px",
-                fontSize: "13px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.15s",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <span>{emoji}</span>
-              {label}
-              {data?.results && (
-                <span
-                  style={{
-                    background:
-                      activeTab === value
-                        ? "rgba(255,255,255,0.25)"
-                        : "#EEEDFE",
-                    color: activeTab === value ? "#fff" : "#534AB7",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    padding: "1px 6px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  {value === ""
-                    ? (data?.count ?? allResults.length)
-                    : value === "true"
-                      ? allResults.filter((j) => j.is_wanted).length
-                      : allResults.filter((j) => !j.is_wanted).length}
-                </span>
-              )}
-            </button>
-          ))}
+          <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
+            {TABS.map(({ value, label, emoji }) => (
+              <button
+                key={value}
+                onClick={() => {
+                  setActiveTab(value);
+                  setPage(1);
+                }}
+                style={{
+                  background: activeTab === value ? "#534AB7" : "#fff",
+                  color: activeTab === value ? "#fff" : "#534AB7",
+                  border: `1.5px solid ${activeTab === value ? "#534AB7" : "#AFA9EC"}`,
+                  borderRadius: "20px",
+                  padding: "7px 18px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span>{emoji}</span>
+                {label}
+                {data && (
+                  <span
+                    style={{
+                      background:
+                        activeTab === value
+                          ? "rgba(255,255,255,0.25)"
+                          : "#EEEDFE",
+                      color: activeTab === value ? "#fff" : "#534AB7",
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      padding: "1px 6px",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {value === ""
+                      ? (data?.count ?? allResults.length)
+                      : value === "true"
+                        ? allResults.filter((j) => j.is_wanted).length
+                        : allResults.filter((j) => !j.is_wanted).length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Filters */}
+        {/* Mobile: search + filter button */}
+        <div className="jb-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
+          <input
+            type="text"
+            placeholder="🔍  Search jobs..."
+            value={filters.search}
+            onChange={(e) => updateFilters({ search: e.target.value })}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              border: "0.5px solid #ddd",
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "16px",
+              outline: "none",
+              background: "#fff",
+            }}
+          />
+          <button
+            onClick={() => setDrawerOpen(true)}
+            style={{
+              background: activeFilterCount > 0 ? "#EEEDFE" : "#fff",
+              border: `0.5px solid ${activeFilterCount > 0 ? "#AFA9EC" : "#ddd"}`,
+              borderRadius: "9px",
+              padding: "10px 14px",
+              fontSize: "13px",
+              fontWeight: 700,
+              color: activeFilterCount > 0 ? "#534AB7" : "#555",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              minWidth: "90px",
+            }}
+          >
+            ⚙️ Filters
+            {activeFilterCount > 0 && (
+              <span
+                style={{
+                  background: "#534AB7",
+                  color: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Active filter chips (mobile) */}
+        {activeChips.length > 0 && (
+          <div
+            className="jb-fmob"
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+          >
+            {activeChips.map(({ key, label, color, bg, border }) => (
+              <button
+                key={key}
+                onClick={() => updateFilters({ [key]: "" })}
+                style={{
+                  background: bg,
+                  border: `0.5px solid ${border}`,
+                  color,
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                {label}{" "}
+                <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                updateFilters({
+                  job_type: "",
+                  state: "",
+                  ordering: "-listing__created_at",
+                })
+              }
+              style={{
+                background: "#FCEBEB",
+                border: "0.5px solid #F09595",
+                color: "#A32D2D",
+                fontSize: "11px",
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: "20px",
+                cursor: "pointer",
+              }}
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        {/* Desktop: full filter bar */}
         <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-          }}
+          className="jb-fdesk"
+          style={{ gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}
         >
           <input
             type="text"
@@ -469,14 +776,14 @@ export default function JobsPage() {
               color: "#444",
             }}
           >
-            <option value="-listing__created_at">Newest first</option>
-            <option value="listing__created_at">Oldest first</option>
-            <option value="salary">Salary ↑</option>
-            <option value="-salary">Salary ↓</option>
+            {SORT_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
 
-        {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "12px" }}
@@ -487,7 +794,6 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <div
             style={{
@@ -503,7 +809,6 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Empty */}
         {!isLoading && !isFetching && filteredResults.length === 0 && (
           <div
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
@@ -525,9 +830,9 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* ── Mobile: list rows ── */}
+        {/* Mobile list rows */}
         <div
-          className="jobs-mobile"
+          className="jb-mobile"
           style={{
             flexDirection: "column",
             gap: "10px",
@@ -541,27 +846,22 @@ export default function JobsPage() {
               to={`/jobs/listing/${job.listing_id}`}
               style={{
                 background: "#fff",
-                border: `0.5px solid ${job.is_wanted ? "#AFA9EC" : "#e5e5e5"}`,
-                borderRadius: "12px",
-                padding: "16px 20px",
-                textDecoration: "none",
-                display: "block",
-                transition: "all 0.15s",
+                border: "0.5px solid #e5e5e5",
                 borderLeft: job.is_wanted
                   ? "3px solid #534AB7"
                   : job.is_featured
                     ? "3px solid #E87722"
                     : "0.5px solid #e5e5e5",
+                borderRadius: "12px",
+                padding: "14px 16px",
+                textDecoration: "none",
+                display: "block",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow =
-                  "0 2px 12px rgba(83,74,183,0.1)";
-                e.currentTarget.style.transform = "translateY(-1px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.boxShadow =
+                  "0 2px 12px rgba(83,74,183,0.1)")
+              }
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
             >
               <div
                 style={{
@@ -574,7 +874,7 @@ export default function JobsPage() {
                 <div
                   style={{
                     display: "flex",
-                    gap: "14px",
+                    gap: "12px",
                     alignItems: "flex-start",
                     flex: 1,
                     minWidth: 0,
@@ -596,58 +896,60 @@ export default function JobsPage() {
                     {job.is_wanted ? "🔍" : "💼"}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "5px",
-                        flexWrap: "wrap",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      {job.is_featured && (
-                        <span
-                          style={{
-                            background:
-                              "linear-gradient(135deg,#E87722,#534AB7)",
-                            color: "#fff",
-                            fontSize: "9px",
-                            fontWeight: 700,
-                            padding: "2px 7px",
-                            borderRadius: "6px",
-                          }}
-                        >
-                          ⭐ FEATURED
-                        </span>
-                      )}
-                      {job.is_wanted && (
-                        <span
-                          style={{
-                            background: "#EEEDFE",
-                            color: "#534AB7",
-                            fontSize: "9px",
-                            fontWeight: 700,
-                            padding: "2px 7px",
-                            borderRadius: "6px",
-                          }}
-                        >
-                          🔍 LOOKING FOR WORK
-                        </span>
-                      )}
-                      {job.is_urgent && !job.is_wanted && (
-                        <span
-                          style={{
-                            background: "#FCEBEB",
-                            color: "#A32D2D",
-                            fontSize: "9px",
-                            fontWeight: 700,
-                            padding: "2px 7px",
-                            borderRadius: "6px",
-                          }}
-                        >
-                          🔴 URGENT
-                        </span>
-                      )}
-                    </div>
+                    {(job.is_featured || job.is_wanted || job.is_urgent) && (
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "5px",
+                          flexWrap: "wrap",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        {job.is_featured && (
+                          <span
+                            style={{
+                              background:
+                                "linear-gradient(135deg,#E87722,#534AB7)",
+                              color: "#fff",
+                              fontSize: "9px",
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            ⭐ FEATURED
+                          </span>
+                        )}
+                        {job.is_wanted && (
+                          <span
+                            style={{
+                              background: "#EEEDFE",
+                              color: "#534AB7",
+                              fontSize: "9px",
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            🔍 LOOKING FOR WORK
+                          </span>
+                        )}
+                        {job.is_urgent && !job.is_wanted && (
+                          <span
+                            style={{
+                              background: "#FCEBEB",
+                              color: "#A32D2D",
+                              fontSize: "9px",
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            🔴 URGENT
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <h3
                       style={{
                         fontSize: "14px",
@@ -655,9 +957,10 @@ export default function JobsPage() {
                         color: "#26215C",
                         marginBottom: "3px",
                         lineHeight: 1.3,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
                         overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
                       }}
                     >
                       {job.listing_title}
@@ -666,7 +969,10 @@ export default function JobsPage() {
                       style={{
                         fontSize: "12px",
                         color: "#777",
-                        marginBottom: "8px",
+                        marginBottom: "6px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {job.is_wanted
@@ -677,7 +983,6 @@ export default function JobsPage() {
                       style={{
                         display: "flex",
                         gap: "6px",
-                        flexWrap: "wrap",
                         alignItems: "center",
                       }}
                     >
@@ -689,12 +994,21 @@ export default function JobsPage() {
                           fontWeight: 500,
                           padding: "2px 9px",
                           borderRadius: "8px",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         {job.job_type?.replace("_", " ")}
                       </span>
-                      <span style={{ fontSize: "11px", color: "#bbb" }}>·</span>
-                      <span style={{ fontSize: "11px", color: "#aaa" }}>
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          color: "#aaa",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        ·{" "}
                         {job.is_wanted
                           ? `Seeking · ${job.posted_by}`
                           : `by ${job.posted_by}`}
@@ -702,29 +1016,28 @@ export default function JobsPage() {
                     </div>
                   </div>
                 </div>
-                <div style={{ flexShrink: 0, textAlign: "right" }}>
-                  <div
-                    style={{
-                      background: "#EEEDFE",
-                      color: "#3C3489",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      padding: "5px 12px",
-                      borderRadius: "20px",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {job.salary_display}
-                  </div>
+                <div
+                  style={{
+                    background: "#EEEDFE",
+                    color: "#3C3489",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    padding: "5px 10px",
+                    borderRadius: "20px",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
+                  {job.salary_display}
                 </div>
               </div>
             </Link>
           ))}
         </div>
 
-        {/* ── Desktop: card grid ── */}
+        {/* Desktop card grid */}
         <div
-          className="jobs-desktop"
+          className="jb-desktop"
           style={{
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: "16px",
@@ -737,7 +1050,6 @@ export default function JobsPage() {
           ))}
         </div>
 
-        {/* Load more */}
         {data?.next && (
           <div style={{ textAlign: "center", paddingTop: "20px" }}>
             <button
