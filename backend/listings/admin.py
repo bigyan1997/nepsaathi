@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Listing, ListingImage, SavedListing, ListingReport
+from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView
 
 
 class ListingImageInline(admin.TabularInline):
@@ -222,3 +222,20 @@ class ListingReportAdmin(admin.ModelAdmin):
 
         self.message_user(request, f'{queryset.count()} listings removed — owners notified.')
     remove_listing.short_description = '❌ Remove listing — notify owner'
+
+
+@admin.register(SavedListing)
+class SavedListingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'listing', 'saved_at')
+    search_fields = ('user__email', 'listing__title')
+    readonly_fields = ('user', 'listing', 'saved_at')
+    ordering = ('-saved_at',)
+
+
+@admin.register(ListingView)
+class ListingViewAdmin(admin.ModelAdmin):
+    list_display = ('listing', 'user', 'ip_address', 'viewed_at')
+    list_filter = ('viewed_at',)
+    search_fields = ('listing__title', 'user__email', 'ip_address')
+    readonly_fields = ('listing', 'user', 'ip_address', 'viewed_at')
+    ordering = ('-viewed_at',)

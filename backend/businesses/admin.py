@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Business, BusinessReport
+from .models import Business, BusinessReport, BusinessReview
 
 
 @admin.register(Business)
@@ -84,4 +84,13 @@ class BusinessReportAdmin(admin.ModelAdmin):
     list_filter = ('reason', 'is_reviewed')
     search_fields = ('business__business_name', 'user__email')
     readonly_fields = ('user', 'business', 'reason', 'details', 'created_at')
-    ordering = ('-created_at')
+    ordering = ('-created_at',)
+
+
+@admin.register(BusinessReview)
+class BusinessReviewAdmin(admin.ModelAdmin):
+    list_display = ('business', 'reviewer', 'rating', 'created_at')
+    list_filter = ('rating',)
+    search_fields = ('business__business_name', 'reviewer__email', 'comment')
+    readonly_fields = ('business', 'reviewer', 'rating', 'comment', 'created_at')
+    ordering = ('-created_at',)
