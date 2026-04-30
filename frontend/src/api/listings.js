@@ -41,14 +41,19 @@ export const getMyListings = async () => {
 export const uploadImages = async (listingId, images) => {
   const formData = new FormData();
   images.forEach((image) => formData.append("images", image));
-  const response = await api.post(
-    `/api/listings/${listingId}/images/`,
-    formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
-  return response.data;
+  try {
+    const response = await api.post(
+      `/api/listings/${listingId}/images/`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  } catch (err) {
+    const status = err?.response?.status;
+    if (status === 413) throw new Error("Image file is too large to upload.");
+    if (status === 415) throw new Error("Unsupported image format.");
+    throw err;
+  }
 };
 
 export const getStats = async () => {

@@ -36,7 +36,11 @@ export default function ReportButton({ listingId, endpoint }) {
       await api.post(url, { reason, details });
       setSubmitted(true);
       addToast("Report submitted. Thank you! 🙏", "success");
-      queryClient.invalidateQueries({ predicate: (q) => q.queryKey.includes(listingId) });
+      queryClient.invalidateQueries({ queryKey: ["job", String(listingId)] });
+      queryClient.invalidateQueries({ queryKey: ["room", String(listingId)] });
+      queryClient.invalidateQueries({ queryKey: ["event", String(listingId)] });
+      queryClient.invalidateQueries({ queryKey: ["announcement", String(listingId)] });
+      queryClient.invalidateQueries({ queryKey: ["listing", listingId] });
       setTimeout(() => {
         setOpen(false);
         setSubmitted(false);

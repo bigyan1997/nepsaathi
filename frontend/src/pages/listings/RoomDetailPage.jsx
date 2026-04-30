@@ -97,8 +97,9 @@ export default function RoomDetailPage() {
 
   const { data: similarListings } = useQuery({
     queryKey: ["similar", room?.listing_id],
-    queryFn: () => getSimilarListings(room.listing_id),
+    queryFn: () => getSimilarListings(room?.listing_id),
     enabled: !!room?.listing_id,
+    retry: false,
   });
 
   usePageTitle(

@@ -143,8 +143,9 @@ export default function EventDetailPage() {
 
   const { data: similarListings } = useQuery({
     queryKey: ["similar", event?.listing_id],
-    queryFn: () => getSimilarListings(event.listing_id),
+    queryFn: () => getSimilarListings(event?.listing_id),
     enabled: !!event?.listing_id,
+    retry: false,
   });
 
   // Optimistic local state for RSVP so the UI responds instantly
@@ -850,9 +851,7 @@ export default function EventDetailPage() {
                     <>
                       {isAuthenticated ? (
                         <button
-                          onClick={() =>
-                            !rsvpMutation.isPending && rsvpMutation.mutate()
-                          }
+                          onClick={() => rsvpMutation.mutate()}
                           disabled={
                             rsvpMutation.isPending ||
                             (isSoldOut && !rsvpState?.rsvped)

@@ -101,8 +101,9 @@ export default function JobDetailPage() {
 
   const { data: similarListings } = useQuery({
     queryKey: ["similar", job?.listing_id],
-    queryFn: () => getSimilarListings(job.listing_id),
+    queryFn: () => getSimilarListings(job?.listing_id),
     enabled: !!job?.listing_id,
+    retry: false,
   });
 
   useEffect(() => {

@@ -99,7 +99,7 @@ class ListingCreateView(generics.CreateAPIView):
             raise ValidationError(
                 'Please wait 5 minutes before posting again.'
             )
-        # Check duplicate title in last 24 hours
+        # Check duplicate title in last 24 hours across all statuses
         yesterday = timezone.now() - timedelta(hours=24)
         title = self.request.data.get('title', '').strip().lower()
         duplicate = Listing.objects.filter(
@@ -385,15 +385,11 @@ class ReportListingView(APIView):
                 {'detail': 'You have already reported this listing.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        # Limit 5 reports per day per user
-        import zoneinfo
-        sydney_tz = zoneinfo.ZoneInfo('Australia/Sydney')
-        today_start = timezone.now().astimezone(sydney_tz).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
+        # Limit 5 reports per day per user (rolling 24-hour window in UTC)
+        one_day_ago = timezone.now() - timedelta(hours=24)
         daily_reports = ListingReport.objects.filter(
             user=request.user,
-            created_at__gte=today_start
+            created_at__gte=one_day_ago
         ).count()
         if daily_reports >= 5:
             return Response(

@@ -106,8 +106,9 @@ export default function AnnouncementDetailPage() {
 
   const { data: similarListings } = useQuery({
     queryKey: ["similar", announcement?.listing_id],
-    queryFn: () => getSimilarListings(announcement.listing_id),
+    queryFn: () => getSimilarListings(announcement?.listing_id),
     enabled: !!announcement?.listing_id,
+    retry: false,
   });
 
   usePageTitle(

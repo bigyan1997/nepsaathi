@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, EventRSVP
+from .models import Event
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -76,6 +76,15 @@ class EventSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Event date must be in the future.")
         return value
 
+    def validate(self, attrs):
+        event_date = attrs.get('event_date') or getattr(self.instance, 'event_date', None)
+        event_end_date = attrs.get('event_end_date')
+        if event_end_date and event_date and event_end_date <= event_date:
+            raise serializers.ValidationError(
+                {'event_end_date': 'End date must be after the start date.'}
+            )
+        return attrs
+
 
     class Meta:
         model = Event
@@ -130,7 +139,6 @@ class EventSerializer(serializers.ModelSerializer):
             'expires_at',
             'is_under_review',
             'view_count',
-            'description',
             'rsvp_count',
             'spots_left',
             'user_has_rsvp',

@@ -96,14 +96,22 @@ class DeleteAccountView(APIView):
         def delete(self, request):
             user = request.user
             try:
-                # Soft delete all listings
                 from listings.models import Listing
-                # Delete each listing individually to trigger Cloudinary cleanup
-                listings = Listing.objects.filter(user=user)
+                listings = Listing.objects.filter(user=user).prefetch_related('images')
+                cloudinary_errors = []
                 for listing in listings:
                     for image in listing.images.all():
-                        image.delete()  # triggers Cloudinary cleanup
+                        try:
+                            image.delete()
+                        except Exception as e:
+                            cloudinary_errors.append(str(e))
                     listing.delete()
+                if cloudinary_errors:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        'Cloudinary cleanup errors during account deletion for user %s: %s',
+                        user.id, cloudinary_errors
+                    )
                 user.delete()
                 return Response(
                     {'detail': 'Your account has been permanently deleted.'},

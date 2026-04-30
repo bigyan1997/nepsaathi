@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
 from .models import Event, EventRSVP
@@ -138,16 +139,20 @@ class EventRSVPToggleView(APIView):
         if not event.is_upcoming:
             raise ValidationError('This event has already passed.')
 
-        existing = EventRSVP.objects.filter(event=event, user=request.user).first()
+        with transaction.atomic():
+            # Lock the event row to prevent concurrent RSVPs past the limit
+            event = Event.objects.select_for_update().get(pk=pk, listing__status='active')
 
-        if existing:
-            existing.delete()
-            rsvped = False
-        else:
-            if event.max_attendees is not None and event.rsvps.count() >= event.max_attendees:
-                raise ValidationError('Sorry, this event is sold out.')
-            EventRSVP.objects.create(event=event, user=request.user)
-            rsvped = True
+            existing = EventRSVP.objects.filter(event=event, user=request.user).first()
+
+            if existing:
+                existing.delete()
+                rsvped = False
+            else:
+                if event.max_attendees is not None and event.rsvps.count() >= event.max_attendees:
+                    raise ValidationError('Sorry, this event is sold out.')
+                EventRSVP.objects.create(event=event, user=request.user)
+                rsvped = True
 
         rsvp_count = event.rsvps.count()
         spots_left = event.spots_left
