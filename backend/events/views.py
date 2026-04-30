@@ -138,18 +138,15 @@ class EventRSVPToggleView(APIView):
         if not event.is_upcoming:
             raise ValidationError('This event has already passed.')
 
-        rsvp, created = EventRSVP.objects.get_or_create(
-            event=event, user=request.user
-        )
+        existing = EventRSVP.objects.filter(event=event, user=request.user).first()
 
-        if not created:
-            rsvp.delete()
+        if existing:
+            existing.delete()
             rsvped = False
         else:
-            spots_left = event.spots_left
-            if spots_left is not None and spots_left <= 0:
-                rsvp.delete()
+            if event.max_attendees is not None and event.rsvps.count() >= event.max_attendees:
                 raise ValidationError('Sorry, this event is sold out.')
+            EventRSVP.objects.create(event=event, user=request.user)
             rsvped = True
 
         rsvp_count = event.rsvps.count()

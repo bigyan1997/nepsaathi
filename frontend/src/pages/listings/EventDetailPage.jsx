@@ -782,6 +782,23 @@ export default function EventDetailPage() {
                   {/* Capacity bar — shown when max_attendees is set */}
                   {event.max_attendees && rsvpState && (
                     <div style={{ marginBottom: "12px" }}>
+                      {isSoldOut && (
+                        <div
+                          style={{
+                            background: "#E74C3C",
+                            color: "#fff",
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            letterSpacing: "0.06em",
+                            textAlign: "center",
+                            padding: "5px 10px",
+                            borderRadius: "6px",
+                            marginBottom: "8px",
+                          }}
+                        >
+                          SOLD OUT
+                        </div>
+                      )}
                       <div
                         style={{
                           height: "6px",
@@ -795,7 +812,11 @@ export default function EventDetailPage() {
                           style={{
                             height: "100%",
                             width: `${fillPct}%`,
-                            background: "#fff",
+                            background: isSoldOut
+                              ? "#E74C3C"
+                              : fillPct >= 85
+                              ? "#FFB347"
+                              : "#fff",
                             borderRadius: "99px",
                             transition: "width 0.3s ease",
                           }}
@@ -811,7 +832,7 @@ export default function EventDetailPage() {
                       >
                         <span>
                           {isSoldOut
-                            ? "Sold out"
+                            ? "No spots remaining"
                             : fillPct >= 85
                             ? `⚠️ Almost full — ${rsvpState.spots_left} left`
                             : `${rsvpState.spots_left} spot${rsvpState.spots_left === 1 ? "" : "s"} left`}
