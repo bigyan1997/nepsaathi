@@ -186,6 +186,7 @@ class BusinessReviewDeleteView(APIView):
 class ReportBusinessView(APIView):
     """
     POST /api/businesses/<pk>/report/
+    Report a business for spam, fake content, etc.
     """
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -208,10 +209,15 @@ class ReportBusinessView(APIView):
         if BusinessReport.objects.filter(user=request.user, created_at__gte=today_start).count() >= 5:
             return Response({'detail': 'You have reached the maximum of 5 reports per day.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        BusinessReport.objects.create(
+        report = BusinessReport.objects.create(
             user=request.user,
             business=business,
             reason=request.data.get('reason', 'spam'),
             details=request.data.get('details', ''),
         )
+        try:
+            from core.emails import send_business_report_emails
+            send_business_report_emails(report)
+        except Exception as e:
+            print(f'Business report email failed: {e}', flush=True)
         return Response({'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'}, status=status.HTTP_201_CREATED)

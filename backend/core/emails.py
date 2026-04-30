@@ -351,7 +351,78 @@ def send_report_emails(report):
 
 
 # ─────────────────────────────────────────────────────────────
-# 5. LISTING CLEARED
+# 5. BUSINESS REPORTED
+# ─────────────────────────────────────────────────────────────
+
+def send_business_report_emails(report):
+    business = report.business
+    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    admin_review_url = f"{ADMIN_URL}/businesses/businessreport/{report.id}/change/"
+
+    try:
+        admin_body = f"""
+<h1 {_H1}>New business report &#9888;</h1>
+<p {_P}>A business has been reported and requires your review.</p>
+
+{_listing_card(
+    business.business_name,
+    business_url,
+    f"Reported by: {report.user.email} &middot; Owner: {business.owner.email}",
+    bg="#FCEBEB"
+)}
+
+{_info_box(
+    f"<strong>Reason:</strong> {report.get_reason_display()}<br>"
+    f"<strong>Details:</strong> {html_module.escape(report.details or 'No details provided')}",
+    bg="#FCEBEB", border="#F09595", color="#A32D2D"
+)}
+
+{_btn("Review in admin panel &rarr;", admin_review_url, color="#26215C")}
+
+{_DIVIDER}
+<p {_SMALL}>This is an automated message from NepSaathi.</p>"""
+
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      ['hello@nepsaathi.com'],
+            'subject': f'[NepSaathi] New business report — {business.business_name}',
+            'html':    _wrap(admin_body),
+        })
+
+        first_name = business.owner.first_name or 'there'
+        owner_body = f"""
+<h1 {_H1}>Your business has been reported</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, we wanted to let you know that your business
+  has received a report from another NepSaathi member. Our team is reviewing it.
+</p>
+
+{_listing_card(business.business_name, business_url, f"Report ID: #{report.id}", bg="#FFF1E0")}
+
+{_info_box(
+    "&#9989; If your business follows our community guidelines, no action will be taken "
+    "and it will remain live. We typically review reports within 24 hours.",
+    bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
+)}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Questions? Contact us at
+  <a href="mailto:support@nepsaathi.com" style="color:#534AB7;text-decoration:none;">support@nepsaathi.com</a>
+</p>"""
+
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [business.owner.email],
+            'subject': '[NepSaathi] Your business has been reported',
+            'html':    _wrap(owner_body),
+        })
+    except Exception as e:
+        print(f'Business report email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 6. LISTING CLEARED
 # ─────────────────────────────────────────────────────────────
 
 def send_listing_cleared_email(report):

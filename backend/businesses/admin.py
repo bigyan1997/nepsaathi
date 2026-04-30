@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Business
+from .models import Business, BusinessReport
 
 
 @admin.register(Business)
@@ -76,3 +76,12 @@ class BusinessAdmin(admin.ModelAdmin):
         queryset.update(is_verified=False)
         self.message_user(request, f'{queryset.count()} businesses unverified.')
     unverify_businesses.short_description = 'Unverify selected businesses'
+
+
+@admin.register(BusinessReport)
+class BusinessReportAdmin(admin.ModelAdmin):
+    list_display = ('business', 'user', 'reason', 'is_reviewed', 'created_at')
+    list_filter = ('reason', 'is_reviewed')
+    search_fields = ('business__business_name', 'user__email')
+    readonly_fields = ('user', 'business', 'reason', 'details', 'created_at')
+    ordering = ('-created_at')
