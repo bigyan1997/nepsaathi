@@ -172,8 +172,8 @@ export default function BusinessDetailPage() {
   const addReviewMutation = useMutation({
     mutationFn: (data) => addBusinessReview(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["business-reviews", id]);
-      queryClient.invalidateQueries(["business", id]);
+      queryClient.invalidateQueries({ queryKey: ["business-reviews", id] });
+      queryClient.invalidateQueries({ queryKey: ["business", id] });
       setReviewRating(0);
       setReviewComment("");
       addToast("Review submitted!", "success");
@@ -188,8 +188,8 @@ export default function BusinessDetailPage() {
   const deleteReviewMutation = useMutation({
     mutationFn: (reviewId) => deleteBusinessReview(id, reviewId),
     onSuccess: () => {
-      queryClient.invalidateQueries(["business-reviews", id]);
-      queryClient.invalidateQueries(["business", id]);
+      queryClient.invalidateQueries({ queryKey: ["business-reviews", id] });
+      queryClient.invalidateQueries({ queryKey: ["business", id] });
       addToast("Review deleted.", "info");
     },
   });

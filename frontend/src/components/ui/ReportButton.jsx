@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useToast } from "./Toast";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import api from "../../utils/axios";
 
 const REASONS = [
@@ -17,6 +18,7 @@ export default function ReportButton({ listingId, endpoint }) {
   const { isAuthenticated } = useAuthStore();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("spam");
   const [details, setDetails] = useState("");
@@ -34,6 +36,7 @@ export default function ReportButton({ listingId, endpoint }) {
       await api.post(url, { reason, details });
       setSubmitted(true);
       addToast("Report submitted. Thank you! 🙏", "success");
+      queryClient.invalidateQueries({ predicate: (q) => q.queryKey.includes(listingId) });
       setTimeout(() => {
         setOpen(false);
         setSubmitted(false);

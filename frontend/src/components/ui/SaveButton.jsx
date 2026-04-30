@@ -24,8 +24,8 @@ export default function SaveButton({ listingId, compact = false }) {
     mutationFn: () =>
       isSaved ? unsaveListing(listingId) : saveListing(listingId),
     onSuccess: (data) => {
-      queryClient.invalidateQueries(["saved", listingId]);
-      queryClient.invalidateQueries(["saved-listings"]);
+      queryClient.invalidateQueries({ queryKey: ["saved", listingId] });
+      queryClient.invalidateQueries({ queryKey: ["saved-listings"] });
       addToast(
         data.is_saved ? "Listing saved! ❤️" : "Listing removed from saved.",
         data.is_saved ? "success" : "info",

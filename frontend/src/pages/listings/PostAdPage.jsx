@@ -434,12 +434,12 @@ export default function PostAdPage() {
           ...jobForm,
           salary: jobForm.salary || null,
         });
-        queryClient.invalidateQueries(["jobs"]);
-        queryClient.invalidateQueries(["home-jobs"]);
+        queryClient.invalidateQueries({ queryKey: ["jobs"] });
+        queryClient.invalidateQueries({ queryKey: ["home-jobs"] });
       } else if (listingType === "room") {
         await createRoom({ listing: listing.id, ...roomForm });
-        queryClient.invalidateQueries(["rooms"]);
-        queryClient.invalidateQueries(["home-rooms"]);
+        queryClient.invalidateQueries({ queryKey: ["rooms"] });
+        queryClient.invalidateQueries({ queryKey: ["home-rooms"] });
       } else if (listingType === "announcement") {
         await createAnnouncement({
           listing: listing.id,
@@ -449,7 +449,7 @@ export default function PostAdPage() {
           is_free: announcementForm.is_free,
           is_urgent: announcementForm.is_urgent,
         });
-        queryClient.invalidateQueries(["announcements"]);
+        queryClient.invalidateQueries({ queryKey: ["announcements"] });
       } else if (listingType === "event") {
         await createEvent({
           listing: listing.id,
@@ -464,12 +464,14 @@ export default function PostAdPage() {
           is_online: eventForm.is_online,
           event_url: eventForm.event_url,
         });
-        queryClient.invalidateQueries(["events"]);
-        queryClient.invalidateQueries(["home-events"]);
+        queryClient.invalidateQueries({ queryKey: ["events"] });
+        queryClient.invalidateQueries({ queryKey: ["home-events"] });
       }
 
-      queryClient.invalidateQueries(["listings"]);
-      queryClient.invalidateQueries(["my-listings"]);
+      queryClient.invalidateQueries({ queryKey: ["listings"] });
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      queryClient.invalidateQueries({ queryKey: ["home-featured"] });
       setCreatedListingId(listing.id);
       setStep(4);
       addToast("Listing created! Now add some photos.", "success");

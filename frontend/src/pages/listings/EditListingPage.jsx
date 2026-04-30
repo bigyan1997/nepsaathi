@@ -187,11 +187,11 @@ export default function EditListingPage() {
           price: typeForm.price || null,
         });
 
-      queryClient.invalidateQueries(["my-listings"]);
-      queryClient.invalidateQueries(["jobs"]);
-      queryClient.invalidateQueries(["rooms"]);
-      queryClient.invalidateQueries(["events"]);
-      queryClient.invalidateQueries(["announcements"]);
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
 
       addToast("Listing updated successfully!", "success");
       navigate(`/${listingType}s/listing/${id}`);

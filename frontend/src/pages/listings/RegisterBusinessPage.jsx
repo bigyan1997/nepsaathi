@@ -144,8 +144,8 @@ export default function RegisterBusinessPage() {
         ...form,
         established_year: form.established_year || null,
       });
-      queryClient.invalidateQueries(["businesses"]);
-      queryClient.invalidateQueries(["my-businesses"]);
+      queryClient.invalidateQueries({ queryKey: ["businesses"] });
+      queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
       addToast("Business registered successfully! 🎉", "success");
       navigate(`/businesses/${business.id}`);
     } catch (err) {

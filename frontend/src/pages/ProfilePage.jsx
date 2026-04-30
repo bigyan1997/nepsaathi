@@ -76,7 +76,7 @@ export default function ProfilePage() {
   const updateMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: (data) => {
-      queryClient.invalidateQueries(["profile"]);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       updateUser(data);
       addToast("Profile updated successfully!", "success");
     },

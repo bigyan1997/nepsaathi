@@ -406,7 +406,8 @@ export default function MyListingsPage() {
         "home-jobs",
         "home-rooms",
         "home-events",
-      ].forEach((k) => queryClient.invalidateQueries([k]));
+      ].forEach((k) => queryClient.invalidateQueries({ queryKey: [k] }));
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
       setDeletingId(null);
       addToast("Listing deleted successfully!", "success");
     },
@@ -419,8 +420,8 @@ export default function MyListingsPage() {
   const deleteBusinessMutation = useMutation({
     mutationFn: deleteBusiness,
     onSuccess: () => {
-      queryClient.invalidateQueries(["my-businesses"]);
-      queryClient.invalidateQueries(["businesses"]);
+      queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
+      queryClient.invalidateQueries({ queryKey: ["businesses"] });
       setDeletingId(null);
       addToast("Business removed successfully!", "success");
     },
@@ -433,7 +434,7 @@ export default function MyListingsPage() {
   const unsaveMutation = useMutation({
     mutationFn: unsaveListing,
     onSuccess: () => {
-      queryClient.invalidateQueries(["saved-listings"]);
+      queryClient.invalidateQueries({ queryKey: ["saved-listings"] });
       addToast("Removed from saved listings.", "info");
     },
     onError: () => addToast("Failed to remove.", "error"),
@@ -442,7 +443,7 @@ export default function MyListingsPage() {
   const markStatusMutation = useMutation({
     mutationFn: ({ id, status }) => markListingStatus(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries(["my-listings"]);
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
       addToast("Listing status updated!", "success");
     },
     onError: () => addToast("Failed to update status.", "error"),
@@ -451,7 +452,7 @@ export default function MyListingsPage() {
   const renewMutation = useMutation({
     mutationFn: renewListing,
     onSuccess: () => {
-      queryClient.invalidateQueries(["my-listings"]);
+      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
       addToast("Listing renewed for 30 more days! ✅", "success");
     },
     onError: () => addToast("Failed to renew listing.", "error"),

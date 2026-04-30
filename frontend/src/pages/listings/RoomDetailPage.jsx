@@ -398,6 +398,7 @@ export default function RoomDetailPage() {
                       color: "#444",
                       lineHeight: 1.8,
                       margin: 0,
+                      whiteSpace: "pre-wrap",
                     }}
                   >
                     {room.description}
