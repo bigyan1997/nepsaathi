@@ -14,15 +14,12 @@ _LOGO = """
 <div style="background:#26215C;border-radius:16px 16px 0 0;padding:28px 40px 24px;text-align:center;">
   <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 12px;">
     <tr>
-      <!-- Overlapping circles: orange left, purple right, 10px overlap -->
+      <!-- SVG overlapping circles — email-safe, matches website logo exactly -->
       <td style="vertical-align:middle;padding-right:10px;">
-        <table cellpadding="0" cellspacing="0" role="presentation">
-          <tr>
-            <td style="width:28px;height:28px;background:#E87722;border-radius:50%;line-height:28px;font-size:0;">&nbsp;</td>
-            <td style="width:10px;height:28px;background:linear-gradient(to right,#E87722 0%,#534AB7 100%);line-height:28px;font-size:0;margin-left:-1px;">&nbsp;</td>
-            <td style="width:18px;height:28px;background:#534AB7;border-radius:0 50% 50% 0;line-height:28px;font-size:0;">&nbsp;</td>
-          </tr>
-        </table>
+        <svg width="46" height="30" viewBox="0 0 46 30" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="15" cy="15" r="15" fill="#E87722"/>
+          <circle cx="31" cy="15" r="15" fill="#534AB7"/>
+        </svg>
       </td>
       <!-- Wordmark -->
       <td style="vertical-align:middle;">
@@ -79,7 +76,7 @@ def _wrap(body: str) -> str:
           <tr>
             <td>
               {_LOGO}
-              <!-- White body — explicit bgcolor for dark mode -->
+              <!-- White body — explicit bgcolor for dark mode email clients -->
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#ffffff" style="background-color:#ffffff;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;">
                 <tr>
                   <td style="padding:36px 40px;background-color:#ffffff;" bgcolor="#ffffff">
@@ -100,7 +97,7 @@ def _wrap(body: str) -> str:
 def _btn(label: str, url: str, color: str = "#E87722") -> str:
     return f"""
 <div style="text-align:center;margin:28px 0;">
-  <a href="{url}" style="display:inline-block;background:{color};color:#ffffff;padding:14px 36px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:700;font-family:-apple-system,Arial,sans-serif;">
+  <a href="{url}" style="display:inline-block;background:{color};color:#ffffff;padding:14px 36px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:700;font-family:Arial,sans-serif;">
     {label}
   </a>
 </div>"""
@@ -188,27 +185,39 @@ def send_welcome_email(user):
 
 {_btn("Explore NepSaathi &rarr;", FRONTEND_URL)}
 
-<table width="100%" cellpadding="0" cellspacing="8" style="margin:0 0 24px;">
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;">
   <tr>
     <td width="31%" style="padding:0 4px 0 0;">
-      <div style="background:#EEEDFE;border-radius:10px;padding:16px;text-align:center;">
-        <div style="font-size:22px;margin-bottom:6px;">&#128188;</div>
-        <div style="font-size:12px;font-weight:700;color:#3C3489;font-family:-apple-system,Arial,sans-serif;">Find jobs</div>
-      </div>
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td bgcolor="#EEEDFE" style="background-color:#EEEDFE;border-radius:10px;padding:16px;text-align:center;">
+            <div style="font-size:22px;margin-bottom:6px;">&#128188;</div>
+            <div style="font-size:12px;font-weight:700;color:#3C3489;font-family:Arial,sans-serif;">Find jobs</div>
+          </td>
+        </tr>
+      </table>
     </td>
     <td width="4%"></td>
     <td width="31%" style="padding:0 2px;">
-      <div style="background:#FFF1E0;border-radius:10px;padding:16px;text-align:center;">
-        <div style="font-size:22px;margin-bottom:6px;">&#127968;</div>
-        <div style="font-size:12px;font-weight:700;color:#633806;font-family:-apple-system,Arial,sans-serif;">Find rooms</div>
-      </div>
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td bgcolor="#FFF1E0" style="background-color:#FFF1E0;border-radius:10px;padding:16px;text-align:center;">
+            <div style="font-size:22px;margin-bottom:6px;">&#127968;</div>
+            <div style="font-size:12px;font-weight:700;color:#633806;font-family:Arial,sans-serif;">Find rooms</div>
+          </td>
+        </tr>
+      </table>
     </td>
     <td width="4%"></td>
     <td width="31%" style="padding:0 0 0 4px;">
-      <div style="background:#E1F5EE;border-radius:10px;padding:16px;text-align:center;">
-        <div style="font-size:22px;margin-bottom:6px;">&#127881;</div>
-        <div style="font-size:12px;font-weight:700;color:#085041;font-family:-apple-system,Arial,sans-serif;">Events</div>
-      </div>
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td bgcolor="#E1F5EE" style="background-color:#E1F5EE;border-radius:10px;padding:16px;text-align:center;">
+            <div style="font-size:22px;margin-bottom:6px;">&#127881;</div>
+            <div style="font-size:12px;font-weight:700;color:#085041;font-family:Arial,sans-serif;">Events</div>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
 </table>
@@ -221,7 +230,7 @@ def send_welcome_email(user):
         _fire({
             'from':    'NepSaathi <noreply@nepsaathi.com>',
             'to':      [user.email],
-            'subject': 'Welcome to NepSaathi! &#127881;',
+            'subject': 'Welcome to NepSaathi!',
             'html':    _wrap(body),
         })
     except Exception as e:
@@ -246,10 +255,10 @@ def send_email_verification_email(user, email, confirm_url):
 {_btn("Verify my email &rarr;", safe_url)}
 
 {_DIVIDER}
-<p style="font-size:12px;color:#aaaaaa;margin:0 0 8px;font-family:-apple-system,Arial,sans-serif;">
+<p style="font-size:12px;color:#aaaaaa;margin:0 0 8px;font-family:Arial,sans-serif;">
   If the button doesn't work, copy and paste this link into your browser:
 </p>
-<p style="font-size:12px;color:#534AB7;word-break:break-all;margin:0 0 20px;font-family:-apple-system,Arial,sans-serif;">
+<p style="font-size:12px;color:#534AB7;word-break:break-all;margin:0 0 20px;font-family:Arial,sans-serif;">
   <a href="{safe_url}" style="color:#534AB7;">{safe_url}</a>
 </p>
 {_DIVIDER}
@@ -288,10 +297,10 @@ def send_password_reset_email(user, reset_url):
 )}
 
 {_DIVIDER}
-<p style="font-size:12px;color:#aaaaaa;margin:0 0 8px;font-family:-apple-system,Arial,sans-serif;">
+<p style="font-size:12px;color:#aaaaaa;margin:0 0 8px;font-family:Arial,sans-serif;">
   If the button doesn't work, copy and paste this link into your browser:
 </p>
-<p style="font-size:12px;color:#534AB7;word-break:break-all;margin:0;font-family:-apple-system,Arial,sans-serif;">
+<p style="font-size:12px;color:#534AB7;word-break:break-all;margin:0;font-family:Arial,sans-serif;">
   <a href="{safe_url}" style="color:#534AB7;">{safe_url}</a>
 </p>"""
         _fire({
@@ -524,28 +533,17 @@ def send_contact_email(name, email, subject, message):
         admin_body = f"""
 <h1 {_H1}>New contact form submission</h1>
 
-<div style="background:#F5F4F0;border-radius:12px;padding:20px 24px;margin:20px 0;">
-  <table width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="padding:8px 0;font-size:12px;color:#aaaaaa;width:90px;font-family:-apple-system,Arial,sans-serif;">From</td>
-      <td style="padding:8px 0;font-size:14px;color:#26215C;font-weight:700;font-family:-apple-system,Arial,sans-serif;">{safe_name}</td>
-    </tr>
-    <tr>
-      <td style="padding:8px 0;font-size:12px;color:#aaaaaa;font-family:-apple-system,Arial,sans-serif;">Email</td>
-      <td style="padding:8px 0;font-size:14px;font-family:-apple-system,Arial,sans-serif;">
-        <a href="mailto:{email}" style="color:#534AB7;text-decoration:none;">{email}</a>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:8px 0;font-size:12px;color:#aaaaaa;font-family:-apple-system,Arial,sans-serif;">Subject</td>
-      <td style="padding:8px 0;font-size:14px;color:#26215C;font-family:-apple-system,Arial,sans-serif;">{safe_subject}</td>
-    </tr>
-  </table>
-</div>
+{_listing_card(
+    safe_name,
+    f"mailto:{email}",
+    f"Subject: {safe_subject}",
+    emoji="&#128140;",
+    bg="#EEEDFE"
+)}
 
 {_DIVIDER}
-<p style="font-size:11px;color:#aaaaaa;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.05em;font-family:-apple-system,Arial,sans-serif;">Message</p>
-<p style="font-size:14px;color:#555555;line-height:1.8;white-space:pre-wrap;font-family:-apple-system,Arial,sans-serif;">{safe_message}</p>
+<p style="font-size:11px;color:#aaaaaa;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.05em;font-family:Arial,sans-serif;">Message</p>
+<p style="font-size:14px;color:#555555;line-height:1.8;white-space:pre-wrap;font-family:Arial,sans-serif;">{safe_message}</p>
 {_DIVIDER}
 <p {_SMALL}>
   Reply directly to <a href="mailto:{email}" style="color:#534AB7;text-decoration:none;">{email}</a> to respond.
@@ -567,19 +565,11 @@ def send_contact_email(name, email, subject, message):
   We'll get back to you within 24 hours at <strong>{email}</strong>.
 </p>
 
-<div style="background:#F5F4F0;border-radius:12px;padding:20px 24px;margin:20px 0;">
-  <p style="margin:0 0 12px;font-size:11px;color:#aaaaaa;text-transform:uppercase;letter-spacing:0.05em;font-family:-apple-system,Arial,sans-serif;">Your message</p>
-  <table width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="padding:6px 0;font-size:12px;color:#aaaaaa;width:80px;font-family:-apple-system,Arial,sans-serif;">Subject</td>
-      <td style="padding:6px 0;font-size:13px;color:#333333;font-weight:600;font-family:-apple-system,Arial,sans-serif;">{safe_subject}</td>
-    </tr>
-    <tr>
-      <td style="padding:6px 0;font-size:12px;color:#aaaaaa;vertical-align:top;font-family:-apple-system,Arial,sans-serif;">Message</td>
-      <td style="padding:6px 0;font-size:13px;color:#555555;line-height:1.7;white-space:pre-wrap;font-family:-apple-system,Arial,sans-serif;">{safe_message}</td>
-    </tr>
-  </table>
-</div>
+{_info_box(
+    f"<strong>Subject:</strong> {safe_subject}<br><br>"
+    f"{safe_message}",
+    bg="#F5F4F0", border="#e8e8e8", color="#555555"
+)}
 
 {_info_box(
     "&#128172; If your enquiry is urgent, you can also reach us directly at "
@@ -769,7 +759,7 @@ def send_business_verified_email(business):
 
 
 # ─────────────────────────────────────────────────────────────
-# 11. BUSINESS REMOVED BY ADMIN
+# 12. BUSINESS REMOVED BY ADMIN
 # ─────────────────────────────────────────────────────────────
 
 def send_business_removed_email(business, reason=''):
