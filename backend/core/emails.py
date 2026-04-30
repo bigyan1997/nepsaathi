@@ -800,3 +800,175 @@ def send_business_removed_email(business, reason=''):
         })
     except Exception as e:
         print(f'Business removed email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 12. USER VERIFIED BY ADMIN
+# ─────────────────────────────────────────────────────────────
+
+def send_user_verified_email(user):
+    try:
+        first_name = user.first_name or 'there'
+        body = f"""
+<h1 {_H1}>Your account is now verified &#9989;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, great news! Our team has verified your NepSaathi account.
+  You now have a verified badge on your profile, giving the community more confidence in you.
+</p>
+
+{_info_box(
+    "&#11088; Verified accounts display a trusted badge across all your listings, "
+    "businesses, and posts on NepSaathi.",
+    bg="#E1F5EE", border="#9FE1CB", color="#085041"
+)}
+
+{_btn("Go to your profile &rarr;", FRONTEND_URL, color="#1D9E75")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Thank you for being part of NepSaathi. If you have any questions,
+  contact us at <a href="mailto:hello@nepsaathi.com" style="color:#534AB7;text-decoration:none;">hello@nepsaathi.com</a>
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [user.email],
+            'subject': '[NepSaathi] Your account has been verified!',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'User verified email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 13. USER BANNED BY ADMIN
+# ─────────────────────────────────────────────────────────────
+
+def send_user_banned_email(user):
+    try:
+        first_name = user.first_name or 'there'
+        safe_reason = html_module.escape(user.ban_reason) if user.ban_reason else 'Violation of community guidelines'
+        body = f"""
+<h1 {_H1}>Your account has been suspended</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, your NepSaathi account has been suspended
+  following a review by our team.
+</p>
+
+{_info_box(
+    f"<strong>Reason:</strong> {safe_reason}",
+    bg="#FCEBEB", border="#F09595", color="#A32D2D"
+)}
+
+<p {_P}>
+  If you believe this decision was made in error, please contact our support team
+  and we will review your case as soon as possible.
+</p>
+
+{_btn("Contact support &rarr;", "mailto:support@nepsaathi.com", color="#26215C")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Please review our
+  <a href="{FRONTEND_URL}/terms" style="color:#534AB7;text-decoration:none;">Terms of Use</a>
+  for more information. Thank you for your understanding.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [user.email],
+            'subject': '[NepSaathi] Your account has been suspended',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'User banned email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 14. LISTING RENEWED
+# ─────────────────────────────────────────────────────────────
+
+def send_listing_renewed_email(listing):
+    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}"
+    my_listings_url = f"{FRONTEND_URL}/my-listings"
+    try:
+        first_name = listing.user.first_name or 'there'
+        expires_at = listing.expires_at.strftime('%d %B %Y')
+        body = f"""
+<h1 {_H1}>Your listing has been renewed &#128260;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, your listing has been successfully renewed
+  and is now live for another 30 days.
+</p>
+
+{_listing_card(
+    listing.title,
+    listing_url,
+    f"Active until: {expires_at}",
+    bg="#E1F5EE"
+)}
+
+{_info_box(
+    f"&#9989; Your listing is live and visible to the NepSaathi community until <strong>{expires_at}</strong>. "
+    "We'll remind you again 3 days before it expires.",
+    bg="#E1F5EE", border="#9FE1CB", color="#085041"
+)}
+
+{_btn("View your listing &rarr;", listing_url, color="#1D9E75")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Manage all your listings at
+  <a href="{my_listings_url}" style="color:#534AB7;text-decoration:none;">My Listings</a>.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [listing.user.email],
+            'subject': f'[NepSaathi] Your listing has been renewed — {listing.title}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Listing renewed email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 15. LISTING EXPIRED
+# ─────────────────────────────────────────────────────────────
+
+def send_listing_expired_email(listing):
+    my_listings_url = f"{FRONTEND_URL}/my-listings"
+    try:
+        first_name = listing.user.first_name or 'there'
+        body = f"""
+<h1 {_H1}>Your listing has expired &#9201;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, your listing has expired and is no longer visible
+  to the NepSaathi community. You can repost it for free from My Listings.
+</p>
+
+{_listing_card(
+    listing.title,
+    my_listings_url,
+    "Status: Expired",
+    bg="#FFF1E0"
+)}
+
+{_info_box(
+    "&#128260; Reposting is completely free and takes just one click. "
+    "Your listing will be live again for another 30 days.",
+    bg="#FFF1E0", border="#EFD9C0", color="#633806"
+)}
+
+{_btn("Repost my listing &rarr;", my_listings_url, color="#E87722")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Go to <a href="{my_listings_url}" style="color:#534AB7;text-decoration:none;">My Listings</a>
+  to manage all your posts.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [listing.user.email],
+            'subject': f'[NepSaathi] Your listing has expired — {listing.title}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Listing expired email failed: {e}', flush=True)

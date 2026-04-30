@@ -640,7 +640,7 @@ class RenewListingView(APIView):
     """
     POST /api/listings/<id>/renew/
     Extends listing expiry by 30 days from today.
-    Owner only.
+    Owner only. Can only renew if listing expires within 7 days (or is already expired).
     """
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -659,10 +659,23 @@ class RenewListingView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Extend expiry by 30 days from today
+        # Only allow renewal when expiry is within 7 days (or already expired)
+        if listing.expires_at and listing.expires_at > timezone.now() + timedelta(days=7):
+            days_left = (listing.expires_at - timezone.now()).days
+            return Response(
+                {'detail': f'Your listing still has {days_left} days left. You can renew it when it is within 7 days of expiry.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         listing.expires_at = timezone.now() + timedelta(days=30)
         listing.status = 'active'
         listing.save()
+
+        try:
+            from core.emails import send_listing_renewed_email
+            send_listing_renewed_email(listing)
+        except Exception as e:
+            print(f'Listing renewed email failed: {e}', flush=True)
 
         return Response({
             'detail': 'Listing renewed successfully!',

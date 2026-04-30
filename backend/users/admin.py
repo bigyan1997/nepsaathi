@@ -46,3 +46,20 @@ class UserAdmin(BaseUserAdmin):
     )
 
     readonly_fields = ('created_at', 'updated_at')
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            old = User.objects.get(pk=obj.pk)
+            was_verified = old.is_verified
+            was_banned = old.is_banned
+        super().save_model(request, obj, form, change)
+        if not change:
+            return
+        try:
+            from core.emails import send_user_verified_email, send_user_banned_email
+            if not was_verified and obj.is_verified:
+                send_user_verified_email(obj)
+            if not was_banned and obj.is_banned:
+                send_user_banned_email(obj)
+        except Exception as e:
+            print(f'User admin email failed: {e}', flush=True)
