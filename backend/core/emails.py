@@ -12,27 +12,27 @@ ADMIN_URL    = config('ADMIN_URL',    default='https://nepsaathi-production.up.r
 
 _LOGO = """
 <div style="background:#26215C;border-radius:16px 16px 0 0;padding:28px 40px 24px;text-align:center;">
-  <table cellpadding="0" cellspacing="0" style="margin:0 auto 10px;">
+  <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 12px;">
     <tr>
-      <td style="vertical-align:middle;">
-        <!-- Two overlapping circles -->
-        <table cellpadding="0" cellspacing="0" style="display:inline-table;">
+      <!-- Overlapping circles: orange left, purple right, 10px overlap -->
+      <td style="vertical-align:middle;padding-right:10px;">
+        <table cellpadding="0" cellspacing="0" role="presentation">
           <tr>
-            <td>
-              <div style="width:28px;height:28px;border-radius:50%;background:#E87722;display:inline-block;vertical-align:middle;"></div>
-              <div style="width:28px;height:28px;border-radius:50%;background:#534AB7;display:inline-block;vertical-align:middle;margin-left:-10px;"></div>
-            </td>
-            <td style="padding-left:10px;vertical-align:middle;">
-              <span style="font-size:26px;font-weight:700;color:#ffffff;font-family:-apple-system,Arial,sans-serif;letter-spacing:-0.3px;">
-                <span style="color:#E87722;">Nep</span>Saathi
-              </span>
-            </td>
+            <td style="width:28px;height:28px;background:#E87722;border-radius:50%;line-height:28px;font-size:0;">&nbsp;</td>
+            <td style="width:10px;height:28px;background:linear-gradient(to right,#E87722 0%,#534AB7 100%);line-height:28px;font-size:0;margin-left:-1px;">&nbsp;</td>
+            <td style="width:18px;height:28px;background:#534AB7;border-radius:0 50% 50% 0;line-height:28px;font-size:0;">&nbsp;</td>
           </tr>
         </table>
       </td>
+      <!-- Wordmark -->
+      <td style="vertical-align:middle;">
+        <span style="font-size:24px;font-weight:700;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-0.3px;line-height:1;">
+          <span style="color:#E87722;">Nep</span>Saathi
+        </span>
+      </td>
     </tr>
   </table>
-  <div style="font-size:12px;color:#AFA9EC;letter-spacing:0.04em;font-family:-apple-system,Arial,sans-serif;">
+  <div style="font-size:12px;color:#AFA9EC;letter-spacing:0.04em;font-family:Arial,sans-serif;">
     &#2344;&#2375;&#2346;&#2360;&#2366;&#2341;&#2368; &nbsp;&middot;&nbsp; your Nepali friend, wherever you are
   </div>
 </div>
@@ -40,38 +40,53 @@ _LOGO = """
 
 def _footer():
     return f"""
-<div style="background:#F5F4F0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;border:1px solid #e8e8e8;border-top:none;">
-  <p style="font-size:12px;color:#aaaaaa;margin:0 0 4px;font-family:-apple-system,Arial,sans-serif;">
-    &copy; 2026 NepSaathi &nbsp;&middot;&nbsp;
-    <a href="{FRONTEND_URL}" style="color:#534AB7;text-decoration:none;">nepsaathi.com</a>
-    &nbsp;&middot;&nbsp;
-    <a href="mailto:hello@nepsaathi.com" style="color:#534AB7;text-decoration:none;">Contact us</a>
-  </p>
-  <p style="font-size:11px;color:#cccccc;margin:0;font-family:-apple-system,Arial,sans-serif;">
-    NepSaathi &middot; Australia &middot; noreply@nepsaathi.com
-  </p>
-</div>
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+  <tr>
+    <td bgcolor="#F5F4F0" style="background-color:#F5F4F0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;border:1px solid #e8e8e8;border-top:none;">
+      <p style="font-size:12px;color:#aaaaaa;margin:0 0 4px;font-family:Arial,sans-serif;">
+        &copy; 2026 NepSaathi &nbsp;&middot;&nbsp;
+        <a href="{FRONTEND_URL}" style="color:#534AB7;text-decoration:none;">nepsaathi.com</a>
+        &nbsp;&middot;&nbsp;
+        <a href="mailto:hello@nepsaathi.com" style="color:#534AB7;text-decoration:none;">Contact us</a>
+      </p>
+      <p style="font-size:11px;color:#cccccc;margin:0;font-family:Arial,sans-serif;">
+        NepSaathi &middot; Australia &middot; noreply@nepsaathi.com
+      </p>
+    </td>
+  </tr>
+</table>
 """
 
 def _wrap(body: str) -> str:
     """Wraps body HTML in the full email shell: outer bg → logo header → white body → footer."""
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <style>
+    :root {{ color-scheme: light; }}
+    body {{ background-color:#e8e6e0 !important; }}
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#e8e6e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#e8e6e0;padding:32px 16px;">
+<body style="margin:0;padding:0;background-color:#e8e6e0 !important;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;" bgcolor="#e8e6e0">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#e8e6e0" style="background-color:#e8e6e0;padding:32px 16px;">
     <tr>
       <td align="center">
-        <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;">
+        <table width="580" cellpadding="0" cellspacing="0" role="presentation" style="max-width:580px;width:100%;">
           <tr>
             <td>
               {_LOGO}
-              <div style="background:#ffffff;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;padding:36px 40px;">
-                {body}
-              </div>
+              <!-- White body — explicit bgcolor for dark mode -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#ffffff" style="background-color:#ffffff;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;">
+                <tr>
+                  <td style="padding:36px 40px;background-color:#ffffff;" bgcolor="#ffffff">
+                    {body}
+                  </td>
+                </tr>
+              </table>
               {_footer()}
             </td>
           </tr>
@@ -92,33 +107,45 @@ def _btn(label: str, url: str, color: str = "#E87722") -> str:
 
 def _info_box(text: str, bg: str = "#EEEDFE", border: str = "#AFA9EC", color: str = "#3C3489") -> str:
     return f"""
-<div style="background:{bg};border:1px solid {border};border-radius:10px;padding:16px 20px;margin:20px 0;">
-  <p style="margin:0;font-size:13px;color:{color};line-height:1.7;font-family:-apple-system,Arial,sans-serif;">{text}</p>
-</div>"""
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:20px 0;">
+  <tr>
+    <td bgcolor="{bg}" style="background-color:{bg};border:1px solid {border};border-radius:10px;padding:16px 20px;">
+      <p style="margin:0;font-size:13px;color:{color};line-height:1.7;font-family:Arial,sans-serif;">{text}</p>
+    </td>
+  </tr>
+</table>"""
 
 def _listing_card(title: str, url: str, meta: str = "", emoji: str = "&#128204;", bg: str = "#EEEDFE") -> str:
     return f"""
-<div style="background:#F5F4F0;border-radius:12px;padding:18px 20px;margin:20px 0;">
-  <table width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td width="44" style="vertical-align:middle;padding-right:14px;">
-        <div style="width:40px;height:40px;border-radius:10px;background:{bg};text-align:center;line-height:40px;font-size:20px;">{emoji}</div>
-      </td>
-      <td style="vertical-align:middle;">
-        <div style="font-size:14px;font-weight:700;color:#26215C;margin-bottom:3px;font-family:-apple-system,Arial,sans-serif;">{title}</div>
-        <div style="font-size:12px;color:#888888;font-family:-apple-system,Arial,sans-serif;">{meta}</div>
-      </td>
-      <td width="60" style="vertical-align:middle;text-align:right;">
-        <a href="{url}" style="font-size:13px;color:#534AB7;font-weight:700;text-decoration:none;font-family:-apple-system,Arial,sans-serif;">View &rarr;</a>
-      </td>
-    </tr>
-  </table>
-</div>"""
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:20px 0;">
+  <tr>
+    <td bgcolor="#F5F4F0" style="background-color:#F5F4F0;border-radius:12px;padding:18px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td width="54" style="vertical-align:middle;padding-right:14px;">
+            <table cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <td bgcolor="{bg}" style="background-color:{bg};width:40px;height:40px;border-radius:10px;text-align:center;vertical-align:middle;font-size:20px;line-height:40px;">{emoji}</td>
+              </tr>
+            </table>
+          </td>
+          <td style="vertical-align:middle;">
+            <div style="font-size:14px;font-weight:700;color:#26215C;margin-bottom:3px;font-family:Arial,sans-serif;">{title}</div>
+            <div style="font-size:12px;color:#888888;font-family:Arial,sans-serif;">{meta}</div>
+          </td>
+          <td width="60" style="vertical-align:middle;text-align:right;">
+            <a href="{url}" style="font-size:13px;color:#534AB7;font-weight:700;text-decoration:none;font-family:Arial,sans-serif;">View &rarr;</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>"""
 
 _DIVIDER = '<hr style="border:none;border-top:1px solid #f0f0f0;margin:24px 0;">'
-_P       = 'style="font-size:14px;color:#555555;line-height:1.8;margin:0 0 16px;font-family:-apple-system,Arial,sans-serif;"'
-_H1      = 'style="font-size:22px;font-weight:700;color:#26215C;margin:0 0 12px;font-family:-apple-system,Arial,sans-serif;"'
-_SMALL   = 'style="font-size:12px;color:#aaaaaa;line-height:1.6;text-align:center;font-family:-apple-system,Arial,sans-serif;"'
+_P       = 'style="font-size:14px;color:#555555;line-height:1.8;margin:0 0 16px;font-family:Arial,sans-serif;"'
+_H1      = 'style="font-size:22px;font-weight:700;color:#26215C;margin:0 0 12px;font-family:Arial,sans-serif;"'
+_SMALL   = 'style="font-size:12px;color:#aaaaaa;line-height:1.6;text-align:center;font-family:Arial,sans-serif;"'
 
 
 # ─────────────────────────────────────────────────────────────
@@ -351,78 +378,7 @@ def send_report_emails(report):
 
 
 # ─────────────────────────────────────────────────────────────
-# 5. BUSINESS REPORTED
-# ─────────────────────────────────────────────────────────────
-
-def send_business_report_emails(report):
-    business = report.business
-    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
-    admin_review_url = f"{ADMIN_URL}/businesses/businessreport/{report.id}/change/"
-
-    try:
-        admin_body = f"""
-<h1 {_H1}>New business report &#9888;</h1>
-<p {_P}>A business has been reported and requires your review.</p>
-
-{_listing_card(
-    business.business_name,
-    business_url,
-    f"Reported by: {report.user.email} &middot; Owner: {business.owner.email}",
-    bg="#FCEBEB"
-)}
-
-{_info_box(
-    f"<strong>Reason:</strong> {report.get_reason_display()}<br>"
-    f"<strong>Details:</strong> {html_module.escape(report.details or 'No details provided')}",
-    bg="#FCEBEB", border="#F09595", color="#A32D2D"
-)}
-
-{_btn("Review in admin panel &rarr;", admin_review_url, color="#26215C")}
-
-{_DIVIDER}
-<p {_SMALL}>This is an automated message from NepSaathi.</p>"""
-
-        _fire({
-            'from':    'NepSaathi <noreply@nepsaathi.com>',
-            'to':      ['hello@nepsaathi.com'],
-            'subject': f'[NepSaathi] New business report — {business.business_name}',
-            'html':    _wrap(admin_body),
-        })
-
-        first_name = business.owner.first_name or 'there'
-        owner_body = f"""
-<h1 {_H1}>Your business has been reported</h1>
-<p {_P}>
-  Hi <strong>{first_name}</strong>, we wanted to let you know that your business
-  has received a report from another NepSaathi member. Our team is reviewing it.
-</p>
-
-{_listing_card(business.business_name, business_url, f"Report ID: #{report.id}", bg="#FFF1E0")}
-
-{_info_box(
-    "&#9989; If your business follows our community guidelines, no action will be taken "
-    "and it will remain live. We typically review reports within 24 hours.",
-    bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
-)}
-
-{_DIVIDER}
-<p {_SMALL}>
-  Questions? Contact us at
-  <a href="mailto:support@nepsaathi.com" style="color:#534AB7;text-decoration:none;">support@nepsaathi.com</a>
-</p>"""
-
-        _fire({
-            'from':    'NepSaathi <noreply@nepsaathi.com>',
-            'to':      [business.owner.email],
-            'subject': '[NepSaathi] Your business has been reported',
-            'html':    _wrap(owner_body),
-        })
-    except Exception as e:
-        print(f'Business report email failed: {e}', flush=True)
-
-
-# ─────────────────────────────────────────────────────────────
-# 6. LISTING CLEARED
+# 5. LISTING CLEARED
 # ─────────────────────────────────────────────────────────────
 
 def send_listing_cleared_email(report):
