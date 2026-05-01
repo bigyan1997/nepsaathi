@@ -71,18 +71,18 @@ export default function ExchangeRates() {
       </div>
 
       {/* Scrollable rates row */}
+      <style>{`.exchange-scroll::-webkit-scrollbar { display: none; }`}</style>
       <div
+        className="exchange-scroll"
         style={{
           display: "flex",
           gap: "8px",
           overflowX: "auto",
-          padding: "4px 8px",
-          scrollbarWidth: "none", // Firefox
-          msOverflowStyle: "none", // IE
-          justifyContent: "center",
+          padding: "4px 12px",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
-        <style>{`.exchange-scroll::-webkit-scrollbar { display: none; }`}</style>
         {Object.entries(data.rates).map(([currency, info]) => (
           <div
             key={currency}
