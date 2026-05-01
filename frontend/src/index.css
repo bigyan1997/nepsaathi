@@ -18,6 +18,10 @@
   padding: 0;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family:
     "Inter",
@@ -27,7 +31,6 @@ body {
     Roboto,
     sans-serif;
   -webkit-font-smoothing: antialiased;
-  scrollbar-gutter: stable;
 }
 
 /* Page transition animation */
