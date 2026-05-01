@@ -23,6 +23,7 @@ const TABS = [
 ];
 
 const SORT_OPTIONS = [
+  { value: "-listing__is_featured,-listing__created_at", label: "Featured first" },
   { value: "-listing__created_at", label: "Newest first" },
   { value: "listing__created_at", label: "Oldest first" },
   { value: "salary", label: "Salary ↑" },
@@ -125,7 +126,7 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
                 ...p,
                 job_type: "",
                 state: "",
-                ordering: "-listing__created_at",
+                ordering: "-listing__is_featured,-listing__created_at",
               }))
             }
             style={{
@@ -416,7 +417,7 @@ export default function JobsPage() {
     job_type: "",
     search: "",
     state: "",
-    ordering: "-listing__created_at",
+    ordering: "-listing__is_featured,-listing__created_at",
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
@@ -467,7 +468,7 @@ export default function JobsPage() {
   const activeFilterCount = [
     filters.job_type,
     filters.state,
-    filters.ordering !== "-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -686,7 +687,7 @@ export default function JobsPage() {
                 updateFilters({
                   job_type: "",
                   state: "",
-                  ordering: "-listing__created_at",
+                  ordering: "-listing__is_featured,-listing__created_at",
                 })
               }
               style={{

@@ -42,6 +42,7 @@ const CATEGORY_EMOJIS = {
 };
 
 const SORT_OPTIONS = [
+  { value: "-listing__is_featured,-listing__created_at", label: "Featured first" },
   { value: "-listing__created_at", label: "Newest first" },
   { value: "listing__created_at", label: "Oldest first" },
   { value: "event_date", label: "Date: earliest" },
@@ -146,7 +147,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 state: "",
                 is_free: "",
                 is_online: "",
-                ordering: "-listing__created_at",
+                ordering: "-listing__is_featured,-listing__created_at",
                 upcoming: "true",
               }))
             }
@@ -600,7 +601,7 @@ export default function EventsPage() {
     is_free: "",
     is_online: "",
     upcoming: "true",
-    ordering: "-listing__created_at",
+    ordering: "-listing__is_featured,-listing__created_at",
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
@@ -649,7 +650,7 @@ export default function EventsPage() {
     filters.is_free,
     filters.is_online,
     filters.upcoming !== "true" ? "1" : "",
-    filters.ordering !== "-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -847,7 +848,7 @@ export default function EventsPage() {
                   state: "",
                   is_free: "",
                   is_online: "",
-                  ordering: "-listing__created_at",
+                  ordering: "-listing__is_featured,-listing__created_at",
                 })
               }
               style={{

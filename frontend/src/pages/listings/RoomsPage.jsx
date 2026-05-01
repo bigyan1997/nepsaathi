@@ -22,6 +22,7 @@ const TABS = [
 ];
 
 const SORT_OPTIONS = [
+  { value: "-listing__is_featured,-listing__created_at", label: "Featured first" },
   { value: "-listing__created_at", label: "Newest first" },
   { value: "listing__created_at", label: "Oldest first" },
   { value: "price", label: "Price ↑" },
@@ -130,7 +131,7 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
                 max_price: "",
                 bills_included: "",
                 nepalese_household: "",
-                ordering: "-listing__created_at",
+                ordering: "-listing__is_featured,-listing__created_at",
               }))
             }
             style={{
@@ -588,7 +589,7 @@ export default function RoomsPage() {
     state: "",
     min_price: "",
     max_price: "",
-    ordering: "-listing__created_at",
+    ordering: "-listing__is_featured,-listing__created_at",
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
@@ -647,7 +648,7 @@ export default function RoomsPage() {
     filters.max_price,
     filters.bills_included,
     filters.nepalese_household,
-    filters.ordering !== "-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -899,7 +900,7 @@ export default function RoomsPage() {
                   max_price: "",
                   bills_included: "",
                   nepalese_household: "",
-                  ordering: "-listing__created_at",
+                  ordering: "-listing__is_featured,-listing__created_at",
                 })
               }
               style={{

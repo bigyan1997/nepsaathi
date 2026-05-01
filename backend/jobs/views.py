@@ -23,7 +23,7 @@ class JobListView(generics.ListAPIView):
         'listing__state',
         'company_name',
     )
-    ordering_fields = ('listing__created_at', 'salary')
+    ordering_fields = ('listing__created_at', 'salary', 'listing__is_featured')
     ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):

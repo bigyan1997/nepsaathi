@@ -133,7 +133,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 state: "",
                 is_free: "",
                 is_urgent: "",
-                ordering: "-listing__created_at",
+                ordering: "-listing__is_featured,-listing__created_at",
               }))
             }
             style={{
@@ -523,7 +523,7 @@ export default function AnnouncementsPage() {
     state: "",
     is_free: "",
     is_urgent: "",
-    ordering: "-listing__created_at",
+    ordering: "-listing__is_featured,-listing__created_at",
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
@@ -572,7 +572,7 @@ export default function AnnouncementsPage() {
     filters.state,
     filters.is_free,
     filters.is_urgent,
-    filters.ordering !== "-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -743,7 +743,7 @@ export default function AnnouncementsPage() {
                   state: "",
                   is_free: "",
                   is_urgent: "",
-                  ordering: "-listing__created_at",
+                  ordering: "-listing__is_featured,-listing__created_at",
                 })
               }
               style={{

@@ -40,7 +40,7 @@ class AnnouncementListView(generics.ListAPIView):
         'listing__location',
         'listing__state',
     )
-    ordering_fields = ('listing__created_at',)
+    ordering_fields = ('listing__created_at', 'listing__is_featured')
     ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):

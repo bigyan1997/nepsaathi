@@ -30,7 +30,7 @@ class RoomListView(generics.ListAPIView):
         'listing__location',
         'listing__state',
     )
-    ordering_fields = ('listing__created_at', 'price')
+    ordering_fields = ('listing__created_at', 'price', 'listing__is_featured')
     ordering = ('-listing__is_featured', '-listing__created_at',)
 
     def get_queryset(self):
