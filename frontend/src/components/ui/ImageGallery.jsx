@@ -41,6 +41,7 @@ export default function ImageGallery({ images }) {
             <>
               <button
                 onClick={goPrev}
+                aria-label="Previous image"
                 style={{
                   position: "absolute",
                   left: "10px",
@@ -63,6 +64,7 @@ export default function ImageGallery({ images }) {
               </button>
               <button
                 onClick={goNext}
+                aria-label="Next image"
                 style={{
                   position: "absolute",
                   right: "10px",
@@ -176,6 +178,7 @@ export default function ImageGallery({ images }) {
         >
           <button
             onClick={() => setLightboxOpen(false)}
+            aria-label="Close gallery"
             style={{
               position: "absolute",
               top: "16px",
@@ -200,6 +203,7 @@ export default function ImageGallery({ images }) {
                   e.stopPropagation();
                   goPrev();
                 }}
+                aria-label="Previous image"
                 style={{
                   position: "absolute",
                   left: "16px",
@@ -220,6 +224,7 @@ export default function ImageGallery({ images }) {
                   e.stopPropagation();
                   goNext();
                 }}
+                aria-label="Next image"
                 style={{
                   position: "absolute",
                   right: "16px",

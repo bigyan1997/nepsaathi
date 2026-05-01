@@ -83,6 +83,7 @@ export function ToastProvider({ children }) {
               </span>
               <button
                 onClick={() => removeToast(toast.id)}
+                aria-label="Dismiss"
                 style={{
                   background: "transparent",
                   border: "none",

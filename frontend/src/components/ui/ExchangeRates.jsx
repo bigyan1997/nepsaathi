@@ -75,12 +75,17 @@ export default function ExchangeRates() {
       <div
         className="exchange-scroll"
         style={{
-          display: "flex",
-          gap: "8px",
           overflowX: "auto",
-          padding: "4px 12px",
+          textAlign: "center",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
+        }}
+      >
+      <div
+        style={{
+          display: "inline-flex",
+          gap: "8px",
+          padding: "4px 12px",
         }}
       >
         {Object.entries(data.rates).map(([currency, info]) => (
@@ -108,6 +113,7 @@ export default function ExchangeRates() {
             </span>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

@@ -463,6 +463,7 @@ export default function Navbar() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="mobile-menu-btn"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
           style={{
             display: "none",
             background: "transparent",
