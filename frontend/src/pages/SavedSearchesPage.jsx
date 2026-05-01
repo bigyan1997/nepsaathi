@@ -11,7 +11,7 @@ const TYPE_LABELS = {
 
 export default function SavedSearchesPage() {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
+  const { addToast } = useToast();
 
   const { data: searches = [], isLoading } = useQuery({
     queryKey: ["saved-searches"],
@@ -22,13 +22,15 @@ export default function SavedSearchesPage() {
     mutationFn: deleteSavedSearch,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["saved-searches"] });
-      showToast("Search alert deleted.", "success");
+      addToast("Search alert deleted.", "success");
     },
+    onError: () => addToast("Failed to delete. Please try again.", "error"),
   });
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, is_active }) => updateSavedSearch(id, { is_active }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["saved-searches"] }),
+    onError: () => addToast("Failed to update alert. Please try again.", "error"),
   });
 
   return (
