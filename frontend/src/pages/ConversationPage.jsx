@@ -31,6 +31,7 @@ export default function ConversationPage() {
   const [content, setContent] = useState("");
   const bottomRef = useRef(null);
   const prevMsgCountRef = useRef(0);
+  const initialScrollDone = useRef(false);
   const isVisible = usePageVisible();
 
   const { data, isLoading, isError } = useQuery({
@@ -53,10 +54,15 @@ export default function ConversationPage() {
     },
   });
 
-  // Only scroll to bottom when message count increases
+  // Scroll to bottom on initial load (instant), then smooth for new messages
   useEffect(() => {
     const count = data?.messages?.length ?? 0;
-    if (count > prevMsgCountRef.current) {
+    if (count === 0) return;
+    if (!initialScrollDone.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "instant" });
+      initialScrollDone.current = true;
+      prevMsgCountRef.current = count;
+    } else if (count > prevMsgCountRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
       prevMsgCountRef.current = count;
     }
