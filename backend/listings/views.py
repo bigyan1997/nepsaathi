@@ -704,29 +704,34 @@ def _trigger_saved_search_alerts(listing, send_fn):
 
     def _run():
         from django.utils import timezone as tz
+        print(f'[SEARCH ALERT] Checking for listing #{listing.id} type={listing.listing_type} title="{listing.title}"', flush=True)
         searches = SavedSearch.objects.filter(
             listing_type=listing.listing_type,
             is_active=True,
         ).exclude(user=listing.user).select_related('user')
 
+        print(f'[SEARCH ALERT] Found {searches.count()} candidate searches', flush=True)
+
         for saved in searches:
             try:
                 filters = saved.filters or {}
-                # Basic keyword filter
                 keyword = filters.get('search', '').lower()
+                print(f'[SEARCH ALERT] Search #{saved.id} keyword="{keyword}" state="{filters.get("state", "")}"', flush=True)
                 if keyword and keyword not in listing.title.lower():
                     if not listing.description or keyword not in listing.description.lower():
+                        print(f'[SEARCH ALERT] Search #{saved.id} skipped — keyword not matched', flush=True)
                         continue
-                # State filter
                 if filters.get('state') and filters['state'] != listing.state:
+                    print(f'[SEARCH ALERT] Search #{saved.id} skipped — state not matched', flush=True)
                     continue
 
+                print(f'[SEARCH ALERT] Sending alert for search #{saved.id} to {saved.user.email}', flush=True)
                 send_fn(saved.user, listing, saved.id)
 
                 saved.last_notified = tz.now()
                 saved.save(update_fields=['last_notified'])
             except Exception as e:
-                print(f'Saved search alert for search #{saved.id} failed: {e}', flush=True)
+                print(f'[SEARCH ALERT] Search #{saved.id} failed: {e}', flush=True)
 
     threading.Thread(target=_run, daemon=True).start()
 
