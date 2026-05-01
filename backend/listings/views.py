@@ -717,8 +717,10 @@ def _trigger_saved_search_alerts(listing, send_fn):
                 filters = saved.filters or {}
                 keyword = filters.get('search', '').lower()
                 print(f'[SEARCH ALERT] Search #{saved.id} keyword="{keyword}" state="{filters.get("state", "")}"', flush=True)
-                if keyword and keyword not in listing.title.lower():
-                    if not listing.description or keyword not in listing.description.lower():
+                if keyword:
+                    words = [w for w in keyword.split() if len(w) > 1]
+                    text = f"{listing.title} {listing.description or ''}".lower()
+                    if words and not all(w in text for w in words):
                         print(f'[SEARCH ALERT] Search #{saved.id} skipped — keyword not matched', flush=True)
                         continue
                 if filters.get('state') and filters['state'] != listing.state:
