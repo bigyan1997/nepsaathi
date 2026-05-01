@@ -17,16 +17,18 @@ import ScrollToTop from "./components/layout/ScrollToTop";
 import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
 
-// Public pages — lazy loaded
-const HomePage               = lazy(() => import("./pages/HomePage"));
+// High-traffic pages — kept eager (no waterfall on first load)
+import HomePage    from "./pages/HomePage";
+import JobsPage    from "./pages/listings/JobsPage";
+import RoomsPage   from "./pages/listings/RoomsPage";
+import EventsPage  from "./pages/listings/EventsPage";
+
+// Everything else — lazy loaded
 const FeaturedPage           = lazy(() => import("./pages/FeaturedPage"));
-const JobsPage               = lazy(() => import("./pages/listings/JobsPage"));
-const RoomsPage              = lazy(() => import("./pages/listings/RoomsPage"));
 const JobDetailPage          = lazy(() => import("./pages/listings/JobDetailPage"));
 const RoomDetailPage         = lazy(() => import("./pages/listings/RoomDetailPage"));
 const AnnouncementsPage      = lazy(() => import("./pages/listings/AnnouncementsPage"));
 const AnnouncementDetailPage = lazy(() => import("./pages/listings/AnnouncementDetailPage"));
-const EventsPage             = lazy(() => import("./pages/listings/EventsPage"));
 const EventDetailPage        = lazy(() => import("./pages/listings/EventDetailPage"));
 const BusinessesPage         = lazy(() => import("./pages/listings/BusinessesPage"));
 const BusinessDetailPage     = lazy(() => import("./pages/listings/BusinessDetailPage"));
@@ -37,23 +39,19 @@ const PrivacyPage            = lazy(() => import("./pages/PrivacyPage"));
 const TermsPage              = lazy(() => import("./pages/TermsPage"));
 const ContactPage            = lazy(() => import("./pages/ContactPage"));
 const NotFoundPage           = lazy(() => import("./pages/NotFoundPage"));
-
-// Protected pages — lazy loaded
-const PostAdPage         = lazy(() => import("./pages/listings/PostAdPage"));
-const MyListingsPage     = lazy(() => import("./pages/listings/MyListingsPage"));
-const ProfilePage        = lazy(() => import("./pages/ProfilePage"));
-const InboxPage          = lazy(() => import("./pages/InboxPage"));
-const ConversationPage   = lazy(() => import("./pages/ConversationPage"));
-const SavedSearchesPage  = lazy(() => import("./pages/SavedSearchesPage"));
-const PaymentSuccessPage = lazy(() => import("./pages/payment/PaymentSuccessPage"));
-const PaymentCancelPage  = lazy(() => import("./pages/payment/PaymentCancelPage"));
-
-// Auth pages — lazy loaded
-const LoginPage          = lazy(() => import("./pages/auth/LoginPage"));
-const RegisterPage       = lazy(() => import("./pages/auth/RegisterPage"));
-const VerifyEmailPage    = lazy(() => import("./pages/auth/VerifyEmailPage"));
-const ForgotPasswordPage = lazy(() => import("./pages/auth/ForgotPasswordPage"));
-const ResetPasswordPage  = lazy(() => import("./pages/auth/ResetPasswordPage"));
+const PostAdPage             = lazy(() => import("./pages/listings/PostAdPage"));
+const MyListingsPage         = lazy(() => import("./pages/listings/MyListingsPage"));
+const ProfilePage            = lazy(() => import("./pages/ProfilePage"));
+const InboxPage              = lazy(() => import("./pages/InboxPage"));
+const ConversationPage       = lazy(() => import("./pages/ConversationPage"));
+const SavedSearchesPage      = lazy(() => import("./pages/SavedSearchesPage"));
+const PaymentSuccessPage     = lazy(() => import("./pages/payment/PaymentSuccessPage"));
+const PaymentCancelPage      = lazy(() => import("./pages/payment/PaymentCancelPage"));
+const LoginPage              = lazy(() => import("./pages/auth/LoginPage"));
+const RegisterPage           = lazy(() => import("./pages/auth/RegisterPage"));
+const VerifyEmailPage        = lazy(() => import("./pages/auth/VerifyEmailPage"));
+const ForgotPasswordPage     = lazy(() => import("./pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage      = lazy(() => import("./pages/auth/ResetPasswordPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
