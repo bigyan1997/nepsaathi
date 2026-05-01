@@ -1,57 +1,50 @@
-import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-// Route guards — kept eager (tiny, needed immediately)
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import GuestRoute from "./components/auth/GuestRoute";
 
-// Layout — kept eager (visible on every page)
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import PageWrapper from "./components/layout/PageWrapper";
 import ScrollToTop from "./components/layout/ScrollToTop";
 
-// UI providers — kept eager
 import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
 
-// High-traffic pages — kept eager (no waterfall on first load)
-import HomePage    from "./pages/HomePage";
-import JobsPage    from "./pages/listings/JobsPage";
-import RoomsPage   from "./pages/listings/RoomsPage";
-import EventsPage  from "./pages/listings/EventsPage";
-
-// Everything else — lazy loaded
-const FeaturedPage           = lazy(() => import("./pages/FeaturedPage"));
-const JobDetailPage          = lazy(() => import("./pages/listings/JobDetailPage"));
-const RoomDetailPage         = lazy(() => import("./pages/listings/RoomDetailPage"));
-const AnnouncementsPage      = lazy(() => import("./pages/listings/AnnouncementsPage"));
-const AnnouncementDetailPage = lazy(() => import("./pages/listings/AnnouncementDetailPage"));
-const EventDetailPage        = lazy(() => import("./pages/listings/EventDetailPage"));
-const BusinessesPage         = lazy(() => import("./pages/listings/BusinessesPage"));
-const BusinessDetailPage     = lazy(() => import("./pages/listings/BusinessDetailPage"));
-const RegisterBusinessPage   = lazy(() => import("./pages/listings/RegisterBusinessPage"));
-const EditListingPage        = lazy(() => import("./pages/listings/EditListingPage"));
-const SearchPage             = lazy(() => import("./pages/SearchPage"));
-const PrivacyPage            = lazy(() => import("./pages/PrivacyPage"));
-const TermsPage              = lazy(() => import("./pages/TermsPage"));
-const ContactPage            = lazy(() => import("./pages/ContactPage"));
-const NotFoundPage           = lazy(() => import("./pages/NotFoundPage"));
-const PostAdPage             = lazy(() => import("./pages/listings/PostAdPage"));
-const MyListingsPage         = lazy(() => import("./pages/listings/MyListingsPage"));
-const ProfilePage            = lazy(() => import("./pages/ProfilePage"));
-const InboxPage              = lazy(() => import("./pages/InboxPage"));
-const ConversationPage       = lazy(() => import("./pages/ConversationPage"));
-const SavedSearchesPage      = lazy(() => import("./pages/SavedSearchesPage"));
-const PaymentSuccessPage     = lazy(() => import("./pages/payment/PaymentSuccessPage"));
-const PaymentCancelPage      = lazy(() => import("./pages/payment/PaymentCancelPage"));
-const LoginPage              = lazy(() => import("./pages/auth/LoginPage"));
-const RegisterPage           = lazy(() => import("./pages/auth/RegisterPage"));
-const VerifyEmailPage        = lazy(() => import("./pages/auth/VerifyEmailPage"));
-const ForgotPasswordPage     = lazy(() => import("./pages/auth/ForgotPasswordPage"));
-const ResetPasswordPage      = lazy(() => import("./pages/auth/ResetPasswordPage"));
+import HomePage              from "./pages/HomePage";
+import JobsPage              from "./pages/listings/JobsPage";
+import RoomsPage             from "./pages/listings/RoomsPage";
+import EventsPage            from "./pages/listings/EventsPage";
+import FeaturedPage          from "./pages/FeaturedPage";
+import JobDetailPage         from "./pages/listings/JobDetailPage";
+import RoomDetailPage        from "./pages/listings/RoomDetailPage";
+import AnnouncementsPage     from "./pages/listings/AnnouncementsPage";
+import AnnouncementDetailPage from "./pages/listings/AnnouncementDetailPage";
+import EventDetailPage       from "./pages/listings/EventDetailPage";
+import BusinessesPage        from "./pages/listings/BusinessesPage";
+import BusinessDetailPage    from "./pages/listings/BusinessDetailPage";
+import RegisterBusinessPage  from "./pages/listings/RegisterBusinessPage";
+import EditListingPage       from "./pages/listings/EditListingPage";
+import SearchPage            from "./pages/SearchPage";
+import PrivacyPage           from "./pages/PrivacyPage";
+import TermsPage             from "./pages/TermsPage";
+import ContactPage           from "./pages/ContactPage";
+import NotFoundPage          from "./pages/NotFoundPage";
+import PostAdPage            from "./pages/listings/PostAdPage";
+import MyListingsPage        from "./pages/listings/MyListingsPage";
+import ProfilePage           from "./pages/ProfilePage";
+import InboxPage             from "./pages/InboxPage";
+import ConversationPage      from "./pages/ConversationPage";
+import SavedSearchesPage     from "./pages/SavedSearchesPage";
+import PaymentSuccessPage    from "./pages/payment/PaymentSuccessPage";
+import PaymentCancelPage     from "./pages/payment/PaymentCancelPage";
+import LoginPage             from "./pages/auth/LoginPage";
+import RegisterPage          from "./pages/auth/RegisterPage";
+import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
+import ForgotPasswordPage    from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage     from "./pages/auth/ResetPasswordPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,11 +55,6 @@ const queryClient = new QueryClient({
   },
 });
 
-function PageFallback() {
-  return (
-    <div style={{ minHeight: "60vh", background: "#F5F4F0" }} />
-  );
-}
 
 function App() {
   return (
@@ -87,8 +75,7 @@ function App() {
                 <Navbar />
                 <div style={{ flex: 1 }}>
                   <PageWrapper>
-                    <Suspense fallback={<PageFallback />}>
-                      <Routes>
+                    <Routes>
                         {/* Public routes */}
                         <Route path="/" element={<HomePage />} />
                         <Route path="/featured" element={<FeaturedPage />} />
@@ -135,8 +122,7 @@ function App() {
                         <Route path="/payment/cancel" element={<PaymentCancelPage />} />
                         {/* 404 — must be last */}
                         <Route path="*" element={<NotFoundPage />} />
-                      </Routes>
-                    </Suspense>
+                    </Routes>
                   </PageWrapper>
                 </div>
                 <Footer />
