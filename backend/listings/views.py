@@ -655,6 +655,18 @@ class RenewListingView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if listing.is_under_review:
+            return Response(
+                {'detail': 'Your listing is currently under review and cannot be renewed. Please contact support@nepsaathi.com for assistance.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if listing.renewal_blocked:
+            return Response(
+                {'detail': 'Renewal has been restricted on this listing by our team. Please contact support@nepsaathi.com for assistance.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         # Only allow renewal when expiry is within 7 days (or already expired)
         if listing.expires_at and listing.expires_at > timezone.now() + timedelta(days=7):
             days_left = (listing.expires_at - timezone.now()).days

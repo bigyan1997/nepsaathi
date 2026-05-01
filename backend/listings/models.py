@@ -79,6 +79,10 @@ class Listing(models.Model):
         help_text='Featured listings appear at the top of search results'
     )
     is_under_review = models.BooleanField(default=False)
+    renewal_blocked = models.BooleanField(
+        default=False,
+        help_text='Admin can block this listing from being renewed'
+    )
     is_wanted = models.BooleanField(
         default=False)
 

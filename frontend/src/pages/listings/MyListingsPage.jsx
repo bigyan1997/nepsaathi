@@ -455,7 +455,10 @@ export default function MyListingsPage() {
       queryClient.invalidateQueries({ queryKey: ["my-listings"] });
       addToast("Listing renewed for 30 more days! ✅", "success");
     },
-    onError: () => addToast("Failed to renew listing.", "error"),
+    onError: (err) => {
+      const msg = err?.response?.data?.detail || "Failed to renew listing.";
+      addToast(msg, "error");
+    },
   });
 
   /* ── derived data ── */
@@ -898,24 +901,49 @@ export default function MyListingsPage() {
 
                     {/* Renew pill — inline for expiring */}
                     {(expiring || isExpired) && (
-                      <button
-                        onClick={() => renewMutation.mutate(listing.id)}
-                        disabled={renewMutation.isPending}
-                        style={{
-                          marginTop: "8px",
-                          background: "#EEEDFE",
-                          color: "#534AB7",
-                          border: "none",
-                          borderRadius: "20px",
-                          padding: "4px 12px",
-                          fontSize: "11px",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          opacity: renewMutation.isPending ? 0.6 : 1,
-                        }}
-                      >
-                        🔄 Renew for 30 days
-                      </button>
+                      <>
+                        {listing.is_under_review || listing.renewal_blocked ? (
+                          <span
+                            title={
+                              listing.is_under_review
+                                ? "This listing is under review and cannot be renewed"
+                                : "Renewal has been restricted on this listing"
+                            }
+                            style={{
+                              marginTop: "8px",
+                              display: "inline-block",
+                              background: "#FFF1E0",
+                              color: "#E87722",
+                              border: "0.5px solid #EFD9C0",
+                              borderRadius: "20px",
+                              padding: "4px 12px",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                            }}
+                          >
+                            🚫 Renewal blocked
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => renewMutation.mutate(listing.id)}
+                            disabled={renewMutation.isPending}
+                            style={{
+                              marginTop: "8px",
+                              background: "#EEEDFE",
+                              color: "#534AB7",
+                              border: "none",
+                              borderRadius: "20px",
+                              padding: "4px 12px",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              opacity: renewMutation.isPending ? 0.6 : 1,
+                            }}
+                          >
+                            🔄 Renew for 30 days
+                          </button>
+                        )}
+                      </>
                     )}
                   </div>
 
@@ -941,14 +969,16 @@ export default function MyListingsPage() {
                         },
                       },
                       (listing.status === "active" ||
-                        listing.status === "expired") && {
-                        label: "🔄 Renew 30 days",
-                        highlight: true,
-                        onClick: () => {
-                          setOpenMenu(null);
-                          renewMutation.mutate(listing.id);
+                        listing.status === "expired") &&
+                        !listing.is_under_review &&
+                        !listing.renewal_blocked && {
+                          label: "🔄 Renew 30 days",
+                          highlight: true,
+                          onClick: () => {
+                            setOpenMenu(null);
+                            renewMutation.mutate(listing.id);
+                          },
                         },
-                      },
                       listing.status === "active" && {
                         label: "✓ Mark as filled",
                         onClick: () => {

@@ -46,6 +46,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'contact_whatsapp',
             'is_featured',
             'is_under_review',
+            'renewal_blocked',
             'images',
             'job_detail',
             'room_detail',
