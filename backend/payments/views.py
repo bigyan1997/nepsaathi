@@ -23,7 +23,12 @@ class CreateCheckoutSessionView(APIView):
         except Listing.DoesNotExist:
             raise NotFound('Active listing not found or not yours.')
 
-        if listing.renewal_blocked or listing.is_under_review:
+        if listing.is_under_review:
+            raise ValidationError(
+                'This listing is under review and cannot be featured. '
+                'Contact us at support@nepsaathi.com.au if you have questions.'
+            )
+        if listing.renewal_blocked:
             raise ValidationError('This listing cannot be featured at this time.')
 
         stripe.api_key = settings.STRIPE_SECRET_KEY

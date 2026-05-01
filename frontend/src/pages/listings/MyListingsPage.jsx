@@ -378,6 +378,7 @@ export default function MyListingsPage() {
   const [listingsPage, setListingsPage] = useState(1);
   const [businessesPage, setBusinessesPage] = useState(1);
   const [savedPage, setSavedPage] = useState(1);
+  const [underReviewPage, setUnderReviewPage] = useState(1);
   const PAGE_SIZE = 5;
 
   /* ── queries — fetch all results, paginate client-side ── */
@@ -468,7 +469,8 @@ export default function MyListingsPage() {
       if (data.checkout_url) window.location.href = data.checkout_url;
     },
     onError: (err) => {
-      const msg = err?.response?.data?.detail || "Failed to start checkout.";
+      const data = err?.response?.data;
+      const msg = (Array.isArray(data) ? data[0] : data?.detail) || "Failed to start checkout.";
       addToast(msg, "error");
     },
   });
@@ -502,6 +504,11 @@ export default function MyListingsPage() {
     (savedPage - 1) * PAGE_SIZE,
     savedPage * PAGE_SIZE,
   );
+  const allUnderReview = allListings.filter((l) => l.is_under_review);
+  const underReview = allUnderReview.slice(
+    (underReviewPage - 1) * PAGE_SIZE,
+    underReviewPage * PAGE_SIZE,
+  );
 
   /* ── modal helpers ── */
   const confirmDelete = (message, fn) =>
@@ -518,10 +525,15 @@ export default function MyListingsPage() {
     <>
       <style>{`
         .myl-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        @media (max-width: 600px) { .myl-stats { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) {
+          .myl-stats { grid-template-columns: repeat(2, 1fr); }
+          .myl-wrap { padding: 16px !important; }
+          .myl-header { padding: 18px 16px !important; }
+        }
       `}</style>
 
       <div
+        className="myl-wrap"
         style={{
           maxWidth: "900px",
           margin: "0 auto",
@@ -534,6 +546,7 @@ export default function MyListingsPage() {
 
         {/* ── Dark header banner ── */}
         <div
+          className="myl-header"
           style={{
             background: "#26215C",
             borderRadius: "16px",
@@ -666,18 +679,19 @@ export default function MyListingsPage() {
             border: "0.5px solid #e5e5e5",
             padding: "4px",
             borderRadius: "12px",
-            width: "fit-content",
+            width: "100%",
             marginBottom: "16px",
+            flexWrap: "wrap",
           }}
         >
           {[
-            { key: "listings", label: `Listings (${allListings.length})` },
-            {
-              key: "businesses",
-              label: `Businesses (${allBusinesses.length})`,
-            },
-            { key: "saved", label: `Saved (${allSaved.length})` },
-          ].map(({ key, label }) => (
+            { key: "listings", label: "Listings", count: allListings.length },
+            { key: "businesses", label: "Businesses", count: allBusinesses.length },
+            { key: "saved", label: "Saved", count: allSaved.length },
+            ...(allUnderReview.length > 0
+              ? [{ key: "under-review", label: "Under Review", count: allUnderReview.length, alert: true }]
+              : []),
+          ].map(({ key, label, count, alert }) => (
             <button
               key={key}
               onClick={() => {
@@ -685,30 +699,52 @@ export default function MyListingsPage() {
                 setOpenMenu(null);
               }}
               style={{
-                background: activeTab === key ? "#26215C" : "transparent",
+                flex: 1,
+                minWidth: "fit-content",
+                background: activeTab === key ? (alert ? "#E87722" : "#26215C") : "transparent",
                 border: "none",
                 borderRadius: "8px",
-                padding: "8px 18px",
+                padding: "8px 12px",
                 fontSize: "13px",
                 fontWeight: activeTab === key ? 600 : 400,
-                color: activeTab === key ? "#fff" : "#888",
+                color: activeTab === key ? "#fff" : alert ? "#E87722" : "#888",
                 cursor: "pointer",
                 transition: "all 0.15s",
+                whiteSpace: "nowrap",
               }}
             >
-              {label}
+              {alert && activeTab !== key ? "⚠️ " : ""}{label}
+              <span style={{
+                marginLeft: "5px",
+                background: activeTab === key ? "rgba(255,255,255,0.25)" : "#f0f0f0",
+                color: activeTab === key ? "#fff" : alert ? "#E87722" : "#666",
+                borderRadius: "10px",
+                padding: "1px 6px",
+                fontSize: "11px",
+                fontWeight: 600,
+              }}>
+                {count}
+              </span>
             </button>
           ))}
         </div>
 
-        {/* ══ LISTINGS TAB ══ */}
-        {activeTab === "listings" && (
+        {/* ══ LISTINGS + UNDER REVIEW TABS ══ */}
+        {(activeTab === "listings" || activeTab === "under-review") && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "10px" }}
           >
             {listingsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
 
-            {!listingsLoading && allListings.length === 0 && (
+            {!listingsLoading && underReview.length === 0 && activeTab === "under-review" && (
+              <div style={{ textAlign: "center", padding: "48px", background: "#fff", borderRadius: "16px", border: "0.5px solid #e5e5e5" }}>
+                <div style={{ fontSize: "36px", marginBottom: "14px" }}>✅</div>
+                <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", marginBottom: "6px" }}>No listings under review</h3>
+                <p style={{ fontSize: "14px", color: "#888" }}>All your listings are in good standing</p>
+              </div>
+            )}
+
+            {!listingsLoading && allListings.length === 0 && activeTab === "listings" && (
               <div
                 style={{
                   textAlign: "center",
@@ -756,7 +792,7 @@ export default function MyListingsPage() {
               </div>
             )}
 
-            {listings.map((listing) => {
+            {(activeTab === "under-review" ? underReview : listings).map((listing) => {
               const typeColor =
                 TYPE_COLORS[listing.listing_type] || TYPE_COLORS.job;
               const statusColor =
@@ -867,6 +903,22 @@ export default function MyListingsPage() {
                           }}
                         >
                           ⭐ Featured
+                        </span>
+                      )}
+                      {listing.is_under_review && (
+                        <span
+                          style={{
+                            background: "#FFF8E0",
+                            color: "#8B6914",
+                            fontSize: "10px",
+                            fontWeight: 600,
+                            padding: "2px 9px",
+                            borderRadius: "20px",
+                            whiteSpace: "nowrap",
+                            border: "0.5px solid #E8D5A0",
+                          }}
+                        >
+                          🔍 Under Review
                         </span>
                       )}
                       {expiring && (
@@ -1059,11 +1111,11 @@ export default function MyListingsPage() {
               );
             })}
             <Pagination
-              page={listingsPage}
-              count={allListings.length}
+              page={activeTab === "under-review" ? underReviewPage : listingsPage}
+              count={activeTab === "under-review" ? allUnderReview.length : allListings.length}
               pageSize={PAGE_SIZE}
               onChange={(p) => {
-                setListingsPage(p);
+                activeTab === "under-review" ? setUnderReviewPage(p) : setListingsPage(p);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />

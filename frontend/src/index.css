@@ -28,6 +28,7 @@ body {
     Roboto,
     sans-serif;
   -webkit-font-smoothing: antialiased;
+  scrollbar-gutter: stable;
 }
 
 /* Page transition animation */
