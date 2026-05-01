@@ -956,7 +956,7 @@ def send_saved_search_alert_email(user, listing, saved_search_id):
 {_listing_card(
     html_module.escape(listing.title),
     listing_url,
-    html_module.escape(listing.suburb or listing.state or 'Australia'),
+    html_module.escape(listing.location or listing.state or 'Australia'),
     emoji=emoji,
     bg=bg
 )}
