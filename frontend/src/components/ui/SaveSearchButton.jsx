@@ -31,8 +31,14 @@ export default function SaveSearchButton({ listingType, filters = {} }) {
     },
   });
 
+  const hasFilters = Object.values(filters).some((v) => v !== "" && v != null);
+
   const handleClick = () => {
     if (!isAuthenticated) { navigate("/login"); return; }
+    if (!hasFilters) {
+      addToast("Add at least one filter (keyword, location, etc.) before saving.", "error");
+      return;
+    }
     if (saved || mutation.isPending) return;
     mutation.mutate();
   };
