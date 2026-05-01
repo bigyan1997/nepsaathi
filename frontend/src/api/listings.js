@@ -129,3 +129,24 @@ export const getFeaturedListings = async () => {
   const response = await api.get("/api/listings/?is_featured=true&page_size=6");
   return response.data;
 };
+
+// Saved searches
+export const getSavedSearches = async () => {
+  const response = await api.get("/api/listings/saved-searches/");
+  return response.data;
+};
+
+export const createSavedSearch = async (data) => {
+  const response = await api.post("/api/listings/saved-searches/", data);
+  return response.data;
+};
+
+export const updateSavedSearch = async (id, data) => {
+  const response = await api.patch(`/api/listings/saved-searches/${id}/`, data);
+  return response.data;
+};
+
+export const deleteSavedSearch = async (id) => {
+  const response = await api.delete(`/api/listings/saved-searches/${id}/`);
+  return response.data;
+};

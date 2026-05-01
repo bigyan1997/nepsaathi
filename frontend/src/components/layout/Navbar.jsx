@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import useAuthStore from "../../store/authStore";
 import { logout as logoutApi } from "../../api/auth";
+import { getUnreadCount } from "../../api/messages";
 
 const NAV_LINKS = [
   { to: "/jobs", label: "Jobs" },
@@ -18,6 +20,15 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const { data: unreadData } = useQuery({
+    queryKey: ["unread-count"],
+    queryFn: getUnreadCount,
+    enabled: isAuthenticated,
+    refetchInterval: 10000,
+    staleTime: 8000,
+  });
+  const unreadCount = unreadData?.unread_count || 0;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -164,6 +175,47 @@ export default function Navbar() {
         >
           {isAuthenticated ? (
             <>
+              {/* Messages icon */}
+              <Link
+                to="/messages"
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  background: isActive("/messages") ? "#EEEDFE" : "transparent",
+                  color: isActive("/messages") ? "#534AB7" : "#555",
+                  textDecoration: "none",
+                  fontSize: "18px",
+                }}
+                title="Messages"
+              >
+                💬
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: "absolute",
+                    top: 2,
+                    right: 2,
+                    minWidth: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    background: "#E87722",
+                    color: "#fff",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 3px",
+                  }}>
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </Link>
+
               <Link
                 to="/post-ad"
                 style={{
@@ -279,6 +331,8 @@ export default function Navbar() {
 
                     {[
                       { to: "/my-listings", label: "My listings", emoji: "📋" },
+                      { to: "/messages", label: "Messages", emoji: "💬", badge: unreadCount },
+                      { to: "/saved-searches", label: "Search alerts", emoji: "🔔" },
                       {
                         to: "/register-business",
                         label: "Register business",
@@ -289,7 +343,7 @@ export default function Navbar() {
                         label: "Profile settings",
                         emoji: "⚙️",
                       },
-                    ].map(({ to, label, emoji }) => (
+                    ].map(({ to, label, emoji, badge }) => (
                       <Link
                         key={to}
                         to={to}
@@ -313,6 +367,24 @@ export default function Navbar() {
                       >
                         <span style={{ fontSize: "14px" }}>{emoji}</span>
                         {label}
+                        {badge > 0 && (
+                          <span style={{
+                            marginLeft: "auto",
+                            minWidth: 18,
+                            height: 18,
+                            borderRadius: 9,
+                            background: "#E87722",
+                            color: "#fff",
+                            fontSize: 10,
+                            fontWeight: 700,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "0 4px",
+                          }}>
+                            {badge > 9 ? "9+" : badge}
+                          </span>
+                        )}
                       </Link>
                     ))}
 
@@ -539,13 +611,15 @@ export default function Navbar() {
                   highlight: true,
                 },
                 { to: "/my-listings", label: "My listings", emoji: "📋" },
+                { to: "/messages", label: "Messages", emoji: "💬", badge: unreadCount },
+                { to: "/saved-searches", label: "Search alerts", emoji: "🔔" },
                 {
                   to: "/register-business",
                   label: "Register business",
                   emoji: "🏪",
                 },
                 { to: "/profile", label: "Profile settings", emoji: "⚙️" },
-              ].map(({ to, label, emoji, highlight }) => (
+              ].map(({ to, label, emoji, highlight, badge }) => (
                 <Link
                   key={to}
                   to={to}
@@ -572,6 +646,24 @@ export default function Navbar() {
                 >
                   <span style={{ fontSize: "16px" }}>{emoji}</span>
                   {label}
+                  {badge > 0 && (
+                    <span style={{
+                      marginLeft: "auto",
+                      minWidth: 18,
+                      height: 18,
+                      borderRadius: 9,
+                      background: "#E87722",
+                      color: "#fff",
+                      fontSize: 10,
+                      fontWeight: 700,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0 4px",
+                    }}>
+                      {badge > 9 ? "9+" : badge}
+                    </span>
+                  )}
                 </Link>
               ))}
 

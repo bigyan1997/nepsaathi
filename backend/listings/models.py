@@ -248,3 +248,24 @@ class ListingView(models.Model):
             models.Index(fields=['listing', 'user']),
             models.Index(fields=['listing', 'ip_address']),
         ]
+
+class SavedSearch(models.Model):
+    """Stores a user's saved search filters to trigger email alerts on new matches."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="saved_searches",
+    )
+    label = models.CharField(max_length=100, blank=True)
+    listing_type = models.CharField(max_length=20)
+    filters = models.JSONField(default=dict, blank=True)
+    is_active = models.BooleanField(default=True)
+    last_notified = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "saved_searches"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.email} — {self.listing_type} search"

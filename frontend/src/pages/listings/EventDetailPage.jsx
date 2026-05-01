@@ -7,6 +7,7 @@ import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import MessageButton from "../../components/ui/MessageButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView } from "../../api/listings";
 import { useEffect, useState } from "react";
@@ -265,6 +266,13 @@ export default function EventDetailPage() {
                 👁️ {event.view_count}
               </span>
             )}
+            <MessageButton
+              recipientId={event?.user_id}
+              listingId={event?.listing_id}
+              listingTitle={event?.listing_title}
+              listingType="event"
+              compact={isMobile}
+            />
             <SaveButton listingId={event?.listing_id} compact={isMobile} />
             <ShareButton title={event?.listing_title} compact={isMobile} />
           </div>

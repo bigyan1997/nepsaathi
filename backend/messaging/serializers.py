@@ -1,0 +1,53 @@
+from rest_framework import serializers
+from .models import Conversation, Message
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender_name = serializers.SerializerMethodField()
+    sender_id = serializers.IntegerField(source='sender.id', read_only=True)
+
+    def get_sender_name(self, obj):
+        return f"{obj.sender.first_name} {obj.sender.last_name}".strip() or obj.sender.email
+
+    class Meta:
+        model = Message
+        fields = ('id', 'sender_id', 'sender_name', 'content', 'is_read', 'created_at')
+        read_only_fields = ('id', 'sender_id', 'sender_name', 'is_read', 'created_at')
+
+
+class ConversationSerializer(serializers.ModelSerializer):
+    other_user = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField()
+    unread_count = serializers.SerializerMethodField()
+
+    def get_other_user(self, obj):
+        request = self.context.get('request')
+        other = obj.other_participant(request.user)
+        if not other:
+            return None
+        return {
+            'id': other.id,
+            'name': f"{other.first_name} {other.last_name}".strip() or other.email,
+            'avatar': getattr(other, 'google_avatar', None),
+        }
+
+    def get_last_message(self, obj):
+        msg = obj.messages.order_by('-created_at').first()
+        if not msg:
+            return None
+        return {
+            'content': msg.content[:80],
+            'created_at': msg.created_at,
+            'sender_id': msg.sender_id,
+        }
+
+    def get_unread_count(self, obj):
+        request = self.context.get('request')
+        return obj.messages.filter(is_read=False).exclude(sender=request.user).count()
+
+    class Meta:
+        model = Conversation
+        fields = (
+            'id', 'listing_id', 'listing_title', 'listing_type',
+            'other_user', 'last_message', 'unread_count', 'updated_at',
+        )

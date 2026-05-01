@@ -2,8 +2,8 @@ from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Listing, ListingImage, ListingReport, SavedListing, ListingView
-from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer
+from .models import Listing, ListingImage, ListingReport, SavedListing, ListingView, SavedSearch
+from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer, SavedSearchSerializer
 from .throttles import ListingCreateThrottle
 from django.utils import timezone
 from django.db.models import Q
@@ -114,7 +114,14 @@ class ListingCreateView(generics.CreateAPIView):
 
         # Set expiry to 30 days from now
         expires_at = timezone.now() + timedelta(days=30)
-        serializer.save(user=user, expires_at=expires_at)
+        listing = serializer.save(user=user, expires_at=expires_at)
+
+        # Fire saved search alerts in background
+        try:
+            from core.emails import send_saved_search_alert_email
+            _trigger_saved_search_alerts(listing, send_saved_search_alert_email)
+        except Exception as e:
+            print(f'Saved search alert trigger failed: {e}', flush=True)
 
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -689,3 +696,82 @@ class RenewListingView(APIView):
             'detail': 'Listing renewed successfully!',
             'expires_at': listing.expires_at,
         })
+
+
+def _trigger_saved_search_alerts(listing, send_fn):
+    """Check saved searches matching a newly created listing and fire email alerts."""
+    import threading
+
+    def _run():
+        from django.utils import timezone as tz
+        searches = SavedSearch.objects.filter(
+            listing_type=listing.listing_type,
+            is_active=True,
+        ).exclude(user=listing.user).select_related('user')
+
+        for saved in searches:
+            try:
+                filters = saved.filters or {}
+                # Basic keyword filter
+                keyword = filters.get('search', '').lower()
+                if keyword and keyword not in listing.title.lower():
+                    if not listing.description or keyword not in listing.description.lower():
+                        continue
+                # State filter
+                if filters.get('state') and filters['state'] != listing.state:
+                    continue
+
+                send_fn(saved.user, listing, saved.id)
+
+                saved.last_notified = tz.now()
+                saved.save(update_fields=['last_notified'])
+            except Exception as e:
+                print(f'Saved search alert for search #{saved.id} failed: {e}', flush=True)
+
+    threading.Thread(target=_run, daemon=True).start()
+
+
+class SavedSearchListView(APIView):
+    """
+    GET  /api/listings/saved-searches/        — list user's saved searches
+    POST /api/listings/saved-searches/        — create a saved search
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        searches = SavedSearch.objects.filter(user=request.user)
+        return Response(SavedSearchSerializer(searches, many=True).data)
+
+    def post(self, request):
+        if SavedSearch.objects.filter(user=request.user).count() >= 10:
+            raise ValidationError('You can save up to 10 searches.')
+        serializer = SavedSearchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class SavedSearchDetailView(APIView):
+    """
+    PATCH  /api/listings/saved-searches/<id>/  — toggle is_active or rename
+    DELETE /api/listings/saved-searches/<id>/  — delete a saved search
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def _get(self, pk, user):
+        try:
+            return SavedSearch.objects.get(pk=pk, user=user)
+        except SavedSearch.DoesNotExist:
+            from rest_framework.exceptions import NotFound
+            raise NotFound('Saved search not found.')
+
+    def patch(self, request, pk):
+        saved = self._get(pk, request.user)
+        serializer = SavedSearchSerializer(saved, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        self._get(pk, request.user).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

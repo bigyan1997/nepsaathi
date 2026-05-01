@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Listing, ListingImage, SavedListing, ListingReport
+from .models import Listing, ListingImage, SavedListing, ListingReport, SavedSearch
 from jobs.serializers import JobSerializer
 from rooms.serializers import RoomSerializer
 from django.db.models import Count
@@ -144,3 +144,16 @@ class ListingReportSerializer(serializers.ModelSerializer):
         model = ListingReport
         fields = ('id', 'listing', 'reason', 'details', 'created_at')
         read_only_fields = ('id', 'created_at')
+
+
+class SavedSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedSearch
+        fields = ('id', 'label', 'listing_type', 'filters', 'is_active', 'last_notified', 'created_at')
+        read_only_fields = ('id', 'last_notified', 'created_at')
+
+    def validate_listing_type(self, value):
+        allowed = {'job', 'room', 'event', 'announcement'}
+        if value not in allowed:
+            raise serializers.ValidationError(f'listing_type must be one of: {", ".join(sorted(allowed))}')
+        return value

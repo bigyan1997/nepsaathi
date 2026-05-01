@@ -5,6 +5,7 @@ import { getJobs } from "../../api/jobs";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
+import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -782,6 +783,10 @@ export default function JobsPage() {
               </option>
             ))}
           </select>
+          <SaveSearchButton
+            listingType="job"
+            filters={{ search: filters.search, state: filters.state }}
+          />
         </div>
 
         {(isLoading || (isFetching && allResults.length === 0)) && (

@@ -52,4 +52,8 @@ urlpatterns = [
 
     # Renew Listing
     path('<int:pk>/renew/', views.RenewListingView.as_view(), name='renew-listing'),
+
+    # Saved Searches (alerts)
+    path('saved-searches/', views.SavedSearchListView.as_view(), name='saved-search-list'),
+    path('saved-searches/<int:pk>/', views.SavedSearchDetailView.as_view(), name='saved-search-detail'),
 ]

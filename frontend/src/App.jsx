@@ -41,6 +41,11 @@ import SearchPage from "./pages/SearchPage";
 import PostAdPage from "./pages/listings/PostAdPage";
 import MyListingsPage from "./pages/listings/MyListingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import InboxPage from "./pages/InboxPage";
+import ConversationPage from "./pages/ConversationPage";
+import SavedSearchesPage from "./pages/SavedSearchesPage";
+import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 
 // Auth pages (guest only)
 import LoginPage from "./pages/auth/LoginPage";
@@ -192,6 +197,32 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/messages"
+                        element={
+                          <ProtectedRoute>
+                            <InboxPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/messages/:id"
+                        element={
+                          <ProtectedRoute>
+                            <ConversationPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/saved-searches"
+                        element={
+                          <ProtectedRoute>
+                            <SavedSearchesPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="/payment/success" element={<PaymentSuccessPage />} />
+                      <Route path="/payment/cancel" element={<PaymentCancelPage />} />
                       <Route
                         path="/forgot-password"
                         element={<ForgotPasswordPage />}

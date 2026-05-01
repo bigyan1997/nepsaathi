@@ -52,6 +52,8 @@ LOCAL_APPS = [
     'businesses',
     'announcements',
     'exchange',
+    'messaging',
+    'payments',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -154,6 +156,8 @@ REST_FRAMEWORK = {
         'login': '5/minute' if not DEBUG else '1000/day',
         'register': '3/minute' if not DEBUG else '1000/day',
         'password_reset': '3/hour' if not DEBUG else '1000/day',
+        'message_send': '20/minute' if not DEBUG else '1000/day',
+        'saved_search_create': '20/day' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -253,6 +257,14 @@ else:
 
     # Resend API (used in production instead of SMTP)
 RESEND_API_KEY = config('RESEND_API_KEY', default='')
+
+# ─── Stripe ───────────────────────────────────────────────────────────────────
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+STRIPE_FEATURED_PRICE_CENTS = config('STRIPE_FEATURED_PRICE_CENTS', default=999, cast=int)  # $9.99 AUD
+
+# ─── Frontend URL ─────────────────────────────────────────────────────────────
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 # ─── Cache ────────────────────────────────────────────────────────────────────
 REDIS_URL = config('REDIS_URL', default=None)

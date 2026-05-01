@@ -9,6 +9,7 @@ import {
   markListingStatus,
   renewListing,
 } from "../../api/listings";
+import { createCheckoutSession } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -461,6 +462,17 @@ export default function MyListingsPage() {
     },
   });
 
+  const featureMutation = useMutation({
+    mutationFn: createCheckoutSession,
+    onSuccess: (data) => {
+      if (data.checkout_url) window.location.href = data.checkout_url;
+    },
+    onError: (err) => {
+      const msg = err?.response?.data?.detail || "Failed to start checkout.";
+      addToast(msg, "error");
+    },
+  });
+
   /* ── derived data ── */
   const allListings = (listingsData?.results || []).filter(
     (l) => l.status !== "deleted",
@@ -841,6 +853,22 @@ export default function MyListingsPage() {
                       >
                         ● {listing.status}
                       </span>
+                      {listing.is_featured && (
+                        <span
+                          style={{
+                            background: "#FFF1E0",
+                            color: "#E87722",
+                            fontSize: "10px",
+                            fontWeight: 600,
+                            padding: "2px 9px",
+                            borderRadius: "20px",
+                            whiteSpace: "nowrap",
+                            border: "0.5px solid #EFD9C0",
+                          }}
+                        >
+                          ⭐ Featured
+                        </span>
+                      )}
                       {expiring && (
                         <span
                           style={{
@@ -977,6 +1005,14 @@ export default function MyListingsPage() {
                           onClick: () => {
                             setOpenMenu(null);
                             renewMutation.mutate(listing.id);
+                          },
+                        },
+                      listing.status === "active" &&
+                        !listing.is_featured && {
+                          label: "⭐ Feature listing — $9.99",
+                          onClick: () => {
+                            setOpenMenu(null);
+                            featureMutation.mutate(listing.id);
                           },
                         },
                       listing.status === "active" && {

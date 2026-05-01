@@ -19,6 +19,7 @@ class EventSerializer(serializers.ModelSerializer):
         source='listing.id', read_only=True)
     posted_by = serializers.CharField(
         source='listing.user.full_name', read_only=True)
+    user_id = serializers.IntegerField(source='listing.user.id', read_only=True)
     description = serializers.CharField(
         source='listing.description', read_only=True)
     contact_phone = serializers.CharField(
@@ -95,6 +96,7 @@ class EventSerializer(serializers.ModelSerializer):
             'listing_location',
             'listing_state',
             'posted_by',
+            'user_id',
             'description',
             'contact_phone',
             'contact_whatsapp',

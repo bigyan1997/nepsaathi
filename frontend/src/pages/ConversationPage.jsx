@@ -1,0 +1,211 @@
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getConversation, sendMessage } from "../api/messages";
+import useAuthStore from "../store/authStore";
+
+function timeStr(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  if (isToday) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+function usePageVisible() {
+  const [visible, setVisible] = useState(!document.hidden);
+  useEffect(() => {
+    const handler = () => setVisible(!document.hidden);
+    document.addEventListener("visibilitychange", handler);
+    return () => document.removeEventListener("visibilitychange", handler);
+  }, []);
+  return visible;
+}
+
+export default function ConversationPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+  const [content, setContent] = useState("");
+  const bottomRef = useRef(null);
+  const isVisible = usePageVisible();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["conversation", id],
+    queryFn: () => getConversation(id),
+    refetchInterval: isVisible ? 3000 : false,
+    retry: false,
+  });
+
+  const sendMutation = useMutation({
+    mutationFn: () => sendMessage(id, content.trim()),
+    onSuccess: (newMsg) => {
+      setContent("");
+      queryClient.setQueryData(["conversation", id], (old) => {
+        if (!old) return old;
+        return { ...old, messages: [...old.messages, newMsg] };
+      });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+    },
+  });
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [data?.messages]);
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!content.trim() || sendMutation.isPending) return;
+    sendMutation.mutate();
+  };
+
+  if (isLoading) {
+    return (
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px" }}>
+        <div style={{ height: 20, width: "40%", borderRadius: 8, background: "#e8e8e8", marginBottom: 24 }} />
+        {[1, 2, 3].map((i) => (
+          <div key={i} style={{ height: 48, borderRadius: 12, background: "#e8e8e8", marginBottom: 8, animation: "pulse 1.5s infinite" }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px", textAlign: "center", color: "#888" }}>
+        Conversation not found.
+      </div>
+    );
+  }
+
+  const { conversation, messages } = data;
+  const other = conversation?.other_user;
+
+  return (
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", height: "calc(100vh - 100px)" }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        <button
+          onClick={() => navigate("/messages")}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "#534AB7", fontSize: 20, padding: 0, display: "flex", alignItems: "center" }}
+        >
+          ←
+        </button>
+        <div style={{
+          width: 38,
+          height: 38,
+          borderRadius: "50%",
+          background: "#534AB7",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 700,
+          fontSize: 14,
+          overflow: "hidden",
+          flexShrink: 0,
+        }}>
+          {other?.avatar
+            ? <img src={other.avatar} alt={other.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            : other?.name?.[0]?.toUpperCase() || "?"}
+        </div>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#26215C" }}>{other?.name}</div>
+          {conversation.listing_title && (
+            <div style={{ fontSize: 11, color: "#888" }}>Re: {conversation.listing_title}</div>
+          )}
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, paddingBottom: 12 }}>
+        {messages.length === 0 ? (
+          <div style={{ textAlign: "center", color: "#aaa", fontSize: 13, marginTop: 40 }}>No messages yet. Say hi!</div>
+        ) : (
+          messages.map((msg) => {
+            const isMine = msg.sender_id === user?.id;
+            return (
+              <div key={msg.id} style={{ display: "flex", justifyContent: isMine ? "flex-end" : "flex-start" }}>
+                <div style={{
+                  maxWidth: "75%",
+                  background: isMine ? "#534AB7" : "#fff",
+                  color: isMine ? "#fff" : "#333",
+                  border: isMine ? "none" : "1px solid #e8e8e8",
+                  borderRadius: isMine ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                  padding: "10px 14px",
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}>
+                  {msg.content}
+                  <div style={{ fontSize: 10, color: isMine ? "rgba(255,255,255,0.6)" : "#bbb", marginTop: 4, textAlign: "right" }}>
+                    {timeStr(msg.created_at)}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <form onSubmit={handleSend} style={{ display: "flex", gap: 8, paddingTop: 12, borderTop: "1px solid #f0f0f0" }}>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); }
+          }}
+          placeholder="Type a message..."
+          rows={2}
+          maxLength={2000}
+          style={{
+            flex: 1,
+            border: "1px solid #e0e0e0",
+            borderRadius: 12,
+            padding: "10px 14px",
+            fontSize: 14,
+            resize: "none",
+            outline: "none",
+            fontFamily: "inherit",
+            background: "#fff",
+            lineHeight: 1.5,
+          }}
+        />
+        <button
+          type="submit"
+          disabled={!content.trim() || sendMutation.isPending}
+          style={{
+            background: "#534AB7",
+            color: "#fff",
+            border: "none",
+            borderRadius: 12,
+            padding: "0 20px",
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: content.trim() && !sendMutation.isPending ? "pointer" : "not-allowed",
+            opacity: content.trim() && !sendMutation.isPending ? 1 : 0.5,
+            flexShrink: 0,
+            alignSelf: "stretch",
+          }}
+        >
+          {sendMutation.isPending ? "..." : "Send"}
+        </button>
+      </form>
+
+      {sendMutation.isError && (
+        <div style={{ fontSize: 12, color: "#A32D2D", marginTop: 4 }}>
+          {sendMutation.error?.response?.data?.detail || "Failed to send message."}
+        </div>
+      )}
+
+      <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
+    </div>
+  );
+}

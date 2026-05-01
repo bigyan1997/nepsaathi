@@ -1,0 +1,61 @@
+import { Link, useSearchParams } from "react-router-dom";
+
+export default function PaymentSuccessPage() {
+  const [params] = useSearchParams();
+  const sessionId = params.get("session_id");
+
+  return (
+    <div style={{ maxWidth: 520, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+      <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "#26215C", margin: "0 0 12px" }}>
+        Your listing is now featured!
+      </h1>
+      <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, margin: "0 0 32px" }}>
+        Your listing will appear at the top of search results for the next 7 days,
+        reaching more people in the NepSaathi community.
+      </p>
+      <div style={{
+        background: "#E1F5EE",
+        border: "1px solid #9FE1CB",
+        borderRadius: 12,
+        padding: "16px 20px",
+        marginBottom: 28,
+        fontSize: 13,
+        color: "#085041",
+        textAlign: "left",
+      }}>
+        ✅ Payment confirmed · Featured for 7 days · Visible at the top of search results
+      </div>
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+        <Link
+          to="/my-listings"
+          style={{
+            background: "#534AB7",
+            color: "#fff",
+            padding: "12px 24px",
+            borderRadius: 10,
+            fontSize: 14,
+            fontWeight: 600,
+            textDecoration: "none",
+          }}
+        >
+          View my listings
+        </Link>
+        <Link
+          to="/"
+          style={{
+            background: "#F5F4F0",
+            color: "#555",
+            padding: "12px 24px",
+            borderRadius: 10,
+            fontSize: 14,
+            fontWeight: 500,
+            textDecoration: "none",
+          }}
+        >
+          Go home
+        </Link>
+      </div>
+    </div>
+  );
+}

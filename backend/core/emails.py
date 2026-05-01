@@ -933,6 +933,51 @@ def send_listing_renewed_email(listing):
 # 15. LISTING EXPIRED
 # ─────────────────────────────────────────────────────────────
 
+def send_saved_search_alert_email(user, listing, saved_search_id):
+    listing_type = listing.listing_type
+    listing_url = f"{FRONTEND_URL}/{listing_type}s/listing/{listing.id}"
+    manage_url = f"{FRONTEND_URL}/saved-searches"
+    type_labels = {
+        'job': ('Job', '&#128188;', '#EEEDFE'),
+        'room': ('Room', '&#127968;', '#FFF1E0'),
+        'event': ('Event', '&#127881;', '#E1F5EE'),
+        'announcement': ('Announcement', '&#128226;', '#F5F4F0'),
+    }
+    label, emoji, bg = type_labels.get(listing_type, ('Listing', '&#128204;', '#EEEDFE'))
+    try:
+        first_name = user.first_name or 'there'
+        body = f"""
+<h1 {_H1}>New {label} matching your saved search &#128276;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, a new {label.lower()} has been posted that matches
+  one of your saved searches on NepSaathi.
+</p>
+
+{_listing_card(
+    html_module.escape(listing.title),
+    listing_url,
+    html_module.escape(listing.suburb or listing.state or 'Australia'),
+    emoji=emoji,
+    bg=bg
+)}
+
+{_btn(f"View {label} &rarr;", listing_url, color="#534AB7")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  You're receiving this because you saved a search alert on NepSaathi.
+  <a href="{manage_url}" style="color:#534AB7;text-decoration:none;">Manage your saved searches</a>
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [user.email],
+            'subject': f'[NepSaathi] New {label}: {listing.title}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Saved search alert email failed: {e}', flush=True)
+
+
 def send_listing_expired_email(listing):
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:

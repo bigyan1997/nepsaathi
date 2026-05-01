@@ -6,6 +6,7 @@ import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import MessageButton from "../../components/ui/MessageButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -171,6 +172,13 @@ export default function JobDetailPage() {
                 👁️ {job.view_count}
               </span>
             )}
+            <MessageButton
+              recipientId={job?.user_id}
+              listingId={job?.listing_id}
+              listingTitle={job?.listing_title}
+              listingType="job"
+              compact={isMobile}
+            />
             <SaveButton listingId={job?.listing_id} compact={isMobile} />
             <ShareButton title={job?.listing_title} compact={isMobile} />
           </div>

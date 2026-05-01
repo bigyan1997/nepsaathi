@@ -5,6 +5,7 @@ import { getRooms } from "../../api/rooms";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
+import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
 const ROOM_TYPES = [
   { value: "", label: "All types" },
@@ -1050,6 +1051,10 @@ export default function RoomsPage() {
               </option>
             ))}
           </select>
+          <SaveSearchButton
+            listingType="room"
+            filters={{ search: filters.search, state: filters.state }}
+          />
         </div>
 
         {/* Loading */}

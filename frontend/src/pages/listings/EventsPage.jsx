@@ -5,6 +5,7 @@ import { getEvents } from "../../api/events";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
+import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -968,6 +969,10 @@ export default function EventsPage() {
               {label}
             </label>
           ))}
+          <SaveSearchButton
+            listingType="event"
+            filters={{ search: filters.search, state: filters.state }}
+          />
         </div>
 
         {(isLoading || (isFetching && allResults.length === 0)) && (

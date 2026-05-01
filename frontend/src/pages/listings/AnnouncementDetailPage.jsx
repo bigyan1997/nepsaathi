@@ -9,6 +9,7 @@ import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import MessageButton from "../../components/ui/MessageButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -184,6 +185,13 @@ export default function AnnouncementDetailPage() {
                 👁️ {announcement.view_count}
               </span>
             )}
+            <MessageButton
+              recipientId={announcement?.user_id}
+              listingId={announcement?.listing_id}
+              listingTitle={announcement?.listing_title}
+              listingType="announcement"
+              compact={isMobile}
+            />
             <SaveButton
               listingId={announcement?.listing_id}
               compact={isMobile}

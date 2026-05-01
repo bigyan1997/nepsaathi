@@ -6,6 +6,7 @@ import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
+import MessageButton from "../../components/ui/MessageButton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -189,6 +190,13 @@ export default function RoomDetailPage() {
                 👁️ {room.view_count}
               </span>
             )}
+            <MessageButton
+              recipientId={room?.user_id}
+              listingId={room?.listing_id}
+              listingTitle={room?.listing_title}
+              listingType="room"
+              compact={isMobile}
+            />
             <SaveButton listingId={room?.listing_id} compact={isMobile} />
             <ShareButton title={room?.listing_title} compact={isMobile} />
           </div>

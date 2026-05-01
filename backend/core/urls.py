@@ -78,6 +78,12 @@ urlpatterns = [
 
     # Exchange Rates
     path('api/exchange/', include('exchange.urls')),
+
+    # Messaging
+    path('api/messages/', include('messaging.urls')),
+
+    # Payments (Stripe featured listings)
+    path('api/payments/', include('payments.urls')),
 ]
 
 # Only serve media files locally — Cloudinary handles production

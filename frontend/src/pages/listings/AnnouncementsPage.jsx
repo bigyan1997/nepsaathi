@@ -5,6 +5,7 @@ import { getAnnouncements } from "../../api/announcements";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
+import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -861,6 +862,10 @@ export default function AnnouncementsPage() {
               {label}
             </label>
           ))}
+          <SaveSearchButton
+            listingType="announcement"
+            filters={{ search: filters.search, state: filters.state }}
+          />
         </div>
 
         {(isLoading || (isFetching && allResults.length === 0)) && (
