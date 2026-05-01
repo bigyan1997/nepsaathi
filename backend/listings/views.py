@@ -704,30 +704,23 @@ def _trigger_saved_search_alerts(listing, send_fn):
 
     def _run():
         from django.utils import timezone as tz
-        print(f'[SEARCH ALERT] Checking for listing #{listing.id} type={listing.listing_type} title="{listing.title}"', flush=True)
         searches = SavedSearch.objects.filter(
             listing_type=listing.listing_type,
             is_active=True,
         ).exclude(user=listing.user).select_related('user')
 
-        print(f'[SEARCH ALERT] Found {searches.count()} candidate searches', flush=True)
-
         for saved in searches:
             try:
                 filters = saved.filters or {}
                 keyword = filters.get('search', '').lower()
-                print(f'[SEARCH ALERT] Search #{saved.id} keyword="{keyword}" state="{filters.get("state", "")}"', flush=True)
                 if keyword:
                     words = [w for w in keyword.split() if len(w) > 1]
                     text = f"{listing.title} {listing.description or ''}".lower()
                     if words and not all(w in text for w in words):
-                        print(f'[SEARCH ALERT] Search #{saved.id} skipped — keyword not matched', flush=True)
                         continue
                 if filters.get('state') and filters['state'] != listing.state:
-                    print(f'[SEARCH ALERT] Search #{saved.id} skipped — state not matched', flush=True)
                     continue
 
-                print(f'[SEARCH ALERT] Sending alert for search #{saved.id} to {saved.user.email}', flush=True)
                 send_fn(saved.user, listing, saved.id)
 
                 saved.last_notified = tz.now()
