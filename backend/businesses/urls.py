@@ -13,13 +13,13 @@ urlpatterns = [
     # My businesses
     path('my-businesses/', views.MyBusinessesView.as_view(), name='my-businesses'),
 
-    # View, edit or delete a single business
-    path('<int:pk>/', views.BusinessDetailView.as_view(), name='business-detail'),
+    # View, edit or delete a single business (slug for SEO)
+    path('<slug:slug>/', views.BusinessDetailView.as_view(), name='business-detail'),
 
     # Reviews
-    path('<int:pk>/reviews/', views.BusinessReviewListCreateView.as_view(), name='business-reviews'),
-    path('<int:pk>/reviews/<int:review_pk>/', views.BusinessReviewDeleteView.as_view(), name='business-review-delete'),
+    path('<slug:slug>/reviews/', views.BusinessReviewListCreateView.as_view(), name='business-reviews'),
+    path('<slug:slug>/reviews/<int:review_pk>/', views.BusinessReviewDeleteView.as_view(), name='business-review-delete'),
 
     # Report
-    path('<int:pk>/report/', views.ReportBusinessView.as_view(), name='business-report'),
+    path('<slug:slug>/report/', views.ReportBusinessView.as_view(), name='business-report'),
 ]

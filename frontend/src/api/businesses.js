@@ -5,8 +5,8 @@ export const getBusinesses = async (params = {}) => {
   return response.data;
 };
 
-export const getBusiness = async (id) => {
-  const response = await api.get(`/api/businesses/${id}/`);
+export const getBusiness = async (slug) => {
+  const response = await api.get(`/api/businesses/${slug}/`);
   return response.data;
 };
 
@@ -15,13 +15,13 @@ export const createBusiness = async (data) => {
   return response.data;
 };
 
-export const updateBusiness = async (id, data) => {
-  const response = await api.patch(`/api/businesses/${id}/`, data);
+export const updateBusiness = async (slug, data) => {
+  const response = await api.patch(`/api/businesses/${slug}/`, data);
   return response.data;
 };
 
-export const deleteBusiness = async (id) => {
-  const response = await api.delete(`/api/businesses/${id}/`);
+export const deleteBusiness = async (slug) => {
+  const response = await api.delete(`/api/businesses/${slug}/`);
   return response.data;
 };
 
@@ -30,17 +30,17 @@ export const getMyBusinesses = async () => {
   return response.data;
 };
 
-export const getBusinessReviews = async (id) => {
-  const response = await api.get(`/api/businesses/${id}/reviews/`);
+export const getBusinessReviews = async (slug) => {
+  const response = await api.get(`/api/businesses/${slug}/reviews/`);
   return response.data;
 };
 
-export const addBusinessReview = async (id, data) => {
-  const response = await api.post(`/api/businesses/${id}/reviews/`, data);
+export const addBusinessReview = async (slug, data) => {
+  const response = await api.post(`/api/businesses/${slug}/reviews/`, data);
   return response.data;
 };
 
-export const deleteBusinessReview = async (businessId, reviewId) => {
-  const response = await api.delete(`/api/businesses/${businessId}/reviews/${reviewId}/`);
+export const deleteBusinessReview = async (businessSlug, reviewId) => {
+  const response = await api.delete(`/api/businesses/${businessSlug}/reviews/${reviewId}/`);
   return response.data;
 };

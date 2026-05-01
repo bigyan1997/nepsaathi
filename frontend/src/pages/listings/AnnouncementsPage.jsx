@@ -299,7 +299,7 @@ function AnnouncementCard({ announcement }) {
   const catEmoji = CATEGORY_EMOJIS[announcement.category] || "📢";
   return (
     <Link
-      to={`/announcements/${announcement.id}`}
+      to={`/announcements/${announcement.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -920,7 +920,7 @@ export default function AnnouncementsPage() {
             return (
               <Link
                 key={ann.id}
-                to={`/announcements/${ann.id}`}
+                to={`/announcements/${ann.listing_slug}`}
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",

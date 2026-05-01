@@ -606,7 +606,7 @@ function FeaturedCarousel({ listings }) {
           return (
             <FeaturedDesktopCard
               key={listing.id}
-              to={`/${typePath}/listing/${listing.id}`}
+              to={`/${typePath}/${listing.slug}`}
               emoji={typeEmoji}
               accentBg={typeBg}
               accentFooter={accent.footer}
@@ -1364,7 +1364,7 @@ export default function HomePage() {
           renderRow={(job) => (
             <Link
               key={job.id}
-              to={`/jobs/${job.id}`}
+              to={`/jobs/${job.listing_slug}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",
@@ -1438,7 +1438,7 @@ export default function HomePage() {
           renderCard={(job) => (
             <DesktopCard
               key={job.id}
-              to={`/jobs/${job.id}`}
+              to={`/jobs/${job.listing_slug}`}
               accentType="job"
               emoji="💼"
               timeStr={timeAgo(job.created_at || job.date_posted)}
@@ -1463,7 +1463,7 @@ export default function HomePage() {
           renderRow={(room) => (
             <Link
               key={room.id}
-              to={`/rooms/${room.id}`}
+              to={`/rooms/${room.listing_slug}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",
@@ -1549,7 +1549,7 @@ export default function HomePage() {
           renderCard={(room) => (
             <DesktopCard
               key={room.id}
-              to={`/rooms/${room.id}`}
+              to={`/rooms/${room.listing_slug}`}
               accentType="room"
               emoji="🏠"
               timeStr={timeAgo(room.created_at || room.date_posted)}
@@ -1580,7 +1580,7 @@ export default function HomePage() {
           renderRow={(event) => (
             <Link
               key={event.id}
-              to={`/events/${event.id}`}
+              to={`/events/${event.listing_slug}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",
@@ -1665,7 +1665,7 @@ export default function HomePage() {
           renderCard={(event) => (
             <DesktopCard
               key={event.id}
-              to={`/events/${event.id}`}
+              to={`/events/${event.listing_slug}`}
               accentType="event"
               emoji="🎉"
               timeStr={

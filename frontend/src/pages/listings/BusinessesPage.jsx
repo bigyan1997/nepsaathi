@@ -296,7 +296,7 @@ function BusinessCard({ business }) {
   const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
   return (
     <Link
-      to={`/businesses/${business.id}`}
+      to={`/businesses/${business.slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -923,7 +923,7 @@ export default function BusinessesPage() {
             return (
               <Link
                 key={biz.id}
-                to={`/businesses/${biz.id}`}
+                to={`/businesses/${biz.slug}`}
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",

@@ -100,10 +100,10 @@ class RoomDetailByListingView(generics.RetrieveAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def get_object(self):
-        listing_id = self.kwargs['listing_id']
+        listing_slug = self.kwargs['listing_slug']
         try:
             return Room.objects.select_related(
                 'listing', 'listing__user'
-            ).get(listing__id=listing_id)
+            ).get(listing__slug=listing_slug)
         except Room.DoesNotExist:
             raise NotFound('Room not found.')

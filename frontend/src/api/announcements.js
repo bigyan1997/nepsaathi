@@ -13,10 +13,9 @@ export const getAnnouncement = async (id) => {
   return response.data;
 };
 
-// Get announcement by parent listing ID
-// Used after creating to redirect to detail page
-export const getAnnouncementByListing = async (listingId) => {
-  const response = await api.get(`/api/announcements/listing/${listingId}/`);
+// Get announcement by parent listing slug
+export const getAnnouncementByListing = async (listingSlug) => {
+  const response = await api.get(`/api/announcements/listing/${listingSlug}/`);
   return response.data;
 };
 

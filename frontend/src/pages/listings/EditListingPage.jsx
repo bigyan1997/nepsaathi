@@ -44,7 +44,7 @@ const STATES = [
 
 export default function EditListingPage() {
   usePageTitle("Edit Listing");
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
   const queryClient = useQueryClient();
@@ -66,18 +66,18 @@ export default function EditListingPage() {
 
   // Fetch base listing
   const { data: listing, isLoading } = useQuery({
-    queryKey: ["listing", id],
-    queryFn: () => getListing(id),
+    queryKey: ["listing", slug],
+    queryFn: () => getListing(slug),
   });
 
   // Fetch type-specific details
   const { data: typeData } = useQuery({
-    queryKey: ["listing-type-detail", id, listingType],
+    queryKey: ["listing-type-detail", slug, listingType],
     queryFn: () => {
-      if (listingType === "job") return getJobByListing(id);
-      if (listingType === "room") return getRoomByListing(id);
-      if (listingType === "event") return getEventByListing(id);
-      if (listingType === "announcement") return getAnnouncementByListing(id);
+      if (listingType === "job") return getJobByListing(slug);
+      if (listingType === "room") return getRoomByListing(slug);
+      if (listingType === "event") return getEventByListing(slug);
+      if (listingType === "announcement") return getAnnouncementByListing(slug);
       return null;
     },
     enabled: !!listingType,
@@ -171,7 +171,7 @@ export default function EditListingPage() {
         setLoading(false);
         return;
       }
-      await updateListing(id, baseForm);
+      await updateListing(slug, baseForm);
       if (listingType === "job") await updateJob(typeId, typeForm);
       else if (listingType === "room")
         await updateRoom(typeId, { ...typeForm, price: typeForm.price });
@@ -192,15 +192,14 @@ export default function EditListingPage() {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
       queryClient.invalidateQueries({ queryKey: ["events"] });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
-      queryClient.invalidateQueries({ queryKey: ["listing", id] });
-      // Invalidate detail page caches (both by event/job/room id and by listing id)
-      queryClient.invalidateQueries({ queryKey: ["job", id] });
-      queryClient.invalidateQueries({ queryKey: ["room", id] });
-      queryClient.invalidateQueries({ queryKey: ["event", id] });
-      queryClient.invalidateQueries({ queryKey: ["announcement", id] });
+      queryClient.invalidateQueries({ queryKey: ["listing", slug] });
+      queryClient.invalidateQueries({ queryKey: ["job", slug] });
+      queryClient.invalidateQueries({ queryKey: ["room", slug] });
+      queryClient.invalidateQueries({ queryKey: ["event", slug] });
+      queryClient.invalidateQueries({ queryKey: ["announcement", slug] });
 
       addToast("Listing updated successfully!", "success");
-      navigate(`/${listingType}s/listing/${id}`);
+      navigate(`/${listingType}s/${slug}`);
     } catch (err) {
       const errors = err.response?.data;
       if (errors) {

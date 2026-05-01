@@ -10,7 +10,7 @@ urlpatterns = [
     # Create job details and attach to a listing
     path('create/', views.JobCreateView.as_view(), name='job-create'),
 
-    path('listing/<int:listing_id>/', views.JobDetailByListingView.as_view(), name='job-detail-by-listing'),
+    path('listing/<slug:listing_slug>/', views.JobDetailByListingView.as_view(), name='job-detail-by-listing'),
 
     # View, edit or delete a single job detail
     path('<int:pk>/', views.JobDetailView.as_view(), name='job-detail'),

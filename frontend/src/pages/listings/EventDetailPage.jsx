@@ -1,6 +1,6 @@
-import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getEvent, getEventByListing, toggleRSVP } from "../../api/events";
+import { getEventByListing, toggleRSVP } from "../../api/events";
 import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -125,11 +125,9 @@ const IconArrow = () => (
 
 /* ══════════════════════════════════════════════════ */
 export default function EventDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated } = useAuthStore();
-  const isListingRoute = location.pathname.includes("/listing/");
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
@@ -138,8 +136,8 @@ export default function EventDetailPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["event", id, isListingRoute],
-    queryFn: () => (isListingRoute ? getEventByListing(id) : getEvent(id)),
+    queryKey: ["event", slug],
+    queryFn: () => getEventByListing(slug),
   });
 
   const { data: similarListings } = useQuery({
@@ -1105,7 +1103,7 @@ export default function EventDetailPage() {
                 return (
                   <Link
                     key={listing.id}
-                    to={`/events/listing/${listing.id}`}
+                    to={`/events/${listing.slug}`}
                     style={{
                       display: "flex",
                       alignItems: "center",

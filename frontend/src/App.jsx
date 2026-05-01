@@ -81,25 +81,21 @@ function App() {
                         <Route path="/featured" element={<FeaturedPage />} />
                         {/* Jobs */}
                         <Route path="/jobs" element={<JobsPage />} />
-                        <Route path="/jobs/listing/:id" element={<JobDetailPage />} />
-                        <Route path="/jobs/:id" element={<JobDetailPage />} />
+                        <Route path="/jobs/:slug" element={<JobDetailPage />} />
                         {/* Rooms */}
                         <Route path="/rooms" element={<RoomsPage />} />
-                        <Route path="/rooms/listing/:id" element={<RoomDetailPage />} />
-                        <Route path="/rooms/:id" element={<RoomDetailPage />} />
+                        <Route path="/rooms/:slug" element={<RoomDetailPage />} />
                         {/* Announcements */}
                         <Route path="/announcements" element={<AnnouncementsPage />} />
-                        <Route path="/announcements/listing/:id" element={<AnnouncementDetailPage />} />
-                        <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
+                        <Route path="/announcements/:slug" element={<AnnouncementDetailPage />} />
                         {/* Events */}
                         <Route path="/events" element={<EventsPage />} />
-                        <Route path="/events/listing/:id" element={<EventDetailPage />} />
-                        <Route path="/events/:id" element={<EventDetailPage />} />
+                        <Route path="/events/:slug" element={<EventDetailPage />} />
                         {/* Businesses */}
                         <Route path="/businesses" element={<BusinessesPage />} />
-                        <Route path="/businesses/:id" element={<BusinessDetailPage />} />
+                        <Route path="/businesses/:slug" element={<BusinessDetailPage />} />
                         {/* Other public */}
-                        <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
+                        <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/privacy" element={<PrivacyPage />} />
                         <Route path="/terms" element={<TermsPage />} />

@@ -329,7 +329,7 @@ function RoomCard({ room }) {
   const isWanted = room.is_wanted;
   return (
     <Link
-      to={`/rooms/listing/${room.listing_id}`}
+      to={`/rooms/${room.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -1118,7 +1118,7 @@ export default function RoomsPage() {
           {filteredResults.map((room) => (
             <Link
               key={room.id}
-              to={`/rooms/listing/${room.listing_id}`}
+              to={`/rooms/${room.listing_slug}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",

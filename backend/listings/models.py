@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
 import cloudinary.uploader
 
@@ -91,6 +92,8 @@ class Listing(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     expires_at = models.DateTimeField(null=True, blank=True)
 
+    slug = models.SlugField(max_length=255, unique=True, blank=True, db_index=True)
+
     class Meta:
         db_table = 'listings'
         ordering = ['-created_at']
@@ -107,7 +110,13 @@ class Listing(models.Model):
 
     def __str__(self):
         return f'{self.listing_type.upper()} — {self.title} ({self.location})'
-    
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.slug:
+            self.slug = f"{slugify(self.title)}-{self.id}"
+            super().save(update_fields=['slug'])
+
     def delete(self, *args, **kwargs):
         """
         Override delete to remove all Cloudinary images

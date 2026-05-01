@@ -132,6 +132,7 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = ListingSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    lookup_field = 'slug'
 
     def get_queryset(self):
         user = self.request.user

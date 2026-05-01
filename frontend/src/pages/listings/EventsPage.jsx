@@ -347,7 +347,7 @@ function EventCard({ event }) {
   const footerBg = event.is_free ? "#1D9E75" : "#534AB7";
   return (
     <Link
-      to={`/events/${event.id}`}
+      to={`/events/${event.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -1028,7 +1028,7 @@ export default function EventsPage() {
             return (
               <Link
                 key={event.id}
-                to={`/events/${event.id}`}
+                to={`/events/${event.listing_slug}`}
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",

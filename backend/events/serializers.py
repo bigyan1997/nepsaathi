@@ -17,6 +17,7 @@ class EventSerializer(serializers.ModelSerializer):
         source='listing.state', read_only=True)
     listing_id = serializers.IntegerField(
         source='listing.id', read_only=True)
+    listing_slug = serializers.SlugField(source='listing.slug', read_only=True)
     posted_by = serializers.CharField(
         source='listing.user.full_name', read_only=True)
     user_id = serializers.IntegerField(source='listing.user.id', read_only=True)
@@ -92,6 +93,7 @@ class EventSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'listing_id',
+            'listing_slug',
             'listing_title',
             'listing_location',
             'listing_state',
@@ -131,6 +133,7 @@ class EventSerializer(serializers.ModelSerializer):
             'listing_location',
             'listing_state',
             'listing_id',
+            'listing_slug',
             'posted_by',
             'description',
             'contact_phone',

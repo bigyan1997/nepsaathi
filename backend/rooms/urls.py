@@ -10,7 +10,7 @@ urlpatterns = [
     # Create room details and attach to a listing
     path('create/', views.RoomCreateView.as_view(), name='room-create'),
 
-    path('listing/<int:listing_id>/', views.RoomDetailByListingView.as_view(), name='room-detail-by-listing'),
+    path('listing/<slug:listing_slug>/', views.RoomDetailByListingView.as_view(), name='room-detail-by-listing'),
 
     # View, edit or delete a single room detail
     path('<int:pk>/', views.RoomDetailView.as_view(), name='room-detail'),

@@ -1,6 +1,6 @@
-import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getRoom, getRoomByListing } from "../../api/rooms";
+import { getRoomByListing } from "../../api/rooms";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
@@ -80,11 +80,9 @@ const IconArrow = () => (
 );
 
 export default function RoomDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated } = useAuthStore();
-  const isListingRoute = location.pathname.includes("/listing/");
   const isMobile = useIsMobile();
 
   const {
@@ -92,8 +90,8 @@ export default function RoomDetailPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["room", id, isListingRoute],
-    queryFn: () => (isListingRoute ? getRoomByListing(id) : getRoom(id)),
+    queryKey: ["room", slug],
+    queryFn: () => getRoomByListing(slug),
   });
 
   const { data: similarListings } = useQuery({
@@ -963,7 +961,7 @@ export default function RoomDetailPage() {
               {similarListings.map((listing, i) => (
                 <Link
                   key={listing.id}
-                  to={`/rooms/listing/${listing.id}`}
+                  to={`/rooms/${listing.slug}`}
                   style={{
                     display: "flex",
                     alignItems: "center",

@@ -261,7 +261,7 @@ export default function SearchPage() {
                 {results.map((item, i) => (
                   <Link
                     key={item.id}
-                    to={`/${config.path}/listing/${item.listing_id}`}
+                    to={`/${config.path}/${item.listing_slug}`}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",

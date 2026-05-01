@@ -15,6 +15,9 @@ backend/.env
 .env
 .env.*
 
+# Node
+node_modules/
+
 # Editor
 .DS_Store
 .vscode/

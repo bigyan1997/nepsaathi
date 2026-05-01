@@ -147,7 +147,7 @@ export default function RegisterBusinessPage() {
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
       queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
       addToast("Business registered successfully! 🎉", "success");
-      navigate(`/businesses/${business.id}`);
+      navigate(`/businesses/${business.slug}`);
     } catch (err) {
       const errors = err.response?.data;
       if (errors) {

@@ -12,10 +12,9 @@ export const getRoom = async (id) => {
   return response.data;
 };
 
-// Get a room by its parent listing ID
-// Used after creating a listing to redirect to detail page
-export const getRoomByListing = async (listingId) => {
-  const response = await api.get(`/api/rooms/listing/${listingId}/`);
+// Get a room by its parent listing slug
+export const getRoomByListing = async (listingSlug) => {
+  const response = await api.get(`/api/rooms/listing/${listingSlug}/`);
   return response.data;
 };
 

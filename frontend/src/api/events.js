@@ -10,8 +10,8 @@ export const getEvent = async (id) => {
   return response.data;
 };
 
-export const getEventByListing = async (listingId) => {
-  const response = await api.get(`/api/events/listing/${listingId}/`);
+export const getEventByListing = async (listingSlug) => {
+  const response = await api.get(`/api/events/listing/${listingSlug}/`);
   return response.data;
 };
 

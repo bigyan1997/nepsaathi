@@ -12,6 +12,7 @@ class RoomSerializer(serializers.ModelSerializer):
     listing_state = serializers.CharField(source='listing.state', read_only=True)
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     listing_id = serializers.IntegerField(source='listing.id', read_only=True)
+    listing_slug = serializers.SlugField(source='listing.slug', read_only=True)
     posted_by = serializers.CharField(source='listing.user.full_name', read_only=True)
     user_id = serializers.IntegerField(source='listing.user.id', read_only=True)
     created_at = serializers.DateTimeField(source='listing.created_at', read_only=True)
@@ -47,6 +48,7 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'listing_id',
+            'listing_slug',
             'listing_title',
             'listing_location',
             'listing_state',
@@ -85,6 +87,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'listing_state',
             'listing_status',
             'listing_id',
+            'listing_slug',
             'posted_by',
             'user_id',
             'contact_phone',

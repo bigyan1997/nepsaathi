@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.text import slugify
 
 
 class Business(models.Model):
@@ -110,6 +111,8 @@ class Business(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    slug = models.SlugField(max_length=255, unique=True, blank=True, db_index=True)
+
     class Meta:
         db_table = 'businesses'
         verbose_name = 'Business'
@@ -125,6 +128,12 @@ class Business(models.Model):
 
     def __str__(self):
         return f'{self.business_name} ({self.get_category_display()}) — {self.suburb}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.slug:
+            self.slug = f"{slugify(self.business_name)}-{self.id}"
+            super().save(update_fields=['slug'])
 
 
 class BusinessReport(models.Model):

@@ -12,10 +12,9 @@ export const getJob = async (id) => {
   return response.data;
 };
 
-// Get a job by its parent listing ID
-// Used after creating a listing to redirect to detail page
-export const getJobByListing = async (listingId) => {
-  const response = await api.get(`/api/jobs/listing/${listingId}/`);
+// Get a job by its parent listing slug
+export const getJobByListing = async (listingSlug) => {
+  const response = await api.get(`/api/jobs/listing/${listingSlug}/`);
   return response.data;
 };
 

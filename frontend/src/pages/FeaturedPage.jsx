@@ -84,7 +84,7 @@ function FeaturedCard({ listing }) {
 
   return (
     <Link
-      to={`/${cfg.path}/listing/${listing.id}`}
+      to={`/${cfg.path}/${listing.slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

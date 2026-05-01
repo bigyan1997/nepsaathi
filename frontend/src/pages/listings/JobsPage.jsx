@@ -223,7 +223,7 @@ function JobCard({ job }) {
   const isWanted = job.is_wanted;
   return (
     <Link
-      to={`/jobs/listing/${job.listing_id}`}
+      to={`/jobs/${job.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -849,7 +849,7 @@ export default function JobsPage() {
           {filteredResults.map((job) => (
             <Link
               key={job.id}
-              to={`/jobs/listing/${job.listing_id}`}
+              to={`/jobs/${job.listing_slug}`}
               style={{
                 background: "#fff",
                 border: "0.5px solid #e5e5e5",

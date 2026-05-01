@@ -338,6 +338,7 @@ export default function PostAdPage() {
   const [error, setError] = useState("");
   const [listingType, setListingType] = useState("");
   const [createdListingId, setCreatedListingId] = useState(null);
+  const [createdListingSlug, setCreatedListingSlug] = useState(null);
 
   const [baseForm, setBaseForm] = useState({
     title: "",
@@ -416,7 +417,7 @@ export default function PostAdPage() {
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
-    let baseListingId;
+    let baseListingSlug;
     try {
       const listing = await createListing({
         ...baseForm,
@@ -426,7 +427,7 @@ export default function PostAdPage() {
         setError("Failed to create listing. Please try again.");
         return;
       }
-      baseListingId = listing.id;
+      baseListingSlug = listing.slug;
 
       if (listingType === "job") {
         await createJob({
@@ -473,12 +474,13 @@ export default function PostAdPage() {
       queryClient.invalidateQueries({ queryKey: ["stats"] });
       queryClient.invalidateQueries({ queryKey: ["home-featured"] });
       setCreatedListingId(listing.id);
+      setCreatedListingSlug(listing.slug);
       setStep(4);
       addToast("Listing created! Now add some photos.", "success");
     } catch (err) {
-      if (baseListingId) {
+      if (baseListingSlug) {
         try {
-          await deleteListing(baseListingId);
+          await deleteListing(baseListingSlug);
         } catch (e) {
           console.error("Rollback failed:", e);
         }
@@ -517,7 +519,7 @@ export default function PostAdPage() {
       announcement: "announcements",
       event: "events",
     };
-    navigate(`/${paths[listingType] || ""}/listing/${createdListingId}`);
+    navigate(`/${paths[listingType] || ""}/${createdListingSlug}`);
   };
 
   return (

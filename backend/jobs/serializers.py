@@ -12,6 +12,7 @@ class JobSerializer(serializers.ModelSerializer):
     listing_state = serializers.CharField(source='listing.state', read_only=True)
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     listing_id = serializers.IntegerField(source='listing.id', read_only=True)
+    listing_slug = serializers.SlugField(source='listing.slug', read_only=True)
     contact_phone = serializers.CharField(source='listing.contact_phone', read_only=True)
     contact_whatsapp = serializers.CharField(source='listing.contact_whatsapp', read_only=True)
     contact_email = serializers.EmailField(source='listing.contact_email', read_only=True)
@@ -46,6 +47,7 @@ class JobSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'listing_id',
+            'listing_slug',
             'listing_title',
             'listing_location',
             'listing_state',
@@ -80,6 +82,7 @@ class JobSerializer(serializers.ModelSerializer):
             'listing_state',
             'listing_status',
             'listing_id',
+            'listing_slug',
             'posted_by',
             'user_id',
             'contact_phone',

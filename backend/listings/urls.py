@@ -23,8 +23,8 @@ urlpatterns = [
 
     # ── Dynamic paths (with <int:pk>) ─────────────────────────────────────────
 
-    # View, edit or delete a single listing
-    path('<int:pk>/', views.ListingDetailView.as_view(), name='listing-detail'),
+    # View, edit or delete a single listing (slug for SEO)
+    path('<slug:slug>/', views.ListingDetailView.as_view(), name='listing-detail'),
 
     # Upload images to a listing
     path('<int:pk>/images/', views.ListingImageUploadView.as_view(), name='listing-images'),

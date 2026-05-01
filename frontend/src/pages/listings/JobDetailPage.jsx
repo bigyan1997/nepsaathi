@@ -1,6 +1,6 @@
-import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getJob, getJobByListing } from "../../api/jobs";
+import { getJobByListing } from "../../api/jobs";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import useAuthStore from "../../store/authStore";
 import ShareButton from "../../components/ui/ShareButton";
@@ -80,11 +80,9 @@ const IconArrow = () => (
 
 /* ══════════════════════════════════════════════════ */
 export default function JobDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated } = useAuthStore();
-  const isListingRoute = location.pathname.includes("/listing/");
   const isMobile = useIsMobile();
 
   const {
@@ -92,8 +90,8 @@ export default function JobDetailPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["job", id, isListingRoute],
-    queryFn: () => (isListingRoute ? getJobByListing(id) : getJob(id)),
+    queryKey: ["job", slug],
+    queryFn: () => getJobByListing(slug),
   });
 
   usePageTitle(
@@ -912,7 +910,7 @@ export default function JobDetailPage() {
                 return (
                   <Link
                     key={listing.id}
-                    to={`/jobs/listing/${listing.id}`}
+                    to={`/jobs/${listing.slug}`}
                     style={{
                       display: "flex",
                       alignItems: "center",

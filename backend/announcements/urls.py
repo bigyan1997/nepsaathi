@@ -11,7 +11,7 @@ urlpatterns = [
     path('create/', views.AnnouncementCreateView.as_view(), name='announcement-create'),
 
     # Fetch by listing ID — used after creating
-    path('listing/<int:listing_id>/', views.AnnouncementDetailByListingView.as_view(), name='announcement-detail-by-listing'),
+    path('listing/<slug:listing_slug>/', views.AnnouncementDetailByListingView.as_view(), name='announcement-detail-by-listing'),
 
     # View, edit or delete single announcement
     path('<int:pk>/', views.AnnouncementDetailView.as_view(), name='announcement-detail'),

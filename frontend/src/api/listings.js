@@ -7,9 +7,9 @@ export const getListings = async (params = {}) => {
   return response.data;
 };
 
-// Get a single listing by ID
-export const getListing = async (id) => {
-  const response = await api.get(`/api/listings/${id}/`);
+// Get a single listing by slug
+export const getListing = async (slug) => {
+  const response = await api.get(`/api/listings/${slug}/`);
   return response.data;
 };
 
@@ -20,14 +20,14 @@ export const createListing = async (data) => {
 };
 
 // Update a listing (owner only)
-export const updateListing = async (id, data) => {
-  const response = await api.patch(`/api/listings/${id}/`, data);
+export const updateListing = async (slug, data) => {
+  const response = await api.patch(`/api/listings/${slug}/`, data);
   return response.data;
 };
 
 // Delete a listing (owner only)
-export const deleteListing = async (id) => {
-  const response = await api.delete(`/api/listings/${id}/`);
+export const deleteListing = async (slug) => {
+  const response = await api.delete(`/api/listings/${slug}/`);
   return response.data;
 };
 

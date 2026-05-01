@@ -97,6 +97,7 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticatedOrReadOnly,
         IsOwnerOrReadOnly,
     )
+    lookup_field = 'slug'
 
     def get_queryset(self):
         return Business.objects.select_related('owner')
@@ -135,18 +136,18 @@ class BusinessReviewListCreateView(APIView):
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
-    def get(self, request, pk):
+    def get(self, request, slug):
         try:
-            business = Business.objects.get(pk=pk, is_active=True)
+            business = Business.objects.get(slug=slug, is_active=True)
         except Business.DoesNotExist:
             return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
         reviews = business.reviews.select_related('reviewer').all()
         serializer = BusinessReviewSerializer(reviews, many=True, context={'request': request})
         return Response(serializer.data)
 
-    def post(self, request, pk):
+    def post(self, request, slug):
         try:
-            business = Business.objects.get(pk=pk, is_active=True)
+            business = Business.objects.get(slug=slug, is_active=True)
         except Business.DoesNotExist:
             return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -174,9 +175,9 @@ class BusinessReviewDeleteView(APIView):
     """
     permission_classes = (permissions.IsAuthenticated,)
 
-    def delete(self, request, pk, review_pk):
+    def delete(self, request, slug, review_pk):
         try:
-            review = BusinessReview.objects.get(pk=review_pk, business__pk=pk, reviewer=request.user)
+            review = BusinessReview.objects.get(pk=review_pk, business__slug=slug, reviewer=request.user)
         except BusinessReview.DoesNotExist:
             return Response({'detail': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)
         review.delete()
@@ -190,9 +191,9 @@ class ReportBusinessView(APIView):
     """
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request, pk):
+    def post(self, request, slug):
         try:
-            business = Business.objects.get(pk=pk)
+            business = Business.objects.get(slug=slug)
         except Business.DoesNotExist:
             return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
 

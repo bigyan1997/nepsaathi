@@ -140,7 +140,7 @@ function StarRating({ value, onChange, size = 20 }) {
 }
 
 export default function BusinessDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
   const isMobile = useIsMobile();
@@ -154,8 +154,8 @@ export default function BusinessDetailPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["business", id],
-    queryFn: () => getBusiness(id),
+    queryKey: ["business", slug],
+    queryFn: () => getBusiness(slug),
   });
 
   const { data: similarListings } = useQuery({
@@ -165,15 +165,15 @@ export default function BusinessDetailPage() {
   });
 
   const { data: reviews = [] } = useQuery({
-    queryKey: ["business-reviews", id],
-    queryFn: () => getBusinessReviews(id),
+    queryKey: ["business-reviews", slug],
+    queryFn: () => getBusinessReviews(slug),
   });
 
   const addReviewMutation = useMutation({
-    mutationFn: (data) => addBusinessReview(id, data),
+    mutationFn: (data) => addBusinessReview(slug, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["business-reviews", id] });
-      queryClient.invalidateQueries({ queryKey: ["business", id] });
+      queryClient.invalidateQueries({ queryKey: ["business-reviews", slug] });
+      queryClient.invalidateQueries({ queryKey: ["business", slug] });
       setReviewRating(0);
       setReviewComment("");
       addToast("Review submitted!", "success");
@@ -186,10 +186,10 @@ export default function BusinessDetailPage() {
   });
 
   const deleteReviewMutation = useMutation({
-    mutationFn: (reviewId) => deleteBusinessReview(id, reviewId),
+    mutationFn: (reviewId) => deleteBusinessReview(slug, reviewId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["business-reviews", id] });
-      queryClient.invalidateQueries({ queryKey: ["business", id] });
+      queryClient.invalidateQueries({ queryKey: ["business-reviews", slug] });
+      queryClient.invalidateQueries({ queryKey: ["business", slug] });
       addToast("Review deleted.", "info");
     },
   });
@@ -1074,7 +1074,7 @@ export default function BusinessDetailPage() {
             </div>
 
             <div style={{ textAlign: "center" }}>
-              <ReportButton endpoint={`/api/businesses/${business?.id}/report/`} />
+              <ReportButton endpoint={`/api/businesses/${business?.slug}/report/`} />
             </div>
           </div>
         </div>
@@ -1111,7 +1111,7 @@ export default function BusinessDetailPage() {
               {similarListings.map((listing, i) => (
                 <Link
                   key={listing.id}
-                  to={`/businesses/${listing.id}`}
+                  to={`/businesses/${listing.slug}`}
                   style={{
                     display: "flex",
                     alignItems: "center",

@@ -80,7 +80,7 @@ const getDetailPath = (listing) => {
     event: "events",
     announcement: "announcements",
   };
-  return `/${map[listing.listing_type] || "listings"}/listing/${listing.id}`;
+  return `/${map[listing.listing_type] || "listings"}/${listing.slug}`;
 };
 
 const getSavedPath = (saved) => {
@@ -90,7 +90,7 @@ const getSavedPath = (saved) => {
     event: "events",
     announcement: "announcements",
   };
-  return `/${map[saved.listing_type] || "listings"}/listing/${saved.listing}`;
+  return `/${map[saved.listing_type] || "listings"}/${saved.listing_slug}`;
 };
 
 /* ── Confirm modal ── */
@@ -1045,7 +1045,7 @@ export default function MyListingsPage() {
                         label: "✏️ Edit listing",
                         onClick: () => {
                           setOpenMenu(null);
-                          navigate(`/edit-listing/${listing.id}`);
+                          navigate(`/edit-listing/${listing.slug}`);
                         },
                       },
                       (listing.status === "active" ||
@@ -1339,7 +1339,7 @@ export default function MyListingsPage() {
                         label: "👁️ View business",
                         onClick: () => {
                           setOpenMenu(null);
-                          navigate(`/businesses/${business.id}`);
+                          navigate(`/businesses/${business.slug}`);
                         },
                       },
                       {

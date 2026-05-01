@@ -32,6 +32,7 @@ class ListingSerializer(serializers.ModelSerializer):
         model = Listing
         fields = (
             'id',
+            'slug',
             'user_email',
             'user_name',
             'is_owner',
@@ -58,13 +59,13 @@ class ListingSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'id',
+            'slug',
             'created_at',
             'updated_at',
             'user_email',
             'user_name',
             'expires_at',
             'listing_type',
-            
         )
 
     def get_is_owner(self, obj):
@@ -119,6 +120,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
 
 class SavedListingSerializer(serializers.ModelSerializer):
     listing_title = serializers.CharField(source='listing.title', read_only=True)
+    listing_slug = serializers.SlugField(source='listing.slug', read_only=True)
     listing_type = serializers.CharField(source='listing.listing_type', read_only=True)
     listing_location = serializers.CharField(source='listing.location', read_only=True)
     listing_state = serializers.CharField(source='listing.state', read_only=True)
@@ -130,6 +132,7 @@ class SavedListingSerializer(serializers.ModelSerializer):
             'id',
             'listing',
             'listing_title',
+            'listing_slug',
             'listing_type',
             'listing_location',
             'listing_state',

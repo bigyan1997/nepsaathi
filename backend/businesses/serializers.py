@@ -25,6 +25,7 @@ class BusinessSerializer(serializers.ModelSerializer):
         model = Business
         fields = (
             'id',
+            'slug',
             'owner_name',
             'owner_email',
             'is_owner',
@@ -52,6 +53,7 @@ class BusinessSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'id',
+            'slug',
             'is_verified',
             'owner_name',
             'owner_email',
