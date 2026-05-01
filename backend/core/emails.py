@@ -39,7 +39,7 @@ def _footer():
     return f"""
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
   <tr>
-    <td bgcolor="#F5F4F0" style="background-color:#F5F4F0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;border:1px solid #e8e8e8;border-top:none;">
+    <td bgcolor="#F5F4F0" style="background-color:#F5F4F0 !important;border-radius:0 0 16px 16px;padding:20px 28px;text-align:center;border:1px solid #e8e8e8;border-top:none;" class="footer-pad">
       <p style="font-size:12px;color:#aaaaaa;margin:0 0 4px;font-family:Arial,sans-serif;">
         &copy; 2026 NepSaathi &nbsp;&middot;&nbsp;
         <a href="{FRONTEND_URL}" style="color:#534AB7;text-decoration:none;">nepsaathi.com</a>
@@ -61,25 +61,30 @@ def _wrap(body: str) -> str:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light only">
   <meta name="supported-color-schemes" content="light">
   <style>
-    :root {{ color-scheme: light; }}
+    :root {{ color-scheme: light only; supported-color-schemes: light; }}
     body {{ background-color:#e8e6e0 !important; }}
+    @media only screen and (max-width: 480px) {{
+      .outer-pad {{ padding: 16px 8px !important; }}
+      .body-pad   {{ padding: 24px 16px !important; }}
+      .footer-pad {{ padding: 14px 16px !important; }}
+    }}
   </style>
 </head>
 <body style="margin:0;padding:0;background-color:#e8e6e0 !important;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;" bgcolor="#e8e6e0">
-  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#e8e6e0" style="background-color:#e8e6e0;padding:32px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#e8e6e0" style="background-color:#e8e6e0 !important;padding:28px 12px;" class="outer-pad">
     <tr>
       <td align="center">
         <table width="580" cellpadding="0" cellspacing="0" role="presentation" style="max-width:580px;width:100%;">
           <tr>
             <td>
               {_LOGO}
-              <!-- White body — explicit bgcolor for dark mode email clients -->
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#ffffff" style="background-color:#ffffff;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;">
+              <!-- White body — bgcolor + !important guards against dark-mode overrides -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" bgcolor="#ffffff" style="background-color:#ffffff !important;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;">
                 <tr>
-                  <td style="padding:36px 40px;background-color:#ffffff;" bgcolor="#ffffff">
+                  <td style="padding:28px 28px;background-color:#ffffff !important;" bgcolor="#ffffff" class="body-pad">
                     {body}
                   </td>
                 </tr>
@@ -106,8 +111,8 @@ def _info_box(text: str, bg: str = "#EEEDFE", border: str = "#AFA9EC", color: st
     return f"""
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:20px 0;">
   <tr>
-    <td bgcolor="{bg}" style="background-color:{bg};border:1px solid {border};border-radius:10px;padding:16px 20px;">
-      <p style="margin:0;font-size:13px;color:{color};line-height:1.7;font-family:Arial,sans-serif;">{text}</p>
+    <td bgcolor="{bg}" style="background-color:{bg} !important;border:1px solid {border};border-radius:10px;padding:14px 16px;">
+      <p style="margin:0;font-size:13px;color:{color} !important;line-height:1.7;font-family:Arial,sans-serif;">{text}</p>
     </td>
   </tr>
 </table>"""
@@ -116,22 +121,22 @@ def _listing_card(title: str, url: str, meta: str = "", emoji: str = "&#128204;"
     return f"""
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:20px 0;">
   <tr>
-    <td bgcolor="#F5F4F0" style="background-color:#F5F4F0;border-radius:12px;padding:18px 20px;">
+    <td bgcolor="#F5F4F0" style="background-color:#F5F4F0 !important;border-radius:12px;padding:14px 16px;">
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
         <tr>
-          <td width="54" style="vertical-align:middle;padding-right:14px;">
+          <td width="48" style="vertical-align:middle;padding-right:12px;">
             <table cellpadding="0" cellspacing="0" role="presentation">
               <tr>
-                <td bgcolor="{bg}" style="background-color:{bg};width:40px;height:40px;border-radius:10px;text-align:center;vertical-align:middle;font-size:20px;line-height:40px;">{emoji}</td>
+                <td bgcolor="{bg}" style="background-color:{bg} !important;width:36px;height:36px;border-radius:8px;text-align:center;vertical-align:middle;font-size:18px;line-height:36px;">{emoji}</td>
               </tr>
             </table>
           </td>
           <td style="vertical-align:middle;">
-            <div style="font-size:14px;font-weight:700;color:#26215C;margin-bottom:3px;font-family:Arial,sans-serif;">{title}</div>
-            <div style="font-size:12px;color:#888888;font-family:Arial,sans-serif;">{meta}</div>
+            <div style="font-size:14px;font-weight:700;color:#26215C !important;margin-bottom:3px;font-family:Arial,sans-serif;">{title}</div>
+            <div style="font-size:12px;color:#888888 !important;font-family:Arial,sans-serif;">{meta}</div>
           </td>
-          <td width="60" style="vertical-align:middle;text-align:right;">
-            <a href="{url}" style="font-size:13px;color:#534AB7;font-weight:700;text-decoration:none;font-family:Arial,sans-serif;">View &rarr;</a>
+          <td width="50" style="vertical-align:middle;text-align:right;padding-left:8px;">
+            <a href="{url}" style="font-size:13px;color:#534AB7 !important;font-weight:700;text-decoration:none;font-family:Arial,sans-serif;white-space:nowrap;">View &rarr;</a>
           </td>
         </tr>
       </table>
