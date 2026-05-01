@@ -30,6 +30,7 @@ export default function ConversationPage() {
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const bottomRef = useRef(null);
+  const prevMsgCountRef = useRef(0);
   const isVisible = usePageVisible();
 
   const { data, isLoading, isError } = useQuery({
@@ -52,10 +53,14 @@ export default function ConversationPage() {
     },
   });
 
-  // Scroll to bottom when messages change
+  // Only scroll to bottom when message count increases
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [data?.messages]);
+    const count = data?.messages?.length ?? 0;
+    if (count > prevMsgCountRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      prevMsgCountRef.current = count;
+    }
+  }, [data?.messages?.length]);
 
   const handleSend = (e) => {
     e.preventDefault();
