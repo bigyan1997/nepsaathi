@@ -1,58 +1,59 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-// Route guards
+// Route guards — kept eager (tiny, needed immediately)
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import GuestRoute from "./components/auth/GuestRoute";
 
-// Layout
+// Layout — kept eager (visible on every page)
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import PageWrapper from "./components/layout/PageWrapper";
 import ScrollToTop from "./components/layout/ScrollToTop";
 
-// UI
+// UI providers — kept eager
 import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
 
-// Public pages
-import HomePage from "./pages/HomePage";
-import FeaturedPage from "./pages/FeaturedPage";
-import JobsPage from "./pages/listings/JobsPage";
-import RoomsPage from "./pages/listings/RoomsPage";
-import JobDetailPage from "./pages/listings/JobDetailPage";
-import RoomDetailPage from "./pages/listings/RoomDetailPage";
-import AnnouncementsPage from "./pages/listings/AnnouncementsPage";
-import AnnouncementDetailPage from "./pages/listings/AnnouncementDetailPage";
-import EventsPage from "./pages/listings/EventsPage";
-import EventDetailPage from "./pages/listings/EventDetailPage";
-import BusinessesPage from "./pages/listings/BusinessesPage";
-import BusinessDetailPage from "./pages/listings/BusinessDetailPage";
-import RegisterBusinessPage from "./pages/listings/RegisterBusinessPage";
-import EditListingPage from "./pages/listings/EditListingPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import TermsPage from "./pages/TermsPage";
-import ContactPage from "./pages/ContactPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import SearchPage from "./pages/SearchPage";
+// Public pages — lazy loaded
+const HomePage               = lazy(() => import("./pages/HomePage"));
+const FeaturedPage           = lazy(() => import("./pages/FeaturedPage"));
+const JobsPage               = lazy(() => import("./pages/listings/JobsPage"));
+const RoomsPage              = lazy(() => import("./pages/listings/RoomsPage"));
+const JobDetailPage          = lazy(() => import("./pages/listings/JobDetailPage"));
+const RoomDetailPage         = lazy(() => import("./pages/listings/RoomDetailPage"));
+const AnnouncementsPage      = lazy(() => import("./pages/listings/AnnouncementsPage"));
+const AnnouncementDetailPage = lazy(() => import("./pages/listings/AnnouncementDetailPage"));
+const EventsPage             = lazy(() => import("./pages/listings/EventsPage"));
+const EventDetailPage        = lazy(() => import("./pages/listings/EventDetailPage"));
+const BusinessesPage         = lazy(() => import("./pages/listings/BusinessesPage"));
+const BusinessDetailPage     = lazy(() => import("./pages/listings/BusinessDetailPage"));
+const RegisterBusinessPage   = lazy(() => import("./pages/listings/RegisterBusinessPage"));
+const EditListingPage        = lazy(() => import("./pages/listings/EditListingPage"));
+const SearchPage             = lazy(() => import("./pages/SearchPage"));
+const PrivacyPage            = lazy(() => import("./pages/PrivacyPage"));
+const TermsPage              = lazy(() => import("./pages/TermsPage"));
+const ContactPage            = lazy(() => import("./pages/ContactPage"));
+const NotFoundPage           = lazy(() => import("./pages/NotFoundPage"));
 
-// Protected pages
-import PostAdPage from "./pages/listings/PostAdPage";
-import MyListingsPage from "./pages/listings/MyListingsPage";
-import ProfilePage from "./pages/ProfilePage";
-import InboxPage from "./pages/InboxPage";
-import ConversationPage from "./pages/ConversationPage";
-import SavedSearchesPage from "./pages/SavedSearchesPage";
-import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
-import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
+// Protected pages — lazy loaded
+const PostAdPage         = lazy(() => import("./pages/listings/PostAdPage"));
+const MyListingsPage     = lazy(() => import("./pages/listings/MyListingsPage"));
+const ProfilePage        = lazy(() => import("./pages/ProfilePage"));
+const InboxPage          = lazy(() => import("./pages/InboxPage"));
+const ConversationPage   = lazy(() => import("./pages/ConversationPage"));
+const SavedSearchesPage  = lazy(() => import("./pages/SavedSearchesPage"));
+const PaymentSuccessPage = lazy(() => import("./pages/payment/PaymentSuccessPage"));
+const PaymentCancelPage  = lazy(() => import("./pages/payment/PaymentCancelPage"));
 
-// Auth pages (guest only)
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+// Auth pages — lazy loaded
+const LoginPage          = lazy(() => import("./pages/auth/LoginPage"));
+const RegisterPage       = lazy(() => import("./pages/auth/RegisterPage"));
+const VerifyEmailPage    = lazy(() => import("./pages/auth/VerifyEmailPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage  = lazy(() => import("./pages/auth/ResetPasswordPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +63,12 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function PageFallback() {
+  return (
+    <div style={{ minHeight: "60vh", background: "#F5F4F0" }} />
+  );
+}
 
 function App() {
   return (
@@ -82,158 +89,56 @@ function App() {
                 <Navbar />
                 <div style={{ flex: 1 }}>
                   <PageWrapper>
-                    <Routes>
-                      {/* Public routes */}
-                      <Route path="/" element={<HomePage />} />
-                      {/* Featured Posts */}
-                      <Route path="/featured" element={<FeaturedPage />} />
-                      {/* Jobs */}
-                      <Route path="/jobs" element={<JobsPage />} />
-                      <Route
-                        path="/jobs/listing/:id"
-                        element={<JobDetailPage />}
-                      />{" "}
-                      {/* static first */}
-                      <Route
-                        path="/jobs/:id"
-                        element={<JobDetailPage />}
-                      />{" "}
-                      {/* dynamic after */}
-                      {/* Rooms */}
-                      <Route path="/rooms" element={<RoomsPage />} />
-                      <Route
-                        path="/rooms/listing/:id"
-                        element={<RoomDetailPage />}
-                      />
-                      <Route path="/rooms/:id" element={<RoomDetailPage />} />
-                      {/* Announcements */}
-                      <Route
-                        path="/announcements"
-                        element={<AnnouncementsPage />}
-                      />
-                      <Route
-                        path="/announcements/listing/:id"
-                        element={<AnnouncementDetailPage />}
-                      />
-                      <Route
-                        path="/announcements/:id"
-                        element={<AnnouncementDetailPage />}
-                      />
-                      {/* Events */}
-                      <Route path="/events" element={<EventsPage />} />
-                      <Route
-                        path="/events/listing/:id"
-                        element={<EventDetailPage />}
-                      />
-                      <Route path="/events/:id" element={<EventDetailPage />} />
-                      <Route path="/businesses" element={<BusinessesPage />} />
-                      <Route
-                        path="/businesses/:id"
-                        element={<BusinessDetailPage />}
-                      />
-                      <Route
-                        path="/edit-listing/:id"
-                        element={
-                          <ProtectedRoute>
-                            <EditListingPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/search" element={<SearchPage />} />
-                      <Route path="/privacy" element={<PrivacyPage />} />
-                      <Route path="/terms" element={<TermsPage />} />
-                      <Route path="/contact" element={<ContactPage />} />
-                      {/* Guest only routes */}
-                      <Route
-                        path="/login"
-                        element={
-                          <GuestRoute>
-                            <LoginPage />
-                          </GuestRoute>
-                        }
-                      />
-                      <Route
-                        path="/register"
-                        element={
-                          <GuestRoute>
-                            <RegisterPage />
-                          </GuestRoute>
-                        }
-                      />
-                      <Route
-                        path="/verify-email"
-                        element={<VerifyEmailPage />}
-                      />
-                      {/* Protected routes */}
-                      <Route
-                        path="/post-ad"
-                        element={
-                          <ProtectedRoute>
-                            <PostAdPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/register-business"
-                        element={
-                          <ProtectedRoute>
-                            <RegisterBusinessPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/my-listings"
-                        element={
-                          <ProtectedRoute>
-                            <MyListingsPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/profile"
-                        element={
-                          <ProtectedRoute>
-                            <ProfilePage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/messages"
-                        element={
-                          <ProtectedRoute>
-                            <InboxPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/messages/:id"
-                        element={
-                          <ProtectedRoute>
-                            <ConversationPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/saved-searches"
-                        element={
-                          <ProtectedRoute>
-                            <SavedSearchesPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/payment/success" element={<PaymentSuccessPage />} />
-                      <Route path="/payment/cancel" element={<PaymentCancelPage />} />
-                      <Route
-                        path="/forgot-password"
-                        element={<ForgotPasswordPage />}
-                      />
-                      <Route
-                        path="/reset-password/:uid/:token"
-                        element={<ResetPasswordPage />}
-                      />
-                      {/* 404 — must be last */}
-                      <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
+                    <Suspense fallback={<PageFallback />}>
+                      <Routes>
+                        {/* Public routes */}
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/featured" element={<FeaturedPage />} />
+                        {/* Jobs */}
+                        <Route path="/jobs" element={<JobsPage />} />
+                        <Route path="/jobs/listing/:id" element={<JobDetailPage />} />
+                        <Route path="/jobs/:id" element={<JobDetailPage />} />
+                        {/* Rooms */}
+                        <Route path="/rooms" element={<RoomsPage />} />
+                        <Route path="/rooms/listing/:id" element={<RoomDetailPage />} />
+                        <Route path="/rooms/:id" element={<RoomDetailPage />} />
+                        {/* Announcements */}
+                        <Route path="/announcements" element={<AnnouncementsPage />} />
+                        <Route path="/announcements/listing/:id" element={<AnnouncementDetailPage />} />
+                        <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
+                        {/* Events */}
+                        <Route path="/events" element={<EventsPage />} />
+                        <Route path="/events/listing/:id" element={<EventDetailPage />} />
+                        <Route path="/events/:id" element={<EventDetailPage />} />
+                        {/* Businesses */}
+                        <Route path="/businesses" element={<BusinessesPage />} />
+                        <Route path="/businesses/:id" element={<BusinessDetailPage />} />
+                        {/* Other public */}
+                        <Route path="/edit-listing/:id" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
+                        <Route path="/search" element={<SearchPage />} />
+                        <Route path="/privacy" element={<PrivacyPage />} />
+                        <Route path="/terms" element={<TermsPage />} />
+                        <Route path="/contact" element={<ContactPage />} />
+                        {/* Guest only */}
+                        <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+                        <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+                        <Route path="/verify-email" element={<VerifyEmailPage />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                        <Route path="/reset-password/:uid/:token" element={<ResetPasswordPage />} />
+                        {/* Protected */}
+                        <Route path="/post-ad" element={<ProtectedRoute><PostAdPage /></ProtectedRoute>} />
+                        <Route path="/register-business" element={<ProtectedRoute><RegisterBusinessPage /></ProtectedRoute>} />
+                        <Route path="/my-listings" element={<ProtectedRoute><MyListingsPage /></ProtectedRoute>} />
+                        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                        <Route path="/messages" element={<ProtectedRoute><InboxPage /></ProtectedRoute>} />
+                        <Route path="/messages/:id" element={<ProtectedRoute><ConversationPage /></ProtectedRoute>} />
+                        <Route path="/saved-searches" element={<ProtectedRoute><SavedSearchesPage /></ProtectedRoute>} />
+                        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+                        <Route path="/payment/cancel" element={<PaymentCancelPage />} />
+                        {/* 404 — must be last */}
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </Suspense>
                   </PageWrapper>
                 </div>
                 <Footer />
