@@ -1,8 +1,6 @@
 import stripe
 from django.conf import settings
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
 from rest_framework.response import Response
@@ -67,7 +65,6 @@ class CreateCheckoutSessionView(APIView):
         return Response({'checkout_url': session.url})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class StripeWebhookView(APIView):
     """
     POST /api/payments/webhook/
