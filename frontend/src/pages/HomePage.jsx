@@ -1367,7 +1367,7 @@ export default function HomePage() {
           title="Latest jobs"
           viewAllTo="/jobs"
           viewAllColor="#534AB7"
-          items={jobsData?.results}
+          items={jobsData?.results?.slice(0, 6)}
           /* Mobile row (unchanged) */
           renderRow={(job) => (
             <Link
@@ -1467,7 +1467,7 @@ export default function HomePage() {
           title="Rooms available"
           viewAllTo="/rooms"
           viewAllColor="#E87722"
-          items={roomsData?.results}
+          items={roomsData?.results?.slice(0, 6)}
           renderRow={(room) => (
             <Link
               key={room.id}
@@ -1584,7 +1584,7 @@ export default function HomePage() {
           title="Upcoming events"
           viewAllTo="/events"
           viewAllColor="#1D9E75"
-          items={eventsData?.results}
+          items={eventsData?.results?.slice(0, 6)}
           renderRow={(event) => (
             <Link
               key={event.id}
@@ -1705,7 +1705,7 @@ export default function HomePage() {
           title="Latest notices"
           viewAllTo="/notices"
           viewAllColor="#0C447C"
-          items={noticesData?.results}
+          items={noticesData?.results?.slice(0, 6)}
           renderRow={(notice) => (
             <Link
               key={notice.id}
