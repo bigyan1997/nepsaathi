@@ -8,6 +8,7 @@ const TYPE_LABELS = {
   room: { label: "Rooms", emoji: "🏠", color: "#FFF1E0" },
   event: { label: "Events", emoji: "🎉", color: "#E1F5EE" },
   notice: { label: "Notices", emoji: "📢", color: "#F5F4F0" },
+  business: { label: "Businesses", emoji: "🏪", color: "#FFF1E0" },
 };
 
 export default function SavedSearchesPage() {

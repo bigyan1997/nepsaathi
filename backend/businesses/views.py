@@ -83,7 +83,45 @@ class BusinessCreateView(generics.CreateAPIView):
                 f'A business named "{business_name}" is already registered in {state} on NepSaathi.'
             )
 
-        serializer.save(owner=user)
+        business = serializer.save(owner=user)
+        try:
+            from core.emails import send_business_saved_search_alert_email
+            _trigger_business_saved_search_alerts(business, send_business_saved_search_alert_email)
+        except Exception:
+            pass
+
+
+def _trigger_business_saved_search_alerts(business, send_fn):
+    import threading
+
+    def _run():
+        from listings.models import SavedSearch
+        searches = SavedSearch.objects.filter(
+            listing_type='business',
+            is_active=True,
+        ).exclude(user=business.owner).select_related('user')
+
+        for saved in searches:
+            try:
+                f = saved.filters or {}
+                keyword = f.get('search', '').lower()
+                if keyword:
+                    words = [w for w in keyword.split() if len(w) > 1]
+                    text = f"{business.business_name} {business.description or ''}".lower()
+                    if words and not all(w in text for w in words):
+                        continue
+                if f.get('state') and f['state'] != business.state:
+                    continue
+                if f.get('category') and f['category'] != business.category:
+                    continue
+                send_fn(saved.user, business, saved.id)
+                from django.utils import timezone as tz
+                saved.last_notified = tz.now()
+                saved.save(update_fields=['last_notified'])
+            except Exception as e:
+                print(f'[BIZ SEARCH ALERT] Search #{saved.id} failed: {e}', flush=True)
+
+    threading.Thread(target=_run, daemon=True).start()
 
 
 class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):

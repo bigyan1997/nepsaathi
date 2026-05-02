@@ -1058,6 +1058,20 @@ export default function RoomsPage() {
           />
         </div>
 
+        {/* Mobile: results count + save search */}
+        <div
+          className="rm-fmob"
+          style={{ justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null ? `${data.count} result${data.count !== 1 ? "s" : ""} found` : ""}
+          </span>
+          <SaveSearchButton
+            listingType="room"
+            filters={{ search: filters.search, state: filters.state }}
+          />
+        </div>
+
         {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div

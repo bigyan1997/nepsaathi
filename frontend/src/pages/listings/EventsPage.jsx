@@ -976,6 +976,20 @@ export default function EventsPage() {
           />
         </div>
 
+        {/* Mobile: results count + save search */}
+        <div
+          className="ev-fmob"
+          style={{ justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null ? `${data.count} result${data.count !== 1 ? "s" : ""} found` : ""}
+          </span>
+          <SaveSearchButton
+            listingType="event"
+            filters={{ search: filters.search, state: filters.state }}
+          />
+        </div>
+
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "12px" }}

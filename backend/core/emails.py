@@ -983,6 +983,43 @@ def send_saved_search_alert_email(user, listing, saved_search_id):
         print(f'Saved search alert email failed: {e}', flush=True)
 
 
+def send_business_saved_search_alert_email(user, business, saved_search_id):
+    business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
+    manage_url = f"{FRONTEND_URL}/saved-searches"
+    try:
+        first_name = user.first_name or 'there'
+        body = f"""
+<h1 {_H1}>New business matching your saved search &#128276;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, a new business has been listed on NepSaathi
+  that matches one of your saved searches.
+</p>
+
+{_listing_card(
+    html_module.escape(business.business_name),
+    business_url,
+    html_module.escape(f"{business.suburb}, {business.state}"),
+    emoji="&#127981;",
+    bg="#FFF1E0"
+)}
+
+{_btn("View Business &rarr;", business_url, color="#8B5E00")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  You're receiving this because you saved a business search alert on NepSaathi.
+  <a href="{manage_url}" style="color:#534AB7;text-decoration:none;">Manage your saved searches</a>
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [user.email],
+            'subject': f'[NepSaathi] New business: {business.business_name}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Business saved search alert email failed: {e}', flush=True)
+
+
 def send_listing_expired_email(listing):
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:

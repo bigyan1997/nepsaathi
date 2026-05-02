@@ -5,6 +5,7 @@ import { getBusinesses } from "../../api/businesses";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
+import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -636,6 +637,7 @@ export default function BusinessesPage() {
           .bz-fmob   { display: none !important; }
           .bz-fdesk  { display: flex !important; }
         }
+        .bz-fmob::-webkit-scrollbar { display: none; }
       `}</style>
 
       {drawerOpen && (
@@ -725,13 +727,55 @@ export default function BusinessesPage() {
           </button>
         </div>
 
-        {/* Active chips (mobile) */}
-        {activeChips.length > 0 && (
+        {/* Mobile: scrollable category chips */}
+        <div
+          className="bz-fmob"
+          style={{
+            gap: "8px",
+            overflowX: "auto",
+            paddingBottom: "4px",
+            marginBottom: "10px",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
+          {[{ value: "", label: "All", emoji: "🏪" }, ...CATEGORIES.slice(1).map(c => ({ ...c, emoji: CATEGORY_EMOJIS[c.value] || "📌" }))].map(({ value, label, emoji }) => {
+            const active = filters.category === value;
+            const col = value ? CATEGORY_COLORS[value] : null;
+            return (
+              <button
+                key={value}
+                onClick={() => updateFilters({ category: value })}
+                style={{
+                  flexShrink: 0,
+                  background: active ? (col?.bg || "#FFF1E0") : "#fff",
+                  border: `1.5px solid ${active ? (col?.color || "#8B5E00") : "#e5e5e5"}`,
+                  borderRadius: "20px",
+                  padding: "6px 13px",
+                  fontSize: "12px",
+                  fontWeight: active ? 700 : 500,
+                  color: active ? (col?.color || "#633806") : "#555",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.15s",
+                }}
+              >
+                {emoji} {label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active non-category chips (mobile) */}
+        {activeChips.filter(c => c.key !== "category").length > 0 && (
           <div
             className="bz-fmob"
-            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}
           >
-            {activeChips.map(({ key, label, color, bg, border }) => (
+            {activeChips.filter(c => c.key !== "category").map(({ key, label, color, bg, border }) => (
               <button
                 key={key}
                 onClick={() => updateFilters({ [key]: "" })}
@@ -753,30 +797,34 @@ export default function BusinessesPage() {
                 <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
               </button>
             ))}
-            <button
-              onClick={() =>
-                updateFilters({
-                  category: "",
-                  state: "",
-                  is_nepalese_owned: "",
-                  is_verified: "",
-                })
-              }
-              style={{
-                background: "#FCEBEB",
-                border: "0.5px solid #F09595",
-                color: "#A32D2D",
-                fontSize: "11px",
-                fontWeight: 600,
-                padding: "4px 10px",
-                borderRadius: "20px",
-                cursor: "pointer",
-              }}
-            >
-              Clear all
-            </button>
           </div>
         )}
+
+        {/* Mobile: results count + save search */}
+        <div
+          className="bz-fmob"
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "12px",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null
+              ? `${data.count} business${data.count !== 1 ? "es" : ""} found`
+              : ""}
+          </span>
+          <SaveSearchButton
+            listingType="business"
+            filters={{
+              search: filters.search,
+              category: filters.category,
+              state: filters.state,
+              is_nepalese_owned: filters.is_nepalese_owned,
+              is_verified: filters.is_verified,
+            }}
+          />
+        </div>
 
         {/* Desktop filters */}
         <div
@@ -862,6 +910,16 @@ export default function BusinessesPage() {
               {label}
             </label>
           ))}
+          <SaveSearchButton
+            listingType="business"
+            filters={{
+              search: filters.search,
+              category: filters.category,
+              state: filters.state,
+              is_nepalese_owned: filters.is_nepalese_owned,
+              is_verified: filters.is_verified,
+            }}
+          />
         </div>
 
         {(isLoading || (isFetching && allResults.length === 0)) && (
@@ -908,13 +966,10 @@ export default function BusinessesPage() {
           </div>
         )}
 
-        {/* Mobile: 2-col compact cards */}
+        {/* Mobile: horizontal list cards */}
         <div
           className="bz-mobile"
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-            gap: "12px",
-          }}
+          style={{ gridTemplateColumns: "1fr", gap: "10px" }}
         >
           {allResults.map((biz) => {
             const catColor =
@@ -927,144 +982,192 @@ export default function BusinessesPage() {
                 style={{
                   background: "#fff",
                   border: "0.5px solid #e5e5e5",
-                  borderRadius: "12px",
-                  padding: "14px",
+                  borderRadius: "14px",
+                  padding: "12px 14px",
                   textDecoration: "none",
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#FAC775")
+                onTouchStart={(e) =>
+                  (e.currentTarget.style.background = "#FAFAF8")
                 }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.borderColor = "#e5e5e5")
+                onTouchEnd={(e) =>
+                  (e.currentTarget.style.background = "#fff")
                 }
               >
+                {/* Logo / emoji */}
                 <div
                   style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "10px",
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "14px",
                     background: catColor.bg,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "20px",
-                    marginBottom: "10px",
+                    fontSize: "26px",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    position: "relative",
                   }}
                 >
-                  {catEmoji}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    gap: "6px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: "#26215C",
-                      lineHeight: 1.3,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {biz.business_name}
-                  </h3>
-                  {biz.is_verified && (
-                    <span
+                  {biz.logo_url ? (
+                    <img
+                      src={biz.logo_url}
+                      alt={biz.business_name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    catEmoji
+                  )}
+                  {biz.is_featured && (
+                    <div
                       style={{
-                        background: "#E1F5EE",
-                        color: "#085041",
-                        fontSize: "9px",
-                        fontWeight: 500,
-                        padding: "2px 5px",
-                        borderRadius: "6px",
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: "3px",
+                        background: "linear-gradient(90deg,#E87722,#534AB7)",
+                        borderRadius: "14px 14px 0 0",
                       }}
-                    >
-                      ✓
-                    </span>
+                    />
                   )}
                 </div>
-                {biz.avg_rating > 0 && (
+
+                {/* Details */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      gap: "6px",
+                      marginBottom: "3px",
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#26215C",
+                        lineHeight: 1.3,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      {biz.business_name}
+                    </h3>
+                    {biz.is_verified && (
+                      <span
+                        style={{
+                          background: "#E1F5EE",
+                          color: "#085041",
+                          fontSize: "10px",
+                          fontWeight: 600,
+                          padding: "2px 7px",
+                          borderRadius: "6px",
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                        }}
+                      >
+                        ✓ Verified
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Rating */}
+                  {biz.avg_rating > 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "3px",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <span
+                          key={s}
+                          style={{
+                            fontSize: "11px",
+                            color:
+                              s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd",
+                          }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                      <span
+                        style={{
+                          fontSize: "11px",
+                          color: "#E87722",
+                          fontWeight: 700,
+                          marginLeft: "1px",
+                        }}
+                      >
+                        {Number(biz.avg_rating).toFixed(1)}
+                      </span>
+                      <span style={{ fontSize: "10px", color: "#bbb" }}>
+                        ({biz.review_count})
+                      </span>
+                    </div>
+                  ) : null}
+
+                  {/* Category + location row */}
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "3px",
-                      marginBottom: "4px",
+                      gap: "6px",
+                      flexWrap: "wrap",
                     }}
                   >
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <span
-                        key={s}
-                        style={{
-                          fontSize: "10px",
-                          color:
-                            s <= Math.round(biz.avg_rating)
-                              ? "#E87722"
-                              : "#ddd",
-                        }}
-                      >
-                        ★
-                      </span>
-                    ))}
                     <span
                       style={{
+                        background: catColor.bg,
+                        color: catColor.color,
                         fontSize: "10px",
-                        color: "#E87722",
-                        fontWeight: 600,
+                        fontWeight: 500,
+                        padding: "2px 8px",
+                        borderRadius: "8px",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {Number(biz.avg_rating).toFixed(1)}
+                      {catEmoji} {biz.category?.replace("_", " ")}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#888" }}>
+                      📍 {biz.suburb}, {biz.state}
                     </span>
                   </div>
-                )}
-                <span
-                  style={{
-                    background: catColor.bg,
-                    color: catColor.color,
-                    fontSize: "10px",
-                    fontWeight: 500,
-                    padding: "2px 7px",
-                    borderRadius: "7px",
-                    display: "inline-block",
-                    marginBottom: "6px",
-                  }}
-                >
-                  {catEmoji} {biz.category?.replace("_", " ")}
-                </span>
-                <p
-                  style={{
-                    fontSize: "11px",
-                    color: "#888",
-                    marginBottom: "4px",
-                  }}
-                >
-                  📍 {biz.suburb}, {biz.state}
-                </p>
-                {biz.is_nepalese_owned && (
-                  <span
-                    style={{
-                      background: "#EEEDFE",
-                      color: "#3C3489",
-                      fontSize: "10px",
-                      fontWeight: 500,
-                      padding: "2px 7px",
-                      borderRadius: "7px",
-                    }}
-                  >
-                    🇳🇵 Nepalese
-                  </span>
-                )}
+
+                  {biz.is_nepalese_owned && (
+                    <span
+                      style={{
+                        display: "inline-block",
+                        background: "#EEEDFE",
+                        color: "#3C3489",
+                        fontSize: "10px",
+                        fontWeight: 500,
+                        padding: "2px 8px",
+                        borderRadius: "8px",
+                        marginTop: "5px",
+                      }}
+                    >
+                      🇳🇵 Nepalese owned
+                    </span>
+                  )}
+                </div>
+
+                {/* Chevron */}
+                <div style={{ color: "#ccc", fontSize: "18px", flexShrink: 0 }}>
+                  ›
+                </div>
               </Link>
             );
           })}
