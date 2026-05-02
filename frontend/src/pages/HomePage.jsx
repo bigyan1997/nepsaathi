@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { getJobs } from "../api/jobs";
 import { getRooms } from "../api/rooms";
 import { getEvents } from "../api/events";
+import { getNotices } from "../api/notices";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
@@ -836,19 +837,25 @@ export default function HomePage() {
 
   const { data: jobsData } = useQuery({
     queryKey: ["home-jobs"],
-    queryFn: () => getJobs({ page_size: 3 }),
+    queryFn: () => getJobs({ page_size: 6 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: roomsData } = useQuery({
     queryKey: ["home-rooms"],
-    queryFn: () => getRooms({ page_size: 3 }),
+    queryFn: () => getRooms({ page_size: 6 }),
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: eventsData } = useQuery({
     queryKey: ["home-events"],
-    queryFn: () => getEvents({ upcoming: "true", page_size: 3 }),
+    queryFn: () => getEvents({ upcoming: "true", page_size: 6 }),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: noticesData } = useQuery({
+    queryKey: ["home-notices"],
+    queryFn: () => getNotices({ page_size: 6 }),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -1352,7 +1359,7 @@ export default function HomePage() {
 
         {/* ── FEATURED POSTS ── */}
         {featuredData?.results?.length > 0 && (
-          <FeaturedCarousel listings={featuredData.results.slice(0, 8)} />
+          <FeaturedCarousel listings={featuredData.results.slice(0, 6)} />
         )}
 
         {/* ── LATEST JOBS ── */}
@@ -1688,6 +1695,102 @@ export default function HomePage() {
                 { value: event.ticket_display || "—", label: "Tickets" },
                 { value: event.is_free ? "Free" : "Paid", label: "Entry" },
                 { value: event.listing_state || "—", label: "State" },
+              ]}
+            />
+          )}
+        />
+
+        {/* ── LATEST NOTICES ── */}
+        <ListingSection
+          title="Latest notices"
+          viewAllTo="/notices"
+          viewAllColor="#0C447C"
+          items={noticesData?.results}
+          renderRow={(notice) => (
+            <Link
+              key={notice.id}
+              to={`/notices/${notice.listing_slug}`}
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "12px",
+                padding: "16px 20px",
+                textDecoration: "none",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "16px",
+                transition: "border-color 0.15s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = "#B5D4F4")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "#e5e5e5")
+              }
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <div
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                    background: "#E6F1FB",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "18px",
+                    flexShrink: 0,
+                  }}
+                >
+                  📢
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#26215C",
+                      marginBottom: "3px",
+                    }}
+                  >
+                    {notice.listing_title}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#888" }}>
+                    📍 {notice.listing_location}, {notice.listing_state}
+                    {notice.category && ` · ${notice.category.replace("_", " ")}`}
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  background: "#E6F1FB",
+                  color: "#0C447C",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {notice.is_urgent ? "🔴 Urgent" : timeAgo(notice.created_at || notice.date_posted)}
+              </div>
+            </Link>
+          )}
+          renderCard={(notice) => (
+            <DesktopCard
+              key={notice.id}
+              to={`/notices/${notice.listing_slug}`}
+              accentType="notice"
+              emoji="📢"
+              timeStr={timeAgo(notice.created_at || notice.date_posted)}
+              title={notice.listing_title}
+              subtitle={`📍 ${notice.listing_location}, ${notice.listing_state}`}
+              description={notice.description || notice.listing_description}
+              stats={[
+                { value: notice.category?.replace("_", " ") || "General", label: "Category" },
+                { value: notice.listing_state || "—", label: "State" },
+                { value: notice.posted_by || "—", label: "Posted by" },
               ]}
             />
           )}
