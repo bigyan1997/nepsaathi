@@ -25,8 +25,9 @@ export default function Navbar() {
     queryKey: ["unread-count"],
     queryFn: getUnreadCount,
     enabled: isAuthenticated,
-    refetchInterval: 10000,
-    staleTime: 8000,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: false,
+    staleTime: 55000,
   });
   const unreadCount = unreadData?.unread_count || 0;
 
