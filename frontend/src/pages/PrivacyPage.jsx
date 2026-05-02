@@ -76,7 +76,7 @@ export default function PrivacyPage() {
     },
     {
       title: "6. Your rights",
-      content: `You have the right to:\n\n- Access your personal data at any time via your Profile settings\n- Update or correct your information in Profile settings\n- Delete your account by contacting support@nepsaathi.com\n- Opt out of non-essential communications\n\nFor any privacy concerns, contact us at privacy@nepsaathi.com`,
+      content: `You have the right to:\n\n- Access your personal data at any time via your Profile settings\n- Update or correct your information in Profile settings\n- Delete your account by contacting support@nepsaathi.com\n- Opt out of non-essential communications\n\nFor any privacy concerns, contact us at legal@nepsaathi.com`,
     },
     {
       title: "7. Cookies",
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
     },
     {
       title: "8. Contact us",
-      content: `If you have questions about this Privacy Policy, please contact us at:\n\nEmail: privacy@nepsaathi.com\nWebsite: nepsaathi.com`,
+      content: `If you have questions about this Privacy Policy, please contact us at:\n\nEmail: legal@nepsaathi.com\nWebsite: nepsaathi.com`,
     },
   ];
 

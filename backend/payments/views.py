@@ -26,7 +26,7 @@ class CreateCheckoutSessionView(APIView):
         if listing.is_under_review:
             raise ValidationError(
                 'This listing is under review and cannot be featured. '
-                'Contact us at support@nepsaathi.com.au if you have questions.'
+                'Contact us at support@nepsaathi.com if you have questions.'
             )
         if listing.renewal_blocked:
             raise ValidationError('This listing cannot be featured at this time.')

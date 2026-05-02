@@ -353,7 +353,7 @@ def send_report_emails(report):
 
         _fire({
             'from':    'NepSaathi <noreply@nepsaathi.com>',
-            'to':      ['hello@nepsaathi.com'],
+            'to':      ['support@nepsaathi.com'],
             'subject': f'[NepSaathi] New report — {listing.title}',
             'html':    _wrap(admin_body),
         })
@@ -631,7 +631,7 @@ def send_business_report_emails(report):
 
         _fire({
             'from':    'NepSaathi <noreply@nepsaathi.com>',
-            'to':      ['hello@nepsaathi.com'],
+            'to':      ['support@nepsaathi.com'],
             'subject': f'[NepSaathi] New business report — {business.business_name}',
             'html':    _wrap(admin_body),
         })
