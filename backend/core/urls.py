@@ -68,7 +68,7 @@ urlpatterns = [
     path('api/rooms/', include('rooms.urls')),
 
     # Announcements
-    path('api/announcements/', include('announcements.urls')),
+    path('api/notices/', include('announcements.urls')),
 
     # Events
     path('api/events/', include('events.urls')),

@@ -39,9 +39,9 @@ const CATEGORIES = [
     border: "#9FE1CB",
   },
   {
-    to: "/announcements",
+    to: "/notices",
     emoji: "📢",
-    label: "Announcements",
+    label: "Notices",
     desc: "News and updates",
     color: "#E6F1FB",
     border: "#B5D4F4",
@@ -72,7 +72,7 @@ const TYPE_EMOJI = {
   job: "💼",
   room: "🏠",
   event: "🎉",
-  announcement: "📢",
+  notice: "📢",
   business: "🏪",
 };
 
@@ -81,7 +81,7 @@ const SEARCH_TYPES = [
   { value: "jobs", emoji: "💼", label: "Jobs" },
   { value: "rooms", emoji: "🏠", label: "Rooms" },
   { value: "events", emoji: "🎉", label: "Events" },
-  { value: "announcements", emoji: "📢", label: "Announcements" },
+  { value: "notices", emoji: "📢", label: "Notices" },
   { value: "businesses", emoji: "🏪", label: "Businesses" },
 ];
 
@@ -107,7 +107,7 @@ const CARD_ACCENT = {
   job: { footer: "#534AB7", time: "#534AB7", bg: "#EEEDFE" },
   room: { footer: "#E87722", time: "#E87722", bg: "#FFF1E0" },
   event: { footer: "#1D9E75", time: "#1D9E75", bg: "#E1F5EE" },
-  announcement: { footer: "#0C447C", time: "#2176AE", bg: "#E6F1FB" },
+  notice: { footer: "#0C447C", time: "#2176AE", bg: "#E6F1FB" },
   business: { footer: "#8B5E00", time: "#B47D00", bg: "#FAEEDA" },
   default: { footer: "#26215C", time: "#534AB7", bg: "#F5F4F0" },
 };
@@ -577,7 +577,7 @@ function FeaturedCarousel({ listings }) {
       >
         {listings.map((listing) => {
           const typeEmoji =
-            { job: "💼", room: "🏠", event: "🎉", announcement: "📢" }[
+            { job: "💼", room: "🏠", event: "🎉", notice: "📢" }[
               listing.listing_type
             ] || "📌";
           const typeBg =
@@ -585,21 +585,21 @@ function FeaturedCarousel({ listings }) {
               job: "#EEEDFE",
               room: "#FFF1E0",
               event: "#E1F5EE",
-              announcement: "#E6F1FB",
+              notice: "#E6F1FB",
             }[listing.listing_type] || "#F5F4F0";
           const typeColor =
             {
               job: "#3C3489",
               room: "#633806",
               event: "#085041",
-              announcement: "#0C447C",
+              notice: "#0C447C",
             }[listing.listing_type] || "#444";
           const typePath =
             {
               job: "jobs",
               room: "rooms",
               event: "events",
-              announcement: "announcements",
+              notice: "notices",
             }[listing.listing_type] || "listings";
           const accent =
             CARD_ACCENT[listing.listing_type] || CARD_ACCENT.default;
@@ -815,6 +815,7 @@ export default function HomePage() {
     else if (searchType === "jobs") navigate(`/jobs?${params}`);
     else if (searchType === "rooms") navigate(`/rooms?${params}`);
     else if (searchType === "events") navigate(`/events?${params}`);
+    else if (searchType === "notices") navigate(`/notices?${params}`);
     else if (searchType === "businesses") navigate(`/businesses?${params}`);
   };
 
@@ -1080,8 +1081,8 @@ export default function HomePage() {
                           ? "Search rooms..."
                           : searchType === "events"
                             ? "Search events..."
-                            : searchType === "announcements"
-                              ? "Search announcements..."
+                            : searchType === "notices"
+                              ? "Search notices..."
                               : "Search businesses..."
                   }
                   style={{
@@ -1739,7 +1740,7 @@ export default function HomePage() {
               <p
                 style={{ fontSize: "14px", color: "#AFA9EC", lineHeight: 1.6 }}
               >
-                Post a job, room, event or announcement — reach thousands of
+                Post a job, room, event or notice — reach thousands of
                 Nepalese Australians instantly.
               </p>
             </div>

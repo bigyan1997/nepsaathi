@@ -420,7 +420,7 @@ export default function ProfilePage() {
                 Post a free ad
               </div>
               <div style={{ fontSize: "11px", color: "#E87722" }}>
-                Job, room, event or announcement
+                Job, room, event or notice
               </div>
             </div>
           </div>

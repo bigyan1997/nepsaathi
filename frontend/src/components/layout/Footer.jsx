@@ -209,7 +209,7 @@ export default function Footer() {
               { to: "/jobs", label: "Jobs" },
               { to: "/rooms", label: "Rooms" },
               { to: "/events", label: "Events" },
-              { to: "/announcements", label: "Announcements" },
+              { to: "/notices", label: "Notices" },
               { to: "/businesses", label: "Businesses" },
             ].map(({ to, label }) => (
               <Link

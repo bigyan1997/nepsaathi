@@ -74,17 +74,17 @@ class AnnouncementCreateView(generics.CreateAPIView):
             listing = Listing.objects.get(
                 pk=listing_id,
                 user=self.request.user,
-                listing_type='announcement'
+                listing_type='notice'
             )
         except Listing.DoesNotExist:
             raise PermissionDenied(
-                'Listing not found, not yours, or not an announcement.'
+                'Listing not found, not yours, or not a notice.'
             )
 
         # Prevent duplicate announcement details
         if hasattr(listing, 'announcement_detail'):
             raise PermissionDenied(
-                'This listing already has announcement details.'
+                'This listing already has notice details.'
             )
 
         serializer.save(listing=listing)

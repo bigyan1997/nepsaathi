@@ -16,7 +16,7 @@ class Listing(models.Model):
         ROOM = 'room', 'Room'
         EVENT = 'event', 'Event'
         BUSINESS = 'business', 'Business'
-        ANNOUNCEMENT = 'announcement', 'Announcement'
+        NOTICE = 'notice', 'Notice'
 
     class Status(models.TextChoices):
         ACTIVE = 'active', 'Active'
@@ -46,7 +46,7 @@ class Listing(models.Model):
     listing_type = models.CharField(
         max_length=20,
         choices=ListingType.choices,
-        help_text='Type of listing: job, room, event, business or announcement'
+        help_text='Type of listing: job, room, event, business or notice'
     )
 
     # Core fields

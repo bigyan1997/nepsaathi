@@ -6,9 +6,9 @@ import { getJobByListing, updateJob } from "../../api/jobs";
 import { getRoomByListing, updateRoom } from "../../api/rooms";
 import { getEventByListing, updateEvent } from "../../api/events";
 import {
-  getAnnouncementByListing,
-  updateAnnouncement,
-} from "../../api/announcements";
+  getNoticeByListing,
+  updateNotice,
+} from "../../api/notices";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
 
@@ -77,7 +77,7 @@ export default function EditListingPage() {
       if (listingType === "job") return getJobByListing(slug);
       if (listingType === "room") return getRoomByListing(slug);
       if (listingType === "event") return getEventByListing(slug);
-      if (listingType === "announcement") return getAnnouncementByListing(slug);
+      if (listingType === "notice") return getNoticeByListing(slug);
       return null;
     },
     enabled: !!listingType,
@@ -146,7 +146,7 @@ export default function EditListingPage() {
           is_online: typeData.is_online || false,
           event_url: typeData.event_url || "",
         });
-      } else if (listingType === "announcement") {
+      } else if (listingType === "notice") {
         setTypeForm({
           category: typeData.category || "general",
           price: typeData.price || "",
@@ -181,8 +181,8 @@ export default function EditListingPage() {
           ticket_price: typeForm.ticket_price || null,
           max_attendees: typeForm.max_attendees || null,
         });
-      else if (listingType === "announcement")
-        await updateAnnouncement(typeId, {
+      else if (listingType === "notice")
+        await updateNotice(typeId, {
           ...typeForm,
           price: typeForm.price || null,
         });
@@ -191,12 +191,12 @@ export default function EditListingPage() {
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      queryClient.invalidateQueries({ queryKey: ["notices"] });
       queryClient.invalidateQueries({ queryKey: ["listing", slug] });
       queryClient.invalidateQueries({ queryKey: ["job", slug] });
       queryClient.invalidateQueries({ queryKey: ["room", slug] });
       queryClient.invalidateQueries({ queryKey: ["event", slug] });
-      queryClient.invalidateQueries({ queryKey: ["announcement", slug] });
+      queryClient.invalidateQueries({ queryKey: ["notice", slug] });
 
       addToast("Listing updated successfully!", "success");
       navigate(`/${listingType}s/${slug}`);
@@ -710,11 +710,11 @@ export default function EditListingPage() {
         )}
 
         {/* Announcement specific fields */}
-        {listingType === "announcement" && (
+        {listingType === "notice" && (
           <>
             <hr style={{ border: "none", borderTop: "0.5px solid #e5e5e5" }} />
             <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#26215C" }}>
-              Announcement details
+              Notice details
             </h2>
             <div
               style={{

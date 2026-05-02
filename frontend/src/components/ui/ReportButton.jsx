@@ -39,7 +39,7 @@ export default function ReportButton({ listingId, endpoint }) {
       queryClient.invalidateQueries({ queryKey: ["job", String(listingId)] });
       queryClient.invalidateQueries({ queryKey: ["room", String(listingId)] });
       queryClient.invalidateQueries({ queryKey: ["event", String(listingId)] });
-      queryClient.invalidateQueries({ queryKey: ["announcement", String(listingId)] });
+      queryClient.invalidateQueries({ queryKey: ["notice", String(listingId)] });
       queryClient.invalidateQueries({ queryKey: ["listing", listingId] });
       setTimeout(() => {
         setOpen(false);

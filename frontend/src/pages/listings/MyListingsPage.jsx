@@ -27,10 +27,10 @@ const TYPE_COLORS = {
   job: { bg: "#EEEDFE", color: "#3C3489", border: "#1D9E75" },
   room: { bg: "#FFF1E0", color: "#633806", border: "#E87722" },
   event: { bg: "#E1F5EE", color: "#085041", border: "#1D9E75" },
-  announcement: { bg: "#E6F1FB", color: "#0C447C", border: "#1D9E75" },
+  notice: { bg: "#E6F1FB", color: "#0C447C", border: "#1D9E75" },
 };
 
-const TYPE_EMOJIS = { job: "💼", room: "🏠", event: "🎉", announcement: "📢" };
+const TYPE_EMOJIS = { job: "💼", room: "🏠", event: "🎉", notice: "📢" };
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -78,7 +78,7 @@ const getDetailPath = (listing) => {
     job: "jobs",
     room: "rooms",
     event: "events",
-    announcement: "announcements",
+    notice: "notices",
   };
   return `/${map[listing.listing_type] || "listings"}/${listing.slug}`;
 };
@@ -88,7 +88,7 @@ const getSavedPath = (saved) => {
     job: "jobs",
     room: "rooms",
     event: "events",
-    announcement: "announcements",
+    notice: "notices",
   };
   return `/${map[saved.listing_type] || "listings"}/${saved.listing_slug}`;
 };
@@ -404,7 +404,7 @@ export default function MyListingsPage() {
         "jobs",
         "rooms",
         "events",
-        "announcements",
+        "notices",
         "home-jobs",
         "home-rooms",
         "home-events",
@@ -772,7 +772,7 @@ export default function MyListingsPage() {
                     marginBottom: "20px",
                   }}
                 >
-                  Post a job, room, event or announcement for free
+                  Post a job, room, event or notice for free
                 </p>
                 <button
                   onClick={() => navigate("/post-ad")}

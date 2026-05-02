@@ -596,8 +596,8 @@ class GlobalSearchView(APIView):
 
         if len(query) < 2:
             return Response({
-                'jobs': [], 'rooms': [], 
-                'events': [], 'announcements': []
+                'jobs': [], 'rooms': [],
+                'events': [], 'notices': []
             })
 
         from django.db.models import Q

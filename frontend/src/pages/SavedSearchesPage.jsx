@@ -7,7 +7,7 @@ const TYPE_LABELS = {
   job: { label: "Jobs", emoji: "💼", color: "#EEEDFE" },
   room: { label: "Rooms", emoji: "🏠", color: "#FFF1E0" },
   event: { label: "Events", emoji: "🎉", color: "#E1F5EE" },
-  announcement: { label: "Announcements", emoji: "📢", color: "#F5F4F0" },
+  notice: { label: "Notices", emoji: "📢", color: "#F5F4F0" },
 };
 
 export default function SavedSearchesPage() {

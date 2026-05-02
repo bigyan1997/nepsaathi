@@ -60,7 +60,7 @@ export default function PrivacyPage() {
     },
     {
       title: "2. Information we collect",
-      content: `We collect the following types of information:\n\n- Account information — your name, email address, and password when you register\n- Profile information — phone number, location, bio, and profile picture\n- Listing information — details of jobs, rooms, events, announcements or businesses you post\n- Google account information — if you sign in with Google, we receive your name, email and profile picture\n- Usage data — how you interact with our platform, pages visited, and search queries`,
+      content: `We collect the following types of information:\n\n- Account information — your name, email address, and password when you register\n- Profile information — phone number, location, bio, and profile picture\n- Listing information — details of jobs, rooms, events, notices or businesses you post\n- Google account information — if you sign in with Google, we receive your name, email and profile picture\n- Usage data — how you interact with our platform, pages visited, and search queries`,
     },
     {
       title: "3. How we use your information",

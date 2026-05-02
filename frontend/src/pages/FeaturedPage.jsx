@@ -31,13 +31,13 @@ const TYPE_CONFIG = {
     color: "#085041",
     path: "events",
   },
-  announcement: {
+  notice: {
     emoji: "📢",
-    label: "Announcements",
+    label: "Notices",
     bg: "#E6F1FB",
     border: "#B5D4F4",
     color: "#0C447C",
-    path: "announcements",
+    path: "notices",
   },
 };
 
@@ -45,7 +45,7 @@ const CARD_ACCENT = {
   job: { footer: "#534AB7", time: "#534AB7" },
   room: { footer: "#E87722", time: "#E87722" },
   event: { footer: "#1D9E75", time: "#1D9E75" },
-  announcement: { footer: "#0C447C", time: "#0C447C" },
+  notice: { footer: "#0C447C", time: "#0C447C" },
   default: { footer: "#534AB7", time: "#534AB7" },
 };
 

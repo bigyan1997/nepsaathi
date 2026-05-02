@@ -156,7 +156,7 @@ class SavedSearchSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'last_notified', 'created_at')
 
     def validate_listing_type(self, value):
-        allowed = {'job', 'room', 'event', 'announcement'}
+        allowed = {'job', 'room', 'event', 'notice'}
         if value not in allowed:
             raise serializers.ValidationError(f'listing_type must be one of: {", ".join(sorted(allowed))}')
         return value

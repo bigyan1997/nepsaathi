@@ -29,13 +29,13 @@ const TYPE_CONFIG = {
     border: "#9FE1CB",
     path: "events",
   },
-  announcements: {
+  notices: {
     emoji: "📢",
-    label: "Announcements",
+    label: "Notices",
     color: "#E6F1FB",
     textColor: "#0C447C",
     border: "#B5D4F4",
-    path: "announcements",
+    path: "notices",
   },
 };
 

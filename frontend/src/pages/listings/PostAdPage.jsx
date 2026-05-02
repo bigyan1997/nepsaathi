@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createListing, deleteListing } from "../../api/listings";
 import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
-import { createAnnouncement } from "../../api/announcements";
+import { createNotice } from "../../api/notices";
 import { createEvent } from "../../api/events";
 import ImageUpload from "../../components/ui/ImageUpload";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -40,8 +40,8 @@ const LISTING_TYPES = [
     color: "#085041",
   },
   {
-    value: "announcement",
-    label: "Announcement",
+    value: "notice",
+    label: "Notice",
     emoji: "📢",
     desc: "Share news or items for sale",
     bg: "#E6F1FB",
@@ -373,7 +373,7 @@ export default function PostAdPage() {
     pets_allowed: false,
     parking_available: false,
   });
-  const [announcementForm, setAnnouncementForm] = useState({
+  const [noticeForm, setNoticeForm] = useState({
     category: "general",
     price: "",
     condition: "na",
@@ -400,7 +400,7 @@ export default function PostAdPage() {
   const setRoom = (f) => (e) =>
     setRoomForm((p) => ({ ...p, [f]: e.target.value }));
   const setAnn = (f) => (e) =>
-    setAnnouncementForm((p) => ({ ...p, [f]: e.target.value }));
+    setNoticeForm((p) => ({ ...p, [f]: e.target.value }));
   const setEvt = (f) => (e) =>
     setEventForm((p) => ({ ...p, [f]: e.target.value }));
 
@@ -441,16 +441,16 @@ export default function PostAdPage() {
         await createRoom({ listing: listing.id, ...roomForm });
         queryClient.invalidateQueries({ queryKey: ["rooms"] });
         queryClient.invalidateQueries({ queryKey: ["home-rooms"] });
-      } else if (listingType === "announcement") {
-        await createAnnouncement({
+      } else if (listingType === "notice") {
+        await createNotice({
           listing: listing.id,
-          category: announcementForm.category,
-          price: announcementForm.price || null,
-          condition: announcementForm.condition,
-          is_free: announcementForm.is_free,
-          is_urgent: announcementForm.is_urgent,
+          category: noticeForm.category,
+          price: noticeForm.price || null,
+          condition: noticeForm.condition,
+          is_free: noticeForm.is_free,
+          is_urgent: noticeForm.is_urgent,
         });
-        queryClient.invalidateQueries({ queryKey: ["announcements"] });
+        queryClient.invalidateQueries({ queryKey: ["notices"] });
       } else if (listingType === "event") {
         await createEvent({
           listing: listing.id,
@@ -516,7 +516,7 @@ export default function PostAdPage() {
     const paths = {
       job: "jobs",
       room: "rooms",
-      announcement: "announcements",
+      notice: "notices",
       event: "events",
     };
     navigate(`/${paths[listingType] || ""}/${createdListingSlug}`);
@@ -826,6 +826,42 @@ export default function PostAdPage() {
               accentBg="#EEEDFE"
               accentBorder="#AFA9EC"
             >
+              {listingType === "notice" && (
+                <div>
+                  <label style={labelStyle}>Category *</label>
+                  <select
+                    style={inputStyle}
+                    value={noticeForm.category}
+                    onChange={setAnn("category")}
+                  >
+                    <option value="news">📰 Community news</option>
+                    <option value="sale">🏷️ Item for sale</option>
+                    <option value="service">🛠️ Service offered</option>
+                    <option value="lost_found">🔎 Lost and found</option>
+                    <option value="education">📚 Education</option>
+                    <option value="general">📢 General</option>
+                  </select>
+                </div>
+              )}
+              {listingType === "event" && (
+                <div>
+                  <label style={labelStyle}>Category *</label>
+                  <select
+                    style={inputStyle}
+                    value={eventForm.category}
+                    onChange={setEvt("category")}
+                  >
+                    <option value="cultural">🎭 Cultural</option>
+                    <option value="sports">⚽ Sports</option>
+                    <option value="food">🍛 Food and Dining</option>
+                    <option value="music">🎵 Music and Entertainment</option>
+                    <option value="religious">🙏 Religious</option>
+                    <option value="community">👥 Community Meetup</option>
+                    <option value="education">📚 Education and Workshop</option>
+                    <option value="other">📌 Other</option>
+                  </select>
+                </div>
+              )}
               <div>
                 <label style={labelStyle}>Title *</label>
                 <input
@@ -840,7 +876,11 @@ export default function PostAdPage() {
                           ? "e.g. Kitchen Hand Wanted"
                           : listingType === "room"
                             ? "e.g. Private room in Parramatta"
-                            : "e.g. Community announcement"
+                            : listingType === "notice"
+                              ? "e.g. Selling furniture — dining table and chairs"
+                              : listingType === "event"
+                                ? "e.g. Dashain Celebration 2025"
+                                : "e.g. Community notice"
                   }
                   onChange={setBase("title")}
                 />
@@ -1325,30 +1365,15 @@ export default function PostAdPage() {
           </>
         )}
 
-        {/* ══ STEP 3 — Announcement details ══ */}
-        {step === 3 && listingType === "announcement" && (
+        {/* ══ STEP 3 — Notice details ══ */}
+        {step === 3 && listingType === "notice" && (
           <>
             <SectionCard
-              title="Announcement details"
+              title="Notice details"
               accent="#0C447C"
               accentBg="#E6F1FB"
               accentBorder="#B5D4F4"
             >
-              <div>
-                <label style={labelStyle}>Category *</label>
-                <select
-                  style={inputStyle}
-                  value={announcementForm.category}
-                  onChange={setAnn("category")}
-                >
-                  <option value="news">📰 Community news</option>
-                  <option value="sale">🏷️ Item for sale</option>
-                  <option value="service">🛠️ Service offered</option>
-                  <option value="lost_found">🔎 Lost and found</option>
-                  <option value="education">📚 Education</option>
-                  <option value="general">📢 General</option>
-                </select>
-              </div>
               <Grid2>
                 <div>
                   <label style={labelStyle}>Price (AUD)</label>
@@ -1356,7 +1381,7 @@ export default function PostAdPage() {
                     type="number"
                     style={inputStyle}
                     placeholder="e.g. 50"
-                    value={announcementForm.price}
+                    value={noticeForm.price}
                     onChange={setAnn("price")}
                   />
                 </div>
@@ -1364,7 +1389,7 @@ export default function PostAdPage() {
                   <label style={labelStyle}>Condition</label>
                   <select
                     style={inputStyle}
-                    value={announcementForm.condition}
+                    value={noticeForm.condition}
                     onChange={setAnn("condition")}
                   >
                     <option value="na">Not applicable</option>
@@ -1377,9 +1402,9 @@ export default function PostAdPage() {
                 </div>
               </Grid2>
               <CheckCard
-                checked={announcementForm.is_free}
+                checked={noticeForm.is_free}
                 onChange={(e) =>
-                  setAnnouncementForm((p) => ({
+                  setNoticeForm((p) => ({
                     ...p,
                     is_free: e.target.checked,
                   }))
@@ -1391,9 +1416,9 @@ export default function PostAdPage() {
                 border="#9FE1CB"
               />
               <CheckCard
-                checked={announcementForm.is_urgent}
+                checked={noticeForm.is_urgent}
                 onChange={(e) =>
-                  setAnnouncementForm((p) => ({
+                  setNoticeForm((p) => ({
                     ...p,
                     is_urgent: e.target.checked,
                   }))
@@ -1413,7 +1438,7 @@ export default function PostAdPage() {
               }}
               onNext={handleSubmit}
               loading={loading}
-              nextLabel="Post announcement →"
+              nextLabel="Post notice →"
             />
           </>
         )}
@@ -1427,23 +1452,6 @@ export default function PostAdPage() {
               accentBg="#E1F5EE"
               accentBorder="#9FE1CB"
             >
-              <div>
-                <label style={labelStyle}>Category *</label>
-                <select
-                  style={inputStyle}
-                  value={eventForm.category}
-                  onChange={setEvt("category")}
-                >
-                  <option value="cultural">🎭 Cultural</option>
-                  <option value="sports">⚽ Sports</option>
-                  <option value="food">🍛 Food and Dining</option>
-                  <option value="music">🎵 Music and Entertainment</option>
-                  <option value="religious">🙏 Religious</option>
-                  <option value="community">👥 Community Meetup</option>
-                  <option value="education">📚 Education and Workshop</option>
-                  <option value="other">📌 Other</option>
-                </select>
-              </div>
               <Grid2>
                 <div>
                   <label style={labelStyle}>Event date and time *</label>

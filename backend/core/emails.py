@@ -184,7 +184,7 @@ def send_welcome_email(user):
 <h1 {_H1}>Welcome to NepSaathi! &#127881;</h1>
 <p {_P}>
   Hi <strong>{first_name}</strong>, we're so excited to have you in our community.
-  NepSaathi is your hub for jobs, rooms, events, announcements and businesses
+  NepSaathi is your hub for jobs, rooms, events, notices and businesses
   across Australia — all in one place, all free.
 </p>
 
@@ -946,7 +946,7 @@ def send_saved_search_alert_email(user, listing, saved_search_id):
         'job': ('Job', '&#128188;', '#EEEDFE'),
         'room': ('Room', '&#127968;', '#FFF1E0'),
         'event': ('Event', '&#127881;', '#E1F5EE'),
-        'announcement': ('Announcement', '&#128226;', '#F5F4F0'),
+        'notice': ('Notice', '&#128226;', '#F5F4F0'),
     }
     label, emoji, bg = type_labels.get(listing_type, ('Listing', '&#128204;', '#EEEDFE'))
     try:

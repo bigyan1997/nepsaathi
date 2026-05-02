@@ -20,8 +20,8 @@ import EventsPage            from "./pages/listings/EventsPage";
 import FeaturedPage          from "./pages/FeaturedPage";
 import JobDetailPage         from "./pages/listings/JobDetailPage";
 import RoomDetailPage        from "./pages/listings/RoomDetailPage";
-import AnnouncementsPage     from "./pages/listings/AnnouncementsPage";
-import AnnouncementDetailPage from "./pages/listings/AnnouncementDetailPage";
+import NoticesPage           from "./pages/listings/NoticesPage";
+import NoticeDetailPage      from "./pages/listings/NoticeDetailPage";
 import EventDetailPage       from "./pages/listings/EventDetailPage";
 import BusinessesPage        from "./pages/listings/BusinessesPage";
 import BusinessDetailPage    from "./pages/listings/BusinessDetailPage";
@@ -86,8 +86,8 @@ function App() {
                         <Route path="/rooms" element={<RoomsPage />} />
                         <Route path="/rooms/:slug" element={<RoomDetailPage />} />
                         {/* Announcements */}
-                        <Route path="/announcements" element={<AnnouncementsPage />} />
-                        <Route path="/announcements/:slug" element={<AnnouncementDetailPage />} />
+                        <Route path="/notices" element={<NoticesPage />} />
+                        <Route path="/notices/:slug" element={<NoticeDetailPage />} />
                         {/* Events */}
                         <Route path="/events" element={<EventsPage />} />
                         <Route path="/events/:slug" element={<EventDetailPage />} />
