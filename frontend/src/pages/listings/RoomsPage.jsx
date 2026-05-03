@@ -1201,7 +1201,7 @@ export default function RoomsPage() {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     {(room.is_featured || room.is_wanted) && (
-                      <div style={{ marginBottom: "4px" }}>
+                      <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginBottom: "4px" }}>
                         {room.is_featured && (
                           <span
                             style={{
@@ -1212,6 +1212,7 @@ export default function RoomsPage() {
                               fontWeight: 700,
                               padding: "2px 7px",
                               borderRadius: "6px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             ⭐ FEATURED
@@ -1226,6 +1227,7 @@ export default function RoomsPage() {
                               fontWeight: 700,
                               padding: "2px 7px",
                               borderRadius: "6px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             🏘️ Room Seeker

@@ -1004,6 +1004,7 @@ export default function JobsPage() {
                         display: "flex",
                         gap: "6px",
                         alignItems: "center",
+                        minWidth: 0,
                       }}
                     >
                       <span
@@ -1015,6 +1016,7 @@ export default function JobsPage() {
                           padding: "2px 9px",
                           borderRadius: "8px",
                           whiteSpace: "nowrap",
+                          flexShrink: 0,
                         }}
                       >
                         {job.job_type?.replace("_", " ")}
@@ -1023,9 +1025,10 @@ export default function JobsPage() {
                         style={{
                           fontSize: "11px",
                           color: "#aaa",
-                          whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          minWidth: 0,
                         }}
                       >
                         ·{" "}

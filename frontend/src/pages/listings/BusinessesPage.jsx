@@ -1159,7 +1159,15 @@ export default function BusinessesPage() {
                     >
                       {catEmoji} {biz.category?.replace("_", " ")}
                     </span>
-                    <span style={{ fontSize: "11px", color: "#888" }}>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "#888",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       📍 {biz.suburb}, {biz.state}
                     </span>
                   </div>
