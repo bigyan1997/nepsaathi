@@ -34,6 +34,7 @@ class EventSerializer(serializers.ModelSerializer):
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True) 
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
+    is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
     rsvp_count = serializers.SerializerMethodField()
@@ -124,6 +125,7 @@ class EventSerializer(serializers.ModelSerializer):
             'rsvp_count',
             'spots_left',
             'user_has_rsvp',
+            'is_featured',
         )
         read_only_fields = (
             'id',
@@ -147,4 +149,5 @@ class EventSerializer(serializers.ModelSerializer):
             'rsvp_count',
             'spots_left',
             'user_has_rsvp',
+            'is_featured',
         )

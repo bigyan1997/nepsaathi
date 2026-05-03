@@ -111,6 +111,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
         model = Listing
         fields = (
             'id',
+            'slug',
             'listing_type',
             'title',
             'description',
@@ -121,7 +122,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_whatsapp',
             'is_wanted',
         )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'slug')
         extra_kwargs = {
             'listing_type': {'required': True},
         }

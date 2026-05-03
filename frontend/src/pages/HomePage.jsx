@@ -92,8 +92,12 @@ const SEARCH_TYPES = [
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days === 0) return "Today";
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return mins === 1 ? "1 min ago" : `${mins} mins ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
   if (days === 1) return "1 day ago";
   if (days < 7) return `${days} days ago`;
   const weeks = Math.floor(days / 7);
@@ -126,6 +130,7 @@ function DesktopCard({
   subtitle,
   description,
   stats,
+  isFeatured,
 }) {
   const accent = CARD_ACCENT[accentType] || CARD_ACCENT.default;
   const [hovered, setHovered] = useState(false);
@@ -142,7 +147,9 @@ function DesktopCard({
         borderRadius: "16px",
         overflow: "hidden",
         textDecoration: "none",
-        border: "0.5px solid #e5e5e5",
+        border: isFeatured
+          ? `1.5px solid #E87722`
+          : "0.5px solid #e5e5e5",
         boxShadow: hovered
           ? "0 8px 28px rgba(0,0,0,0.13)"
           : "0 2px 8px rgba(0,0,0,0.06)",
@@ -165,6 +172,24 @@ function DesktopCard({
         }}
       >
         {emoji}
+        {isFeatured && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              background: "linear-gradient(135deg, #E87722, #534AB7)",
+              color: "#fff",
+              fontSize: "9px",
+              fontWeight: 700,
+              padding: "3px 8px",
+              borderRadius: "6px",
+              letterSpacing: "0.04em",
+            }}
+          >
+            ⭐ FEATURED
+          </div>
+        )}
         {/* subtle corner accent bar */}
         <div
           style={{
@@ -1417,9 +1442,16 @@ export default function HomePage() {
                       fontWeight: 600,
                       color: "#26215C",
                       marginBottom: "3px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      flexWrap: "wrap",
                     }}
                   >
                     {job.listing_title}
+                    {job.is_featured && (
+                      <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>⭐ FEATURED</span>
+                    )}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888" }}>
                     {job.company_name} · {job.listing_location},{" "}
@@ -1449,6 +1481,7 @@ export default function HomePage() {
               to={`/jobs/${job.listing_slug}`}
               accentType="job"
               emoji="💼"
+              isFeatured={!!job.is_featured}
               timeStr={timeAgo(job.created_at || job.date_posted)}
               title={job.listing_title}
               subtitle={`${job.company_name} · ${job.listing_location}, ${job.listing_state}`}
@@ -1516,9 +1549,16 @@ export default function HomePage() {
                       fontWeight: 600,
                       color: "#26215C",
                       marginBottom: "3px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      flexWrap: "wrap",
                     }}
                   >
                     {room.listing_title}
+                    {room.is_featured && (
+                      <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>⭐ FEATURED</span>
+                    )}
                   </div>
                   <div
                     style={{
@@ -1560,6 +1600,7 @@ export default function HomePage() {
               to={`/rooms/${room.listing_slug}`}
               accentType="room"
               emoji="🏠"
+              isFeatured={!!room.is_featured}
               timeStr={timeAgo(room.created_at || room.date_posted)}
               title={room.listing_title}
               subtitle={`📍 ${room.listing_location}, ${room.listing_state}`}
@@ -1646,9 +1687,16 @@ export default function HomePage() {
                     fontWeight: 600,
                     color: "#26215C",
                     marginBottom: "3px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    flexWrap: "wrap",
                   }}
                 >
                   {event.listing_title}
+                  {event.is_featured && (
+                    <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>⭐ FEATURED</span>
+                  )}
                 </div>
                 <div style={{ fontSize: "12px", color: "#888" }}>
                   {event.venue ||
@@ -1676,6 +1724,7 @@ export default function HomePage() {
               to={`/events/${event.listing_slug}`}
               accentType="event"
               emoji="🎉"
+              isFeatured={!!event.is_featured}
               timeStr={
                 event.event_date
                   ? new Date(event.event_date).toLocaleDateString("en-AU", {
@@ -1752,9 +1801,16 @@ export default function HomePage() {
                       fontWeight: 600,
                       color: "#26215C",
                       marginBottom: "3px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      flexWrap: "wrap",
                     }}
                   >
                     {notice.listing_title}
+                    {notice.is_featured && (
+                      <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>⭐ FEATURED</span>
+                    )}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888" }}>
                     📍 {notice.listing_location}, {notice.listing_state}
@@ -1783,6 +1839,7 @@ export default function HomePage() {
               to={`/notices/${notice.listing_slug}`}
               accentType="notice"
               emoji="📢"
+              isFeatured={!!notice.is_featured}
               timeStr={timeAgo(notice.created_at || notice.date_posted)}
               title={notice.listing_title}
               subtitle={`📍 ${notice.listing_location}, ${notice.listing_state}`}

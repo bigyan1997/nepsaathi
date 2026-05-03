@@ -24,6 +24,7 @@ class RoomSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='listing.description', read_only=True)
     images = serializers.SerializerMethodField()
     is_wanted = serializers.BooleanField(source='listing.is_wanted', read_only=True)
+    is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     view_count = serializers.SerializerMethodField()
 
     def get_view_count(self, obj):
@@ -78,6 +79,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'description',
             'images',
             'is_wanted',
+            'is_featured',
         )
         read_only_fields = (
             'id',
@@ -99,4 +101,5 @@ class RoomSerializer(serializers.ModelSerializer):
             'view_count',
             'description',
             'is_wanted',
+            'is_featured',
         )

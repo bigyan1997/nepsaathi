@@ -757,6 +757,23 @@ export default function EditListingPage() {
                   }
                 />
               </div>
+              <div>
+                <label style={labelStyle}>Condition</label>
+                <select
+                  style={inputStyle}
+                  value={typeForm.condition || "na"}
+                  onChange={(e) =>
+                    setTypeForm({ ...typeForm, condition: e.target.value })
+                  }
+                >
+                  <option value="na">Not applicable</option>
+                  <option value="new">Brand new</option>
+                  <option value="like_new">Like new</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="poor">Poor</option>
+                </select>
+              </div>
             </div>
             {[
               { key: "is_free", label: "Free" },

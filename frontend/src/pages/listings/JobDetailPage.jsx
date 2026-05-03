@@ -13,6 +13,24 @@ import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
 
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return mins === 1 ? "1 min ago" : `${mins} mins ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "1 day ago";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks === 1) return "1 week ago";
+  if (weeks < 5) return `${weeks} weeks ago`;
+  const months = Math.floor(days / 30);
+  return months === 1 ? "1 month ago" : `${months} months ago`;
+}
+
 /* ── icons ── */
 const IconBack = () => (
   <svg
@@ -595,11 +613,9 @@ export default function JobDetailPage() {
                   style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
                 >
                   {isWanted ? "Looking for work · " : "Posted "}
-                  {new Date(job.created_at).toLocaleDateString("en-AU", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  <span title={job.created_at ? new Date(job.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" }) : ""}>
+                    {timeAgo(job.created_at)}
+                  </span>
                 </div>
               </div>
               {isWanted && (

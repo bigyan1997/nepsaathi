@@ -36,6 +36,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
+    is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
 
@@ -84,6 +85,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'is_under_review',
             'view_count',
             'images',
+            'is_featured',
         )
         read_only_fields = (
             'id',
@@ -104,4 +106,5 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'is_under_review',
             'view_count',
             'description',
+            'is_featured',
         )

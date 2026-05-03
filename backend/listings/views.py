@@ -175,7 +175,7 @@ class MyListingsView(generics.ListAPIView):
             'images', 'job_detail', 'room_detail'
         ).annotate(
             view_count_annotated=Count('views')
-        )
+        ).order_by('-is_featured', '-created_at')
 
 
 class ListingImageUploadView(APIView):
