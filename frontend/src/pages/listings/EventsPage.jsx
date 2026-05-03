@@ -62,6 +62,24 @@ const formatTime = (d) =>
     minute: "2-digit",
   });
 
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return mins === 1 ? "1 min ago" : `${mins} mins ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "1 day ago";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks === 1) return "1 week ago";
+  if (weeks < 5) return `${weeks} weeks ago`;
+  const months = Math.floor(days / 30);
+  return months === 1 ? "1 month ago" : `${months} months ago`;
+}
+
 /* ── Mobile filter drawer ────────────────────────── */
 function MobileFilterDrawer({ filters, onApply, onClose }) {
   const [draft, setDraft] = useState({ ...filters });
@@ -1174,6 +1192,11 @@ export default function EventsPage() {
                   {event.venue && (
                     <div style={{ fontSize: "12px", color: "#888" }}>
                       📍 {event.venue}
+                    </div>
+                  )}
+                  {event.created_at && (
+                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>
+                      {timeAgo(event.created_at)}
                     </div>
                   )}
                 </div>

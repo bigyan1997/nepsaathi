@@ -1457,6 +1457,11 @@ export default function HomePage() {
                     {job.company_name} · {job.listing_location},{" "}
                     {job.listing_state}
                   </div>
+                  {job.created_at && (
+                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>
+                      {timeAgo(job.created_at)}
+                    </div>
+                  )}
                 </div>
               </div>
               <div
@@ -1577,6 +1582,11 @@ export default function HomePage() {
                       <span>· {room.room_type.replace("_", " ")}</span>
                     )}
                   </div>
+                  {room.created_at && (
+                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>
+                      {timeAgo(room.created_at)}
+                    </div>
+                  )}
                 </div>
               </div>
               <div
@@ -1702,6 +1712,11 @@ export default function HomePage() {
                   {event.venue ||
                     `${event.listing_location}, ${event.listing_state}`}
                 </div>
+                {event.created_at && (
+                  <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>
+                    {timeAgo(event.created_at)}
+                  </div>
+                )}
               </div>
               <div
                 style={{
@@ -1816,6 +1831,11 @@ export default function HomePage() {
                     📍 {notice.listing_location}, {notice.listing_state}
                     {notice.category && ` · ${notice.category.replace("_", " ")}`}
                   </div>
+                  {notice.created_at && (
+                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>
+                      {timeAgo(notice.created_at)}
+                    </div>
+                  )}
                 </div>
               </div>
               <div

@@ -1034,6 +1034,11 @@ export default function JobsPage() {
                           : `by ${job.posted_by}`}
                       </span>
                     </div>
+                    {job.created_at && (
+                      <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>
+                        {timeAgo(job.created_at)}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div

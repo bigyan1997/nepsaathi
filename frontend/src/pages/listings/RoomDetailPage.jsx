@@ -385,6 +385,11 @@ export default function RoomDetailPage() {
             >
               📍 {room.listing_location}, {room.listing_state}
             </span>
+            {room.created_at && (
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
+                🕐 Posted {timeAgo(room.created_at)}
+              </div>
+            )}
           </div>
         </div>
 
@@ -655,9 +660,28 @@ export default function RoomDetailPage() {
                     fontSize: "14px",
                     fontWeight: 600,
                     color: "#26215C",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    flexWrap: "wrap",
                   }}
                 >
                   {room.posted_by}
+                  {isWanted && (
+                    <span
+                      style={{
+                        background: "#E87722",
+                        color: "#fff",
+                        fontSize: "10px",
+                        fontWeight: 600,
+                        padding: "3px 10px",
+                        borderRadius: "20px",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      🏘️ Room Seeker
+                    </span>
+                  )}
                 </div>
                 <div
                   style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
@@ -668,21 +692,6 @@ export default function RoomDetailPage() {
                   </span>
                 </div>
               </div>
-              {isWanted && (
-                <span
-                  style={{
-                    background: "#E87722",
-                    color: "#fff",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    padding: "3px 10px",
-                    borderRadius: "20px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  🏘️ Room Seeker
-                </span>
-              )}
             </div>
           </div>
 

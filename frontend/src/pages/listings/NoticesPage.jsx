@@ -1041,6 +1041,7 @@ export default function NoticesPage() {
                     </p>
                     <p style={{ fontSize: "11px", color: "#aaa" }}>
                       Posted by {ann.posted_by}
+                      {ann.created_at && ` · ${timeAgo(ann.created_at)}`}
                     </p>
                   </div>
                   {(ann.price || ann.is_free) && (

@@ -1307,6 +1307,11 @@ export default function RoomsPage() {
                         </span>
                       )}
                     </div>
+                    {room.created_at && (
+                      <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>
+                        {timeAgo(room.created_at)}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div

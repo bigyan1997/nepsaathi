@@ -491,6 +491,11 @@ export default function EventDetailPage() {
                 {formatTime(event.event_date)}
               </span>
             </div>
+            {event.created_at && (
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "6px" }}>
+                🕐 Posted {timeAgo(event.created_at)}
+              </div>
+            )}
           </div>
         </div>
 

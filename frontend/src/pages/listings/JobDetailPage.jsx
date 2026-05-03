@@ -380,6 +380,11 @@ export default function JobDetailPage() {
                 📍 {job.listing_location}, {job.listing_state}
               </span>
             </div>
+            {job.created_at && (
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
+                🕐 Posted {timeAgo(job.created_at)}
+              </div>
+            )}
           </div>
         </div>
 
@@ -605,9 +610,28 @@ export default function JobDetailPage() {
                     fontSize: "14px",
                     fontWeight: 600,
                     color: "#26215C",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    flexWrap: "wrap",
                   }}
                 >
                   {job.posted_by}
+                  {isWanted && (
+                    <span
+                      style={{
+                        background: "#534AB7",
+                        color: "#fff",
+                        fontSize: "10px",
+                        fontWeight: 600,
+                        padding: "3px 10px",
+                        borderRadius: "20px",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      🔍 Job Seeker
+                    </span>
+                  )}
                 </div>
                 <div
                   style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
@@ -618,21 +642,6 @@ export default function JobDetailPage() {
                   </span>
                 </div>
               </div>
-              {isWanted && (
-                <span
-                  style={{
-                    background: "#534AB7",
-                    color: "#fff",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    padding: "3px 10px",
-                    borderRadius: "20px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  🔍 Job Seeker
-                </span>
-              )}
             </div>
           </div>
 

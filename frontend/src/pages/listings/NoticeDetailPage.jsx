@@ -370,6 +370,11 @@ export default function NoticeDetailPage() {
             >
               📍 {notice.listing_location}, {notice.listing_state}
             </span>
+            {notice.created_at && (
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
+                🕐 Posted {timeAgo(notice.created_at)}
+              </div>
+            )}
           </div>
         </div>
 
