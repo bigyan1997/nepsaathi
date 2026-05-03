@@ -189,12 +189,13 @@ class ThrottledLoginView(APIView):
 
         response = LoginView.as_view()(request._request, *args, **kwargs)
 
-        # If login failed (not 200), increment counter
         if response.status_code != 200:
-            cache.set(cache_key, attempts + 1, timeout=300)  # 5 minute lockout
-
-        # If login succeeded, clear the counter
-        if response.status_code == 200:
+            # Atomic increment — avoids race condition under burst requests
+            try:
+                cache.incr(cache_key)
+            except ValueError:
+                cache.set(cache_key, 1, timeout=300)
+        else:
             cache.delete(cache_key)
 
         return response

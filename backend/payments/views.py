@@ -48,7 +48,7 @@ class CreateCheckoutSessionView(APIView):
                 'quantity': 1,
             }],
             mode='payment',
-            success_url=f'{frontend_url}/payment/success?session_id={{CHECKOUT_SESSION_ID}}',
+            success_url=f'{frontend_url}/payment/success?session_id={{CHECKOUT_SESSION_ID}}&listing_id={listing.id}',
             cancel_url=f'{frontend_url}/payment/cancel',
             metadata={
                 'listing_id': str(listing.id),

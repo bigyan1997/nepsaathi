@@ -139,19 +139,18 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
         if user.is_authenticated:
             return Listing.objects.select_related('user').prefetch_related('images').filter(
                 Q(status='active') | Q(user=user)
-            )
+            ).exclude(status='deleted')
         return Listing.objects.select_related('user').prefetch_related('images').filter(
             status='active'
         )
 
     def destroy(self, request, *args, **kwargs):
         listing = self.get_object()
-        # Delete all images from Cloudinary to free storage
-        for image in listing.images.all():
-            image.delete()
-        # Soft delete: mark as deleted instead of removing from DB
+        # Soft delete first so listing is gone even if image cleanup fails
         listing.status = 'deleted'
         listing.save()
+        for image in listing.images.all():
+            image.delete()
 
         return Response(
             {'detail': 'Listing deleted successfully.'},
@@ -596,8 +595,7 @@ class GlobalSearchView(APIView):
 
         if len(query) < 2:
             return Response({
-                'jobs': [], 'rooms': [],
-                'events': [], 'notices': []
+                'jobs': [], 'rooms': [], 'events': [], 'notices': [], 'businesses': []
             })
 
         from django.db.models import Q
@@ -609,9 +607,11 @@ class GlobalSearchView(APIView):
         from events.serializers import EventSerializer
         from announcements.models import Announcement
         from announcements.serializers import AnnouncementSerializer
+        from businesses.serializers import BusinessSerializer
 
         base_filter = Q(listing__title__icontains=query) | Q(listing__location__icontains=query) | Q(listing__description__icontains=query)
         state_filter = Q(listing__state=state) if state else Q()
+        biz_state_filter = Q(state=state) if state else Q()
 
         jobs = Job.objects.filter(
             base_filter & state_filter,
@@ -633,11 +633,18 @@ class GlobalSearchView(APIView):
             listing__status='active'
         ).select_related('listing', 'listing__user')[:5]
 
+        businesses = Business.objects.filter(
+            (Q(business_name__icontains=query) | Q(description__icontains=query) | Q(suburb__icontains=query))
+            & biz_state_filter,
+            is_active=True,
+        ).select_related('owner')[:5]
+
         return Response({
             'jobs': JobSerializer(jobs, many=True, context={'request': request}).data,
             'rooms': RoomSerializer(rooms, many=True, context={'request': request}).data,
             'events': EventSerializer(events, many=True, context={'request': request}).data,
             'notices': AnnouncementSerializer(announcements, many=True, context={'request': request}).data,
+            'businesses': BusinessSerializer(businesses, many=True, context={'request': request}).data,
         })
 
 class RenewListingView(APIView):

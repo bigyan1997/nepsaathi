@@ -37,10 +37,10 @@ urlpatterns = [
     # Auth — login with rate limiting
     path('api/auth/login/', users_views.ThrottledLoginView.as_view(), name='throttled-login'),
 
-    # Auth — register with rate limiting
+    # Auth — register with rate limiting (first match handles POST /api/auth/registration/)
     path('api/auth/registration/', users_views.ThrottledRegisterView.as_view(), name='throttled-register'),
 
-    # Auth — email verification and resend (sub-routes of registration)
+    # Auth — sub-routes only: verify-email/, resend/ (root POST is handled above)
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
 
     # Auth — password reset with rate limiting

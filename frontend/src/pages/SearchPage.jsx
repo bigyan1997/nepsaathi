@@ -37,6 +37,14 @@ const TYPE_CONFIG = {
     border: "#B5D4F4",
     path: "notices",
   },
+  businesses: {
+    emoji: "🏪",
+    label: "Businesses",
+    color: "#FFF1E0",
+    textColor: "#7A3B00",
+    border: "#F0CFA0",
+    path: "businesses",
+  },
 };
 
 export default function SearchPage() {

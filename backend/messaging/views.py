@@ -77,9 +77,8 @@ class ConversationListView(APIView):
 
 class ConversationDetailView(APIView):
     """
-    GET  /api/messages/<id>/       — get messages in a conversation
+    GET  /api/messages/<id>/       — get messages; marks incoming messages as read as a side effect
     POST /api/messages/<id>/send/  — send a message
-    POST /api/messages/<id>/read/  — mark all messages as read
     """
     permission_classes = (permissions.IsAuthenticated,)
 

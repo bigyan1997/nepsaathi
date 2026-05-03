@@ -488,7 +488,7 @@ def send_expiry_warning_email(listing):
         first_name = listing.user.first_name or 'there'
         expires_at = listing.expires_at.strftime('%d %B %Y')
         body = f"""
-<h1 {_H1}>Your listing expires in 3 days &#9201;</h1>
+<h1 {_H1}>Your listing is expiring soon &#9201;</h1>
 <p {_P}>
   Hi <strong>{first_name}</strong>, just a heads up — your listing is expiring soon.
   Renew it in one click to keep it live and visible to the community.
@@ -517,7 +517,7 @@ def send_expiry_warning_email(listing):
         _fire({
             'from':    'NepSaathi <noreply@nepsaathi.com>',
             'to':      [listing.user.email],
-            'subject': f'[NepSaathi] Your listing expires in 3 days — {listing.title}',
+            'subject': f'[NepSaathi] Your listing is expiring soon — {listing.title}',
             'html':    _wrap(body),
         })
     except Exception as e:
