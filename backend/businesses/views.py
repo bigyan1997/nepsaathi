@@ -59,6 +59,8 @@ class BusinessCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
+        if user.is_banned:
+            raise ValidationError('Your account has been suspended.')
 
         # Max 5 businesses per user
         business_count = Business.objects.filter(

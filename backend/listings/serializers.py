@@ -92,6 +92,15 @@ class ListingSerializer(serializers.ModelSerializer):
             return obj.view_count_annotated
         return obj.views.count()
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            data.pop('contact_email', None)
+            data.pop('contact_phone', None)
+            data.pop('contact_whatsapp', None)
+        return data
+
 
 class ListingCreateSerializer(serializers.ModelSerializer):
     """

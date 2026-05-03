@@ -637,7 +637,7 @@ class GlobalSearchView(APIView):
             'jobs': JobSerializer(jobs, many=True, context={'request': request}).data,
             'rooms': RoomSerializer(rooms, many=True, context={'request': request}).data,
             'events': EventSerializer(events, many=True, context={'request': request}).data,
-            'announcements': AnnouncementSerializer(announcements, many=True, context={'request': request}).data,
+            'notices': AnnouncementSerializer(announcements, many=True, context={'request': request}).data,
         })
 
 class RenewListingView(APIView):

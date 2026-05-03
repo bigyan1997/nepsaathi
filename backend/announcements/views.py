@@ -2,7 +2,7 @@
 
 # Create your views here.
 from rest_framework import generics, permissions, filters
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
 from .models import Announcement
@@ -67,13 +67,16 @@ class AnnouncementCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
+        user = self.request.user
+        if user.is_banned:
+            raise ValidationError('Your account has been suspended.')
         listing_id = self.request.data.get('listing')
 
         # Validate listing exists and belongs to user
         try:
             listing = Listing.objects.get(
                 pk=listing_id,
-                user=self.request.user,
+                user=user,
                 listing_type='notice'
             )
         except Listing.DoesNotExist:

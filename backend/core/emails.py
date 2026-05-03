@@ -324,7 +324,7 @@ def send_password_reset_email(user, reset_url):
 
 def send_report_emails(report):
     listing = report.listing
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}"
+    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     admin_review_url = f"{ADMIN_URL}/listings/listingreport/{report.id}/change/"
 
     try:
@@ -397,7 +397,7 @@ def send_report_emails(report):
 
 def send_listing_cleared_email(report):
     listing = report.listing
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}"
+    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     try:
         first_name = listing.user.first_name or 'there'
         body = f"""
@@ -482,7 +482,7 @@ def send_listing_removed_email(report, reason):
 # ─────────────────────────────────────────────────────────────
 
 def send_expiry_warning_email(listing):
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}"
+    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
         first_name = listing.user.first_name or 'there'
@@ -601,7 +601,7 @@ def send_contact_email(name, email, subject, message):
 
 def send_business_report_emails(report):
     business = report.business
-    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
     admin_review_url = f"{ADMIN_URL}/businesses/businessreport/{report.id}/change/"
 
     try:
@@ -675,7 +675,7 @@ def send_business_report_emails(report):
 
 def send_business_cleared_email(report):
     business = report.business
-    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
     try:
         first_name = business.owner.first_name or 'there'
         body = f"""
@@ -721,7 +721,7 @@ def send_business_cleared_email(report):
 # ─────────────────────────────────────────────────────────────
 
 def send_business_verified_email(business):
-    business_url = f"{FRONTEND_URL}/businesses/{business.id}"
+    business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
     try:
         first_name = business.owner.first_name or 'there'
         body = f"""
@@ -892,7 +892,7 @@ def send_user_banned_email(user):
 # ─────────────────────────────────────────────────────────────
 
 def send_listing_renewed_email(listing):
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/listing/{listing.id}"
+    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
         first_name = listing.user.first_name or 'there'
@@ -940,7 +940,7 @@ def send_listing_renewed_email(listing):
 
 def send_saved_search_alert_email(user, listing, saved_search_id):
     listing_type = listing.listing_type
-    listing_url = f"{FRONTEND_URL}/{listing_type}s/listing/{listing.id}"
+    listing_url = f"{FRONTEND_URL}/{listing_type}s/{listing.slug}"
     manage_url = f"{FRONTEND_URL}/saved-searches"
     type_labels = {
         'job': ('Job', '&#128188;', '#EEEDFE'),

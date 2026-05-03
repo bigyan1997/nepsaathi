@@ -72,11 +72,14 @@ class EventCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
+        user = self.request.user
+        if user.is_banned:
+            raise ValidationError('Your account has been suspended.')
         listing_id = self.request.data.get('listing')
         try:
             listing = Listing.objects.get(
                 pk=listing_id,
-                user=self.request.user,
+                user=user,
                 listing_type='event'
             )
         except Listing.DoesNotExist:
