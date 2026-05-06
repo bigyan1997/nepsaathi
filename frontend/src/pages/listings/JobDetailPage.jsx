@@ -12,6 +12,7 @@ import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
+import JsonLd from "../../components/ui/JsonLd";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -141,8 +142,49 @@ export default function JobDetailPage() {
   /* avatar initial */
   const initial = job.posted_by?.[0]?.toUpperCase() || "?";
 
+  const jobTypeMap = {
+    full_time: "FULL_TIME",
+    part_time: "PART_TIME",
+    casual: "OTHER",
+    contract: "CONTRACTOR",
+    internship: "INTERN",
+    volunteer: "VOLUNTEER",
+  };
+
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": job.listing_title,
+        "description": job.description,
+        "datePosted": job.created_at,
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": job.company_name || "NepSaathi",
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": job.location,
+            "addressRegion": job.state,
+            "addressCountry": "AU",
+          },
+        },
+        ...(job.salary && {
+          "baseSalary": {
+            "@type": "MonetaryAmount",
+            "currency": "AUD",
+            "value": {
+              "@type": "QuantitativeValue",
+              "value": Number(job.salary),
+              "unitText": job.salary_type?.toUpperCase() || "YEAR",
+            },
+          },
+        }),
+        "employmentType": jobTypeMap[job.job_type] || "OTHER",
+      }} />
       <style>{`
         .job-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) { .job-grid { grid-template-columns: 1fr !important; } }

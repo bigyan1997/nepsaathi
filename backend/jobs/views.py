@@ -28,11 +28,25 @@ class JobListView(generics.ListAPIView):
 
     def get_queryset(self):
         from django.db.models import Count
-        return Job.objects.filter(
+        qs = Job.objects.filter(
             listing__status='active'
         ).select_related('listing', 'listing__user').annotate(
             view_count_annotated=Count('listing__views')
         )
+        params = self.request.query_params
+        min_salary = params.get('min_salary')
+        max_salary = params.get('max_salary')
+        if min_salary:
+            try:
+                qs = qs.filter(salary__gte=float(min_salary))
+            except ValueError:
+                pass
+        if max_salary:
+            try:
+                qs = qs.filter(salary__lte=float(max_salary))
+            except ValueError:
+                pass
+        return qs
 
 
 class JobCreateView(generics.CreateAPIView):

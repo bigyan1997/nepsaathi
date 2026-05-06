@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Business, BusinessReport, BusinessReview
+from .models import Business, BusinessImage, BusinessReport, BusinessReview
+
+
+class BusinessImageInline(admin.TabularInline):
+    model = BusinessImage
+    extra = 0
+    readonly_fields = ('uploaded_at',)
 
 
 @admin.register(Business)
@@ -26,6 +32,7 @@ class BusinessAdmin(admin.ModelAdmin):
         'is_verified',
         'is_active',
     )
+    inlines = (BusinessImageInline,)
     search_fields = (
         'business_name',
         'suburb',

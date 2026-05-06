@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.throttles import BusinessCreateThrottle
-from .models import Business, BusinessReport, BusinessReview
-from .serializers import BusinessSerializer, BusinessReviewSerializer
+from .models import Business, BusinessImage, BusinessReport, BusinessReview
+from .serializers import BusinessImageSerializer, BusinessSerializer, BusinessReviewSerializer
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -47,7 +47,7 @@ class BusinessListView(generics.ListAPIView):
     def get_queryset(self):
         return Business.objects.filter(
             is_active=True
-        ).select_related('owner')
+        ).select_related('owner').prefetch_related('images')
 
 
 class BusinessCreateView(generics.CreateAPIView):
@@ -143,7 +143,7 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'slug'
 
     def get_queryset(self):
-        return Business.objects.select_related('owner')
+        return Business.objects.select_related('owner').prefetch_related('images')
 
     def destroy(self, request, *args, **kwargs):
         business = self.get_object()
@@ -166,7 +166,7 @@ class MyBusinessesView(generics.ListAPIView):
     def get_queryset(self):
         return Business.objects.filter(
             owner=self.request.user
-        ).select_related('owner')
+        ).select_related('owner').prefetch_related('images')
 
 
 class BusinessReviewListCreateView(APIView):
@@ -225,6 +225,72 @@ class BusinessReviewDeleteView(APIView):
             return Response({'detail': 'Review not found.'}, status=status.HTTP_404_NOT_FOUND)
         review.delete()
         return Response({'detail': 'Review deleted.'}, status=status.HTTP_200_OK)
+
+
+class BusinessImageUploadView(APIView):
+    """
+    POST   /api/businesses/<slug>/images/  — upload images (owner only, max 5)
+    DELETE /api/businesses/<slug>/images/  — delete an image (owner only)
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, slug):
+        try:
+            business = Business.objects.get(slug=slug, owner=request.user)
+        except Business.DoesNotExist:
+            return Response(
+                {'detail': 'Business not found or you do not own it.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        existing_count = business.images.count()
+        if existing_count >= 5:
+            return Response(
+                {'detail': 'Maximum 5 images per business.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        images = request.FILES.getlist('images')
+        if not images:
+            return Response(
+                {'detail': 'No images provided.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        remaining = 5 - existing_count
+        images = images[:remaining]
+
+        has_existing = business.images.exists()
+        uploaded = []
+        for i, image in enumerate(images):
+            if not image.content_type.startswith('image/'):
+                continue
+            if image.size > 5 * 1024 * 1024:
+                continue
+            biz_image = BusinessImage.objects.create(
+                business=business,
+                image=image,
+                is_primary=(i == 0 and not has_existing),
+            )
+            uploaded.append(BusinessImageSerializer(biz_image).data)
+
+        return Response(uploaded, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, slug):
+        image_id = request.data.get('image_id')
+        try:
+            image = BusinessImage.objects.get(
+                pk=image_id,
+                business__slug=slug,
+                business__owner=request.user,
+            )
+            image.delete()
+            return Response({'detail': 'Image deleted.'}, status=status.HTTP_200_OK)
+        except BusinessImage.DoesNotExist:
+            return Response(
+                {'detail': 'Image not found or you do not own it.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class ReportBusinessView(APIView):

@@ -1,11 +1,13 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getBusiness,
   getBusinessReviews,
   addBusinessReview,
   deleteBusinessReview,
+  uploadBusinessImages,
+  deleteBusinessImage,
 } from "../../api/businesses";
 import { getSimilarListings } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
@@ -15,6 +17,7 @@ import ReportButton from "../../components/ui/ReportButton";
 import usePageMeta from "../../hooks/usePageMeta";
 import useIsMobile from "../../hooks/useIsMobile";
 import { useToast } from "../../components/ui/Toast";
+import JsonLd from "../../components/ui/JsonLd";
 
 const CATEGORY_EMOJIS = {
   restaurant: "🍛",
@@ -148,6 +151,9 @@ export default function BusinessDetailPage() {
   const queryClient = useQueryClient();
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const imageInputRef = useRef(null);
 
   const {
     data: business,
@@ -194,6 +200,35 @@ export default function BusinessDetailPage() {
     },
   });
 
+  const uploadImagesMutation = useMutation({
+    mutationFn: (formData) => uploadBusinessImages(slug, formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["business", slug] });
+      addToast("Photos uploaded!", "success");
+    },
+    onError: (err) =>
+      addToast(err?.response?.data?.detail || "Upload failed.", "error"),
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: (imageId) => deleteBusinessImage(slug, imageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["business", slug] });
+      setGalleryIndex(0);
+      addToast("Photo removed.", "info");
+    },
+    onError: () => addToast("Failed to remove photo.", "error"),
+  });
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    const fd = new FormData();
+    files.forEach((f) => fd.append("images", f));
+    uploadImagesMutation.mutate(fd);
+    e.target.value = "";
+  };
+
   usePageMeta(
     business?.business_name ? `${business.business_name} — Business` : null,
     business?.description,
@@ -214,6 +249,29 @@ export default function BusinessDetailPage() {
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": business.business_name,
+        "description": business.description,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": business.address || business.suburb,
+          "addressLocality": business.suburb,
+          "addressRegion": business.state,
+          "postalCode": business.postcode,
+          "addressCountry": "AU",
+        },
+        ...(business.phone && { "telephone": business.phone }),
+        ...(business.website && { "url": business.website }),
+        ...(business.avg_rating && {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": business.avg_rating,
+            "reviewCount": business.review_count,
+          },
+        }),
+      }} />
       <style>{`
         .biz-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) { .biz-grid { grid-template-columns: 1fr !important; } }
@@ -529,6 +587,208 @@ export default function BusinessDetailPage() {
                   ))}
               </div>
             </div>
+
+            {/* Photos */}
+            {(business.images?.length > 0 || business.is_owner) && (
+              <div
+                style={{
+                  background: "#fff",
+                  border: "0.5px solid #e5e5e5",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    background: "#26215C",
+                    padding: "14px 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 700,
+                      color: "#fff",
+                      margin: 0,
+                    }}
+                  >
+                    Photos
+                  </h3>
+                  {business.is_owner && business.images?.length < 5 && (
+                    <>
+                      <input
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        style={{ display: "none" }}
+                        onChange={handleImageUpload}
+                      />
+                      <button
+                        onClick={() => imageInputRef.current?.click()}
+                        disabled={uploadImagesMutation.isPending}
+                        style={{
+                          background: "rgba(255,255,255,0.15)",
+                          border: "1px solid rgba(255,255,255,0.3)",
+                          color: "#fff",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          padding: "5px 12px",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {uploadImagesMutation.isPending ? "Uploading…" : "+ Add photos"}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {business.images?.length > 0 ? (
+                  <div style={{ padding: "16px" }}>
+                    {/* Main image */}
+                    <div
+                      style={{
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                        marginBottom: "10px",
+                        aspectRatio: "16/9",
+                        background: "#f5f4f0",
+                        position: "relative",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setLightboxOpen(true)}
+                    >
+                      <img
+                        src={business.images[galleryIndex]?.image}
+                        alt="Business photo"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                      {business.is_owner && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteImageMutation.mutate(business.images[galleryIndex].id);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: "8px",
+                            right: "8px",
+                            background: "rgba(0,0,0,0.55)",
+                            border: "none",
+                            color: "#fff",
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            padding: "4px 10px",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    {/* Thumbnails */}
+                    {business.images.length > 1 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "8px",
+                          overflowX: "auto",
+                          paddingBottom: "4px",
+                        }}
+                      >
+                        {business.images.map((img, i) => (
+                          <div
+                            key={img.id}
+                            onClick={() => setGalleryIndex(i)}
+                            style={{
+                              width: "64px",
+                              height: "64px",
+                              borderRadius: "8px",
+                              overflow: "hidden",
+                              flexShrink: 0,
+                              cursor: "pointer",
+                              border: i === galleryIndex ? "2px solid #534AB7" : "2px solid transparent",
+                            }}
+                          >
+                            <img
+                              src={img.image}
+                              alt=""
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      padding: "32px",
+                      textAlign: "center",
+                      color: "#aaa",
+                      fontSize: "13px",
+                    }}
+                  >
+                    No photos yet. Add up to 5 photos to showcase your business.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Lightbox */}
+            {lightboxOpen && business.images?.length > 0 && (
+              <div
+                onClick={() => setLightboxOpen(false)}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.88)",
+                  zIndex: 9999,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src={business.images[galleryIndex]?.image}
+                  alt="Business photo"
+                  style={{
+                    maxWidth: "90vw",
+                    maxHeight: "90vh",
+                    objectFit: "contain",
+                    borderRadius: "12px",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <button
+                  onClick={() => setLightboxOpen(false)}
+                  style={{
+                    position: "fixed",
+                    top: "20px",
+                    right: "20px",
+                    background: "rgba(255,255,255,0.15)",
+                    border: "none",
+                    color: "#fff",
+                    fontSize: "22px",
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
             {/* Reviews */}
             <div

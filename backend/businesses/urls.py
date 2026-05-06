@@ -20,6 +20,9 @@ urlpatterns = [
     path('<slug:slug>/reviews/', views.BusinessReviewListCreateView.as_view(), name='business-reviews'),
     path('<slug:slug>/reviews/<int:review_pk>/', views.BusinessReviewDeleteView.as_view(), name='business-review-delete'),
 
+    # Images
+    path('<slug:slug>/images/', views.BusinessImageUploadView.as_view(), name='business-images'),
+
     # Report
     path('<slug:slug>/report/', views.ReportBusinessView.as_view(), name='business-report'),
 ]

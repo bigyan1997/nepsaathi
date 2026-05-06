@@ -40,13 +40,14 @@ class RoomListView(generics.ListAPIView):
         ).select_related('listing', 'listing__user').annotate(
             view_count_annotated=Count('listing__views')
         )
+        params = self.request.query_params
         try:
-            min_price = self.request.query_params.get('min_price')
-            max_price = self.request.query_params.get('max_price')
-            if min_price:
-                queryset = queryset.filter(price__gte=float(min_price))
-            if max_price:
-                queryset = queryset.filter(price__lte=float(max_price))
+            if params.get('min_price'):
+                queryset = queryset.filter(price__gte=float(params['min_price']))
+            if params.get('max_price'):
+                queryset = queryset.filter(price__lte=float(params['max_price']))
+            if params.get('min_bedrooms'):
+                queryset = queryset.filter(bedrooms__gte=int(params['min_bedrooms']))
         except (ValueError, TypeError):
             pass
         return queryset

@@ -130,8 +130,11 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 state: "",
                 min_price: "",
                 max_price: "",
+                min_bedrooms: "",
                 bills_included: "",
                 nepalese_household: "",
+                pets_allowed: "",
+                parking_available: "",
                 ordering: "-listing__is_featured,-listing__created_at",
               }))
             }
@@ -208,6 +211,19 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               />
             </div>
           </div>
+          <div>
+            <div style={lbl}>Min bedrooms</div>
+            <select
+              value={draft.min_bedrooms}
+              onChange={(e) => set("min_bedrooms", e.target.value)}
+              style={sel}
+            >
+              <option value="">Any</option>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <option key={n} value={String(n)}>{n}+</option>
+              ))}
+            </select>
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {[
               {
@@ -225,6 +241,22 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 color: "#534AB7",
                 bg: "#EEEDFE",
                 border: "#AFA9EC",
+              },
+              {
+                key: "pets_allowed",
+                label: "🐾 Pets allowed",
+                sub: "Pets welcome",
+                color: "#85510A",
+                bg: "#FFF1E0",
+                border: "#EFD9C0",
+              },
+              {
+                key: "parking_available",
+                label: "🚗 Parking available",
+                sub: "On-site parking included",
+                color: "#444",
+                bg: "#F5F4F0",
+                border: "#D3D1C7",
               },
             ].map(({ key, label, sub, color, bg, border }) => {
               const on = draft[key] === "true";
@@ -804,9 +836,12 @@ export default function RoomsPage() {
     search: "",
     bills_included: "",
     nepalese_household: "",
+    pets_allowed: "",
+    parking_available: "",
     state: "",
     min_price: "",
     max_price: "",
+    min_bedrooms: "",
     ordering: "-listing__is_featured,-listing__created_at",
   });
   const [page, setPage] = useState(1);
@@ -826,9 +861,12 @@ export default function RoomsPage() {
         room_type: filters.room_type || undefined,
         bills_included: filters.bills_included || undefined,
         nepalese_household: filters.nepalese_household || undefined,
+        pets_allowed: filters.pets_allowed || undefined,
+        parking_available: filters.parking_available || undefined,
         listing__state: filters.state || undefined,
         min_price: filters.min_price || undefined,
         max_price: filters.max_price || undefined,
+        min_bedrooms: filters.min_bedrooms || undefined,
         ordering: filters.ordering || undefined,
         page,
       }),
@@ -864,11 +902,12 @@ export default function RoomsPage() {
     filters.state,
     filters.min_price,
     filters.max_price,
+    filters.min_bedrooms,
     filters.bills_included,
     filters.nepalese_household,
-    filters.ordering !== "-listing__is_featured,-listing__created_at"
-      ? "1"
-      : "",
+    filters.pets_allowed,
+    filters.parking_available,
+    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -1253,9 +1292,29 @@ export default function RoomsPage() {
               background: "#fff",
             }}
           />
+          <select
+            value={filters.min_bedrooms}
+            onChange={(e) => updateFilters({ min_bedrooms: e.target.value })}
+            style={{
+              border: "0.5px solid #ddd",
+              borderRadius: "8px",
+              padding: "9px 12px",
+              fontSize: "13px",
+              outline: "none",
+              background: "#fff",
+              color: "#444",
+            }}
+          >
+            <option value="">Any beds</option>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <option key={n} value={String(n)}>{n}+ beds</option>
+            ))}
+          </select>
           {[
-            { key: "bills_included", label: "Bills incl." },
+            { key: "bills_included", label: "💡 Bills incl." },
             { key: "nepalese_household", label: "🇳🇵 Nepalese" },
+            { key: "pets_allowed", label: "🐾 Pets OK" },
+            { key: "parking_available", label: "🚗 Parking" },
           ].map(({ key, label }) => (
             <label
               key={key}

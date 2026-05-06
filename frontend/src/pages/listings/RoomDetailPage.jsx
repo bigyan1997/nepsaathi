@@ -12,6 +12,7 @@ import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
+import JsonLd from "../../components/ui/JsonLd";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -161,6 +162,27 @@ export default function RoomDetailPage() {
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "RealEstateListing",
+        "name": room.listing_title,
+        "description": room.description,
+        "url": window.location.href,
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": room.location,
+          "addressRegion": room.state,
+          "addressCountry": "AU",
+        },
+        ...(room.price && {
+          "offers": {
+            "@type": "Offer",
+            "price": room.price,
+            "priceCurrency": "AUD",
+            "name": "Weekly rent",
+          },
+        }),
+      }} />
       <style>{`
         .room-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) { .room-grid { grid-template-columns: 1fr !important; } }

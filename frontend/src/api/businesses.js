@@ -44,3 +44,17 @@ export const deleteBusinessReview = async (businessSlug, reviewId) => {
   const response = await api.delete(`/api/businesses/${businessSlug}/reviews/${reviewId}/`);
   return response.data;
 };
+
+export const uploadBusinessImages = async (slug, formData) => {
+  const response = await api.post(`/api/businesses/${slug}/images/`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const deleteBusinessImage = async (slug, imageId) => {
+  const response = await api.delete(`/api/businesses/${slug}/images/`, {
+    data: { image_id: imageId },
+  });
+  return response.data;
+};

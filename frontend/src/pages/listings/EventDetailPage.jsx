@@ -13,6 +13,7 @@ import { trackView } from "../../api/listings";
 import { useEffect, useState } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
+import JsonLd from "../../components/ui/JsonLd";
 
 const CATEGORY_COLORS = {
   cultural: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" },
@@ -239,6 +240,40 @@ export default function EventDetailPage() {
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": event.listing_title,
+        "description": event.description,
+        "startDate": event.event_date,
+        ...(event.event_end_date && { "endDate": event.event_end_date }),
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": event.is_online
+          ? "https://schema.org/OnlineEventAttendanceMode"
+          : "https://schema.org/OfflineEventAttendanceMode",
+        "location": event.is_online
+          ? { "@type": "VirtualLocation", "url": event.event_url || window.location.href }
+          : {
+              "@type": "Place",
+              "name": event.venue || event.location,
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": event.location,
+                "addressRegion": event.state,
+                "addressCountry": "AU",
+              },
+            },
+        "organizer": { "@type": "Organization", "name": event.organiser || "NepSaathi" },
+        "isAccessibleForFree": event.is_free,
+        ...(event.ticket_price && !event.is_free && {
+          "offers": {
+            "@type": "Offer",
+            "price": event.ticket_price,
+            "priceCurrency": "AUD",
+            "availability": "https://schema.org/InStock",
+          },
+        }),
+      }} />
       <style>{`
         .evt-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) {

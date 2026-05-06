@@ -3,16 +3,46 @@ from .models import Listing, ListingImage, SavedListing, ListingReport, SavedSea
 from jobs.serializers import JobSerializer
 from rooms.serializers import RoomSerializer
 from django.db.models import Count
+import cloudinary.utils
+
+
+def _cloudinary_url(public_id, width):
+    url, _ = cloudinary.utils.cloudinary_url(
+        public_id,
+        fetch_format='auto',
+        quality='auto',
+        width=width,
+        crop='limit',
+    )
+    return url
 
 
 class ListingImageSerializer(serializers.ModelSerializer):
     """
     Serializer for listing images.
+    Returns optimized Cloudinary URLs (f_auto, q_auto) with two sizes:
+      - image: 800px wide for detail views
+      - thumbnail: 400px wide for list/card views
     """
+    image = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
+
     class Meta:
         model = ListingImage
-        fields = ('id', 'image', 'is_primary', 'uploaded_at')
+        fields = ('id', 'image', 'thumbnail', 'is_primary', 'uploaded_at')
         read_only_fields = ('id', 'uploaded_at')
+
+    def get_image(self, obj):
+        try:
+            return _cloudinary_url(obj.image.public_id, 800)
+        except Exception:
+            return str(obj.image)
+
+    def get_thumbnail(self, obj):
+        try:
+            return _cloudinary_url(obj.image.public_id, 400)
+        except Exception:
+            return str(obj.image)
 
 
 class ListingSerializer(serializers.ModelSerializer):

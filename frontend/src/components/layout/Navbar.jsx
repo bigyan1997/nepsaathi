@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAuthStore from "../../store/authStore";
 import { logout as logoutApi } from "../../api/auth";
 import { getUnreadCount } from "../../api/messages";
+import { useToast } from "../ui/Toast";
 
 const NAV_LINKS = [
   { to: "/jobs", label: "Jobs" },
@@ -20,16 +21,45 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const prevUnreadRef = useRef(null);
+  const { addToast } = useToast();
 
   const { data: unreadData } = useQuery({
     queryKey: ["unread-count"],
     queryFn: getUnreadCount,
     enabled: isAuthenticated,
-    refetchInterval: 60000,
-    refetchOnWindowFocus: false,
-    staleTime: 55000,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
+    staleTime: 25000,
   });
   const unreadCount = unreadData?.unread_count || 0;
+
+  // Show toast when new messages arrive while not on the inbox/conversation pages
+  useEffect(() => {
+    if (prevUnreadRef.current === null) {
+      prevUnreadRef.current = unreadCount;
+      return;
+    }
+    const isOnMessagesPage =
+      location.pathname.startsWith("/messages") ||
+      location.pathname.startsWith("/inbox");
+    if (unreadCount > prevUnreadRef.current && !isOnMessagesPage) {
+      addToast(
+        <span>
+          💬 You have a new message —{" "}
+          <a
+            href="/inbox"
+            style={{ color: "#fff", fontWeight: 700, textDecoration: "underline" }}
+          >
+            View inbox
+          </a>
+        </span>,
+        "info",
+        6000,
+      );
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

@@ -130,6 +130,9 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 job_type: "",
                 state: "",
                 ordering: "-listing__is_featured,-listing__created_at",
+                min_salary: "",
+                max_salary: "",
+                is_urgent: "",
               }))
             }
             style={{
@@ -179,6 +182,49 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <div style={lbl}>Salary range (AUD)</div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="number"
+                placeholder="Min"
+                value={draft.min_salary}
+                onChange={(e) => set("min_salary", e.target.value)}
+                style={{ ...sel, width: "50%" }}
+                min="0"
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                value={draft.max_salary}
+                onChange={(e) => set("max_salary", e.target.value)}
+                style={{ ...sel, width: "50%" }}
+                min="0"
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={draft.is_urgent === "true"}
+                onChange={(e) =>
+                  set("is_urgent", e.target.checked ? "true" : "")
+                }
+                style={{ width: "18px", height: "18px", cursor: "pointer" }}
+              />
+              <span style={{ fontSize: "14px", fontWeight: 600, color: "#444" }}>
+                🔥 Urgent jobs only
+              </span>
+            </label>
           </div>
           <div>
             <div style={lbl}>Sort by</div>
@@ -631,6 +677,9 @@ export default function JobsPage() {
     search: "",
     state: "",
     ordering: "-listing__is_featured,-listing__created_at",
+    min_salary: "",
+    max_salary: "",
+    is_urgent: "",
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
@@ -649,6 +698,9 @@ export default function JobsPage() {
         search: filters.search || undefined,
         listing__state: filters.state || undefined,
         ordering: filters.ordering || undefined,
+        min_salary: filters.min_salary || undefined,
+        max_salary: filters.max_salary || undefined,
+        is_urgent: filters.is_urgent || undefined,
         page,
       }),
   });
@@ -681,9 +733,10 @@ export default function JobsPage() {
   const activeFilterCount = [
     filters.job_type,
     filters.state,
-    filters.ordering !== "-listing__is_featured,-listing__created_at"
-      ? "1"
-      : "",
+    filters.min_salary,
+    filters.max_salary,
+    filters.is_urgent,
+    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -1024,6 +1077,58 @@ export default function JobsPage() {
               </option>
             ))}
           </select>
+          <input
+            type="number"
+            placeholder="Min salary"
+            value={filters.min_salary}
+            onChange={(e) => updateFilters({ min_salary: e.target.value })}
+            style={{
+              width: "110px",
+              border: "0.5px solid #ddd",
+              borderRadius: "8px",
+              padding: "9px 12px",
+              fontSize: "13px",
+              outline: "none",
+              background: "#fff",
+            }}
+            min="0"
+          />
+          <input
+            type="number"
+            placeholder="Max salary"
+            value={filters.max_salary}
+            onChange={(e) => updateFilters({ max_salary: e.target.value })}
+            style={{
+              width: "110px",
+              border: "0.5px solid #ddd",
+              borderRadius: "8px",
+              padding: "9px 12px",
+              fontSize: "13px",
+              outline: "none",
+              background: "#fff",
+            }}
+            min="0"
+          />
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              cursor: "pointer",
+              fontSize: "13px",
+              color: "#444",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={filters.is_urgent === "true"}
+              onChange={(e) =>
+                updateFilters({ is_urgent: e.target.checked ? "true" : "" })
+              }
+            />
+            🔥 Urgent
+          </label>
           <SaveSearchButton
             listingType="job"
             filters={{ search: filters.search, state: filters.state }}

@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from cloudinary.models import CloudinaryField
+import cloudinary.uploader
 
 
 class Business(models.Model):
@@ -134,6 +136,32 @@ class Business(models.Model):
         if not self.slug:
             self.slug = f"{slugify(self.business_name)}-{self.id}"
             super().save(update_fields=['slug'])
+
+
+class BusinessImage(models.Model):
+    business = models.ForeignKey(
+        Business,
+        on_delete=models.CASCADE,
+        related_name='images',
+    )
+    image = CloudinaryField('image', folder='nepsaathi/businesses/')
+    is_primary = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'business_images'
+
+    def __str__(self):
+        return f'Image for {self.business.business_name}'
+
+    def delete(self, *args, **kwargs):
+        try:
+            public_id = self.image.public_id
+            if public_id:
+                cloudinary.uploader.destroy(public_id)
+        except Exception:
+            pass
+        super().delete(*args, **kwargs)
 
 
 class BusinessReport(models.Model):

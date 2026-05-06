@@ -1,6 +1,40 @@
 from rest_framework import serializers
 from django.db.models import Avg
-from .models import Business, BusinessReview
+from .models import Business, BusinessImage, BusinessReview
+import cloudinary.utils
+
+
+def _cloudinary_url(public_id, width):
+    url, _ = cloudinary.utils.cloudinary_url(
+        public_id,
+        fetch_format='auto',
+        quality='auto',
+        width=width,
+        crop='limit',
+    )
+    return url
+
+
+class BusinessImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BusinessImage
+        fields = ('id', 'image', 'thumbnail', 'is_primary', 'uploaded_at')
+        read_only_fields = ('id', 'uploaded_at')
+
+    def get_image(self, obj):
+        try:
+            return _cloudinary_url(obj.image.public_id, 800)
+        except Exception:
+            return str(obj.image)
+
+    def get_thumbnail(self, obj):
+        try:
+            return _cloudinary_url(obj.image.public_id, 400)
+        except Exception:
+            return str(obj.image)
 
 
 class BusinessSerializer(serializers.ModelSerializer):
@@ -20,6 +54,7 @@ class BusinessSerializer(serializers.ModelSerializer):
     is_owner = serializers.SerializerMethodField()
     avg_rating = serializers.SerializerMethodField()
     review_count = serializers.SerializerMethodField()
+    images = BusinessImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Business
@@ -46,6 +81,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             'operating_hours',
             'is_verified',
             'is_active',
+            'images',
             'avg_rating',
             'review_count',
             'created_at',
@@ -58,6 +94,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             'owner_name',
             'owner_email',
             'is_owner',
+            'images',
             'avg_rating',
             'review_count',
             'created_at',
