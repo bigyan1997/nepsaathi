@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { createBusiness } from "../../api/businesses";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { createBusiness, uploadBusinessImages } from "../../api/businesses";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
 import { STATES } from "../../utils/constants";
@@ -105,6 +105,49 @@ export default function RegisterBusinessPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [step, setStep] = useState(1);
+  const [createdSlug, setCreatedSlug] = useState(null);
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [photoError, setPhotoError] = useState("");
+  const fileInputRef = useRef(null);
+
+  const uploadMutation = useMutation({
+    mutationFn: (fd) => uploadBusinessImages(createdSlug, fd),
+    onSuccess: () => navigate(`/businesses/${createdSlug}`),
+    onError: () => {
+      addToast("Upload failed — you can add photos later from your listing.", "error");
+      navigate(`/businesses/${createdSlug}`);
+    },
+  });
+
+  const handlePhotoSelect = (files) => {
+    const valid = files.filter((f) => {
+      if (!f.type.startsWith("image/")) { setPhotoError("Only image files allowed."); return false; }
+      if (f.size > 5 * 1024 * 1024) { setPhotoError("Each image must be under 5MB."); return false; }
+      return true;
+    });
+    if (valid.length + photoFiles.length > 5) { setPhotoError("Maximum 5 photos."); return; }
+    setPhotoError("");
+    setPhotoFiles((p) => [...p, ...valid]);
+    valid.forEach((f) => {
+      const reader = new FileReader();
+      reader.onload = (e) => setPhotoPreviews((p) => [...p, { url: e.target.result, id: `${f.name}-${Date.now()}` }]);
+      reader.readAsDataURL(f);
+    });
+  };
+
+  const removePhoto = (i) => {
+    setPhotoFiles((p) => p.filter((_, idx) => idx !== i));
+    setPhotoPreviews((p) => p.filter((_, idx) => idx !== i));
+  };
+
+  const handlePhotoUpload = () => {
+    if (!photoFiles.length) { navigate(`/businesses/${createdSlug}`); return; }
+    const fd = new FormData();
+    photoFiles.forEach((f) => fd.append("images", f));
+    uploadMutation.mutate(fd);
+  };
 
   const [form, setForm] = useState({
     business_name: "",
@@ -146,8 +189,9 @@ export default function RegisterBusinessPage() {
       });
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
       queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
-      addToast("Business registered successfully! 🎉", "success");
-      navigate(`/businesses/${business.slug}`);
+      addToast("Business registered! Now add some photos.", "success");
+      setCreatedSlug(business.slug);
+      setStep(2);
     } catch (err) {
       const errors = err.response?.data;
       if (errors) {
@@ -163,6 +207,81 @@ export default function RegisterBusinessPage() {
       setLoading(false);
     }
   };
+
+  /* ── Step 2: Photo upload ── */
+  if (step === 2 && createdSlug) {
+    return (
+      <div style={{ maxWidth: "680px", margin: "0 auto", padding: "28px", background: "#F5F4F0", minHeight: "100vh" }}>
+        <div style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "16px", overflow: "hidden" }}>
+          <div style={{ background: "#26215C", padding: "20px 24px" }}>
+            <div style={{ fontSize: "16px", fontWeight: 700, color: "#fff", marginBottom: "4px" }}>Add photos</div>
+            <div style={{ fontSize: "13px", color: "#AFA9EC" }}>Photos help your business stand out — you can skip this step</div>
+          </div>
+          <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); handlePhotoSelect(Array.from(e.dataTransfer.files)); }}
+              style={{
+                border: "1.5px dashed #AFA9EC", borderRadius: "12px", padding: "32px",
+                textAlign: "center", cursor: "pointer", background: "#EEEDFE",
+              }}
+            >
+              <div style={{ fontSize: "32px", marginBottom: "8px" }}>📷</div>
+              <div style={{ fontSize: "14px", fontWeight: 500, color: "#534AB7", marginBottom: "4px" }}>
+                Click to upload or drag and drop
+              </div>
+              <div style={{ fontSize: "12px", color: "#888" }}>PNG, JPG up to 5MB each · Max 5 photos</div>
+              <input ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+                onChange={(e) => handlePhotoSelect(Array.from(e.target.files))} />
+            </div>
+
+            {photoError && (
+              <div style={{ background: "#FCEBEB", border: "0.5px solid #F09595", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#A32D2D" }}>
+                {photoError}
+              </div>
+            )}
+
+            {photoPreviews.length > 0 && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "10px" }}>
+                {photoPreviews.map((p, i) => (
+                  <div key={p.id} style={{ position: "relative" }}>
+                    <img src={p.url} alt="" style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px", border: i === 0 ? "2px solid #534AB7" : "0.5px solid #e5e5e5" }} />
+                    {i === 0 && (
+                      <div style={{ position: "absolute", bottom: "4px", left: "4px", background: "#534AB7", color: "#fff", fontSize: "10px", fontWeight: 500, padding: "2px 6px", borderRadius: "4px" }}>
+                        Main photo
+                      </div>
+                    )}
+                    <button onClick={() => removePhoto(i)} style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", cursor: "pointer", fontSize: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={() => navigate(`/businesses/${createdSlug}`)}
+                style={{ flex: 1, background: "#fff", color: "#555", border: "0.5px solid #ccc", borderRadius: "8px", padding: "12px", fontSize: "14px", cursor: "pointer" }}
+              >
+                Skip for now
+              </button>
+              <button
+                onClick={handlePhotoUpload}
+                disabled={uploadMutation.isPending || photoFiles.length === 0}
+                style={{
+                  flex: 2, background: uploadMutation.isPending || photoFiles.length === 0 ? "#ccc" : "#534AB7",
+                  color: "#fff", border: "none", borderRadius: "8px", padding: "12px",
+                  fontSize: "14px", fontWeight: 500, cursor: uploadMutation.isPending || photoFiles.length === 0 ? "not-allowed" : "pointer",
+                }}
+              >
+                {uploadMutation.isPending ? "Uploading…" : `Upload ${photoFiles.length} photo${photoFiles.length !== 1 ? "s" : ""}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
