@@ -4,10 +4,21 @@ const SITE_NAME = "NepSaathi";
 const DEFAULT_TITLE = "NepSaathi — नेपसाथी | Jobs, Rooms & Community for Nepalese Australians";
 const DEFAULT_DESC =
   "Find Nepalese community listings in Australia — jobs, rooms, events, businesses and more on NepSaathi.";
+const DEFAULT_CANONICAL = "https://www.nepsaathi.com/";
 
 function setMeta(selector, attr, value) {
   let el = document.querySelector(selector);
   if (el) el.setAttribute(attr, value);
+}
+
+function setCanonical(href) {
+  let el = document.querySelector('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement("link");
+    el.rel = "canonical";
+    document.head.appendChild(el);
+  }
+  el.href = href;
 }
 
 export default function usePageMeta(title, description) {
@@ -16,6 +27,9 @@ export default function usePageMeta(title, description) {
     const metaDesc = description
       ? description.replace(/\s+/g, " ").trim().slice(0, 155)
       : DEFAULT_DESC;
+    const canonicalUrl = title
+      ? window.location.origin + window.location.pathname
+      : DEFAULT_CANONICAL;
 
     const prevTitle = document.title;
     const prevDesc = document.querySelector('meta[name="description"]')?.getAttribute("content") ?? "";
@@ -24,14 +38,16 @@ export default function usePageMeta(title, description) {
     const prevOgUrl = document.querySelector('meta[property="og:url"]')?.getAttribute("content") ?? "";
     const prevTwTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute("content") ?? "";
     const prevTwDesc = document.querySelector('meta[name="twitter:description"]')?.getAttribute("content") ?? "";
+    const prevCanonical = document.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? DEFAULT_CANONICAL;
 
     document.title = fullTitle;
     setMeta('meta[name="description"]', "content", metaDesc);
     setMeta('meta[property="og:title"]', "content", fullTitle);
     setMeta('meta[property="og:description"]', "content", metaDesc);
-    setMeta('meta[property="og:url"]', "content", window.location.href);
+    setMeta('meta[property="og:url"]', "content", canonicalUrl);
     setMeta('meta[name="twitter:title"]', "content", fullTitle);
     setMeta('meta[name="twitter:description"]', "content", metaDesc);
+    setCanonical(canonicalUrl);
 
     return () => {
       document.title = prevTitle;
@@ -41,6 +57,7 @@ export default function usePageMeta(title, description) {
       setMeta('meta[property="og:url"]', "content", prevOgUrl);
       setMeta('meta[name="twitter:title"]', "content", prevTwTitle);
       setMeta('meta[name="twitter:description"]', "content", prevTwDesc);
+      setCanonical(prevCanonical);
     };
   }, [title, description]);
 }
