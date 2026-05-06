@@ -114,7 +114,8 @@ class Listing(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if not self.slug:
-            self.slug = f"{slugify(self.title)}-{self.id}"
+            base = slugify(self.title) or 'listing'
+            self.slug = f"{base}-{self.id}"
             super().save(update_fields=['slug'])
 
     def delete(self, *args, **kwargs):
@@ -253,6 +254,7 @@ class ListingView(models.Model):
     viewed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table = 'listing_views'
         indexes = [
             models.Index(fields=['listing', 'user']),
             models.Index(fields=['listing', 'ip_address']),

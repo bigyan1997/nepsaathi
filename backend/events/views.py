@@ -43,7 +43,8 @@ class EventListView(generics.ListAPIView):
         queryset = Event.objects.filter(
             listing__status='active'
         ).select_related('listing', 'listing__user').annotate(
-            view_count_annotated=Count('listing__views')
+            view_count_annotated=Count('listing__views'),
+            rsvp_count_annotated=Count('rsvps'),
         )
 
         # Filter upcoming or past events

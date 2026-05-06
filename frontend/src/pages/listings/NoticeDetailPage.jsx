@@ -7,7 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
@@ -124,10 +124,9 @@ export default function NoticeDetailPage() {
     retry: false,
   });
 
-  usePageTitle(
-    notice?.listing_title
-      ? `${notice.listing_title} — Notice`
-      : "Notice",
+  usePageMeta(
+    notice?.listing_title ? `${notice.listing_title} — Notice` : null,
+    notice?.description,
   );
 
   useEffect(() => {
@@ -792,8 +791,8 @@ export default function NoticeDetailPage() {
                     >
                       Sign in to view contact details
                     </p>
-                    <a
-                      href="/login"
+                    <Link
+                      to="/login"
                       style={{
                         display: "block",
                         textAlign: "center",
@@ -807,7 +806,7 @@ export default function NoticeDetailPage() {
                       }}
                     >
                       Sign in →
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>

@@ -3,6 +3,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
+from listings.throttles import BusinessCreateThrottle
 from .models import Business, BusinessReport, BusinessReview
 from .serializers import BusinessSerializer, BusinessReviewSerializer
 
@@ -53,9 +54,11 @@ class BusinessCreateView(generics.CreateAPIView):
     """
     POST /api/businesses/create/
     Register a new business.
+    Throttled: 3 requests per hour per user.
     """
     serializer_class = BusinessSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (BusinessCreateThrottle,)
 
     def perform_create(self, serializer):
         user = self.request.user

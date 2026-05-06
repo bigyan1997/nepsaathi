@@ -7,7 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
@@ -119,8 +119,9 @@ export default function RoomDetailPage() {
     retry: false,
   });
 
-  usePageTitle(
-    room?.listing_title ? `${room.listing_title} — Room` : "Room for Rent",
+  usePageMeta(
+    room?.listing_title ? `${room.listing_title} — Room` : null,
+    room?.description,
   );
 
   useEffect(() => {
@@ -927,8 +928,8 @@ export default function RoomDetailPage() {
                         ? "Sign in to contact this room seeker"
                         : "Sign in to contact the landlord"}
                     </p>
-                    <a
-                      href="/login"
+                    <Link
+                      to="/login"
                       style={{
                         display: "block",
                         textAlign: "center",
@@ -942,7 +943,7 @@ export default function RoomDetailPage() {
                       }}
                     >
                       Sign in →
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>

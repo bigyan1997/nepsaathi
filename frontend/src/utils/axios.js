@@ -55,7 +55,6 @@ api.interceptors.response.use(
       if (!refreshToken) {
         if (localStorage.getItem("nepsaathi_access_token")) {
           clearAuth();
-          window.location.href = "/login";
         }
         return Promise.reject(error);
       }
@@ -94,7 +93,6 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         clearAuth();
-        window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -106,7 +104,6 @@ api.interceptors.response.use(
       const url = error.config?.url;
       if (url?.includes("/api/users/profile")) {
         clearAuth();
-        window.location.href = "/login";
       }
     }
 

@@ -23,7 +23,10 @@ const TABS = [
 ];
 
 const SORT_OPTIONS = [
-  { value: "-listing__is_featured,-listing__created_at", label: "Featured first" },
+  {
+    value: "-listing__is_featured,-listing__created_at",
+    label: "Featured first",
+  },
   { value: "-listing__created_at", label: "Newest first" },
   { value: "listing__created_at", label: "Oldest first" },
   { value: "salary", label: "Salary ↑" },
@@ -44,7 +47,7 @@ function timeAgo(dateStr) {
 }
 
 /* ── Mobile filter drawer ────────────────────────── */
-function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
+function MobileFilterDrawer({ filters, onApply, onClose }) {
   const [draft, setDraft] = useState({ ...filters });
   const set = (k, v) => setDraft((p) => ({ ...p, [k]: v }));
   const sel = {
@@ -214,6 +217,216 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Mobile card — Option B ───────────────────────── */
+function JobMobileCard({ job }) {
+  const isWanted = job.is_wanted;
+  const headerBg = isWanted ? "#EEEDFE" : "#F0EFF9";
+  return (
+    <Link
+      to={`/jobs/${job.listing_slug}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+        textDecoration: "none",
+        transition: "box-shadow 0.15s",
+        height: "100%",
+      }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(83,74,183,0.12)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+    >
+      {/* Strip */}
+      <div
+        style={{
+          background: headerBg,
+          height: "130px",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <span style={{ fontSize: "36px" }}>{isWanted ? "🔍" : "💼"}</span>
+
+        {/* Salary — top right */}
+        <div
+          style={{ position: "absolute", top: "8px", right: "8px", zIndex: 2 }}
+        >
+          <span
+            style={{
+              background: "rgba(255,255,255,0.95)",
+              color: "#3C3489",
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "3px 8px",
+              borderRadius: "20px",
+              whiteSpace: "nowrap",
+              display: "block",
+            }}
+          >
+            {job.salary_display}
+          </span>
+        </div>
+
+        {/* Badges — bottom left */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "8px",
+            left: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            zIndex: 2,
+          }}
+        >
+          {job.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg,#E87722,#534AB7)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
+          {isWanted && (
+            <span
+              style={{
+                background: "rgba(255,255,255,0.92)",
+                color: "#534AB7",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              🔍 Seeker
+            </span>
+          )}
+          {job.is_urgent && !isWanted && (
+            <span
+              style={{
+                background: "#FCEBEB",
+                color: "#A32D2D",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              🔴 Urgent
+            </span>
+          )}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: "#534AB7",
+            opacity: 0.4,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+        }}
+      >
+        <div style={{ fontSize: "10px", color: "#534AB7", fontWeight: 600 }}>
+          {timeAgo(job.created_at || job.date_posted)}
+        </div>
+        <div
+          style={{
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.3,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {job.listing_title}
+        </div>
+        <div
+          style={{
+            fontSize: "11px",
+            color: "#777",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {job.company_name ? `${job.company_name} · ` : ""}📍{" "}
+          {job.listing_location}, {job.listing_state}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: "4px",
+            flexWrap: "wrap",
+            marginTop: "2px",
+          }}
+        >
+          {job.job_type && (
+            <span
+              style={{
+                background: "#EEEDFE",
+                color: "#3C3489",
+                fontSize: "10px",
+                fontWeight: 500,
+                padding: "2px 6px",
+                borderRadius: "6px",
+              }}
+            >
+              {job.job_type.replace("_", " ")}
+            </span>
+          )}
+          {isWanted && (
+            <span
+              style={{
+                background: "#F0EFF9",
+                color: "#534AB7",
+                fontSize: "10px",
+                fontWeight: 500,
+                padding: "2px 6px",
+                borderRadius: "6px",
+              }}
+            >
+              Seeking
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -468,7 +681,9 @@ export default function JobsPage() {
   const activeFilterCount = [
     filters.job_type,
     filters.state,
-    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at"
+      ? "1"
+      : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -492,22 +707,21 @@ export default function JobsPage() {
     <>
       <style>{`
         .jb-desktop { display: none !important; }
-        .jb-mobile  { display: flex !important; }
+        .jb-mobile  { display: grid !important; }
         .jb-fdesk   { display: none !important; }
         .jb-fmob    { display: flex !important; }
         .jb-tabs::-webkit-scrollbar { display: none; }
         @media (min-width: 768px) {
-          .jb-mobile { display: none !important; }
-          .jb-desktop{ display: grid !important; }
-          .jb-fmob   { display: none !important; }
-          .jb-fdesk  { display: flex !important; }
+          .jb-mobile  { display: none !important; }
+          .jb-desktop { display: grid !important; }
+          .jb-fmob    { display: none !important; }
+          .jb-fdesk   { display: flex !important; }
         }
       `}</style>
 
       {drawerOpen && (
         <MobileFilterDrawer
           filters={filters}
-          resultCount={filteredResults.length}
           onApply={(d) => {
             setPage(1);
             setFilters(d);
@@ -516,11 +730,17 @@ export default function JobsPage() {
         />
       )}
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        <div style={{ marginBottom: "18px" }}>
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "20px 16px 28px",
+        }}
+      >
+        <div style={{ marginBottom: "16px" }}>
           <h1
             style={{
-              fontSize: "26px",
+              fontSize: "24px",
               fontWeight: 700,
               color: "#26215C",
               marginBottom: "4px",
@@ -533,14 +753,14 @@ export default function JobsPage() {
           </p>
         </div>
 
-        {/* Tabs: horizontal scroll */}
+        {/* Tabs */}
         <div
           className="jb-tabs"
           style={{
             overflowX: "auto",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
-            marginBottom: "16px",
+            marginBottom: "14px",
           }}
         >
           <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
@@ -595,7 +815,7 @@ export default function JobsPage() {
           </div>
         </div>
 
-        {/* Mobile: search + filter button */}
+        {/* Mobile: search + filter */}
         <div className="jb-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
@@ -654,11 +874,11 @@ export default function JobsPage() {
           </button>
         </div>
 
-        {/* Active filter chips (mobile) */}
+        {/* Active chips (mobile) */}
         {activeChips.length > 0 && (
           <div
             className="jb-fmob"
-            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}
           >
             {activeChips.map(({ key, label, color, bg, border }) => (
               <button
@@ -706,7 +926,27 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Desktop: full filter bar */}
+        {/* Mobile: count + save */}
+        <div
+          className="jb-fmob"
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "14px",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null
+              ? `${data.count} result${data.count !== 1 ? "s" : ""} found`
+              : ""}
+          </span>
+          <SaveSearchButton
+            listingType="job"
+            filters={{ search: filters.search, state: filters.state }}
+          />
+        </div>
+
+        {/* Desktop filters */}
         <div
           className="jb-fdesk"
           style={{ gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}
@@ -790,20 +1030,6 @@ export default function JobsPage() {
           />
         </div>
 
-        {/* Mobile: results count + save search */}
-        <div
-          className="jb-fmob"
-          style={{ justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
-        >
-          <span style={{ fontSize: "12px", color: "#888" }}>
-            {data?.count != null ? `${data.count} result${data.count !== 1 ? "s" : ""} found` : ""}
-          </span>
-          <SaveSearchButton
-            listingType="job"
-            filters={{ search: filters.search, state: filters.state }}
-          />
-        </div>
-
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "12px" }}
@@ -813,7 +1039,6 @@ export default function JobsPage() {
             ))}
           </div>
         )}
-
         {error && (
           <div
             style={{
@@ -828,7 +1053,6 @@ export default function JobsPage() {
             Failed to load jobs. Please try again.
           </div>
         )}
-
         {!isLoading && !isFetching && filteredResults.length === 0 && (
           <div
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
@@ -850,220 +1074,22 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Mobile list rows */}
+        {/* Mobile: 2-col card grid */}
         <div
           className="jb-mobile"
           style={{
-            flexDirection: "column",
+            gridTemplateColumns: "repeat(2, 1fr)",
             gap: "10px",
             opacity: isFetching && page === 1 ? 0.5 : 1,
             transition: "opacity 0.2s",
           }}
         >
           {filteredResults.map((job) => (
-            <Link
-              key={job.id}
-              to={`/jobs/${job.listing_slug}`}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #e5e5e5",
-                borderLeft: job.is_wanted
-                  ? "3px solid #534AB7"
-                  : job.is_featured
-                    ? "3px solid #E87722"
-                    : "0.5px solid #e5e5e5",
-                borderRadius: "12px",
-                padding: "14px 16px",
-                textDecoration: "none",
-                display: "block",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow =
-                  "0 2px 12px rgba(83,74,183,0.1)")
-              }
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  gap: "12px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    alignItems: "flex-start",
-                    flex: 1,
-                    minWidth: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "42px",
-                      height: "42px",
-                      borderRadius: "10px",
-                      background: job.is_wanted ? "#EEEDFE" : "#F5F4F0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "20px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {job.is_wanted ? "🔍" : "💼"}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    {(job.is_featured || job.is_wanted || job.is_urgent) && (
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "5px",
-                          flexWrap: "wrap",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        {job.is_featured && (
-                          <span
-                            style={{
-                              background:
-                                "linear-gradient(135deg,#E87722,#534AB7)",
-                              color: "#fff",
-                              fontSize: "9px",
-                              fontWeight: 700,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            ⭐ FEATURED
-                          </span>
-                        )}
-                        {job.is_wanted && (
-                          <span
-                            style={{
-                              background: "#EEEDFE",
-                              color: "#534AB7",
-                              fontSize: "9px",
-                              fontWeight: 700,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            🔍 LOOKING FOR WORK
-                          </span>
-                        )}
-                        {job.is_urgent && !job.is_wanted && (
-                          <span
-                            style={{
-                              background: "#FCEBEB",
-                              color: "#A32D2D",
-                              fontSize: "9px",
-                              fontWeight: 700,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            🔴 URGENT
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#26215C",
-                        marginBottom: "3px",
-                        lineHeight: 1.3,
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {job.listing_title}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#777",
-                        marginBottom: "6px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {job.is_wanted
-                        ? `📍 ${job.listing_location}, ${job.listing_state}`
-                        : `${job.company_name ? `${job.company_name} · ` : ""}📍 ${job.listing_location}, ${job.listing_state}`}
-                    </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "6px",
-                        alignItems: "center",
-                        minWidth: 0,
-                      }}
-                    >
-                      <span
-                        style={{
-                          background: "#F0EFF9",
-                          color: "#534AB7",
-                          fontSize: "11px",
-                          fontWeight: 500,
-                          padding: "2px 9px",
-                          borderRadius: "8px",
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {job.job_type?.replace("_", " ")}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "11px",
-                          color: "#aaa",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          minWidth: 0,
-                        }}
-                      >
-                        ·{" "}
-                        {job.is_wanted
-                          ? `Seeking · ${job.posted_by}`
-                          : `by ${job.posted_by}`}
-                      </span>
-                    </div>
-                    {job.created_at && (
-                      <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>
-                        {timeAgo(job.created_at)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    background: "#EEEDFE",
-                    color: "#3C3489",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    padding: "5px 10px",
-                    borderRadius: "20px",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  {job.salary_display}
-                </div>
-              </div>
-            </Link>
+            <JobMobileCard key={job.id} job={job} />
           ))}
         </div>
 
-        {/* Desktop card grid */}
+        {/* Desktop: 3-col grid */}
         <div
           className="jb-desktop"
           style={{
@@ -1079,7 +1105,7 @@ export default function JobsPage() {
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "20px" }}>
+          <div style={{ textAlign: "center", paddingTop: "24px" }}>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={isFetching}

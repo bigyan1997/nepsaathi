@@ -7,7 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
@@ -112,8 +112,9 @@ export default function JobDetailPage() {
     queryFn: () => getJobByListing(slug),
   });
 
-  usePageTitle(
-    job?.listing_title ? `${job.listing_title} — Job` : "Job Listing",
+  usePageMeta(
+    job?.listing_title ? `${job.listing_title} — Job` : null,
+    job?.description,
   );
 
   const { data: similarListings } = useQuery({
@@ -873,8 +874,8 @@ export default function JobDetailPage() {
                         ? "Sign in to contact this job seeker"
                         : "Sign in to apply for this role"}
                     </p>
-                    <a
-                      href="/login"
+                    <Link
+                      to="/login"
                       style={{
                         display: "block",
                         textAlign: "center",
@@ -888,7 +889,7 @@ export default function JobDetailPage() {
                       }}
                     >
                       Sign in →
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>

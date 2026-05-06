@@ -42,7 +42,10 @@ const CATEGORY_EMOJIS = {
 };
 
 const SORT_OPTIONS = [
-  { value: "-listing__is_featured,-listing__created_at", label: "Featured first" },
+  {
+    value: "-listing__is_featured,-listing__created_at",
+    label: "Featured first",
+  },
   { value: "-listing__created_at", label: "Newest first" },
   { value: "listing__created_at", label: "Oldest first" },
   { value: "event_date", label: "Date: earliest" },
@@ -231,7 +234,6 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               ))}
             </select>
           </div>
-          {/* Upcoming toggle */}
           <div>
             <div style={lbl}>Show</div>
             <div style={{ display: "flex", gap: "8px" }}>
@@ -260,7 +262,6 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               ))}
             </div>
           </div>
-          {/* Checkboxes */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {[
               {
@@ -354,6 +355,222 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Mobile card — Option B ───────────────────────── */
+function EventMobileCard({ event }) {
+  const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
+  const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
+  const footerColor = event.is_free ? "#1D9E75" : "#534AB7";
+  const d = new Date(event.event_date);
+
+  return (
+    <Link
+      to={`/events/${event.listing_slug}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+        textDecoration: "none",
+        transition: "box-shadow 0.15s",
+        height: "100%",
+      }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(29,158,117,0.12)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+    >
+      {/* Strip — date centred, badges bottom-left, ticket top-right */}
+      <div
+        style={{
+          background: catColor.bg,
+          height: "130px",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontSize: "28px",
+              fontWeight: 800,
+              color: "#26215C",
+              lineHeight: 1,
+            }}
+          >
+            {d.getDate()}
+          </div>
+          <div
+            style={{
+              fontSize: "11px",
+              color: catColor.color,
+              fontWeight: 700,
+              marginTop: "2px",
+            }}
+          >
+            {d.toLocaleDateString("en-AU", { month: "short" }).toUpperCase()}
+          </div>
+          <div
+            style={{ fontSize: "10px", color: catColor.color, opacity: 0.7 }}
+          >
+            {d.getFullYear()}
+          </div>
+        </div>
+
+        {/* Ticket — top right */}
+        <div
+          style={{ position: "absolute", top: "8px", right: "8px", zIndex: 2 }}
+        >
+          <span
+            style={{
+              background: "rgba(255,255,255,0.95)",
+              color: event.is_free ? "#085041" : "#633806",
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "3px 8px",
+              borderRadius: "20px",
+              display: "block",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {event.ticket_display}
+          </span>
+        </div>
+
+        {/* Badges — bottom left */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "8px",
+            left: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            zIndex: 2,
+          }}
+        >
+          {event.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg,#E87722,#534AB7)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
+          {event.is_free && (
+            <span
+              style={{
+                background: "#E1F5EE",
+                color: "#085041",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              Free
+            </span>
+          )}
+          {event.is_online && (
+            <span
+              style={{
+                background: "#E6F1FB",
+                color: "#0C447C",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              Online
+            </span>
+          )}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: footerColor,
+            opacity: 0.5,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+        }}
+      >
+        <span
+          style={{
+            background: catColor.bg,
+            color: catColor.color,
+            fontSize: "10px",
+            fontWeight: 500,
+            padding: "2px 7px",
+            borderRadius: "6px",
+            alignSelf: "flex-start",
+          }}
+        >
+          {catEmoji} {event.category?.replace("_", " ")}
+        </span>
+        <div
+          style={{
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.3,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {event.listing_title}
+        </div>
+        <div style={{ fontSize: "11px", color: "#666" }}>
+          {formatDate(event.event_date)}
+        </div>
+        {event.venue && (
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#888",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            📍 {event.venue}
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }
 
@@ -668,7 +885,9 @@ export default function EventsPage() {
     filters.is_free,
     filters.is_online,
     filters.upcoming !== "true" ? "1" : "",
-    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at"
+      ? "1"
+      : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -706,14 +925,14 @@ export default function EventsPage() {
     <>
       <style>{`
         .ev-desktop { display: none !important; }
-        .ev-mobile  { display: flex !important; }
+        .ev-mobile  { display: grid !important; }
         .ev-fdesk   { display: none !important; }
         .ev-fmob    { display: flex !important; }
         @media (min-width: 768px) {
-          .ev-mobile { display: none !important; }
-          .ev-desktop{ display: grid !important; }
-          .ev-fmob   { display: none !important; }
-          .ev-fdesk  { display: flex !important; }
+          .ev-mobile  { display: none !important; }
+          .ev-desktop { display: grid !important; }
+          .ev-fmob    { display: none !important; }
+          .ev-fdesk   { display: flex !important; }
         }
       `}</style>
 
@@ -728,11 +947,17 @@ export default function EventsPage() {
         />
       )}
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        <div style={{ marginBottom: "18px" }}>
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "20px 16px 28px",
+        }}
+      >
+        <div style={{ marginBottom: "16px" }}>
           <h1
             style={{
-              fontSize: "26px",
+              fontSize: "24px",
               fontWeight: 700,
               color: "#26215C",
               marginBottom: "4px",
@@ -745,7 +970,7 @@ export default function EventsPage() {
           </p>
         </div>
 
-        {/* Upcoming toggle — always visible, above filter row */}
+        {/* Upcoming toggle */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
           {[
             { v: "true", label: "🔜 Upcoming" },
@@ -772,7 +997,7 @@ export default function EventsPage() {
           ))}
         </div>
 
-        {/* Mobile: search + filter button */}
+        {/* Mobile: search + filter */}
         <div className="ev-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
@@ -835,7 +1060,7 @@ export default function EventsPage() {
         {activeChips.length > 0 && (
           <div
             className="ev-fmob"
-            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}
           >
             {activeChips.map(({ key, label, color, bg, border }) => (
               <button
@@ -884,6 +1109,26 @@ export default function EventsPage() {
             </button>
           </div>
         )}
+
+        {/* Mobile: count + save */}
+        <div
+          className="ev-fmob"
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "14px",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null
+              ? `${data.count} result${data.count !== 1 ? "s" : ""} found`
+              : ""}
+          </span>
+          <SaveSearchButton
+            listingType="event"
+            filters={{ search: filters.search, state: filters.state }}
+          />
+        </div>
 
         {/* Desktop filters */}
         <div
@@ -994,20 +1239,6 @@ export default function EventsPage() {
           />
         </div>
 
-        {/* Mobile: results count + save search */}
-        <div
-          className="ev-fmob"
-          style={{ justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
-        >
-          <span style={{ fontSize: "12px", color: "#888" }}>
-            {data?.count != null ? `${data.count} result${data.count !== 1 ? "s" : ""} found` : ""}
-          </span>
-          <SaveSearchButton
-            listingType="event"
-            filters={{ search: filters.search, state: filters.state }}
-          />
-        </div>
-
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "12px" }}
@@ -1048,179 +1279,22 @@ export default function EventsPage() {
           </div>
         )}
 
-        {/* Mobile list rows */}
+        {/* Mobile: 2-col card grid */}
         <div
           className="ev-mobile"
-          style={{ flexDirection: "column", gap: "12px" }}
+          style={{
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "10px",
+            opacity: isFetching && page === 1 ? 0.5 : 1,
+            transition: "opacity 0.2s",
+          }}
         >
-          {allResults.map((event) => {
-            const catColor =
-              CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
-            const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
-            return (
-              <Link
-                key={event.id}
-                to={`/events/${event.listing_slug}`}
-                style={{
-                  background: "#fff",
-                  border: "0.5px solid #e5e5e5",
-                  borderLeft: event.is_featured
-                    ? "3px solid #E87722"
-                    : "0.5px solid #e5e5e5",
-                  borderRadius: "12px",
-                  padding: "14px 16px",
-                  textDecoration: "none",
-                  display: "flex",
-                  gap: "14px",
-                  alignItems: "flex-start",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    "0 2px 12px rgba(29,158,117,0.1)")
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-              >
-                {/* Date block */}
-                <div
-                  style={{
-                    background: catColor.bg,
-                    borderRadius: "10px",
-                    padding: "10px 12px",
-                    textAlign: "center",
-                    minWidth: "52px",
-                    flexShrink: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 800,
-                      color: "#26215C",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {new Date(event.event_date).getDate()}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "10px",
-                      color: catColor.color,
-                      fontWeight: 600,
-                      marginTop: "2px",
-                    }}
-                  >
-                    {new Date(event.event_date)
-                      .toLocaleDateString("en-AU", { month: "short" })
-                      .toUpperCase()}
-                  </div>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "5px",
-                      flexWrap: "wrap",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        background: catColor.bg,
-                        color: catColor.color,
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        padding: "2px 8px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      {catEmoji} {event.category?.replace("_", " ")}
-                    </span>
-                    {event.is_free && (
-                      <span
-                        style={{
-                          background: "#E1F5EE",
-                          color: "#085041",
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        Free
-                      </span>
-                    )}
-                    {event.is_online && (
-                      <span
-                        style={{
-                          background: "#E6F1FB",
-                          color: "#0C447C",
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        Online
-                      </span>
-                    )}
-                  </div>
-                  <h3
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      color: "#26215C",
-                      marginBottom: "3px",
-                      lineHeight: 1.3,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {event.listing_title}
-                  </h3>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      color: "#666",
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {formatDate(event.event_date)} at{" "}
-                    {formatTime(event.event_date)}
-                  </div>
-                  {event.venue && (
-                    <div style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {event.venue}
-                    </div>
-                  )}
-                  {event.created_at && (
-                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>
-                      {timeAgo(event.created_at)}
-                    </div>
-                  )}
-                </div>
-                <div
-                  style={{
-                    background: event.is_free ? "#E1F5EE" : "#FFF1E0",
-                    color: event.is_free ? "#085041" : "#633806",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    padding: "5px 10px",
-                    borderRadius: "20px",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                    alignSelf: "center",
-                  }}
-                >
-                  {event.ticket_display}
-                </div>
-              </Link>
-            );
-          })}
+          {allResults.map((event) => (
+            <EventMobileCard key={event.id} event={event} />
+          ))}
         </div>
 
-        {/* Desktop card grid */}
+        {/* Desktop: 3-col grid */}
         <div
           className="ev-desktop"
           style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
@@ -1231,7 +1305,7 @@ export default function EventsPage() {
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "20px" }}>
+          <div style={{ textAlign: "center", paddingTop: "24px" }}>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={isFetching}

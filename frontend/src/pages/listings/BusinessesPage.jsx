@@ -308,6 +308,238 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
   );
 }
 
+/* ── Mobile card — Option B ───────────────────────── */
+function BusinessMobileCard({ biz }) {
+  const catColor = CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
+  const catEmoji = CATEGORY_EMOJIS[biz.category] || "📌";
+
+  return (
+    <Link
+      to={`/businesses/${biz.slug}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+        textDecoration: "none",
+        transition: "box-shadow 0.15s",
+        height: "100%",
+      }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(139,94,0,0.12)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+    >
+      {/* Strip */}
+      <div
+        style={{
+          background: catColor.bg,
+          height: "130px",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}
+      >
+        {biz.logo_url ? (
+          <img
+            src={biz.logo_url}
+            alt={biz.business_name}
+            style={{
+              width: "64px",
+              height: "64px",
+              objectFit: "contain",
+              borderRadius: "12px",
+            }}
+          />
+        ) : (
+          <span style={{ fontSize: "36px" }}>{catEmoji}</span>
+        )}
+
+        {/* Verified — top right */}
+        {biz.is_verified && (
+          <div
+            style={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              zIndex: 2,
+            }}
+          >
+            <span
+              style={{
+                background: "rgba(255,255,255,0.95)",
+                color: "#085041",
+                fontSize: "10px",
+                fontWeight: 700,
+                padding: "3px 8px",
+                borderRadius: "20px",
+                display: "block",
+              }}
+            >
+              ✓ Verified
+            </span>
+          </div>
+        )}
+
+        {/* Badges — bottom left */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "8px",
+            left: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            zIndex: 2,
+          }}
+        >
+          {biz.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg,#E87722,#534AB7)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
+          {biz.is_nepalese_owned && (
+            <span
+              style={{
+                background: "rgba(255,255,255,0.92)",
+                color: "#3C3489",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              🇳🇵 Nepalese
+            </span>
+          )}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: "#8B5E00",
+            opacity: 0.4,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.3,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {biz.business_name}
+        </div>
+
+        {/* Rating */}
+        {biz.avg_rating > 0 ? (
+          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+            {[1, 2, 3, 4, 5].map((s) => (
+              <span
+                key={s}
+                style={{
+                  fontSize: "11px",
+                  color: s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd",
+                }}
+              >
+                ★
+              </span>
+            ))}
+            <span
+              style={{
+                fontSize: "11px",
+                color: "#E87722",
+                fontWeight: 700,
+                marginLeft: "2px",
+              }}
+            >
+              {Number(biz.avg_rating).toFixed(1)}
+            </span>
+            <span style={{ fontSize: "10px", color: "#bbb" }}>
+              ({biz.review_count})
+            </span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", gap: "1px" }}>
+            {[1, 2, 3, 4, 5].map((s) => (
+              <span key={s} style={{ fontSize: "11px", color: "#ddd" }}>
+                ★
+              </span>
+            ))}
+          </div>
+        )}
+
+        <span
+          style={{
+            background: catColor.bg,
+            color: catColor.color,
+            fontSize: "10px",
+            fontWeight: 500,
+            padding: "2px 7px",
+            borderRadius: "6px",
+            alignSelf: "flex-start",
+          }}
+        >
+          {catEmoji} {biz.category?.replace("_", " ")}
+        </span>
+        <div
+          style={{
+            fontSize: "11px",
+            color: "#777",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          📍 {biz.suburb}, {biz.state}
+        </div>
+        {biz.created_at && (
+          <div style={{ fontSize: "10px", color: "#aaa" }}>
+            Listed {timeAgo(biz.created_at)}
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+}
+
 /* ── Desktop card ─────────────────────────────────── */
 function BusinessCard({ business }) {
   const [hovered, setHovered] = useState(false);
@@ -649,13 +881,13 @@ export default function BusinessesPage() {
         .bz-mobile  { display: grid !important; }
         .bz-fdesk   { display: none !important; }
         .bz-fmob    { display: flex !important; }
+        .bz-cats::-webkit-scrollbar { display: none; }
         @media (min-width: 768px) {
-          .bz-mobile { display: none !important; }
-          .bz-desktop{ display: grid !important; }
-          .bz-fmob   { display: none !important; }
-          .bz-fdesk  { display: flex !important; }
+          .bz-mobile  { display: none !important; }
+          .bz-desktop { display: grid !important; }
+          .bz-fmob    { display: none !important; }
+          .bz-fdesk   { display: flex !important; }
         }
-        .bz-fmob::-webkit-scrollbar { display: none; }
       `}</style>
 
       {drawerOpen && (
@@ -669,11 +901,17 @@ export default function BusinessesPage() {
         />
       )}
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        <div style={{ marginBottom: "18px" }}>
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "20px 16px 28px",
+        }}
+      >
+        <div style={{ marginBottom: "16px" }}>
           <h1
             style={{
-              fontSize: "26px",
+              fontSize: "24px",
               fontWeight: 700,
               color: "#26215C",
               marginBottom: "4px",
@@ -745,9 +983,9 @@ export default function BusinessesPage() {
           </button>
         </div>
 
-        {/* Mobile: scrollable category chips */}
+        {/* Mobile: scrollable category pills */}
         <div
-          className="bz-fmob"
+          className="bz-fmob bz-cats"
           style={{
             gap: "8px",
             overflowX: "auto",
@@ -757,7 +995,13 @@ export default function BusinessesPage() {
             msOverflowStyle: "none",
           }}
         >
-          {[{ value: "", label: "All", emoji: "🏪" }, ...CATEGORIES.slice(1).map(c => ({ ...c, emoji: CATEGORY_EMOJIS[c.value] || "📌" }))].map(({ value, label, emoji }) => {
+          {[
+            { value: "", label: "All", emoji: "🏪" },
+            ...CATEGORIES.slice(1).map((c) => ({
+              ...c,
+              emoji: CATEGORY_EMOJIS[c.value] || "📌",
+            })),
+          ].map(({ value, label, emoji }) => {
             const active = filters.category === value;
             const col = value ? CATEGORY_COLORS[value] : null;
             return (
@@ -766,13 +1010,13 @@ export default function BusinessesPage() {
                 onClick={() => updateFilters({ category: value })}
                 style={{
                   flexShrink: 0,
-                  background: active ? (col?.bg || "#FFF1E0") : "#fff",
-                  border: `1.5px solid ${active ? (col?.color || "#8B5E00") : "#e5e5e5"}`,
+                  background: active ? col?.bg || "#FFF1E0" : "#fff",
+                  border: `1.5px solid ${active ? col?.color || "#8B5E00" : "#e5e5e5"}`,
                   borderRadius: "20px",
                   padding: "6px 13px",
                   fontSize: "12px",
                   fontWeight: active ? 700 : 500,
-                  color: active ? (col?.color || "#633806") : "#555",
+                  color: active ? col?.color || "#633806" : "#555",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -788,43 +1032,45 @@ export default function BusinessesPage() {
         </div>
 
         {/* Active non-category chips (mobile) */}
-        {activeChips.filter(c => c.key !== "category").length > 0 && (
+        {activeChips.filter((c) => c.key !== "category").length > 0 && (
           <div
             className="bz-fmob"
             style={{ gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}
           >
-            {activeChips.filter(c => c.key !== "category").map(({ key, label, color, bg, border }) => (
-              <button
-                key={key}
-                onClick={() => updateFilters({ [key]: "" })}
-                style={{
-                  background: bg,
-                  border: `0.5px solid ${border}`,
-                  color,
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  padding: "4px 10px",
-                  borderRadius: "20px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-              >
-                {label}{" "}
-                <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
-              </button>
-            ))}
+            {activeChips
+              .filter((c) => c.key !== "category")
+              .map(({ key, label, color, bg, border }) => (
+                <button
+                  key={key}
+                  onClick={() => updateFilters({ [key]: "" })}
+                  style={{
+                    background: bg,
+                    border: `0.5px solid ${border}`,
+                    color,
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    padding: "4px 10px",
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {label}{" "}
+                  <span style={{ opacity: 0.6, fontSize: "13px" }}>×</span>
+                </button>
+              ))}
           </div>
         )}
 
-        {/* Mobile: results count + save search */}
+        {/* Mobile: count + save */}
         <div
           className="bz-fmob"
           style={{
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "12px",
+            marginBottom: "14px",
           }}
         >
           <span style={{ fontSize: "12px", color: "#888" }}>
@@ -844,7 +1090,7 @@ export default function BusinessesPage() {
           />
         </div>
 
-        {/* Desktop filters */}
+        {/* Desktop: full filter bar */}
         <div
           className="bz-fdesk"
           style={{ gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}
@@ -984,227 +1230,22 @@ export default function BusinessesPage() {
           </div>
         )}
 
-        {/* Mobile: horizontal list cards */}
+        {/* Mobile: 2-col card grid */}
         <div
           className="bz-mobile"
-          style={{ gridTemplateColumns: "1fr", gap: "10px" }}
+          style={{
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "10px",
+            opacity: isFetching && page === 1 ? 0.5 : 1,
+            transition: "opacity 0.2s",
+          }}
         >
-          {allResults.map((biz) => {
-            const catColor =
-              CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
-            const catEmoji = CATEGORY_EMOJIS[biz.category] || "📌";
-            return (
-              <Link
-                key={biz.id}
-                to={`/businesses/${biz.slug}`}
-                style={{
-                  background: "#fff",
-                  border: "0.5px solid #e5e5e5",
-                  borderRadius: "14px",
-                  padding: "12px 14px",
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-                }}
-                onTouchStart={(e) =>
-                  (e.currentTarget.style.background = "#FAFAF8")
-                }
-                onTouchEnd={(e) =>
-                  (e.currentTarget.style.background = "#fff")
-                }
-              >
-                {/* Logo / emoji */}
-                <div
-                  style={{
-                    width: "56px",
-                    height: "56px",
-                    borderRadius: "14px",
-                    background: catColor.bg,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "26px",
-                    flexShrink: 0,
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  {biz.logo_url ? (
-                    <img
-                      src={biz.logo_url}
-                      alt={biz.business_name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  ) : (
-                    catEmoji
-                  )}
-                  {biz.is_featured && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: "3px",
-                        background: "linear-gradient(90deg,#E87722,#534AB7)",
-                        borderRadius: "14px 14px 0 0",
-                      }}
-                    />
-                  )}
-                </div>
-
-                {/* Details */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      gap: "6px",
-                      marginBottom: "3px",
-                    }}
-                  >
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 700,
-                        color: "#26215C",
-                        lineHeight: 1.3,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      {biz.business_name}
-                    </h3>
-                    {biz.is_verified && (
-                      <span
-                        style={{
-                          background: "#E1F5EE",
-                          color: "#085041",
-                          fontSize: "10px",
-                          fontWeight: 600,
-                          padding: "2px 7px",
-                          borderRadius: "6px",
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                        }}
-                      >
-                        ✓ Verified
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Rating */}
-                  {biz.avg_rating > 0 ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "3px",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <span
-                          key={s}
-                          style={{
-                            fontSize: "11px",
-                            color:
-                              s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd",
-                          }}
-                        >
-                          ★
-                        </span>
-                      ))}
-                      <span
-                        style={{
-                          fontSize: "11px",
-                          color: "#E87722",
-                          fontWeight: 700,
-                          marginLeft: "1px",
-                        }}
-                      >
-                        {Number(biz.avg_rating).toFixed(1)}
-                      </span>
-                      <span style={{ fontSize: "10px", color: "#bbb" }}>
-                        ({biz.review_count})
-                      </span>
-                    </div>
-                  ) : null}
-
-                  {/* Category + location row */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <span
-                      style={{
-                        background: catColor.bg,
-                        color: catColor.color,
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        padding: "2px 8px",
-                        borderRadius: "8px",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {catEmoji} {biz.category?.replace("_", " ")}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: "11px",
-                        color: "#888",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      📍 {biz.suburb}, {biz.state}
-                    </span>
-                  </div>
-
-                  {biz.is_nepalese_owned && (
-                    <span
-                      style={{
-                        display: "inline-block",
-                        background: "#EEEDFE",
-                        color: "#3C3489",
-                        fontSize: "10px",
-                        fontWeight: 500,
-                        padding: "2px 8px",
-                        borderRadius: "8px",
-                        marginTop: "5px",
-                      }}
-                    >
-                      🇳🇵 Nepalese owned
-                    </span>
-                  )}
-                  {biz.created_at && (
-                    <div style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>
-                      Listed {timeAgo(biz.created_at)}
-                    </div>
-                  )}
-                </div>
-
-                {/* Chevron */}
-                <div style={{ color: "#ccc", fontSize: "18px", flexShrink: 0 }}>
-                  ›
-                </div>
-              </Link>
-            );
-          })}
+          {allResults.map((biz) => (
+            <BusinessMobileCard key={biz.id} biz={biz} />
+          ))}
         </div>
 
-        {/* Desktop 3-col card grid */}
+        {/* Desktop: 3-col card grid */}
         <div
           className="bz-desktop"
           style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
@@ -1215,7 +1256,7 @@ export default function BusinessesPage() {
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "20px" }}>
+          <div style={{ textAlign: "center", paddingTop: "24px" }}>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={isFetching}

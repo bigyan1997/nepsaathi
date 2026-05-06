@@ -22,7 +22,10 @@ const TABS = [
 ];
 
 const SORT_OPTIONS = [
-  { value: "-listing__is_featured,-listing__created_at", label: "Featured first" },
+  {
+    value: "-listing__is_featured,-listing__created_at",
+    label: "Featured first",
+  },
   { value: "-listing__created_at", label: "Newest first" },
   { value: "listing__created_at", label: "Oldest first" },
   { value: "price", label: "Price ↑" },
@@ -43,7 +46,7 @@ function timeAgo(dateStr) {
 }
 
 /* ── Mobile filter drawer ────────────────────────── */
-function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
+function MobileFilterDrawer({ filters, onApply, onClose }) {
   const [draft, setDraft] = useState({ ...filters });
   const set = (k, v) => setDraft((p) => ({ ...p, [k]: v }));
   const sel = {
@@ -91,7 +94,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
           overflowX: "hidden",
         }}
       >
-        {/* Handle */}
         <div
           style={{
             display: "flex",
@@ -108,7 +110,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
             }}
           />
         </div>
-        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -154,7 +155,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
             gap: "16px",
           }}
         >
-          {/* Room type */}
           <div>
             <div style={lbl}>Room type</div>
             <select
@@ -169,7 +169,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
               ))}
             </select>
           </div>
-          {/* State */}
           <div>
             <div style={lbl}>State</div>
             <select
@@ -184,7 +183,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
               ))}
             </select>
           </div>
-          {/* Price range */}
           <div>
             <div style={lbl}>Price range ($/wk)</div>
             <div
@@ -210,7 +208,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
               />
             </div>
           </div>
-          {/* Checkboxes */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {[
               {
@@ -281,7 +278,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
               );
             })}
           </div>
-          {/* Sort */}
           <div>
             <div style={lbl}>Sort by</div>
             <select
@@ -296,7 +292,6 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
               ))}
             </select>
           </div>
-          {/* Apply */}
           <button
             onClick={() => {
               onApply(draft);
@@ -320,6 +315,229 @@ function MobileFilterDrawer({ filters, onApply, onClose, resultCount }) {
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Mobile card — Option B style ─────────────────── */
+function RoomMobileCard({ room }) {
+  const isWanted = room.is_wanted;
+  return (
+    <Link
+      to={`/rooms/${room.listing_slug}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+        textDecoration: "none",
+        transition: "box-shadow 0.15s",
+        height: "100%",
+      }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,119,34,0.12)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+    >
+      {/* ── Image / colour strip ── */}
+      <div
+        style={{
+          background: "#FFF1E0",
+          height: "130px",
+          position: "relative",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        {room.images?.[0]?.url ? (
+          <img
+            src={room.images[0].url}
+            alt={room.listing_title}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              position: "absolute",
+              inset: 0,
+            }}
+          />
+        ) : (
+          <span style={{ fontSize: "36px" }}>{isWanted ? "🏘️" : "🏠"}</span>
+        )}
+
+        {/* Price pill — top right */}
+        <div
+          style={{ position: "absolute", top: "8px", right: "8px", zIndex: 2 }}
+        >
+          <span
+            style={{
+              background: "rgba(255,255,255,0.95)",
+              color: "#633806",
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "3px 8px",
+              borderRadius: "20px",
+              whiteSpace: "nowrap",
+              display: "block",
+            }}
+          >
+            {isWanted ? `Up to ${room.price_display}` : room.price_display}
+          </span>
+        </div>
+
+        {/* Badges — bottom left of strip, stacked vertically */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "8px",
+            left: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            zIndex: 2,
+          }}
+        >
+          {room.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg,#E87722,#534AB7)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
+          {isWanted && (
+            <span
+              style={{
+                background: "rgba(255,255,255,0.92)",
+                color: "#E87722",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              🏘️ Seeker
+            </span>
+          )}
+        </div>
+
+        {/* Orange accent line */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: "#E87722",
+            opacity: 0.5,
+          }}
+        />
+      </div>
+
+      {/* ── Body ── */}
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+        }}
+      >
+        <div style={{ fontSize: "10px", color: "#E87722", fontWeight: 600 }}>
+          {timeAgo(room.created_at || room.date_posted)}
+        </div>
+        <div
+          style={{
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.3,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {room.listing_title}
+        </div>
+        <div
+          style={{
+            fontSize: "11px",
+            color: "#777",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          📍 {room.listing_location}, {room.listing_state}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: "4px",
+            flexWrap: "wrap",
+            marginTop: "2px",
+          }}
+        >
+          {room.room_type && (
+            <span
+              style={{
+                background: "#FFF1E0",
+                color: "#633806",
+                fontSize: "10px",
+                fontWeight: 500,
+                padding: "2px 6px",
+                borderRadius: "6px",
+              }}
+            >
+              {room.room_type.replace("_", " ")}
+            </span>
+          )}
+          {room.bills_included && (
+            <span
+              style={{
+                background: "#E1F5EE",
+                color: "#085041",
+                fontSize: "10px",
+                fontWeight: 500,
+                padding: "2px 6px",
+                borderRadius: "6px",
+              }}
+            >
+              Bills incl.
+            </span>
+          )}
+          {room.nepalese_household && (
+            <span
+              style={{
+                background: "#EEEDFE",
+                color: "#3C3489",
+                fontSize: "10px",
+                fontWeight: 500,
+                padding: "2px 6px",
+                borderRadius: "6px",
+              }}
+            >
+              🇳🇵
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -648,7 +866,9 @@ export default function RoomsPage() {
     filters.max_price,
     filters.bills_included,
     filters.nepalese_household,
-    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at"
+      ? "1"
+      : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -700,7 +920,7 @@ export default function RoomsPage() {
     <>
       <style>{`
         .rm-desktop { display: none !important; }
-        .rm-mobile  { display: flex !important; }
+        .rm-mobile  { display: grid !important; }
         .rm-fdesk   { display: none !important; }
         .rm-fmob    { display: flex !important; }
         .rm-tabs::-webkit-scrollbar { display: none; }
@@ -715,7 +935,6 @@ export default function RoomsPage() {
       {drawerOpen && (
         <MobileFilterDrawer
           filters={filters}
-          resultCount={filteredResults.length}
           onApply={(d) => {
             setPage(1);
             setFilters(d);
@@ -724,12 +943,18 @@ export default function RoomsPage() {
         />
       )}
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "20px 16px 28px",
+        }}
+      >
         {/* Header */}
-        <div style={{ marginBottom: "18px" }}>
+        <div style={{ marginBottom: "16px" }}>
           <h1
             style={{
-              fontSize: "26px",
+              fontSize: "24px",
               fontWeight: 700,
               color: "#26215C",
               marginBottom: "4px",
@@ -742,14 +967,14 @@ export default function RoomsPage() {
           </p>
         </div>
 
-        {/* Tabs: horizontal scroll */}
+        {/* Tabs */}
         <div
           className="rm-tabs"
           style={{
             overflowX: "auto",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
-            marginBottom: "16px",
+            marginBottom: "14px",
           }}
         >
           <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
@@ -863,11 +1088,11 @@ export default function RoomsPage() {
           </button>
         </div>
 
-        {/* Active filter chips (mobile) */}
+        {/* Active chips (mobile) */}
         {activeChips.length > 0 && (
           <div
             className="rm-fmob"
-            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}
           >
             {activeChips.map(({ key, label, color, bg, border }) => (
               <button
@@ -919,7 +1144,27 @@ export default function RoomsPage() {
           </div>
         )}
 
-        {/* Desktop: full filter bar */}
+        {/* Mobile: result count + save search */}
+        <div
+          className="rm-fmob"
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "14px",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null
+              ? `${data.count} listing${data.count !== 1 ? "s" : ""} found`
+              : ""}
+          </span>
+          <SaveSearchButton
+            listingType="room"
+            filters={{ search: filters.search, state: filters.state }}
+          />
+        </div>
+
+        {/* Desktop filters */}
         <div
           className="rm-fdesk"
           style={{ gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}
@@ -1058,20 +1303,6 @@ export default function RoomsPage() {
           />
         </div>
 
-        {/* Mobile: results count + save search */}
-        <div
-          className="rm-fmob"
-          style={{ justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
-        >
-          <span style={{ fontSize: "12px", color: "#888" }}>
-            {data?.count != null ? `${data.count} result${data.count !== 1 ? "s" : ""} found` : ""}
-          </span>
-          <SaveSearchButton
-            listingType="room"
-            filters={{ search: filters.search, state: filters.state }}
-          />
-        </div>
-
         {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <div
@@ -1119,225 +1350,22 @@ export default function RoomsPage() {
           </div>
         )}
 
-        {/* Mobile list rows */}
+        {/* ── Mobile: 2-col card grid (Option B) ── */}
         <div
           className="rm-mobile"
           style={{
-            flexDirection: "column",
+            gridTemplateColumns: "repeat(2, 1fr)",
             gap: "10px",
             opacity: isFetching && page === 1 ? 0.5 : 1,
             transition: "opacity 0.2s",
           }}
         >
           {filteredResults.map((room) => (
-            <Link
-              key={room.id}
-              to={`/rooms/${room.listing_slug}`}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #e5e5e5",
-                borderLeft:
-                  room.is_wanted || room.is_featured
-                    ? "3px solid #E87722"
-                    : "0.5px solid #e5e5e5",
-                borderRadius: "12px",
-                padding: "14px 16px",
-                textDecoration: "none",
-                display: "block",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow =
-                  "0 2px 12px rgba(232,119,34,0.1)")
-              }
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  gap: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    alignItems: "flex-start",
-                    flex: 1,
-                    minWidth: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "10px",
-                      background: "#FFF1E0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "20px",
-                      flexShrink: 0,
-                      overflow: "hidden",
-                    }}
-                  >
-                    {room.images?.[0]?.url ? (
-                      <img
-                        src={room.images[0].url}
-                        alt={room.listing_title}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "10px",
-                        }}
-                      />
-                    ) : room.is_wanted ? (
-                      "🏘️"
-                    ) : (
-                      "🏠"
-                    )}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    {(room.is_featured || room.is_wanted) && (
-                      <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginBottom: "4px" }}>
-                        {room.is_featured && (
-                          <span
-                            style={{
-                              background:
-                                "linear-gradient(135deg,#E87722,#534AB7)",
-                              color: "#fff",
-                              fontSize: "9px",
-                              fontWeight: 700,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            ⭐ FEATURED
-                          </span>
-                        )}
-                        {room.is_wanted && (
-                          <span
-                            style={{
-                              background: "#FFF1E0",
-                              color: "#E87722",
-                              fontSize: "9px",
-                              fontWeight: 700,
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            🏘️ Room Seeker
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#26215C",
-                        marginBottom: "2px",
-                        lineHeight: 1.3,
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {room.listing_title}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#777",
-                        marginBottom: "6px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      📍 {room.listing_location}, {room.listing_state}
-                    </p>
-                    <div style={{ display: "flex", gap: "4px" }}>
-                      {room.room_type && (
-                        <span
-                          style={{
-                            background: "#FFF1E0",
-                            color: "#633806",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {room.room_type?.replace("_", " ")}
-                        </span>
-                      )}
-                      {room.bills_included && (
-                        <span
-                          style={{
-                            background: "#E1F5EE",
-                            color: "#085041",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          Bills incl.
-                        </span>
-                      )}
-                      {room.nepalese_household && (
-                        <span
-                          style={{
-                            background: "#EEEDFE",
-                            color: "#3C3489",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          🇳🇵
-                        </span>
-                      )}
-                    </div>
-                    {room.created_at && (
-                      <div style={{ fontSize: "11px", color: "#aaa", marginTop: "3px" }}>
-                        {timeAgo(room.created_at)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    background: "#FFF1E0",
-                    color: "#633806",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    padding: "4px 10px",
-                    borderRadius: "20px",
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  {room.is_wanted
-                    ? `Up to ${room.price_display}`
-                    : room.price_display}
-                </div>
-              </div>
-            </Link>
+            <RoomMobileCard key={room.id} room={room} />
           ))}
         </div>
 
-        {/* Desktop card grid */}
+        {/* ── Desktop: 3-col card grid ── */}
         <div
           className="rm-desktop"
           style={{
@@ -1354,7 +1382,7 @@ export default function RoomsPage() {
 
         {/* Load more */}
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "20px" }}>
+          <div style={{ textAlign: "center", paddingTop: "24px" }}>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={isFetching}

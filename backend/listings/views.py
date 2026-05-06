@@ -221,6 +221,7 @@ class ListingImageUploadView(APIView):
         remaining = 5 - existing_count
         images = images[:remaining]
 
+        has_existing_images = listing.images.exists()
         uploaded = []
         for i, image in enumerate(images):
             # Validate file is an image
@@ -234,7 +235,7 @@ class ListingImageUploadView(APIView):
             listing_image = ListingImage.objects.create(
                 listing=listing,
                 image=image,
-                is_primary=(i == 0 and not listing.images.exists())
+                is_primary=(i == 0 and not has_existing_images)
             )
             uploaded.append(ListingImageSerializer(listing_image).data)
 

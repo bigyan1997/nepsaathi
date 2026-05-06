@@ -8,7 +8,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { trackView } from "../../api/listings";
 import { useEffect, useState } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
@@ -196,7 +196,7 @@ export default function EventDetailPage() {
     },
     onSuccess: (data) => {
       setRsvpState(data);
-      queryClient.invalidateQueries({ queryKey: ["event", id, isListingRoute] });
+      queryClient.invalidateQueries({ queryKey: ["event", slug] });
     },
     onError: () => {
       // Roll back on error
@@ -208,12 +208,17 @@ export default function EventDetailPage() {
     },
   });
 
-  usePageTitle(
-    event?.listing_title ? `${event.listing_title} — Event` : "Event",
+  usePageMeta(
+    event?.listing_title ? `${event.listing_title} — Event` : null,
+    event?.description,
   );
 
   useEffect(() => {
-    if (event?.listing_id) trackView(event.listing_id).catch(() => {});
+    if (event?.listing_id) {
+      trackView(event.listing_id)
+        .then(() => queryClient.invalidateQueries({ queryKey: ["event", slug] }))
+        .catch(() => {});
+    }
   }, [event?.listing_id]);
 
   if (isLoading) return <SkeletonDetailPage />;
@@ -925,8 +930,8 @@ export default function EventDetailPage() {
                             : "RSVP — it's free"}
                         </button>
                       ) : (
-                        <a
-                          href="/login"
+                        <Link
+                          to="/login"
                           style={{
                             display: "block",
                             background: "rgba(255,255,255,0.2)",
@@ -941,7 +946,7 @@ export default function EventDetailPage() {
                           }}
                         >
                           Sign in to RSVP
-                        </a>
+                        </Link>
                       )}
                     </>
                   )}
@@ -1080,9 +1085,9 @@ export default function EventDetailPage() {
                   lineHeight: 1.7,
                 }}
               >
-                <a href="/login" style={{ color: "#E87722", fontWeight: 700 }}>
+                <Link to="/login" style={{ color: "#E87722", fontWeight: 700 }}>
                   Sign in
-                </a>{" "}
+                </Link>{" "}
                 to view contact details.
               </div>
             )}

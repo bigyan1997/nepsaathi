@@ -191,6 +191,9 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               onChange={(e) => set("ordering", e.target.value)}
               style={sel}
             >
+              <option value="-listing__is_featured,-listing__created_at">
+                Featured first
+              </option>
               <option value="-listing__created_at">Newest first</option>
               <option value="listing__created_at">Oldest first</option>
             </select>
@@ -291,11 +294,204 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
   );
 }
 
+/* ── Mobile card — Option B ───────────────────────── */
+function NoticeMobileCard({ notice }) {
+  const catColor = CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
+  const catEmoji = CATEGORY_EMOJIS[notice.category] || "📢";
+
+  return (
+    <Link
+      to={`/notices/${notice.listing_slug}`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+        textDecoration: "none",
+        transition: "box-shadow 0.15s",
+        height: "100%",
+      }}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(12,68,124,0.1)")
+      }
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+    >
+      {/* Strip */}
+      <div
+        style={{
+          background: catColor.bg,
+          height: "130px",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <span style={{ fontSize: "36px" }}>{catEmoji}</span>
+
+        {/* Price — top right */}
+        {(notice.price || notice.is_free) && (
+          <div
+            style={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              zIndex: 2,
+            }}
+          >
+            <span
+              style={{
+                background: "rgba(255,255,255,0.95)",
+                color: notice.is_free ? "#085041" : "#633806",
+                fontSize: "11px",
+                fontWeight: 700,
+                padding: "3px 8px",
+                borderRadius: "20px",
+                display: "block",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {notice.price_display}
+            </span>
+          </div>
+        )}
+
+        {/* Badges — bottom left */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "8px",
+            left: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            zIndex: 2,
+          }}
+        >
+          {notice.is_featured && (
+            <span
+              style={{
+                background: "linear-gradient(135deg,#E87722,#534AB7)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              ⭐ Featured
+            </span>
+          )}
+          {notice.is_urgent && (
+            <span
+              style={{
+                background: "#FCEBEB",
+                color: "#A32D2D",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              🔴 Urgent
+            </span>
+          )}
+          {notice.is_free && (
+            <span
+              style={{
+                background: "#E1F5EE",
+                color: "#085041",
+                fontSize: "9px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "5px",
+                alignSelf: "flex-start",
+              }}
+            >
+              Free
+            </span>
+          )}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: "#0C447C",
+            opacity: 0.4,
+          }}
+        />
+      </div>
+
+      {/* Body */}
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+        }}
+      >
+        <span
+          style={{
+            background: catColor.bg,
+            color: catColor.color,
+            fontSize: "10px",
+            fontWeight: 500,
+            padding: "2px 7px",
+            borderRadius: "6px",
+            alignSelf: "flex-start",
+          }}
+        >
+          {catEmoji} {notice.category?.replace("_", " ")}
+        </span>
+        <div
+          style={{
+            fontSize: "13px",
+            fontWeight: 700,
+            color: "#26215C",
+            lineHeight: 1.3,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {notice.listing_title}
+        </div>
+        <div
+          style={{
+            fontSize: "11px",
+            color: "#777",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          📍 {notice.listing_location}, {notice.listing_state}
+        </div>
+        <div style={{ fontSize: "10px", color: "#aaa", marginTop: "2px" }}>
+          {notice.posted_by}
+          {notice.created_at ? ` · ${timeAgo(notice.created_at)}` : ""}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 /* ── Desktop card ─────────────────────────────────── */
 function NoticeCard({ notice }) {
   const [hovered, setHovered] = useState(false);
-  const catColor =
-    CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
+  const catColor = CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
   const catEmoji = CATEGORY_EMOJIS[notice.category] || "📢";
   return (
     <Link
@@ -572,7 +768,9 @@ export default function NoticesPage() {
     filters.state,
     filters.is_free,
     filters.is_urgent,
-    filters.ordering !== "-listing__is_featured,-listing__created_at" ? "1" : "",
+    filters.ordering !== "-listing__is_featured,-listing__created_at"
+      ? "1"
+      : "",
   ].filter(Boolean).length;
 
   const activeChips = [
@@ -610,14 +808,14 @@ export default function NoticesPage() {
     <>
       <style>{`
         .an-desktop { display: none !important; }
-        .an-mobile  { display: flex !important; }
+        .an-mobile  { display: grid !important; }
         .an-fdesk   { display: none !important; }
         .an-fmob    { display: flex !important; }
         @media (min-width: 768px) {
-          .an-mobile { display: none !important; }
-          .an-desktop{ display: grid !important; }
-          .an-fmob   { display: none !important; }
-          .an-fdesk  { display: flex !important; }
+          .an-mobile  { display: none !important; }
+          .an-desktop { display: grid !important; }
+          .an-fmob    { display: none !important; }
+          .an-fdesk   { display: flex !important; }
         }
       `}</style>
 
@@ -632,11 +830,17 @@ export default function NoticesPage() {
         />
       )}
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px" }}>
-        <div style={{ marginBottom: "18px" }}>
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "20px 16px 28px",
+        }}
+      >
+        <div style={{ marginBottom: "16px" }}>
           <h1
             style={{
-              fontSize: "26px",
+              fontSize: "24px",
               fontWeight: 700,
               color: "#26215C",
               marginBottom: "4px",
@@ -649,7 +853,7 @@ export default function NoticesPage() {
           </p>
         </div>
 
-        {/* Mobile: search + filter button */}
+        {/* Mobile: search + filter */}
         <div className="an-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
@@ -712,7 +916,7 @@ export default function NoticesPage() {
         {activeChips.length > 0 && (
           <div
             className="an-fmob"
-            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}
+            style={{ gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}
           >
             {activeChips.map(({ key, label, color, bg, border }) => (
               <button
@@ -761,6 +965,26 @@ export default function NoticesPage() {
             </button>
           </div>
         )}
+
+        {/* Mobile: count + save */}
+        <div
+          className="an-fmob"
+          style={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "14px",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "#888" }}>
+            {data?.count != null
+              ? `${data.count} result${data.count !== 1 ? "s" : ""} found`
+              : ""}
+          </span>
+          <SaveSearchButton
+            listingType="notice"
+            filters={{ search: filters.search, state: filters.state }}
+          />
+        </div>
 
         {/* Desktop filters */}
         <div
@@ -834,6 +1058,9 @@ export default function NoticesPage() {
               color: "#444",
             }}
           >
+            <option value="-listing__is_featured,-listing__created_at">
+              Featured first
+            </option>
             <option value="-listing__created_at">Newest first</option>
             <option value="listing__created_at">Oldest first</option>
           </select>
@@ -862,20 +1089,6 @@ export default function NoticesPage() {
               {label}
             </label>
           ))}
-          <SaveSearchButton
-            listingType="notice"
-            filters={{ search: filters.search, state: filters.state }}
-          />
-        </div>
-
-        {/* Mobile: results count + save search */}
-        <div
-          className="an-fmob"
-          style={{ justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}
-        >
-          <span style={{ fontSize: "12px", color: "#888" }}>
-            {data?.count != null ? `${data.count} result${data.count !== 1 ? "s" : ""} found` : ""}
-          </span>
           <SaveSearchButton
             listingType="notice"
             filters={{ search: filters.search, state: filters.state }}
@@ -922,162 +1135,33 @@ export default function NoticesPage() {
           </div>
         )}
 
-        {/* Mobile list rows */}
+        {/* Mobile: 2-col card grid */}
         <div
           className="an-mobile"
-          style={{ flexDirection: "column", gap: "10px" }}
+          style={{
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "10px",
+            opacity: isFetching && page === 1 ? 0.5 : 1,
+            transition: "opacity 0.2s",
+          }}
         >
-          {allResults.map((ann) => {
-            const catColor =
-              CATEGORY_COLORS[ann.category] || CATEGORY_COLORS.general;
-            const catEmoji = CATEGORY_EMOJIS[ann.category] || "📢";
-            return (
-              <Link
-                key={ann.id}
-                to={`/notices/${ann.listing_slug}`}
-                style={{
-                  background: "#fff",
-                  border: "0.5px solid #e5e5e5",
-                  borderLeft: ann.is_urgent
-                    ? "3px solid #A32D2D"
-                    : ann.is_featured
-                      ? "3px solid #E87722"
-                      : "0.5px solid #e5e5e5",
-                  borderRadius: "12px",
-                  padding: "14px 16px",
-                  textDecoration: "none",
-                  display: "block",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow =
-                    "0 2px 12px rgba(12,68,124,0.08)")
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    gap: "12px",
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "5px",
-                        flexWrap: "wrap",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          background: catColor.bg,
-                          color: catColor.color,
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "2px 8px",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        {catEmoji} {ann.category?.replace("_", " ")}
-                      </span>
-                      {ann.is_urgent && (
-                        <span
-                          style={{
-                            background: "#FCEBEB",
-                            color: "#A32D2D",
-                            fontSize: "10px",
-                            fontWeight: 700,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          🔴 Urgent
-                        </span>
-                      )}
-                      {ann.is_free && (
-                        <span
-                          style={{
-                            background: "#E1F5EE",
-                            color: "#085041",
-                            fontSize: "10px",
-                            fontWeight: 500,
-                            padding: "2px 8px",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          Free
-                        </span>
-                      )}
-                    </div>
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#26215C",
-                        marginBottom: "3px",
-                        lineHeight: 1.3,
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}
-                    >
-                      {ann.listing_title}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "#777",
-                        marginBottom: "3px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      📍 {ann.listing_location}, {ann.listing_state}
-                    </p>
-                    <p style={{ fontSize: "11px", color: "#aaa" }}>
-                      Posted by {ann.posted_by}
-                      {ann.created_at && ` · ${timeAgo(ann.created_at)}`}
-                    </p>
-                  </div>
-                  {(ann.price || ann.is_free) && (
-                    <div
-                      style={{
-                        background: ann.is_free ? "#E1F5EE" : "#FFF1E0",
-                        color: ann.is_free ? "#085041" : "#633806",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        padding: "5px 12px",
-                        borderRadius: "20px",
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {ann.price_display}
-                    </div>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+          {allResults.map((notice) => (
+            <NoticeMobileCard key={notice.id} notice={notice} />
+          ))}
         </div>
 
-        {/* Desktop card grid */}
+        {/* Desktop: 3-col grid */}
         <div
           className="an-desktop"
           style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
         >
-          {allResults.map((ann) => (
-            <NoticeCard key={ann.id} notice={ann} />
+          {allResults.map((notice) => (
+            <NoticeCard key={notice.id} notice={notice} />
           ))}
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "20px" }}>
+          <div style={{ textAlign: "center", paddingTop: "24px" }}>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={isFetching}

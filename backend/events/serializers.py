@@ -74,6 +74,8 @@ class EventSerializer(serializers.ModelSerializer):
         ]
 
     def validate_event_date(self, value):
+        if self.instance:
+            return value
         from django.utils import timezone
         if value < timezone.now():
             raise serializers.ValidationError("Event date must be in the future.")

@@ -12,7 +12,7 @@ import useAuthStore from "../../store/authStore";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
 import ShareButton from "../../components/ui/ShareButton";
 import ReportButton from "../../components/ui/ReportButton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import useIsMobile from "../../hooks/useIsMobile";
 import { useToast } from "../../components/ui/Toast";
 
@@ -194,10 +194,9 @@ export default function BusinessDetailPage() {
     },
   });
 
-  usePageTitle(
-    business?.business_name
-      ? `${business.business_name} — Business`
-      : "Business",
+  usePageMeta(
+    business?.business_name ? `${business.business_name} — Business` : null,
+    business?.description,
   );
 
   if (isLoading) return <SkeletonDetailPage />;
@@ -1052,8 +1051,8 @@ export default function BusinessDetailPage() {
                     >
                       Sign in to view contact details
                     </p>
-                    <a
-                      href="/login"
+                    <Link
+                      to="/login"
                       style={{
                         display: "block",
                         textAlign: "center",
@@ -1067,7 +1066,7 @@ export default function BusinessDetailPage() {
                       }}
                     >
                       Sign in →
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>
