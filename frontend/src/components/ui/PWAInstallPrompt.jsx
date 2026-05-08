@@ -164,12 +164,12 @@ export default function PWAInstallPrompt() {
     <>
       <style>{`
         @keyframes pwa-slide-up {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translateX(-50%) translateY(24px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         @keyframes pwa-slide-down {
-          from { opacity: 1; transform: translateY(0); }
-          to   { opacity: 0; transform: translateY(24px); }
+          from { opacity: 1; transform: translateX(-50%) translateY(0); }
+          to   { opacity: 0; transform: translateX(-50%) translateY(24px); }
         }
         .pwa-card {
           animation: pwa-slide-up 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards;
