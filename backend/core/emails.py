@@ -1,6 +1,7 @@
 import html as html_module
 import resend
 import threading
+from datetime import timedelta
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -155,11 +156,7 @@ _SMALL   = 'style="font-size:12px;color:#aaaaaa;line-height:1.6;text-align:cente
 # ─────────────────────────────────────────────────────────────
 
 def _send_resend(params: dict):
-    api_key = config('RESEND_API_KEY', default='')
-    if not api_key:
-        print(f'[EMAIL ERROR] RESEND_API_KEY not set — skipping: {params["subject"]}', flush=True)
-        return
-    resend.api_key = api_key
+    resend.api_key = config('RESEND_API_KEY')
     try:
         response = resend.Emails.send(params)
         print(f'[EMAIL OK] {params["subject"]} -> {params["to"]} | id={getattr(response, "id", response)}', flush=True)
@@ -168,9 +165,34 @@ def _send_resend(params: dict):
         print(f'[EMAIL ERROR] Failed to send "{params["subject"]}" to {params["to"]}: {e}', flush=True)
         print(traceback.format_exc(), flush=True)
 
+
+def _send_smtp(params: dict):
+    from django.core.mail import EmailMessage, get_connection
+    try:
+        connection = get_connection(backend='django.core.mail.backends.smtp.EmailBackend')
+        msg = EmailMessage(
+            subject=params['subject'],
+            body=params['html'],
+            from_email=params.get('from', 'NepSaathi <noreply@nepsaathi.com>'),
+            to=params['to'],
+            reply_to=[params['reply_to']] if 'reply_to' in params else None,
+            connection=connection,
+        )
+        msg.content_subtype = 'html'
+        msg.send()
+        print(f'[EMAIL OK] {params["subject"]} -> {params["to"]} (SMTP)', flush=True)
+    except Exception as e:
+        import traceback
+        print(f'[EMAIL ERROR] Failed to send "{params["subject"]}" to {params["to"]}: {e}', flush=True)
+        print(traceback.format_exc(), flush=True)
+
+
 def _fire(params: dict):
-    """Send in background thread."""
-    threading.Thread(target=_send_resend, args=(params,), daemon=True).start()
+    """Resend in production (RESEND_API_KEY set), Django SMTP locally."""
+    if config('RESEND_API_KEY', default=''):
+        threading.Thread(target=_send_resend, args=(params,), daemon=True).start()
+    else:
+        threading.Thread(target=_send_smtp, args=(params,), daemon=True).start()
 
 
 # ─────────────────────────────────────────────────────────────
@@ -1018,6 +1040,108 @@ def send_business_saved_search_alert_email(user, business, saved_search_id):
         })
     except Exception as e:
         print(f'Business saved search alert email failed: {e}', flush=True)
+
+
+def send_payment_invoice_email(payment):
+    listing = payment.listing
+    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+    try:
+        first_name = payment.user.first_name or 'there'
+        invoice_number = f"INV-{payment.id:05d}"
+        amount_aud = payment.amount_paid / 100
+        date_paid = payment.completed_at.strftime('%d %B %Y')
+        featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime('%d %B %Y')
+        ref = payment.stripe_session_id[:32] + '...'
+
+        body = f"""
+<h1 {_H1}>Payment confirmed &#9989;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, thank you for your payment!
+  Your listing is now featured and will appear at the top of search results.
+</p>
+
+<!-- PAID badge + invoice number -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;">
+  <tr>
+    <td>
+      <table cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+          <td bgcolor="#E1F5EE" style="background-color:#E1F5EE !important;border-radius:6px;padding:5px 14px;">
+            <span style="font-size:12px;font-weight:700;color:#085041;font-family:Arial,sans-serif;letter-spacing:0.06em;">&#9989;&nbsp; PAID</span>
+          </td>
+          <td style="padding-left:12px;vertical-align:middle;">
+            <span style="font-size:13px;color:#888888;font-family:Arial,sans-serif;">{invoice_number} &middot; {date_paid}</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- Invoice table -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;border-radius:12px;overflow:hidden;border:1px solid #e8e8e8;">
+  <!-- Header -->
+  <tr>
+    <td colspan="2" bgcolor="#F5F4F0" style="background-color:#F5F4F0 !important;padding:11px 16px;border-bottom:1px solid #e8e8e8;">
+      <span style="font-size:11px;font-weight:700;color:#888888;text-transform:uppercase;letter-spacing:0.07em;font-family:Arial,sans-serif;">Invoice</span>
+    </td>
+  </tr>
+  <!-- Line item -->
+  <tr>
+    <td bgcolor="#ffffff" style="background-color:#ffffff !important;padding:16px;border-bottom:1px solid #f0f0f0;vertical-align:top;">
+      <div style="font-size:14px;font-weight:700;color:#26215C;font-family:Arial,sans-serif;margin-bottom:4px;">
+        &#11088; Featured Listing &mdash; {payment.duration_days} days
+      </div>
+      <div style="font-size:12px;color:#888888;font-family:Arial,sans-serif;">{html_module.escape(listing.title)}</div>
+    </td>
+    <td bgcolor="#ffffff" style="background-color:#ffffff !important;padding:16px;border-bottom:1px solid #f0f0f0;text-align:right;vertical-align:middle;white-space:nowrap;">
+      <span style="font-size:14px;font-weight:700;color:#26215C;font-family:Arial,sans-serif;">AUD ${amount_aud:.2f}</span>
+    </td>
+  </tr>
+  <!-- Total -->
+  <tr>
+    <td bgcolor="#EEEDFE" style="background-color:#EEEDFE !important;padding:13px 16px;">
+      <span style="font-size:13px;font-weight:700;color:#3C3489;font-family:Arial,sans-serif;">Total paid</span>
+    </td>
+    <td bgcolor="#EEEDFE" style="background-color:#EEEDFE !important;padding:13px 16px;text-align:right;">
+      <span style="font-size:16px;font-weight:700;color:#26215C;font-family:Arial,sans-serif;">AUD ${amount_aud:.2f}</span>
+    </td>
+  </tr>
+</table>
+
+{_info_box(
+    f"&#11088; Your listing is now featured and will be highlighted to all visitors until <strong>{featured_until}</strong>. "
+    "It will appear at the top of relevant search results for the full duration.",
+    bg="#E1F5EE", border="#9FE1CB", color="#085041"
+)}
+
+{_listing_card(
+    html_module.escape(listing.title),
+    listing_url,
+    f"&#11088; Featured &middot; Active until {featured_until}",
+    emoji="&#11088;",
+    bg="#E1F5EE"
+)}
+
+{_btn("View your featured listing &rarr;", listing_url, color="#1D9E75")}
+
+{_DIVIDER}
+<p style="font-size:12px;color:#aaaaaa;margin:0 0 6px;font-family:Arial,sans-serif;">
+  <strong style="color:#888888;">Payment reference:</strong>&nbsp; {ref}
+</p>
+<p style="font-size:12px;color:#aaaaaa;margin:0;font-family:Arial,sans-serif;">
+  Questions? Email us at&nbsp;
+  <a href="mailto:hello@nepsaathi.com" style="color:#534AB7;text-decoration:none;">hello@nepsaathi.com</a>
+</p>"""
+
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [payment.user.email],
+            'subject': f'Payment receipt {invoice_number} — NepSaathi',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Invoice email failed: {e}', flush=True)
 
 
 def send_listing_expired_email(listing):

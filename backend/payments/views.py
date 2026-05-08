@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from listings.models import Listing
 from .models import FeaturedPayment
+from core.emails import send_payment_invoice_email
 
 
 class CreateCheckoutSessionView(APIView):
@@ -113,6 +114,8 @@ class StripeWebhookView(APIView):
             listing = payment.listing
             listing.is_featured = True
             listing.save(update_fields=['is_featured'])
+
+        send_payment_invoice_email(payment)
 
 
 class PaymentStatusView(APIView):
