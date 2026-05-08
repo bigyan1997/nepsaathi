@@ -12,6 +12,7 @@ import ScrollToTop from "./components/layout/ScrollToTop";
 
 import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
+import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
 
 import HomePage              from "./pages/HomePage";
 import JobsPage              from "./pages/listings/JobsPage";
@@ -123,6 +124,7 @@ function App() {
                 </div>
                 <Footer />
               </div>
+              <PWAInstallPrompt />
             </ToastProvider>
           </ProgressProvider>
         </BrowserRouter>
