@@ -285,7 +285,7 @@ export default function EventDetailPage() {
         style={{
           maxWidth: "900px",
           margin: "0 auto",
-          padding: "28px",
+          padding: isMobile ? "14px" : "28px",
           background: "#F5F4F0",
           minHeight: "100vh",
         }}
@@ -377,11 +377,11 @@ export default function EventDetailPage() {
             background: catColor.bg,
             border: `1.5px solid ${catColor.border}`,
             borderRadius: "20px",
-            padding: "32px 28px",
+            padding: isMobile ? "20px 16px" : "32px 28px",
             marginBottom: "14px",
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            gap: isMobile ? "14px" : "24px",
           }}
         >
           {/* Big date pill */}
@@ -390,16 +390,16 @@ export default function EventDetailPage() {
               background: "#fff",
               border: `1.5px solid ${catColor.border}`,
               borderRadius: "16px",
-              padding: "16px 20px",
+              padding: isMobile ? "10px 14px" : "16px 20px",
               textAlign: "center",
-              minWidth: "80px",
+              minWidth: isMobile ? "56px" : "80px",
               flexShrink: 0,
               boxShadow: `0 2px 0 ${catColor.border}`,
             }}
           >
             <div
               style={{
-                fontSize: "38px",
+                fontSize: isMobile ? "28px" : "38px",
                 fontWeight: 700,
                 color: "#26215C",
                 lineHeight: 1,
@@ -492,7 +492,7 @@ export default function EventDetailPage() {
             </div>
             <h1
               style={{
-                fontSize: "24px",
+                fontSize: isMobile ? "19px" : "24px",
                 fontWeight: 700,
                 color: "#26215C",
                 margin: "0 0 10px",

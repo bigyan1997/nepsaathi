@@ -4,19 +4,22 @@ import usePageTitle from "../../hooks/usePageTitle";
 import api from "../../utils/axios";
 import { useToast } from "../../components/ui/Toast";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function ForgotPasswordPage() {
   usePageTitle("Forgot Password");
   const { addToast } = useToast();
   const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const emailError = touched && !EMAIL_RE.test(email) ? "Enter a valid email address." : null;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) {
-      addToast("Please enter your email.", "error");
-      return;
-    }
+    setTouched(true);
+    if (!EMAIL_RE.test(email)) return;
     setLoading(true);
     try {
       await api.post("/api/auth/password/reset/", { email });
@@ -40,7 +43,6 @@ export default function ForgotPasswordPage() {
       }}
     >
       <div style={{ width: "100%", maxWidth: "420px" }}>
-        {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
           <Link to="/" style={{ textDecoration: "none" }}>
             <span style={{ fontSize: "28px", fontWeight: 700 }}>
@@ -82,17 +84,11 @@ export default function ForgotPasswordPage() {
                 We've sent a password reset link to <strong>{email}</strong>.
                 Check your inbox and follow the instructions.
               </p>
-              <p
-                style={{
-                  fontSize: "13px",
-                  color: "#aaa",
-                  marginBottom: "20px",
-                }}
-              >
+              <p style={{ fontSize: "13px", color: "#aaa", marginBottom: "20px" }}>
                 Didn't receive it? Check your spam folder or try again.
               </p>
               <button
-                onClick={() => setSent(false)}
+                onClick={() => { setSent(false); setTouched(false); }}
                 style={{
                   background: "#F5F4F0",
                   color: "#534AB7",
@@ -133,14 +129,11 @@ export default function ForgotPasswordPage() {
 
               <form
                 onSubmit={handleSubmit}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
+                style={{ display: "flex", flexDirection: "column", gap: "16px" }}
               >
                 <div>
                   <label
+                    htmlFor="fp-email"
                     style={{
                       fontSize: "13px",
                       fontWeight: 500,
@@ -152,13 +145,16 @@ export default function ForgotPasswordPage() {
                     Email address
                   </label>
                   <input
+                    id="fp-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => setTouched(true)}
                     placeholder="you@example.com"
+                    autoComplete="email"
                     style={{
                       width: "100%",
-                      border: "0.5px solid #ccc",
+                      border: emailError ? "1px solid #E53935" : "0.5px solid #ccc",
                       borderRadius: "8px",
                       padding: "10px 14px",
                       fontSize: "14px",
@@ -166,8 +162,14 @@ export default function ForgotPasswordPage() {
                       background: "#fff",
                       color: "#333",
                       boxSizing: "border-box",
+                      transition: "border-color 0.15s",
                     }}
                   />
+                  {emailError && (
+                    <p style={{ fontSize: "12px", color: "#E53935", marginTop: "5px" }}>
+                      {emailError}
+                    </p>
+                  )}
                 </div>
 
                 <button
@@ -193,11 +195,7 @@ export default function ForgotPasswordPage() {
               <div style={{ textAlign: "center", marginTop: "20px" }}>
                 <Link
                   to="/login"
-                  style={{
-                    fontSize: "13px",
-                    color: "#534AB7",
-                    textDecoration: "none",
-                  }}
+                  style={{ fontSize: "13px", color: "#534AB7", textDecoration: "none" }}
                 >
                   ← Back to sign in
                 </Link>

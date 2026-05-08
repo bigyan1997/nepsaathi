@@ -29,7 +29,7 @@ export default function ImageGallery({ images }) {
             onClick={() => setLightboxOpen(true)}
             style={{
               width: "100%",
-              height: "280px",
+              height: "min(280px, 56vw)",
               objectFit: "cover",
               cursor: "pointer",
               display: "block",
@@ -141,6 +141,7 @@ export default function ImageGallery({ images }) {
                 key={img.id}
                 src={img.url}
                 alt={`Thumbnail ${index + 1}`}
+                loading="lazy"
                 onClick={() => setActiveIndex(index)}
                 style={{
                   width: "60px",

@@ -194,7 +194,7 @@ export default function JobDetailPage() {
         style={{
           maxWidth: "900px",
           margin: "0 auto",
-          padding: "28px",
+          padding: isMobile ? "14px" : "28px",
           background: "#F5F4F0",
           minHeight: "100vh",
         }}
@@ -286,25 +286,25 @@ export default function JobDetailPage() {
             background: "#EEEDFE",
             border: isWanted ? "1.5px solid #534AB7" : "1.5px solid #AFA9EC",
             borderRadius: "20px",
-            padding: "32px 28px",
+            padding: isMobile ? "20px 16px" : "32px 28px",
             marginBottom: "14px",
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            gap: isMobile ? "14px" : "24px",
           }}
         >
           {/* Avatar / icon block */}
           <div
             style={{
-              width: "80px",
-              height: "80px",
+              width: isMobile ? "56px" : "80px",
+              height: isMobile ? "56px" : "80px",
               borderRadius: "16px",
               background: isWanted ? "#534AB7" : "#fff",
               border: "1.5px solid #AFA9EC",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: isWanted ? "28px" : "36px",
+              fontSize: isWanted ? (isMobile ? "20px" : "28px") : (isMobile ? "26px" : "36px"),
               fontWeight: 700,
               color: isWanted ? "#fff" : undefined,
               flexShrink: 0,
@@ -384,7 +384,7 @@ export default function JobDetailPage() {
 
             <h1
               style={{
-                fontSize: "24px",
+                fontSize: isMobile ? "19px" : "24px",
                 fontWeight: 700,
                 color: "#26215C",
                 margin: "0 0 8px",

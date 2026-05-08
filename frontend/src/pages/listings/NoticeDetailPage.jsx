@@ -159,7 +159,7 @@ export default function NoticeDetailPage() {
         style={{
           maxWidth: "900px",
           margin: "0 auto",
-          padding: "28px",
+          padding: isMobile ? "14px" : "28px",
           background: "#F5F4F0",
           minHeight: "100vh",
         }}
@@ -257,25 +257,25 @@ export default function NoticeDetailPage() {
             background: catColor.bg,
             border: `1.5px solid ${catColor.border}`,
             borderRadius: "20px",
-            padding: "32px 28px",
+            padding: isMobile ? "20px 16px" : "32px 28px",
             marginBottom: "14px",
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            gap: isMobile ? "14px" : "24px",
           }}
         >
           {/* Icon block */}
           <div
             style={{
-              width: "80px",
-              height: "80px",
+              width: isMobile ? "56px" : "80px",
+              height: isMobile ? "56px" : "80px",
               borderRadius: "16px",
               background: "#fff",
               border: `1.5px solid ${catColor.border}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "36px",
+              fontSize: isMobile ? "26px" : "36px",
               flexShrink: 0,
               boxShadow: `0 2px 0 ${catColor.border}`,
             }}
@@ -351,7 +351,7 @@ export default function NoticeDetailPage() {
             </div>
             <h1
               style={{
-                fontSize: "24px",
+                fontSize: isMobile ? "19px" : "24px",
                 fontWeight: 700,
                 color: "#26215C",
                 margin: "0 0 8px",

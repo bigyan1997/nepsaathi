@@ -70,7 +70,7 @@ export default function Footer() {
             <span
               style={{
                 fontSize: "11px",
-                color: "#AFA9EC",
+                color: "#C9C4F5",
                 letterSpacing: "0.03em",
               }}
             >
@@ -81,7 +81,7 @@ export default function Footer() {
           <p
             style={{
               fontSize: "13px",
-              color: "#AFA9EC",
+              color: "#C9C4F5",
               lineHeight: 1.7,
               marginBottom: "20px",
               maxWidth: "260px",
@@ -98,7 +98,7 @@ export default function Footer() {
             <a
               href="https://facebook.com/nepsaathi"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               title="Facebook"
               style={{
                 width: "36px",
@@ -129,7 +129,7 @@ export default function Footer() {
             <a
               href="https://instagram.com/nepsaathi"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               title="Instagram"
               style={{
                 width: "36px",
@@ -160,7 +160,7 @@ export default function Footer() {
             <a
               href="https://wa.me/your-whatsapp-number"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               title="WhatsApp"
               style={{
                 width: "36px",
@@ -217,7 +217,7 @@ export default function Footer() {
                 to={to}
                 style={{
                   fontSize: "13px",
-                  color: "#AFA9EC",
+                  color: "#C9C4F5",
                   textDecoration: "none",
                   transition: "color 0.15s",
                 }}
@@ -260,7 +260,7 @@ export default function Footer() {
                 to={to}
                 style={{
                   fontSize: "13px",
-                  color: "#AFA9EC",
+                  color: "#C9C4F5",
                   textDecoration: "none",
                   transition: "color 0.15s",
                 }}
@@ -294,7 +294,7 @@ export default function Footer() {
               href="mailto:hello@nepsaathi.com"
               style={{
                 fontSize: "13px",
-                color: "#AFA9EC",
+                color: "#C9C4F5",
                 textDecoration: "none",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
@@ -307,7 +307,7 @@ export default function Footer() {
               href="mailto:support@nepsaathi.com"
               style={{
                 fontSize: "13px",
-                color: "#AFA9EC",
+                color: "#C9C4F5",
                 textDecoration: "none",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
@@ -328,7 +328,7 @@ export default function Footer() {
                 borderRadius: "8px",
                 padding: "8px 12px",
                 fontSize: "12px",
-                color: "#AFA9EC",
+                color: "#C9C4F5",
               }}
             >
               🇦🇺 Based in Australia
@@ -344,7 +344,7 @@ export default function Footer() {
                 borderRadius: "8px",
                 padding: "8px 12px",
                 fontSize: "12px",
-                color: "#AFA9EC",
+                color: "#C9C4F5",
               }}
             >
               🇳🇵 Built for Nepalese diaspora
@@ -370,7 +370,7 @@ export default function Footer() {
           gap: "12px",
         }}
       >
-        <span style={{ fontSize: "12px", color: "#AFA9EC" }}>
+        <span style={{ fontSize: "12px", color: "#C9C4F5" }}>
           © {currentYear} NepSaathi. All rights reserved. · नेपसाथी
         </span>
         <div style={{ display: "flex", gap: "20px" }}>
@@ -384,7 +384,7 @@ export default function Footer() {
               to={to}
               style={{
                 fontSize: "12px",
-                color: "#AFA9EC",
+                color: "#C9C4F5",
                 textDecoration: "none",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
