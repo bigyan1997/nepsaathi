@@ -9,7 +9,7 @@ import {
   markListingStatus,
   renewListing,
 } from "../../api/listings";
-import { createCheckoutSession } from "../../api/payments";
+import { createCheckoutSession, downloadInvoice } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -1067,6 +1067,13 @@ export default function MyListingsPage() {
                             featureMutation.mutate(listing.id);
                           },
                         },
+                      listing.is_featured && {
+                        label: "🧾 Download invoice",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          downloadInvoice(listing.id, `NepSaathi-Invoice-${listing.id}.pdf`);
+                        },
+                      },
                       listing.status === "active" && {
                         label: "✓ Mark as filled",
                         onClick: () => {

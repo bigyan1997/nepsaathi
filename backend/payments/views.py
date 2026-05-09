@@ -1,5 +1,6 @@
 import stripe
 from django.conf import settings
+from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
@@ -7,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from listings.models import Listing
 from .models import FeaturedPayment
+from .pdf import generate_invoice_pdf
 from core.emails import send_payment_invoice_email
 
 
@@ -116,6 +118,30 @@ class StripeWebhookView(APIView):
             listing.save(update_fields=['is_featured'])
 
         send_payment_invoice_email(payment)
+
+
+class InvoicePDFView(APIView):
+    """GET /api/payments/invoice/<listing_id>/ — download invoice PDF for latest completed payment"""
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, listing_id):
+        try:
+            listing = Listing.objects.get(pk=listing_id, user=request.user)
+        except Listing.DoesNotExist:
+            raise NotFound('Listing not found or not yours.')
+
+        payment = FeaturedPayment.objects.filter(
+            listing=listing, status='completed'
+        ).order_by('-completed_at').first()
+
+        if not payment:
+            raise NotFound('No completed payment found for this listing.')
+
+        pdf_bytes = generate_invoice_pdf(payment)
+        invoice_num = f"INV-{payment.id:05d}"
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="NepSaathi-{invoice_num}.pdf"'
+        return response
 
 
 class PaymentStatusView(APIView):

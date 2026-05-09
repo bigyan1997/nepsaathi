@@ -422,6 +422,19 @@ function JobMobileCard({ job }) {
         >
           {job.listing_title}
         </div>
+        {job.company_name && (
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#555",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {job.company_name}
+          </div>
+        )}
         <div
           style={{
             fontSize: "11px",
@@ -431,8 +444,7 @@ function JobMobileCard({ job }) {
             whiteSpace: "nowrap",
           }}
         >
-          {job.company_name ? `${job.company_name} · ` : ""}📍{" "}
-          {job.listing_location}, {job.listing_state}
+          📍 {job.listing_location}, {job.listing_state}
         </div>
         <div
           style={{
@@ -615,10 +627,13 @@ function JobCard({ job }) {
         >
           {job.listing_title}
         </div>
-        <div style={{ fontSize: "12px", color: "#777" }}>
-          {isWanted
-            ? `📍 ${job.listing_location}, ${job.listing_state}`
-            : `${job.company_name ? `${job.company_name} · ` : ""}📍 ${job.listing_location}, ${job.listing_state}`}
+        {!isWanted && job.company_name && (
+          <div style={{ fontSize: "12px", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {job.company_name}
+          </div>
+        )}
+        <div style={{ fontSize: "12px", color: "#777", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          📍 {job.listing_location}, {job.listing_state}
         </div>
         {job.description && (
           <div
