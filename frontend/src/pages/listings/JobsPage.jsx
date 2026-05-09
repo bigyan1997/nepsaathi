@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
-import { SkeletonCard } from "../../components/ui/Skeleton";
+import { SkeletonJobCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -1151,13 +1151,20 @@ export default function JobsPage() {
         </div>
 
         {(isLoading || (isFetching && allResults.length === 0)) && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-          >
-            {[1, 2, 3, 4, 5].map((i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
+          <>
+            <div
+              className="jb-mobile"
+              style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}
+            >
+              {[1, 2, 3, 4].map((i) => <SkeletonJobCard key={i} />)}
+            </div>
+            <div
+              className="jb-desktop"
+              style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
+            >
+              {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonJobCard key={i} />)}
+            </div>
+          </>
         )}
         {error && (
           <div

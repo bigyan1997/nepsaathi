@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
-import { SkeletonCard } from "../../components/ui/Skeleton";
+import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -1364,13 +1364,20 @@ export default function RoomsPage() {
 
         {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-          >
-            {[1, 2, 3, 4, 5].map((i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
+          <>
+            <div
+              className="rm-mobile"
+              style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}
+            >
+              {[1, 2, 3, 4].map((i) => <SkeletonRoomCard key={i} />)}
+            </div>
+            <div
+              className="rm-desktop"
+              style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
+            >
+              {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonRoomCard key={i} />)}
+            </div>
+          </>
         )}
 
         {error && (

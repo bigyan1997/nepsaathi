@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
-import { SkeletonRoomCard } from "../../components/ui/Skeleton";
+import { SkeletonBusinessCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -1187,17 +1187,20 @@ export default function BusinessesPage() {
         </div>
 
         {(isLoading || (isFetching && allResults.length === 0)) && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "14px",
-            }}
-          >
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <SkeletonRoomCard key={i} />
-            ))}
-          </div>
+          <>
+            <div
+              className="bz-mobile"
+              style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}
+            >
+              {[1, 2, 3, 4].map((i) => <SkeletonBusinessCard key={i} />)}
+            </div>
+            <div
+              className="bz-desktop"
+              style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}
+            >
+              {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonBusinessCard key={i} />)}
+            </div>
+          </>
         )}
         {error && (
           <div

@@ -53,12 +53,12 @@ export default function HomePage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { data: featuredData } = useQuery({ queryKey: ["home-featured"], queryFn: getFeaturedListings, staleTime: 1000 * 60 * 5 });
-  const { data: jobsData }     = useQuery({ queryKey: ["home-jobs"],     queryFn: () => getJobs({ page_size: 6 }),                   staleTime: 1000 * 60 * 5 });
-  const { data: roomsData }    = useQuery({ queryKey: ["home-rooms"],    queryFn: () => getRooms({ page_size: 6 }),                   staleTime: 1000 * 60 * 5 });
-  const { data: eventsData }   = useQuery({ queryKey: ["home-events"],   queryFn: () => getEvents({ upcoming: "true", page_size: 6 }), staleTime: 1000 * 60 * 5 });
-  const { data: noticesData }  = useQuery({ queryKey: ["home-notices"],  queryFn: () => getNotices({ page_size: 6 }),                 staleTime: 1000 * 60 * 5 });
-  const { data: statsData }    = useQuery({ queryKey: ["stats"],         queryFn: getStats,                                           staleTime: 1000 * 60 * 10 });
+  const { data: featuredData }                     = useQuery({ queryKey: ["home-featured"], queryFn: getFeaturedListings, staleTime: 1000 * 60 * 5 });
+  const { data: jobsData,    isLoading: jobsLoading    } = useQuery({ queryKey: ["home-jobs"],     queryFn: () => getJobs({ page_size: 6 }),                    staleTime: 1000 * 60 * 5 });
+  const { data: roomsData,   isLoading: roomsLoading   } = useQuery({ queryKey: ["home-rooms"],    queryFn: () => getRooms({ page_size: 6 }),                    staleTime: 1000 * 60 * 5 });
+  const { data: eventsData,  isLoading: eventsLoading  } = useQuery({ queryKey: ["home-events"],   queryFn: () => getEvents({ upcoming: "true", page_size: 6 }), staleTime: 1000 * 60 * 5 });
+  const { data: noticesData, isLoading: noticesLoading } = useQuery({ queryKey: ["home-notices"],  queryFn: () => getNotices({ page_size: 6 }),                  staleTime: 1000 * 60 * 5 });
+  const { data: statsData }                        = useQuery({ queryKey: ["stats"],         queryFn: getStats,                                            staleTime: 1000 * 60 * 10 });
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -234,6 +234,7 @@ export default function HomePage() {
           title="Latest jobs"
           viewAllTo="/jobs"
           viewAllColor="#534AB7"
+          isLoading={jobsLoading}
           items={jobsData?.results?.slice(0, 6)}
           renderRow={(job) => (
             <Link key={job.id} to={`/jobs/${job.listing_slug}`}
@@ -267,6 +268,7 @@ export default function HomePage() {
           title="Rooms available"
           viewAllTo="/rooms"
           viewAllColor="#E87722"
+          isLoading={roomsLoading}
           items={roomsData?.results?.slice(0, 6)}
           renderRow={(room) => (
             <Link key={room.id} to={`/rooms/${room.listing_slug}`}
@@ -304,6 +306,7 @@ export default function HomePage() {
           title="Upcoming events"
           viewAllTo="/events"
           viewAllColor="#1D9E75"
+          isLoading={eventsLoading}
           items={eventsData?.results?.slice(0, 6)}
           renderRow={(event) => (
             <Link key={event.id} to={`/events/${event.listing_slug}`}
@@ -338,6 +341,7 @@ export default function HomePage() {
           title="Latest notices"
           viewAllTo="/notices"
           viewAllColor="#0C447C"
+          isLoading={noticesLoading}
           items={noticesData?.results?.slice(0, 6)}
           renderRow={(notice) => (
             <Link key={notice.id} to={`/notices/${notice.listing_slug}`}

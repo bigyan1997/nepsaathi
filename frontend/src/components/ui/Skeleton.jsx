@@ -57,23 +57,211 @@ export function SkeletonRoomCard() {
       style={{
         background: "#fff",
         border: "0.5px solid #e5e5e5",
-        borderRadius: "12px",
+        borderRadius: "14px",
         overflow: "hidden",
       }}
     >
       <Skeleton width="100%" height="110px" borderRadius="0" />
       <div
         style={{
-          padding: "12px 14px",
+          padding: "10px 12px 12px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <Skeleton width="45px" height="10px" />
+        <Skeleton width="85%" height="13px" />
+        <Skeleton width="65%" height="13px" />
+        <Skeleton width="75%" height="11px" />
+        <div style={{ display: "flex", gap: "4px", marginTop: "2px" }}>
+          <Skeleton width="55px" height="18px" borderRadius="6px" />
+          <Skeleton width="48px" height="18px" borderRadius="6px" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonJobCard() {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+      }}
+    >
+      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <Skeleton width="50px" height="10px" />
+        <Skeleton width="85%" height="13px" />
+        <Skeleton width="62%" height="13px" />
+        <Skeleton width="68%" height="11px" />
+        <Skeleton width="78%" height="11px" />
+        <div style={{ display: "flex", gap: "4px", marginTop: "2px" }}>
+          <Skeleton width="55px" height="18px" borderRadius="6px" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonBusinessCard() {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+      }}
+    >
+      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <Skeleton width="80%" height="13px" />
+        <Skeleton width="55%" height="13px" />
+        <Skeleton width="70px" height="11px" />
+        <Skeleton width="58px" height="18px" borderRadius="6px" />
+        <Skeleton width="72%" height="11px" />
+        <Skeleton width="44px" height="10px" />
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonEventCard() {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+      }}
+    >
+      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <Skeleton width="55px" height="18px" borderRadius="6px" />
+        <Skeleton width="85%" height="13px" />
+        <Skeleton width="60%" height="13px" />
+        <Skeleton width="68%" height="11px" />
+        <Skeleton width="75%" height="11px" />
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonNoticeCard() {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "14px",
+        overflow: "hidden",
+      }}
+    >
+      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <div
+        style={{
+          padding: "10px 12px 12px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <Skeleton width="58px" height="18px" borderRadius="6px" />
+        <Skeleton width="85%" height="13px" />
+        <Skeleton width="58%" height="13px" />
+        <Skeleton width="72%" height="11px" />
+        <Skeleton width="54px" height="10px" />
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonHomeRow() {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "12px",
+        padding: "16px 20px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: "16px",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
+        <Skeleton width="40px" height="40px" borderRadius="10px" style={{ flexShrink: 0 }} />
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "7px", minWidth: 0 }}>
+          <Skeleton width="65%" height="14px" />
+          <Skeleton width="45%" height="12px" />
+          <Skeleton width="28%" height="11px" />
+        </div>
+      </div>
+      <Skeleton width="72px" height="26px" borderRadius="20px" style={{ flexShrink: 0 }} />
+    </div>
+  );
+}
+
+export function SkeletonDesktopCard() {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "0.5px solid #e5e5e5",
+        borderRadius: "16px",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "320px",
+      }}
+    >
+      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <div
+        style={{
+          padding: "16px 18px",
+          flex: 1,
           display: "flex",
           flexDirection: "column",
           gap: "8px",
         }}
       >
-        <Skeleton width="70%" height="13px" />
-        <Skeleton width="50%" height="12px" />
-        <Skeleton width="40%" height="11px" />
+        <Skeleton width="48px" height="12px" />
+        <Skeleton width="80%" height="17px" />
+        <Skeleton width="58%" height="17px" />
+        <Skeleton width="52%" height="12px" />
+        <Skeleton width="100%" height="13px" style={{ marginTop: "4px" }} />
+        <Skeleton width="88%" height="13px" />
+        <Skeleton width="72%" height="13px" />
       </div>
+      <Skeleton width="100%" height="40px" borderRadius="0" />
     </div>
   );
 }
