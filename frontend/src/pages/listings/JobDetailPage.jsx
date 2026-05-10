@@ -7,6 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
+import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -808,7 +809,7 @@ export default function JobDetailPage() {
               </div>
             </div>
 
-            {/* Apply / Contact */}
+            {/* Seller card */}
             <div
               style={{
                 background: "#fff",
@@ -817,122 +818,47 @@ export default function JobDetailPage() {
                 overflow: "hidden",
               }}
             >
-              <div style={{ background: "#E87722", padding: "10px 16px" }}>
-                <div
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: "#fff",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {isWanted ? "CONTACT THIS PERSON" : "APPLY / CONTACT"}
+              <div style={{ padding: "16px", display: "flex", alignItems: "center", gap: "12px", borderBottom: "0.5px solid #f0f0f0" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "#534AB7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 700, color: "#fff", flexShrink: 0 }}>
+                  {initial}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {job.posted_by}
+                  </div>
+                  {job.user_joined && (
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                      Member since {new Date(job.user_joined).toLocaleDateString("en-AU", { month: "short", year: "numeric" })}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div style={{ padding: "14px 16px" }}>
-                {isAuthenticated ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
+              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <MessageButton
+                  recipientId={job.user_id}
+                  listingId={job.listing_id}
+                  listingTitle={job.listing_title}
+                  listingType="job"
+                  fullWidth
+                />
+                {isAuthenticated && (
+                  <>
                     {job.contact_phone && (
-                      <a
-                        href={`tel:${job.contact_phone}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#534AB7",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        📞 Call {job.contact_phone}
+                      <a href={`tel:${job.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#EEEDFE", color: "#534AB7", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #AFA9EC" }}>
+                        📞 {job.contact_phone}
                       </a>
                     )}
                     {job.contact_whatsapp && (
-                      <a
-                        href={`https://wa.me/${job.contact_whatsapp?.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#25D366",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <a href={`https://wa.me/${job.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         WhatsApp
                       </a>
                     )}
                     {job.contact_email && (
-                      <a
-                        href={`mailto:${job.contact_email}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#FFF1E0",
-                          color: "#E87722",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          border: "0.5px solid #EFD9C0",
-                        }}
-                      >
+                      <a href={`mailto:${job.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         ✉️ Email
                       </a>
                     )}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "13px",
-                        color: "#666",
-                        margin: 0,
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {isWanted
-                        ? "Sign in to contact this job seeker"
-                        : "Sign in to apply for this role"}
-                    </p>
-                    <Link
-                      to="/login"
-                      style={{
-                        display: "block",
-                        textAlign: "center",
-                        background: "#E87722",
-                        color: "#fff",
-                        padding: "10px",
-                        borderRadius: "9px",
-                        textDecoration: "none",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Sign in →
-                    </Link>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -943,6 +869,17 @@ export default function JobDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Get in touch ── */}
+        <GetInTouchSection
+          recipientId={job.user_id}
+          listingId={job.listing_id}
+          listingTitle={job.listing_title}
+          listingType="job"
+          postedBy={job.posted_by}
+          joinedDate={job.user_joined}
+          themeColor="#534AB7"
+        />
 
         {/* ── Similar jobs ── */}
         {similarListings?.length > 0 && (

@@ -8,6 +8,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
+import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView } from "../../api/listings";
 import { useEffect, useState } from "react";
@@ -1012,120 +1013,59 @@ export default function EventDetailPage() {
               );
             })()}
 
-            {/* Contact organiser */}
-            {isAuthenticated &&
-              (event.contact_phone ||
-                event.contact_whatsapp ||
-                event.contact_email) && (
-                <div
-                  style={{
-                    background: "#fff",
-                    border: "0.5px solid #e5e5e5",
-                    borderRadius: "14px",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div style={{ background: "#E87722", padding: "10px 16px" }}>
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        color: "#fff",
-                        letterSpacing: "0.06em",
-                      }}
-                    >
-                      CONTACT ORGANISER
-                    </div>
+            {/* Seller card */}
+            <div
+              style={{
+                background: "#fff",
+                border: "0.5px solid #e5e5e5",
+                borderRadius: "14px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ padding: "16px", display: "flex", alignItems: "center", gap: "12px", borderBottom: "0.5px solid #f0f0f0" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "#534AB7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 700, color: "#fff", flexShrink: 0 }}>
+                  {event.posted_by?.[0]?.toUpperCase() || "?"}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {event.posted_by}
                   </div>
-                  <div
-                    style={{
-                      padding: "14px 16px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
+                  {event.user_joined && (
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                      Member since {new Date(event.user_joined).toLocaleDateString("en-AU", { month: "short", year: "numeric" })}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <MessageButton
+                  recipientId={event.user_id}
+                  listingId={event.listing_id}
+                  listingTitle={event.listing_title}
+                  listingType="event"
+                  fullWidth
+                />
+                {isAuthenticated && (
+                  <>
                     {event.contact_phone && (
-                      <a
-                        href={`tel:${event.contact_phone}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#534AB7",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        📞 Call organiser
+                      <a href={`tel:${event.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#EEEDFE", color: "#534AB7", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #AFA9EC" }}>
+                        📞 {event.contact_phone}
                       </a>
                     )}
                     {event.contact_whatsapp && (
-                      <a
-                        href={`https://wa.me/${event.contact_whatsapp?.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#25D366",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <a href={`https://wa.me/${event.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         WhatsApp
                       </a>
                     )}
                     {event.contact_email && (
-                      <a
-                        href={`mailto:${event.contact_email}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#FFF1E0",
-                          color: "#E87722",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          border: "0.5px solid #EFD9C0",
-                        }}
-                      >
+                      <a href={`mailto:${event.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         ✉️ Email
                       </a>
                     )}
-                  </div>
-                </div>
-              )}
-
-            {/* Sign in prompt */}
-            {!isAuthenticated && (
-              <div
-                style={{
-                  background: "#FFF1E0",
-                  border: "0.5px solid #EFD9C0",
-                  borderRadius: "14px",
-                  padding: "16px",
-                  fontSize: "13px",
-                  color: "#633806",
-                  textAlign: "center",
-                  lineHeight: 1.7,
-                }}
-              >
-                <Link to="/login" style={{ color: "#E87722", fontWeight: 700 }}>
-                  Sign in
-                </Link>{" "}
-                to view contact details.
+                  </>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Report — tucked inside sidebar, not floating */}
             <div style={{ textAlign: "center" }}>
@@ -1133,6 +1073,17 @@ export default function EventDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Get in touch ── */}
+        <GetInTouchSection
+          recipientId={event.user_id}
+          listingId={event.listing_id}
+          listingTitle={event.listing_title}
+          listingType="event"
+          postedBy={event.posted_by}
+          joinedDate={event.user_joined}
+          themeColor="#534AB7"
+        />
 
         {/* ── Similar events ── */}
         {similarListings?.length > 0 && (

@@ -713,6 +713,7 @@ export default function NoticesPage() {
   usePageTitle("Notices");
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [filters, setFilters] = useState({
     category: "",
     search: "",
@@ -803,6 +804,8 @@ export default function NoticesPage() {
       border: "#F09595",
     },
   ].filter(Boolean);
+
+  const moreFilterCount = ["is_free", "is_urgent"].filter((k) => filters[k] === "true").length;
 
   return (
     <>
@@ -1064,36 +1067,64 @@ export default function NoticesPage() {
             <option value="-listing__created_at">Newest first</option>
             <option value="listing__created_at">Oldest first</option>
           </select>
-          {[
-            { key: "is_free", label: "Free only" },
-            { key: "is_urgent", label: "Urgent only" },
-          ].map(({ key, label }) => (
-            <label
-              key={key}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "13px",
-                color: "#444",
-                cursor: "pointer",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={filters[key] === "true"}
-                onChange={(e) =>
-                  updateFilters({ [key]: e.target.checked ? "true" : "" })
-                }
-              />
-              {label}
-            </label>
-          ))}
+          <button
+            type="button"
+            onClick={() => setShowMoreFilters(!showMoreFilters)}
+            style={{
+              border: `0.5px solid ${showMoreFilters ? "#AFA9EC" : "#ddd"}`,
+              borderRadius: "8px",
+              padding: "9px 14px",
+              fontSize: "13px",
+              background: showMoreFilters ? "#EEEDFE" : "#fff",
+              color: showMoreFilters ? "#534AB7" : "#555",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            {showMoreFilters ? "Fewer filters ▲" : "More filters ▼"}
+            {moreFilterCount > 0 && !showMoreFilters && (
+              <span style={{ background: "#534AB7", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "11px", fontWeight: 600 }}>
+                {moreFilterCount}
+              </span>
+            )}
+          </button>
           <SaveSearchButton
             listingType="notice"
             filters={{ search: filters.search, state: filters.state }}
           />
         </div>
+        {showMoreFilters && (
+          <div
+            className="an-fdesk"
+            style={{
+              background: "#f9f9ff",
+              border: "0.5px solid #e8e6f8",
+              borderRadius: "10px",
+              padding: "12px 16px",
+              gap: "20px",
+              marginBottom: "16px",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            {[
+              { key: "is_free", label: "🎁 Free items only" },
+              { key: "is_urgent", label: "🔴 Urgent only" },
+            ].map(({ key, label }) => (
+              <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={filters[key] === "true"}
+                  onChange={(e) => updateFilters({ [key]: e.target.checked ? "true" : "" })}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        )}
 
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <>

@@ -788,6 +788,7 @@ export default function BusinessesPage() {
   usePageTitle("Nepalese Businesses");
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [filters, setFilters] = useState({
     category: "",
     state: "",
@@ -873,6 +874,8 @@ export default function BusinessesPage() {
       border: "#9FE1CB",
     },
   ].filter(Boolean);
+
+  const moreFilterCount = ["is_nepalese_owned", "is_verified"].filter((k) => filters[k] === "true").length;
 
   return (
     <>
@@ -1149,31 +1152,30 @@ export default function BusinessesPage() {
               </option>
             ))}
           </select>
-          {[
-            { key: "is_nepalese_owned", label: "Nepalese owned" },
-            { key: "is_verified", label: "Verified only" },
-          ].map(({ key, label }) => (
-            <label
-              key={key}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "13px",
-                color: "#444",
-                cursor: "pointer",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={filters[key] === "true"}
-                onChange={(e) =>
-                  updateFilters({ [key]: e.target.checked ? "true" : "" })
-                }
-              />
-              {label}
-            </label>
-          ))}
+          <button
+            type="button"
+            onClick={() => setShowMoreFilters(!showMoreFilters)}
+            style={{
+              border: `0.5px solid ${showMoreFilters ? "#AFA9EC" : "#ddd"}`,
+              borderRadius: "8px",
+              padding: "10px 14px",
+              fontSize: "13px",
+              background: showMoreFilters ? "#EEEDFE" : "#fff",
+              color: showMoreFilters ? "#534AB7" : "#555",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            {showMoreFilters ? "Fewer filters ▲" : "More filters ▼"}
+            {moreFilterCount > 0 && !showMoreFilters && (
+              <span style={{ background: "#534AB7", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "11px", fontWeight: 600 }}>
+                {moreFilterCount}
+              </span>
+            )}
+          </button>
           <SaveSearchButton
             listingType="business"
             filters={{
@@ -1185,6 +1187,35 @@ export default function BusinessesPage() {
             }}
           />
         </div>
+        {showMoreFilters && (
+          <div
+            className="bz-fdesk"
+            style={{
+              background: "#f9f9ff",
+              border: "0.5px solid #e8e6f8",
+              borderRadius: "10px",
+              padding: "12px 16px",
+              gap: "20px",
+              marginBottom: "16px",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            {[
+              { key: "is_nepalese_owned", label: "🇳🇵 Nepalese owned" },
+              { key: "is_verified", label: "✅ Verified only" },
+            ].map(({ key, label }) => (
+              <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={filters[key] === "true"}
+                  onChange={(e) => updateFilters({ [key]: e.target.checked ? "true" : "" })}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        )}
 
         {(isLoading || (isFetching && allResults.length === 0)) && (
           <>

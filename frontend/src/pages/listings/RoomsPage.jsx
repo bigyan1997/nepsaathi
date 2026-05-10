@@ -831,6 +831,7 @@ export default function RoomsPage() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [filters, setFilters] = useState({
     room_type: "",
     search: "",
@@ -954,6 +955,9 @@ export default function RoomsPage() {
       border: "#EFD9C0",
     },
   ].filter(Boolean);
+
+  const moreFilterCount = ["bills_included", "nepalese_household", "pets_allowed", "parking_available"]
+    .filter((k) => filters[k] === "true").length;
 
   return (
     <>
@@ -1310,33 +1314,30 @@ export default function RoomsPage() {
               <option key={n} value={String(n)}>{n}+ beds</option>
             ))}
           </select>
-          {[
-            { key: "bills_included", label: "💡 Bills incl." },
-            { key: "nepalese_household", label: "🇳🇵 Nepalese" },
-            { key: "pets_allowed", label: "🐾 Pets OK" },
-            { key: "parking_available", label: "🚗 Parking" },
-          ].map(({ key, label }) => (
-            <label
-              key={key}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontSize: "13px",
-                color: "#444",
-                cursor: "pointer",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={filters[key] === "true"}
-                onChange={(e) =>
-                  updateFilters({ [key]: e.target.checked ? "true" : "" })
-                }
-              />
-              {label}
-            </label>
-          ))}
+          <button
+            type="button"
+            onClick={() => setShowMoreFilters(!showMoreFilters)}
+            style={{
+              border: `0.5px solid ${showMoreFilters ? "#AFA9EC" : "#ddd"}`,
+              borderRadius: "8px",
+              padding: "9px 14px",
+              fontSize: "13px",
+              background: showMoreFilters ? "#EEEDFE" : "#fff",
+              color: showMoreFilters ? "#534AB7" : "#555",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            {showMoreFilters ? "Fewer filters ▲" : "More filters ▼"}
+            {moreFilterCount > 0 && !showMoreFilters && (
+              <span style={{ background: "#534AB7", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "11px", fontWeight: 600 }}>
+                {moreFilterCount}
+              </span>
+            )}
+          </button>
           <select
             value={filters.ordering}
             onChange={(e) => updateFilters({ ordering: e.target.value })}
@@ -1361,6 +1362,37 @@ export default function RoomsPage() {
             filters={{ search: filters.search, state: filters.state }}
           />
         </div>
+        {showMoreFilters && (
+          <div
+            className="rm-fdesk"
+            style={{
+              background: "#f9f9ff",
+              border: "0.5px solid #e8e6f8",
+              borderRadius: "10px",
+              padding: "12px 16px",
+              gap: "20px",
+              marginBottom: "16px",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
+            {[
+              { key: "bills_included", label: "💡 Bills included" },
+              { key: "nepalese_household", label: "🇳🇵 Nepalese household" },
+              { key: "pets_allowed", label: "🐾 Pets allowed" },
+              { key: "parking_available", label: "🚗 Parking available" },
+            ].map(({ key, label }) => (
+              <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={filters[key] === "true"}
+                  onChange={(e) => updateFilters({ [key]: e.target.checked ? "true" : "" })}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* Loading */}
         {(isLoading || (isFetching && allResults.length === 0)) && (

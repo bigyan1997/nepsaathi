@@ -7,6 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
+import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -676,7 +677,7 @@ export default function NoticeDetailPage() {
               </div>
             </div>
 
-            {/* Contact */}
+            {/* Seller card */}
             <div
               style={{
                 background: "#fff",
@@ -685,129 +686,47 @@ export default function NoticeDetailPage() {
                 overflow: "hidden",
               }}
             >
-              <div style={{ background: "#E87722", padding: "10px 16px" }}>
-                <div
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: "#fff",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  CONTACT
+              <div style={{ padding: "16px", display: "flex", alignItems: "center", gap: "12px", borderBottom: "0.5px solid #f0f0f0" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: footerBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 700, color: "#fff", flexShrink: 0 }}>
+                  {initial}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {notice.posted_by}
+                  </div>
+                  {notice.user_joined && (
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                      Member since {new Date(notice.user_joined).toLocaleDateString("en-AU", { month: "short", year: "numeric" })}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div style={{ padding: "14px 16px" }}>
-                {isAuthenticated ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
+              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <MessageButton
+                  recipientId={notice.user_id}
+                  listingId={notice.listing_id}
+                  listingTitle={notice.listing_title}
+                  listingType="notice"
+                  fullWidth
+                />
+                {isAuthenticated && (
+                  <>
                     {notice.contact_phone && (
-                      <a
-                        href={`tel:${notice.contact_phone}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: footerBg,
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        📞 Call {notice.contact_phone}
+                      <a href={`tel:${notice.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#f0f6ff", color: footerBg, padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
+                        📞 {notice.contact_phone}
                       </a>
                     )}
                     {notice.contact_whatsapp && (
-                      <a
-                        href={`https://wa.me/${notice.contact_whatsapp?.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#25D366",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <a href={`https://wa.me/${notice.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         WhatsApp
                       </a>
                     )}
                     {notice.contact_email && (
-                      <a
-                        href={`mailto:${notice.contact_email}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#FFF1E0",
-                          color: "#E87722",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          border: "0.5px solid #EFD9C0",
-                        }}
-                      >
+                      <a href={`mailto:${notice.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         ✉️ Email
                       </a>
                     )}
-                    {!notice.contact_phone &&
-                      !notice.contact_whatsapp &&
-                      !notice.contact_email && (
-                        <p
-                          style={{ fontSize: "13px", color: "#aaa", margin: 0 }}
-                        >
-                          No contact details provided.
-                        </p>
-                      )}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "13px",
-                        color: "#666",
-                        margin: 0,
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      Sign in to view contact details
-                    </p>
-                    <Link
-                      to="/login"
-                      style={{
-                        display: "block",
-                        textAlign: "center",
-                        background: "#E87722",
-                        color: "#fff",
-                        padding: "10px",
-                        borderRadius: "9px",
-                        textDecoration: "none",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Sign in →
-                    </Link>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -817,6 +736,17 @@ export default function NoticeDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Get in touch ── */}
+        <GetInTouchSection
+          recipientId={notice.user_id}
+          listingId={notice.listing_id}
+          listingTitle={notice.listing_title}
+          listingType="notice"
+          postedBy={notice.posted_by}
+          joinedDate={notice.user_joined}
+          themeColor={footerBg}
+        />
 
         {/* ── Similar notices ── */}
         {similarListings?.length > 0 && (

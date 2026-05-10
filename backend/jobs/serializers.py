@@ -18,6 +18,7 @@ class JobSerializer(serializers.ModelSerializer):
     contact_email = serializers.EmailField(source='listing.contact_email', read_only=True)
     posted_by = serializers.CharField(source='listing.user.full_name', read_only=True)
     user_id = serializers.IntegerField(source='listing.user.id', read_only=True)
+    user_joined = serializers.DateTimeField(source='listing.user.date_joined', read_only=True)
     created_at = serializers.DateTimeField(source='listing.created_at', read_only=True)
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
     is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
@@ -54,6 +55,7 @@ class JobSerializer(serializers.ModelSerializer):
             'listing_status',
             'posted_by',
             'user_id',
+            'user_joined',
             'contact_phone',
             'contact_whatsapp',
             'contact_email',

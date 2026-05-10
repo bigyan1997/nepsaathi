@@ -7,6 +7,7 @@ import ShareButton from "../../components/ui/ShareButton";
 import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
+import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -842,7 +843,7 @@ export default function RoomDetailPage() {
               </div>
             </div>
 
-            {/* Contact */}
+            {/* Seller card */}
             <div
               style={{
                 background: "#fff",
@@ -851,122 +852,47 @@ export default function RoomDetailPage() {
                 overflow: "hidden",
               }}
             >
-              <div style={{ background: "#E87722", padding: "10px 16px" }}>
-                <div
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: "#fff",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {isWanted ? "CONTACT THIS PERSON" : "CONTACT LANDLORD"}
+              <div style={{ padding: "16px", display: "flex", alignItems: "center", gap: "12px", borderBottom: "0.5px solid #f0f0f0" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "#E87722", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", fontWeight: 700, color: "#fff", flexShrink: 0 }}>
+                  {initial}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {room.posted_by}
+                  </div>
+                  {room.user_joined && (
+                    <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
+                      Member since {new Date(room.user_joined).toLocaleDateString("en-AU", { month: "short", year: "numeric" })}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div style={{ padding: "14px 16px" }}>
-                {isAuthenticated ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
+              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <MessageButton
+                  recipientId={room.user_id}
+                  listingId={room.listing_id}
+                  listingTitle={room.listing_title}
+                  listingType="room"
+                  fullWidth
+                />
+                {isAuthenticated && (
+                  <>
                     {room.contact_phone && (
-                      <a
-                        href={`tel:${room.contact_phone}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#E87722",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        📞 Call {room.contact_phone}
+                      <a href={`tel:${room.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#FFF1E0", color: "#E87722", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #EFD9C0" }}>
+                        📞 {room.contact_phone}
                       </a>
                     )}
                     {room.contact_whatsapp && (
-                      <a
-                        href={`https://wa.me/${room.contact_whatsapp?.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#25D366",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <a href={`https://wa.me/${room.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         WhatsApp
                       </a>
                     )}
                     {room.contact_email && (
-                      <a
-                        href={`mailto:${room.contact_email}`}
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#FFF1E0",
-                          color: "#E87722",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          border: "0.5px solid #EFD9C0",
-                        }}
-                      >
+                      <a href={`mailto:${room.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                         ✉️ Email
                       </a>
                     )}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "13px",
-                        color: "#666",
-                        margin: 0,
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {isWanted
-                        ? "Sign in to contact this room seeker"
-                        : "Sign in to contact the landlord"}
-                    </p>
-                    <Link
-                      to="/login"
-                      style={{
-                        display: "block",
-                        textAlign: "center",
-                        background: "#E87722",
-                        color: "#fff",
-                        padding: "10px",
-                        borderRadius: "9px",
-                        textDecoration: "none",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Sign in →
-                    </Link>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -976,6 +902,17 @@ export default function RoomDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Get in touch ── */}
+        <GetInTouchSection
+          recipientId={room.user_id}
+          listingId={room.listing_id}
+          listingTitle={room.listing_title}
+          listingType="room"
+          postedBy={room.posted_by}
+          joinedDate={room.user_joined}
+          themeColor="#E87722"
+        />
 
         {/* ── Similar rooms ── */}
         {similarListings?.length > 0 && (

@@ -5,7 +5,7 @@ import { startConversation } from "../../api/messages";
 import useAuthStore from "../../store/authStore";
 import { useToast } from "./Toast";
 
-export default function MessageButton({ recipientId, listingId, listingTitle, listingType, compact = false }) {
+export default function MessageButton({ recipientId, listingId, listingTitle, listingType, compact = false, fullWidth = false }) {
   const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -58,20 +58,22 @@ export default function MessageButton({ recipientId, listingId, listingTitle, li
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: fullWidth ? "center" : "flex-start",
           gap: "6px",
-          background: "#EEEDFE",
-          border: "0.5px solid #AFA9EC",
+          width: fullWidth ? "100%" : undefined,
+          background: fullWidth ? "#1B8F5E" : "#EEEDFE",
+          border: fullWidth ? "none" : "0.5px solid #AFA9EC",
           borderRadius: "8px",
-          padding: compact ? "9px 12px" : "9px 16px",
+          padding: compact ? "9px 12px" : fullWidth ? "12px 16px" : "9px 16px",
           fontSize: "13px",
-          fontWeight: 500,
-          color: "#534AB7",
+          fontWeight: fullWidth ? 600 : 500,
+          color: fullWidth ? "#fff" : "#534AB7",
           cursor: "pointer",
           transition: "all 0.15s",
           whiteSpace: "nowrap",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "#DDD9FC")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "#EEEDFE")}
+        onMouseEnter={(e) => (e.currentTarget.style.background = fullWidth ? "#157a50" : "#DDD9FC")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = fullWidth ? "#1B8F5E" : "#EEEDFE")}
       >
         <span style={{ fontSize: "15px" }}>💬</span>
         {!compact && "Message"}
