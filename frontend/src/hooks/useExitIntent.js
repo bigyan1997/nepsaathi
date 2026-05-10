@@ -20,28 +20,29 @@ export default function useExitIntent(onTrigger) {
   useEffect(() => {
     if (!canShow()) return;
 
-    // Desktop: mouse leaves viewport toward top
-    const handleMouseLeave = (e) => {
+    triggered.current = false;
+
+    // Desktop: cursor reaches top 5px of viewport (heading toward URL bar)
+    const handleMouseMove = (e) => {
       if (triggered.current) return;
-      if (e.clientY <= 10) {
+      if (e.clientY <= 5) {
         triggered.current = true;
         onTrigger();
       }
     };
 
-    // Mobile: show after 60s of being on the page
+    // Mobile: show after 30s on the page
     const timer = setTimeout(() => {
       if (triggered.current) return;
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
+      if (window.innerWidth < 768) {
         triggered.current = true;
         onTrigger();
       }
-    }, 60000);
+    }, 30000);
 
-    document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mousemove", handleMouseMove);
     return () => {
-      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mousemove", handleMouseMove);
       clearTimeout(timer);
     };
   }, [onTrigger]);
