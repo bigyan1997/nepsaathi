@@ -30,14 +30,17 @@ def _append_row(feedback):
             creds_abs = os.path.join(base_dir, creds_path)
             creds = Credentials.from_service_account_file(creds_abs, scopes=scopes)
 
+        from zoneinfo import ZoneInfo
         client = gspread.authorize(creds)
         sheet = client.open_by_key(spreadsheet_id).sheet1
 
-        if not sheet.get_all_values():
-            sheet.append_row(['Timestamp', 'Satisfaction', 'Reason', 'Page URL', 'User ID', 'User Email'])
+        rows = sheet.get_all_values()
+        if not rows or not rows[0] or rows[0][0] != 'Timestamp':
+            sheet.insert_row(['Timestamp', 'Satisfaction', 'Reason', 'Page URL', 'User ID', 'User Email'], index=1)
 
+        local_time = feedback.created_at.astimezone(ZoneInfo('Australia/Sydney'))
         sheet.append_row([
-            feedback.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            local_time.strftime('%Y-%m-%d %H:%M:%S'),
             feedback.satisfaction,
             feedback.get_reason_display(),
             feedback.page_url or '',
