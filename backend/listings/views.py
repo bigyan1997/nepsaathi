@@ -144,6 +144,13 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
             status='active'
         )
 
+    def perform_update(self, serializer):
+        if self.request.user.is_banned:
+            raise ValidationError(
+                'Your account has been suspended. Contact support@nepsaathi.com'
+            )
+        serializer.save()
+
     def destroy(self, request, *args, **kwargs):
         listing = self.get_object()
         # Soft delete first so listing is gone even if image cleanup fails

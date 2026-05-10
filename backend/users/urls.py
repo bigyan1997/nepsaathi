@@ -18,4 +18,7 @@ urlpatterns = [
 
     # Contact
     path('contact/', views.ContactView.as_view(), name='contact'),
+
+    # Push notifications
+    path('push/subscribe/', views.PushSubscribeView.as_view(), name='push-subscribe'),
 ]

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import useAuthStore from "./store/authStore";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import GuestRoute from "./components/auth/GuestRoute";
@@ -56,6 +58,12 @@ const queryClient = new QueryClient({
   },
 });
 
+
+function PushInit() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  usePushNotifications(isAuthenticated);
+  return null;
+}
 
 function App() {
   return (
@@ -124,6 +132,7 @@ function App() {
                 </div>
                 <Footer />
               </div>
+              <PushInit />
               <PWAInstallPrompt />
             </ToastProvider>
           </ProgressProvider>

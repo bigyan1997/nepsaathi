@@ -156,8 +156,10 @@ REST_FRAMEWORK = {
         'login': '5/minute' if not DEBUG else '1000/day',
         'register': '3/minute' if not DEBUG else '1000/day',
         'password_reset': '3/hour' if not DEBUG else '1000/day',
-        'message_send': '20/minute' if not DEBUG else '1000/day',
+        'message_send': '5/minute' if not DEBUG else '1000/day',
         'saved_search_create': '20/day' if not DEBUG else '1000/day',
+        'contact': '5/hour' if not DEBUG else '1000/day',
+        'payment_status': '30/minute' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -256,6 +258,11 @@ EMAIL_TIMEOUT       = 10
 
     # Resend API (used in production instead of SMTP)
 RESEND_API_KEY = config('RESEND_API_KEY', default='')
+
+# ─── Web Push (VAPID) ────────────────────────────────────────────────────────
+VAPID_PRIVATE_KEY = config('VAPID_PRIVATE_KEY', default='')
+VAPID_PUBLIC_KEY = config('VAPID_PUBLIC_KEY', default='')
+VAPID_ADMIN_EMAIL = config('VAPID_ADMIN_EMAIL', default='noreply@nepsaathi.com')
 
 # ─── Stripe ───────────────────────────────────────────────────────────────────
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')

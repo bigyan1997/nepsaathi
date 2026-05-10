@@ -27,9 +27,11 @@ from users import views as users_views
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
+ADMIN_URL = config('ADMIN_URL', default='nepsaathi-admin/')
+
 urlpatterns = [
-    # Admin panel
-    path('nepsaathi-admin/', admin.site.urls),
+    # Admin panel — path configurable via ADMIN_URL env var
+    path(ADMIN_URL, admin.site.urls),
 
     # Redirect root to frontend
     path('', lambda request: HttpResponseRedirect(FRONTEND_URL)),

@@ -125,8 +125,18 @@ class MessageSendView(APIView):
             sender=request.user,
             content=content,
         )
-        # Touch conversation updated_at for ordering
         convo.save(update_fields=['updated_at'])
+
+        # Push notification to the other participant
+        recipient = convo.participants.exclude(pk=request.user.pk).first()
+        if recipient:
+            import threading
+            from core.push import send_push_notification
+            sender_name = request.user.full_name or request.user.email
+            threading.Thread(
+                target=send_push_notification,
+                args=(recipient, f'New message from {sender_name}', content[:80], f'/messages/{convo.pk}'),
+            ).start()
 
         return Response(MessageSerializer(msg).data, status=201)
 

@@ -1,5 +1,5 @@
 from rest_framework import generics, permissions, status
-from users.throttles import LoginRateThrottle, RegisterRateThrottle, PasswordResetThrottle
+from users.throttles import LoginRateThrottle, RegisterRateThrottle, PasswordResetThrottle, ContactRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -129,6 +129,7 @@ class ContactView(APIView):
     Send contact form email to hello@nepsaathi.com
     """
     permission_classes = (permissions.AllowAny,)
+    throttle_classes = [ContactRateThrottle]
 
     def post(self, request):
         name = request.data.get('name', '').strip()
@@ -152,7 +153,7 @@ class ContactView(APIView):
             from core.emails import send_contact_email
             send_contact_email(name, email, subject, message)
             return Response({'detail': 'Message sent successfully!'})
-        except Exception as e:
+        except Exception:
             return Response(
                 {'detail': 'Failed to send message. Please email us directly.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -224,3 +225,40 @@ class ThrottledPasswordResetView(APIView):
     def post(self, request, *args, **kwargs):
         from dj_rest_auth.views import PasswordResetView
         return PasswordResetView.as_view()(request._request, *args, **kwargs)
+
+
+class PushSubscribeView(APIView):
+    """
+    POST   /api/users/push/subscribe/   — register a push subscription
+    DELETE /api/users/push/subscribe/   — remove a push subscription
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        endpoint = request.data.get('endpoint', '').strip()
+        p256dh = request.data.get('p256dh', '').strip()
+        auth = request.data.get('auth', '').strip()
+
+        if not endpoint or not p256dh or not auth:
+            return Response(
+                {'detail': 'endpoint, p256dh and auth are required.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from users.models import PushSubscription
+        PushSubscription.objects.update_or_create(
+            endpoint=endpoint,
+            defaults={'user': request.user, 'p256dh': p256dh, 'auth': auth},
+        )
+        return Response({'detail': 'Subscribed.'}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        endpoint = request.data.get('endpoint', '').strip()
+        if not endpoint:
+            return Response(
+                {'detail': 'endpoint is required.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        from users.models import PushSubscription
+        PushSubscription.objects.filter(user=request.user, endpoint=endpoint).delete()
+        return Response({'detail': 'Unsubscribed.'}, status=status.HTTP_200_OK)

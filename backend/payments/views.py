@@ -1,15 +1,24 @@
+import logging
 import stripe
 from django.conf import settings
+from django.db import transaction
 from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 from listings.models import Listing
 from .models import FeaturedPayment
 from .pdf import generate_invoice_pdf
 from core.emails import send_payment_invoice_email
+
+logger = logging.getLogger(__name__)
+
+
+class PaymentStatusThrottle(UserRateThrottle):
+    scope = 'payment_status'
 
 
 class CreateCheckoutSessionView(APIView):
@@ -90,6 +99,7 @@ class StripeWebhookView(APIView):
                 payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
             )
         except (ValueError, stripe.error.SignatureVerificationError):
+            logger.warning('Stripe webhook signature mismatch from %s', request.META.get('REMOTE_ADDR'))
             return Response({'error': 'Invalid signature'}, status=400)
 
         if event['type'] == 'checkout.session.completed':
@@ -100,22 +110,33 @@ class StripeWebhookView(APIView):
 
     def _handle_checkout_completed(self, session):
         session_id = session['id']
-        try:
-            payment = FeaturedPayment.objects.get(stripe_session_id=session_id)
-        except FeaturedPayment.DoesNotExist:
+
+        # Validate the amount matches our expected price before fulfilling
+        amount_total = session.get('amount_total')
+        if amount_total != settings.STRIPE_FEATURED_PRICE_CENTS:
+            logger.error(
+                'Stripe webhook amount mismatch: expected %s, got %s for session %s',
+                settings.STRIPE_FEATURED_PRICE_CENTS, amount_total, session_id,
+            )
             return
 
-        if payment.status == 'completed':
-            return  # Idempotent — already processed
+        with transaction.atomic():
+            try:
+                payment = FeaturedPayment.objects.select_for_update().get(stripe_session_id=session_id)
+            except FeaturedPayment.DoesNotExist:
+                return
 
-        payment.status = 'completed'
-        payment.completed_at = timezone.now()
-        payment.save()
+            if payment.status == 'completed':
+                return  # Idempotent — already processed
 
-        if payment.listing:
-            listing = payment.listing
-            listing.is_featured = True
-            listing.save(update_fields=['is_featured'])
+            payment.status = 'completed'
+            payment.completed_at = timezone.now()
+            payment.save()
+
+            if payment.listing:
+                listing = payment.listing
+                listing.is_featured = True
+                listing.save(update_fields=['is_featured'])
 
         send_payment_invoice_email(payment)
 
@@ -147,6 +168,7 @@ class InvoicePDFView(APIView):
 class PaymentStatusView(APIView):
     """GET /api/payments/status/<listing_id>/ — check featured status for a listing"""
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = [PaymentStatusThrottle]
 
     def get(self, request, listing_id):
         try:

@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import Listing, ListingImage, SavedListing, ListingReport, SavedSearch
 from jobs.serializers import JobSerializer
 from rooms.serializers import RoomSerializer
-from django.db.models import Count
 import cloudinary.utils
 
 
@@ -96,6 +95,9 @@ class ListingSerializer(serializers.ModelSerializer):
             'user_name',
             'expires_at',
             'listing_type',
+            'is_featured',
+            'is_under_review',
+            'renewal_blocked',
         )
 
     def get_is_owner(self, obj):
