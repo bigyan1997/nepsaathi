@@ -60,24 +60,31 @@ export default function GetInTouchSection({
 
   return (
     <div style={{ marginTop: "24px" }}>
+      <style>{`
+        .git-grid { display: grid; grid-template-columns: 220px 1fr; }
+        .git-left { border-right: 0.5px solid #e5e5e5; border-bottom: none; }
+        @media (max-width: 600px) {
+          .git-grid { grid-template-columns: 1fr; }
+          .git-left { border-right: none; border-bottom: 0.5px solid #e5e5e5; padding: 20px 16px !important; }
+        }
+      `}</style>
       <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#26215C", marginBottom: "14px" }}>
         Get in touch
       </h2>
       <div
+        className="git-grid"
         style={{
           background: "#fff",
           border: "0.5px solid #e5e5e5",
           borderRadius: "14px",
           overflow: "hidden",
-          display: "grid",
-          gridTemplateColumns: "220px 1fr",
         }}
       >
         {/* Left: seller info */}
         <div
+          className="git-left"
           style={{
             background: "#F8F7FF",
-            borderRight: "0.5px solid #e5e5e5",
             padding: "24px 20px",
             display: "flex",
             flexDirection: "column",
