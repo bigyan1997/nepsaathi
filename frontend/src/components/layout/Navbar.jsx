@@ -5,6 +5,7 @@ import useAuthStore from "../../store/authStore";
 import { logout as logoutApi } from "../../api/auth";
 import { getUnreadCount } from "../../api/messages";
 import { useToast } from "../ui/Toast";
+import NepSaathiLogo from "../ui/NepSaathiLogo";
 
 const NAV_LINKS = [
   { to: "/jobs", label: "Jobs" },
@@ -118,53 +119,14 @@ export default function Navbar() {
         <Link
           to="/"
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
             textDecoration: "none",
             flexShrink: 0,
+            transition: "transform 0.18s ease, opacity 0.18s ease",
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.04)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
         >
-          <div style={{ position: "relative", width: "32px", height: "24px" }}>
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 1,
-                width: "20px",
-                height: "20px",
-                borderRadius: "50%",
-                background: "#E87722",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                left: "10px",
-                top: 1,
-                width: "20px",
-                height: "20px",
-                borderRadius: "50%",
-                background: "#534AB7",
-                opacity: 0.88,
-              }}
-            />
-          </div>
-          <span style={{ fontSize: "17px", fontWeight: 600 }}>
-            <span style={{ color: "#E87722" }}>Nep</span>
-            <span style={{ color: "#26215C" }}>Saathi</span>
-          </span>
-          <span
-            style={{
-              fontSize: "11px",
-              color: "#aaa",
-              letterSpacing: "0.03em",
-              display: "none",
-            }}
-            className="deva"
-          >
-            नेपसाथी
-          </span>
+          <NepSaathiLogo size={20} animated />
         </Link>
 
         {/* Desktop nav links */}

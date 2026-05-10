@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import NepSaathiLogo from "../ui/NepSaathiLogo";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -28,54 +29,9 @@ export default function Footer() {
           {/* Logo */}
           <Link
             to="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              textDecoration: "none",
-              marginBottom: "16px",
-            }}
+            style={{ textDecoration: "none", display: "inline-block", marginBottom: "16px" }}
           >
-            <div
-              style={{ position: "relative", width: "32px", height: "24px" }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 1,
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  background: "#E87722",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  left: "10px",
-                  top: 1,
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  background: "#AFA9EC",
-                  opacity: 0.9,
-                }}
-              />
-            </div>
-            <span style={{ fontSize: "17px", fontWeight: 600 }}>
-              <span style={{ color: "#E87722" }}>Nep</span>
-              <span style={{ color: "#fff" }}>Saathi</span>
-            </span>
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#C9C4F5",
-                letterSpacing: "0.03em",
-              }}
-            >
-              नेपसाथी
-            </span>
+            <NepSaathiLogo size={20} dark />
           </Link>
 
           <p

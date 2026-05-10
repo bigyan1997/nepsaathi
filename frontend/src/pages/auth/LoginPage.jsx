@@ -1,5 +1,6 @@
 import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import { useState } from "react";
+import NepSaathiLogo from "../../components/ui/NepSaathiLogo";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
@@ -67,46 +68,8 @@ export default function LoginPage() {
       >
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "28px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              marginBottom: "8px",
-            }}
-          >
-            <div
-              style={{ position: "relative", width: "32px", height: "24px" }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 1,
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
-                  background: "#E87722",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  left: "9px",
-                  top: 1,
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
-                  background: "#534AB7",
-                  opacity: 0.88,
-                }}
-              />
-            </div>
-            <span style={{ fontSize: "18px", fontWeight: 600 }}>
-              <span style={{ color: "#E87722" }}>Nep</span>
-              <span style={{ color: "#26215C" }}>Saathi</span>
-            </span>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
+            <NepSaathiLogo size={22} animated />
           </div>
           <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#26215C" }}>
             Welcome back

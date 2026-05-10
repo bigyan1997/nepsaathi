@@ -10,6 +10,7 @@ import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
 import { getSearchSuggestions, getStats, getFeaturedListings } from "../api/listings";
 import DesktopCard from "../components/home/DesktopCard";
+import NepSaathiLogo from "../components/ui/NepSaathiLogo";
 import FeaturedCarousel from "../components/home/FeaturedCarousel";
 import ListingSection from "../components/home/ListingSection";
 import CategoryCards from "../components/home/CategoryCards";
@@ -132,6 +133,9 @@ export default function HomePage() {
 
         {/* ── HERO ── */}
         <div className="hero-section" style={{ background: "#FFF1E0", borderBottom: "0.5px solid #EFD9C0", padding: "60px 28px 48px", textAlign: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+            <NepSaathiLogo size={32} animated />
+          </div>
           <div style={{ display: "inline-block", background: "#EEEDFE", border: "0.5px solid #AFA9EC", borderRadius: "20px", padding: "5px 14px", fontSize: "12px", color: "#534AB7", fontWeight: 500, marginBottom: "16px", letterSpacing: "0.03em" }}>
             नेपसाथी · your Nepali friend, wherever you are
           </div>
