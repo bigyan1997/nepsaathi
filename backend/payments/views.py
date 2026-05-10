@@ -122,6 +122,7 @@ class StripeWebhookView(APIView):
 
         with transaction.atomic():
             try:
+                # select_for_update() locks the row so duplicate webhook deliveries can't both mark it completed
                 payment = FeaturedPayment.objects.select_for_update().get(stripe_session_id=session_id)
             except FeaturedPayment.DoesNotExist:
                 return

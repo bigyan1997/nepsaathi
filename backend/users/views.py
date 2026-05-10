@@ -34,7 +34,7 @@ class GoogleLoginView(SocialLoginView):
                 picture_url = extra_data.get('picture', '')
                 from django.utils import timezone
                 from datetime import timedelta
-                is_new_user = (timezone.now() - user.date_joined) < timedelta(seconds=30)
+                is_new_user = (timezone.now() - user.date_joined) < timedelta(seconds=30)  # 30s catches OAuth users created moments before this signal fires
                 if picture_url and not user.google_avatar:
                     user.google_avatar = picture_url
                     user.save()
@@ -246,6 +246,7 @@ class PushSubscribeView(APIView):
             )
 
         from users.models import PushSubscription
+        # Prevent one user from hijacking another user's push endpoint and intercepting their notifications
         existing = PushSubscription.objects.filter(endpoint=endpoint).exclude(user=request.user).first()
         if existing:
             return Response({'detail': 'Endpoint already registered.'}, status=status.HTTP_400_BAD_REQUEST)

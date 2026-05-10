@@ -59,6 +59,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      // Queue concurrent 401s instead of firing multiple refresh calls — whichever resolves first replays them all
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });

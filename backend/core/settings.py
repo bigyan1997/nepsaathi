@@ -183,7 +183,7 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'nepsaathi-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'nepsaathi-refresh',
     'JWT_AUTH_RETURN_EXPIRATION': True,
-    'JWT_AUTH_HTTPONLY': False,
+    'JWT_AUTH_HTTPONLY': False,  # Tokens returned in JSON body; axios reads them from localStorage, not cookies
     'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer',
 }
@@ -251,7 +251,7 @@ EMAIL_PORT          = config('EMAIL_PORT', default=465, cast=int)
 EMAIL_USE_SSL       = config('EMAIL_USE_SSL', default=True, cast=bool)
 EMAIL_USE_TLS       = config('EMAIL_USE_TLS', default=False, cast=bool)
 if EMAIL_USE_SSL and EMAIL_USE_TLS:
-    EMAIL_USE_TLS = False
+    EMAIL_USE_TLS = False  # SSL and TLS are mutually exclusive for SMTP; both True causes a connection failure
 EMAIL_HOST_USER     = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_TIMEOUT       = 10

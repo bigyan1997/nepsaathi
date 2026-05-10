@@ -30,7 +30,7 @@ const useAuthStore = create(
         // Clear all token storage locations
         localStorage.removeItem("nepsaathi_access_token");
         localStorage.removeItem("nepsaathi_refresh_token");
-        localStorage.removeItem("nepsaathi-auth");
+        localStorage.removeItem("nepsaathi-auth"); // Zustand persist key — must clear this too or stale auth state survives a page reload
         set({
           user: null,
           accessToken: null,

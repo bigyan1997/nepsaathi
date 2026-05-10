@@ -35,6 +35,7 @@ self.addEventListener("notificationclick", (event) => {
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
       const existing = list.find((c) => c.url.includes(self.location.origin));
       if (existing) {
+        // Focus the existing window first; navigate() without focus() silently fails in some browsers
         existing.focus();
         existing.navigate(self.location.origin + url);
       } else {

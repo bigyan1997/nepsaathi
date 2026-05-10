@@ -42,7 +42,7 @@ def generate_invoice_pdf(payment) -> bytes:
     invoice_num    = f"INV-{payment.id:05d}"
     date_paid      = payment.completed_at.strftime('%d/%m/%Y')
     amount_aud     = payment.amount_paid / 100
-    gst_amount     = round(amount_aud / 11, 2)
+    gst_amount     = round(amount_aud / 11, 2)   # AU GST is 1/11 of GST-inclusive total (10% of pre-tax)
     excl_gst       = round(amount_aud - gst_amount, 2)
     featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime('%d %B %Y')
     user           = payment.user
