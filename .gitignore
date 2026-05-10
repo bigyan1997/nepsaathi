@@ -21,6 +21,7 @@ node_modules/
 # Editor
 .DS_Store
 .vscode/
+.claude/
 *.log
 credentials/
 backend/credentials/
