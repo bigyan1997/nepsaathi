@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -70,11 +70,14 @@ function PushInit() {
 
 const FEEDBACK_PATHS = ["/jobs", "/rooms", "/events", "/notices", "/businesses", "/search", "/featured"];
 
+const noop = () => {};
+
 function FeedbackTrigger() {
   const location = useLocation();
   const [showFeedback, setShowFeedback] = useState(false);
   const shouldTrack = FEEDBACK_PATHS.some((p) => location.pathname.startsWith(p));
-  useExitIntent(shouldTrack ? () => setShowFeedback(true) : () => {});
+  const trigger = useCallback(() => setShowFeedback(true), []);
+  useExitIntent(shouldTrack ? trigger : noop);
   if (!showFeedback) return null;
   return <FeedbackModal onClose={() => setShowFeedback(false)} />;
 }
