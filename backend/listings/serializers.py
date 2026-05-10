@@ -131,6 +131,7 @@ class ListingSerializer(serializers.ModelSerializer):
             data.pop('contact_email', None)
             data.pop('contact_phone', None)
             data.pop('contact_whatsapp', None)
+            data.pop('user_email', None)
         return data
 
 

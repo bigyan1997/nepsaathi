@@ -246,6 +246,9 @@ class PushSubscribeView(APIView):
             )
 
         from users.models import PushSubscription
+        existing = PushSubscription.objects.filter(endpoint=endpoint).exclude(user=request.user).first()
+        if existing:
+            return Response({'detail': 'Endpoint already registered.'}, status=status.HTTP_400_BAD_REQUEST)
         PushSubscription.objects.update_or_create(
             endpoint=endpoint,
             defaults={'user': request.user, 'p256dh': p256dh, 'auth': auth},
