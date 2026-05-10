@@ -4,6 +4,7 @@ import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import { register } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
+import NepSaathiLogo from "../../components/ui/NepSaathiLogo";
 
 export default function RegisterPage() {
   usePageTitle("Create Account");
@@ -172,9 +173,17 @@ export default function RegisterPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "28px",
+        padding: "48px 28px",
+        background: "linear-gradient(150deg, #edeaf8 0%, #f8f7ff 45%, #fff6ef 100%)",
+        position: "relative",
       }}
     >
+      {/* Decorative brand blobs */}
+      <div style={{ position: "absolute", top: "-120px", left: "-120px", width: "480px", height: "480px", borderRadius: "50%", background: "rgba(83,74,183,0.22)", filter: "blur(90px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: "-100px", right: "-100px", width: "420px", height: "420px", borderRadius: "50%", background: "rgba(232,119,34,0.18)", filter: "blur(90px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "35%", right: "5%", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(83,74,183,0.12)", filter: "blur(60px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: "25%", left: "4%", width: "160px", height: "160px", borderRadius: "50%", background: "rgba(232,119,34,0.12)", filter: "blur(60px)", pointerEvents: "none" }} />
+
       <div
         style={{
           background: "#fff",
@@ -183,50 +192,15 @@ export default function RegisterPage() {
           padding: "36px",
           width: "100%",
           maxWidth: "420px",
+          position: "relative",
+          zIndex: 1,
+          boxShadow: "0 4px 32px rgba(83,74,183,0.08)",
         }}
       >
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "28px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              marginBottom: "8px",
-            }}
-          >
-            <div
-              style={{ position: "relative", width: "32px", height: "24px" }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 1,
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
-                  background: "#E87722",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  left: "9px",
-                  top: 1,
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
-                  background: "#534AB7",
-                  opacity: 0.88,
-                }}
-              />
-            </div>
-            <span style={{ fontSize: "18px", fontWeight: 600 }}>
-              <span style={{ color: "#E87722" }}>Nep</span>
-              <span style={{ color: "#26215C" }}>Saathi</span>
-            </span>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
+            <NepSaathiLogo size={22} animated />
           </div>
           <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#26215C" }}>
             Create account

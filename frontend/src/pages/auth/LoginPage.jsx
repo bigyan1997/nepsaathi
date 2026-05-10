@@ -53,9 +53,17 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "28px",
+        padding: "48px 28px",
+        background: "linear-gradient(150deg, #edeaf8 0%, #f8f7ff 45%, #fff6ef 100%)",
+        position: "relative",
       }}
     >
+      {/* Decorative brand blobs */}
+      <div style={{ position: "absolute", top: "-120px", left: "-120px", width: "480px", height: "480px", borderRadius: "50%", background: "rgba(83,74,183,0.22)", filter: "blur(90px)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "-100px", right: "-100px", width: "420px", height: "420px", borderRadius: "50%", background: "rgba(232,119,34,0.18)", filter: "blur(90px)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: "35%", right: "5%", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(83,74,183,0.12)", filter: "blur(60px)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "25%", left: "4%", width: "160px", height: "160px", borderRadius: "50%", background: "rgba(232,119,34,0.12)", filter: "blur(60px)", pointerEvents: "none" }} />
+
       <div
         style={{
           background: "#fff",
@@ -64,6 +72,9 @@ export default function LoginPage() {
           padding: "36px",
           width: "100%",
           maxWidth: "420px",
+          position: "relative",
+          zIndex: 1,
+          boxShadow: "0 4px 32px rgba(83,74,183,0.08)",
         }}
       >
         {/* Header */}
@@ -96,10 +107,7 @@ export default function LoginPage() {
             {error.includes("Invalid email or password") && (
               <div style={{ marginTop: "8px", fontSize: "12px" }}>
                 Forgot your password? Email us at{" "}
-                <a
-                  href="mailto:support@nepsaathi.com"
-                  style={{ color: "#A32D2D", fontWeight: 600 }}
-                >
+                <a href="mailto:support@nepsaathi.com" style={{ color: "#A32D2D", fontWeight: 600 }}>
                   support@nepsaathi.com
                 </a>
               </div>
@@ -108,20 +116,9 @@ export default function LoginPage() {
         )}
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "14px" }}
-        >
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div>
-            <label
-              style={{
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#444",
-                display: "block",
-                marginBottom: "6px",
-              }}
-            >
+            <label style={{ fontSize: "13px", fontWeight: 500, color: "#444", display: "block", marginBottom: "6px" }}>
               Email
             </label>
             <input
@@ -130,26 +127,11 @@ export default function LoginPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="you@example.com"
-              style={{
-                width: "100%",
-                border: "0.5px solid #ccc",
-                borderRadius: "8px",
-                padding: "10px 14px",
-                fontSize: "14px",
-                outline: "none",
-              }}
+              style={{ width: "100%", border: "0.5px solid #ccc", borderRadius: "8px", padding: "10px 14px", fontSize: "14px", outline: "none" }}
             />
           </div>
           <div>
-            <label
-              style={{
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#444",
-                display: "block",
-                marginBottom: "6px",
-              }}
-            >
+            <label style={{ fontSize: "13px", fontWeight: 500, color: "#444", display: "block", marginBottom: "6px" }}>
               Password
             </label>
             <div style={{ position: "relative" }}>
@@ -159,75 +141,33 @@ export default function LoginPage() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="••••••••"
-                style={{
-                  width: "100%",
-                  border: "0.5px solid #ccc",
-                  borderRadius: "8px",
-                  padding: "10px 14px",
-                  paddingRight: "44px",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
+                style={{ width: "100%", border: "0.5px solid #ccc", borderRadius: "8px", padding: "10px 14px", paddingRight: "44px", fontSize: "14px", outline: "none" }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  color: "#888",
-                }}
+                style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: "16px", color: "#888" }}
               >
                 {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
           </div>
           <div style={{ textAlign: "right", marginTop: "-8px" }}>
-            <Link
-              to="/forgot-password"
-              style={{
-                fontSize: "12px",
-                color: "#534AB7",
-                textDecoration: "none",
-              }}
-            >
+            <Link to="/forgot-password" style={{ fontSize: "12px", color: "#534AB7", textDecoration: "none" }}>
               Forgot password?
             </Link>
           </div>
           <button
             type="submit"
             disabled={loading}
-            style={{
-              background: loading ? "#ccc" : "#534AB7",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              padding: "12px",
-              fontSize: "14px",
-              fontWeight: 500,
-              cursor: loading ? "not-allowed" : "pointer",
-              marginTop: "4px",
-            }}
+            style={{ background: loading ? "#ccc" : "#534AB7", color: "#fff", border: "none", borderRadius: "8px", padding: "12px", fontSize: "14px", fontWeight: 500, cursor: loading ? "not-allowed" : "pointer", marginTop: "4px" }}
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
         {/* Divider */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            margin: "16px 0",
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "16px 0" }}>
           <div style={{ flex: 1, height: "0.5px", background: "#e5e5e5" }} />
           <span style={{ fontSize: "12px", color: "#aaa" }}>or</span>
           <div style={{ flex: 1, height: "0.5px", background: "#e5e5e5" }} />
@@ -235,23 +175,9 @@ export default function LoginPage() {
 
         <GoogleLoginButton redirectTo={from} />
 
-        <p
-          style={{
-            textAlign: "center",
-            fontSize: "13px",
-            color: "#888",
-            marginTop: "20px",
-          }}
-        >
+        <p style={{ textAlign: "center", fontSize: "13px", color: "#888", marginTop: "20px" }}>
           Don't have an account?{" "}
-          <Link
-            to="/register"
-            style={{
-              color: "#E87722",
-              fontWeight: 500,
-              textDecoration: "none",
-            }}
-          >
+          <Link to="/register" style={{ color: "#E87722", fontWeight: 500, textDecoration: "none" }}>
             Register free
           </Link>
         </p>
