@@ -21,4 +21,4 @@ node_modules/
 # Editor
 .DS_Store
 .vscode/
-*.log
+*.logcredentials/

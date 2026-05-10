@@ -86,6 +86,9 @@ urlpatterns = [
 
     # Payments (Stripe featured listings)
     path('api/payments/', include('payments.urls')),
+
+    # Feedback / exit-intent survey
+    path('api/feedback/', include('feedback.urls')),
 ]
 
 # Only serve media files locally — Cloudinary handles production

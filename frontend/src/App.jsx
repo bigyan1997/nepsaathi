@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import useAuthStore from "./store/authStore";
@@ -15,6 +16,8 @@ import ScrollToTop from "./components/layout/ScrollToTop";
 import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
+import FeedbackModal from "./components/ui/FeedbackModal";
+import useExitIntent from "./hooks/useExitIntent";
 
 import HomePage              from "./pages/HomePage";
 import JobsPage              from "./pages/listings/JobsPage";
@@ -63,6 +66,17 @@ function PushInit() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   usePushNotifications(isAuthenticated);
   return null;
+}
+
+const FEEDBACK_PATHS = ["/jobs", "/rooms", "/events", "/notices", "/businesses", "/search", "/featured"];
+
+function FeedbackTrigger() {
+  const location = useLocation();
+  const [showFeedback, setShowFeedback] = useState(false);
+  const shouldTrack = FEEDBACK_PATHS.some((p) => location.pathname.startsWith(p));
+  useExitIntent(shouldTrack ? () => setShowFeedback(true) : () => {});
+  if (!showFeedback) return null;
+  return <FeedbackModal onClose={() => setShowFeedback(false)} />;
 }
 
 function App() {
@@ -134,6 +148,7 @@ function App() {
               </div>
               <PushInit />
               <PWAInstallPrompt />
+              <FeedbackTrigger />
             </ToastProvider>
           </ProgressProvider>
         </BrowserRouter>
