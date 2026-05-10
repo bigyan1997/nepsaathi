@@ -49,8 +49,8 @@ export default function Navbar() {
         <span>
           💬 You have a new message —{" "}
           <a
-            href="/inbox"
-            style={{ color: "#fff", fontWeight: 700, textDecoration: "underline" }}
+            href="/messages"
+            style={{ color: "#26215C", fontWeight: 700, textDecoration: "underline" }}
           >
             View inbox
           </a>

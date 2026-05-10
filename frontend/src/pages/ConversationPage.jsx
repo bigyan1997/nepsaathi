@@ -54,6 +54,14 @@ export default function ConversationPage() {
     },
   });
 
+  // Invalidate unread count whenever conversation data arrives (backend marks messages read on fetch)
+  useEffect(() => {
+    if (data) {
+      queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    }
+  }, [data]);
+
   // Scroll to bottom on initial load (instant), then smooth for new messages
   useEffect(() => {
     const count = data?.messages?.length ?? 0;
