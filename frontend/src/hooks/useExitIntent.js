@@ -22,27 +22,41 @@ export default function useExitIntent(onTrigger) {
 
     triggered.current = false;
 
-    // Desktop: cursor reaches top 5px of viewport (heading toward URL bar)
+    // Desktop: cursor reaches top 10px of viewport (heading toward URL bar)
     const handleMouseMove = (e) => {
       if (triggered.current) return;
-      if (e.clientY <= 5) {
+      if (e.clientY <= 10) {
         triggered.current = true;
         onTrigger();
       }
     };
 
-    // Mobile: show after 30s on the page
+    // Mobile: show after 15s on the page
     const timer = setTimeout(() => {
       if (triggered.current) return;
       if (window.innerWidth < 768) {
         triggered.current = true;
         onTrigger();
       }
-    }, 30000);
+    }, 15000);
+
+    // Mobile: also trigger when user has scrolled 60% down the page
+    const handleScroll = () => {
+      if (triggered.current) return;
+      if (window.innerWidth >= 768) return;
+      const scrolled = window.scrollY + window.innerHeight;
+      const total = document.documentElement.scrollHeight;
+      if (scrolled / total >= 0.6) {
+        triggered.current = true;
+        onTrigger();
+      }
+    };
 
     document.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
       clearTimeout(timer);
     };
   }, [onTrigger]);
