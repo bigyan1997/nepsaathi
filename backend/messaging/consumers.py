@@ -1,8 +1,11 @@
 import asyncio
 import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Conversation
+
+logger = logging.getLogger(__name__)
 
 PING_INTERVAL = 20  # seconds — keeps Railway proxy from closing idle connections
 
@@ -41,6 +44,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         """Called by channel layer when a new message is broadcast."""
+        logger.info("WS delivering to conversation %s", self.conversation_id)
         await self.send(text_data=json.dumps(event["message"]))
 
     @database_sync_to_async

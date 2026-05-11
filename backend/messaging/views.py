@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import threading
 
@@ -12,19 +11,6 @@ from .serializers import ConversationSerializer, MessageSerializer
 from .throttles import MessageSendThrottle
 
 logger = logging.getLogger(__name__)
-
-
-def _ws_broadcast(group_name, payload):
-    """Run channel layer group_send in a fresh event loop to avoid cross-loop conflicts."""
-    async def _send():
-        from channels.layers import get_channel_layer
-        ch = get_channel_layer()
-        if ch:
-            await ch.group_send(group_name, payload)
-    try:
-        asyncio.run(_send())
-    except Exception as e:
-        logger.error("WS broadcast failed for group %s: %s", group_name, e, exc_info=True)
 
 
 class ConversationListView(APIView):
@@ -146,12 +132,21 @@ class MessageSendView(APIView):
         )
         convo.save(update_fields=['updated_at'])
 
-        # Broadcast to WebSocket group (daemon thread + fresh event loop avoids cross-loop issues)
-        threading.Thread(
-            target=_ws_broadcast,
-            args=(f"conversation_{convo.pk}", {"type": "chat_message", "message": MessageSerializer(msg).data}),
-            daemon=True,
-        ).start()
+        # Broadcast via channel layer (async_to_sync is the documented way from sync views)
+        try:
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+            ch = get_channel_layer()
+            if ch:
+                async_to_sync(ch.group_send)(
+                    f"conversation_{convo.pk}",
+                    {"type": "chat_message", "message": MessageSerializer(msg).data},
+                )
+                logger.info("WS broadcast OK for conversation %s", convo.pk)
+            else:
+                logger.warning("No channel layer configured — WS broadcast skipped")
+        except Exception as e:
+            logger.error("WS broadcast failed for conversation %s: %s", convo.pk, e, exc_info=True)
 
         # Push notification to the other participant
         recipient = convo.participants.exclude(pk=request.user.pk).first()
