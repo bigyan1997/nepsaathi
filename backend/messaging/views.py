@@ -1,3 +1,7 @@
+import asyncio
+import logging
+import threading
+
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
 from rest_framework.response import Response
@@ -6,6 +10,21 @@ from django.db.models import Q
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from .throttles import MessageSendThrottle
+
+logger = logging.getLogger(__name__)
+
+
+def _ws_broadcast(group_name, payload):
+    """Run channel layer group_send in a fresh event loop to avoid cross-loop conflicts."""
+    async def _send():
+        from channels.layers import get_channel_layer
+        ch = get_channel_layer()
+        if ch:
+            await ch.group_send(group_name, payload)
+    try:
+        asyncio.run(_send())
+    except Exception as e:
+        logger.error("WS broadcast failed for group %s: %s", group_name, e, exc_info=True)
 
 
 class ConversationListView(APIView):
@@ -127,18 +146,12 @@ class MessageSendView(APIView):
         )
         convo.save(update_fields=['updated_at'])
 
-        # Broadcast to WebSocket group so open conversation pages update instantly
-        try:
-            from channels.layers import get_channel_layer
-            from asgiref.sync import async_to_sync
-            channel_layer = get_channel_layer()
-            if channel_layer:
-                async_to_sync(channel_layer.group_send)(
-                    f"conversation_{convo.pk}",
-                    {"type": "chat_message", "message": MessageSerializer(msg).data},
-                )
-        except Exception:
-            pass  # WebSocket broadcast is best-effort; HTTP response always succeeds
+        # Broadcast to WebSocket group (daemon thread + fresh event loop avoids cross-loop issues)
+        threading.Thread(
+            target=_ws_broadcast,
+            args=(f"conversation_{convo.pk}", {"type": "chat_message", "message": MessageSerializer(msg).data}),
+            daemon=True,
+        ).start()
 
         # Push notification to the other participant
         recipient = convo.participants.exclude(pk=request.user.pk).first()

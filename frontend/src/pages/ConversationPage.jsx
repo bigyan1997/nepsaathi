@@ -40,27 +40,41 @@ export default function ConversationPage() {
 
   // WebSocket — real-time receive; HTTP send still goes through REST
   useEffect(() => {
-    const token = localStorage.getItem("nepsaathi_access_token");
-    if (!token) return;
-    const ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?token=${token}`);
-    ws.onopen = () => setWsConnected(true);
-    ws.onmessage = (e) => {
-      try {
-        const msg = JSON.parse(e.data);
-        queryClient.setQueryData(["conversation", id], (old) => {
-          if (!old) return old;
-          // Ignore if already in the list (sender sees it instantly from sendMutation)
-          if (old.messages.some((m) => m.id === msg.id)) return old;
-          return { ...old, messages: [...old.messages, msg] };
-        });
-        queryClient.invalidateQueries({ queryKey: ["unread-count"] });
-        queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      } catch {}
+    let ws;
+    let reconnectTimer;
+    let dead = false; // set true on cleanup to stop reconnect loop
+
+    const connect = () => {
+      const token = localStorage.getItem("nepsaathi_access_token");
+      if (!token || dead) return;
+      ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?token=${token}`);
+      wsRef.current = ws;
+      ws.onopen = () => setWsConnected(true);
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          queryClient.setQueryData(["conversation", id], (old) => {
+            if (!old) return old;
+            if (old.messages.some((m) => m.id === msg.id)) return old;
+            return { ...old, messages: [...old.messages, msg] };
+          });
+          queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        } catch {}
+      };
+      ws.onclose = () => {
+        setWsConnected(false);
+        if (!dead) reconnectTimer = setTimeout(connect, 3000);
+      };
+      ws.onerror = () => setWsConnected(false);
     };
-    ws.onclose = () => setWsConnected(false);
-    ws.onerror = () => setWsConnected(false);
-    wsRef.current = ws;
-    return () => ws.close();
+
+    connect();
+    return () => {
+      dead = true;
+      clearTimeout(reconnectTimer);
+      ws?.close();
+    };
   }, [id]);
 
   const { data, isLoading, isError } = useQuery({
