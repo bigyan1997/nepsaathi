@@ -797,29 +797,29 @@ export default function MyListingsPage() {
                 top: "80px",
                 left: "50%",
                 transform: "translateX(-50%)",
-                background: "#26215C",
-                color: "#fff",
+                background: "#fff",
                 borderRadius: "16px",
-                padding: "12px 20px",
+                padding: "10px 16px",
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
-                boxShadow: "0 8px 32px rgba(38,33,92,0.28)",
+                gap: "10px",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.14)",
+                border: "0.5px solid #e5e5e5",
                 zIndex: 1000,
                 animation: "slideDown 0.2s ease",
                 whiteSpace: "nowrap",
               }}>
-                <span style={{ fontSize: "13px", fontWeight: 600, opacity: 0.8 }}>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>
                   {selectedIds.size} selected
                 </span>
-                <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.2)" }} />
-                <button onClick={bulkMarkFilled} style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                <div style={{ width: "1px", height: "20px", background: "#e5e5e5" }} />
+                <button onClick={bulkMarkFilled} style={{ background: "#F0EFF9", color: "#534AB7", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
                   ✓ Mark filled
                 </button>
-                <button onClick={bulkDelete} style={{ background: "rgba(220,53,69,0.25)", color: "#ffb3b3", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
                   🗑️ Delete
                 </button>
-                <button onClick={clearSelection} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", fontSize: "18px", cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>
+                <button onClick={clearSelection} style={{ background: "none", border: "none", color: "#aaa", fontSize: "20px", cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>
                   ×
                 </button>
               </div>
