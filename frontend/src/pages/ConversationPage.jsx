@@ -54,6 +54,7 @@ export default function ConversationPage() {
       ws.onmessage = (e) => {
         try {
           const msg = JSON.parse(e.data);
+          if (msg.type === "ping") return;
           queryClient.setQueryData(["conversation", id], (old) => {
             if (!old) return old;
             if (old.messages.some((m) => m.id === msg.id)) return old;
