@@ -14,18 +14,22 @@ def _append_row(feedback):
 
         spreadsheet_id = config('GOOGLE_SHEETS_SPREADSHEET_ID', default='')
         if not spreadsheet_id:
+            logger.warning("Sheets sync skipped: GOOGLE_SHEETS_SPREADSHEET_ID not set")
             return
 
         scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
         creds_json = config('GOOGLE_SHEETS_CREDENTIALS_JSON', default='')
         if creds_json:
+            logger.info("Sheets sync: using credentials from env var")
             info = json.loads(creds_json)
             creds = Credentials.from_service_account_info(info, scopes=scopes)
         else:
             creds_path = config('GOOGLE_SHEETS_CREDENTIALS', default='')
             if not creds_path:
+                logger.warning("Sheets sync skipped: no credentials configured")
                 return
+            logger.info("Sheets sync: using credentials from file %s", creds_path)
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             creds_abs = os.path.join(base_dir, creds_path)
             creds = Credentials.from_service_account_file(creds_abs, scopes=scopes)
