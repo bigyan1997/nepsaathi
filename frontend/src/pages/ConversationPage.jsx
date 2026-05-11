@@ -91,6 +91,7 @@ export default function ConversationPage() {
       setContent("");
       queryClient.setQueryData(["conversation", id], (old) => {
         if (!old) return old;
+        if (old.messages.some((m) => m.id === newMsg.id)) return old;
         return { ...old, messages: [...old.messages, newMsg] };
       });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
