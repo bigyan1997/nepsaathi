@@ -60,8 +60,12 @@ export default function ConversationPage() {
             if (old.messages.some((m) => m.id === msg.id)) return old;
             return { ...old, messages: [...old.messages, msg] };
           });
-          queryClient.invalidateQueries({ queryKey: ["unread-count"] });
           queryClient.invalidateQueries({ queryKey: ["conversations"] });
+          // For messages from the other user: re-fetch conversation so backend marks them as read,
+          // which then updates the unread badge via useEffect([data]) below.
+          if (msg.sender_id !== user?.id) {
+            queryClient.invalidateQueries({ queryKey: ["conversation", id] });
+          }
         } catch {}
       };
       ws.onclose = () => {
@@ -104,10 +108,11 @@ export default function ConversationPage() {
     },
   });
 
-  // Invalidate unread count whenever conversation data arrives (backend marks messages read on fetch)
+  // Force-refetch unread count after each data update (backend marks messages read on GET).
+  // refetchQueries is unconditional — it bypasses staleTime, unlike invalidateQueries.
   useEffect(() => {
     if (data) {
-      queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+      queryClient.refetchQueries({ queryKey: ["unread-count"] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     }
   }, [data]);
