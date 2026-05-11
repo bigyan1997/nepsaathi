@@ -9,7 +9,6 @@ export default function Footer() {
       style={{
         background: "#26215C",
         color: "#fff",
-        marginTop: "48px",
       }}
     >
       {/* Main footer content */}

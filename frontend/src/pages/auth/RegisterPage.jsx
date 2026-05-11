@@ -173,9 +173,10 @@ export default function RegisterPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "48px 28px",
+        padding: "32px 16px",
         background: "linear-gradient(150deg, #edeaf8 0%, #f8f7ff 45%, #fff6ef 100%)",
         position: "relative",
+        overflow: "hidden",
       }}
     >
       {/* Decorative brand blobs */}
@@ -189,7 +190,7 @@ export default function RegisterPage() {
           background: "#fff",
           border: "0.5px solid #e5e5e5",
           borderRadius: "14px",
-          padding: "36px",
+          padding: "28px 24px",
           width: "100%",
           maxWidth: "420px",
           position: "relative",
