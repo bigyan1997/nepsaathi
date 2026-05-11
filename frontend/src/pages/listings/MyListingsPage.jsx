@@ -774,31 +774,54 @@ export default function MyListingsPage() {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "10px" }}
           >
-            {/* Bulk action toolbar */}
+            {/* Select all checkbox — always visible when on listings tab */}
             {activeTab === "listings" && listings.length > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.size === listings.length && listings.length > 0}
-                    onChange={(e) => e.target.checked ? selectAllPage() : clearSelection()}
-                    style={{ width: "15px", height: "15px", cursor: "pointer", accentColor: "#534AB7" }}
-                  />
-                  {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
-                </label>
-                {selectedIds.size > 0 && (
-                  <>
-                    <button onClick={bulkMarkFilled} style={{ background: "#FFF1E0", color: "#633806", border: "0.5px solid #EFD9C0", borderRadius: "8px", padding: "6px 14px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>
-                      ✓ Mark filled
-                    </button>
-                    <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "0.5px solid #F09595", borderRadius: "8px", padding: "6px 14px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>
-                      🗑️ Delete selected
-                    </button>
-                    <button onClick={clearSelection} style={{ background: "transparent", color: "#aaa", border: "none", fontSize: "12px", cursor: "pointer" }}>
-                      Clear
-                    </button>
-                  </>
-                )}
+              <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#888", cursor: "pointer", userSelect: "none", alignSelf: "flex-start" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedIds.size === listings.length && listings.length > 0}
+                  onChange={(e) => e.target.checked ? selectAllPage() : clearSelection()}
+                  style={{ width: "15px", height: "15px", cursor: "pointer", accentColor: "#534AB7" }}
+                />
+                Select all
+              </label>
+            )}
+
+            {/* Floating bulk action bar */}
+            <style>{`
+              @keyframes slideUp { from { transform: translateY(120%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            `}</style>
+            {selectedIds.size > 0 && (
+              <div style={{
+                position: "fixed",
+                bottom: "24px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "#26215C",
+                color: "#fff",
+                borderRadius: "16px",
+                padding: "12px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                boxShadow: "0 8px 32px rgba(38,33,92,0.28)",
+                zIndex: 1000,
+                animation: "slideUp 0.2s ease",
+                whiteSpace: "nowrap",
+              }}>
+                <span style={{ fontSize: "13px", fontWeight: 600, opacity: 0.8 }}>
+                  {selectedIds.size} selected
+                </span>
+                <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.2)" }} />
+                <button onClick={bulkMarkFilled} style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                  ✓ Mark filled
+                </button>
+                <button onClick={bulkDelete} style={{ background: "rgba(220,53,69,0.25)", color: "#ffb3b3", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                  🗑️ Delete
+                </button>
+                <button onClick={clearSelection} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", fontSize: "18px", cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>
+                  ×
+                </button>
               </div>
             )}
 
