@@ -789,12 +789,12 @@ export default function MyListingsPage() {
 
             {/* Floating bulk action bar */}
             <style>{`
-              @keyframes slideUp { from { transform: translateY(120%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+              @keyframes slideDown { from { transform: translateX(-50%) translateY(-20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
             `}</style>
             {selectedIds.size > 0 && (
               <div style={{
                 position: "fixed",
-                bottom: "24px",
+                top: "80px",
                 left: "50%",
                 transform: "translateX(-50%)",
                 background: "#26215C",
@@ -806,7 +806,7 @@ export default function MyListingsPage() {
                 gap: "12px",
                 boxShadow: "0 8px 32px rgba(38,33,92,0.28)",
                 zIndex: 1000,
-                animation: "slideUp 0.2s ease",
+                animation: "slideDown 0.2s ease",
                 whiteSpace: "nowrap",
               }}>
                 <span style={{ fontSize: "13px", fontWeight: 600, opacity: 0.8 }}>
