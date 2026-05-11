@@ -7,7 +7,7 @@ from .models import Conversation
 
 logger = logging.getLogger(__name__)
 
-PING_INTERVAL = 20  # seconds — keeps Railway proxy from closing idle connections
+PING_INTERVAL = 10  # seconds — keeps Railway proxy from closing idle connections
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
