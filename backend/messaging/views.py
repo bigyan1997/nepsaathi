@@ -156,7 +156,6 @@ class MessageSendView(APIView):
         # Push notification to the other participant
         recipient = convo.participants.exclude(pk=request.user.pk).first()
         if recipient:
-            import threading
             from core.push import send_push_notification
             sender_name = request.user.full_name or request.user.email
             threading.Thread(
