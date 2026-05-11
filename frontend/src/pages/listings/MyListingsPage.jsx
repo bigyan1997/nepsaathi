@@ -94,7 +94,7 @@ const getSavedPath = (saved) => {
 };
 
 /* ── Confirm modal ── */
-function ConfirmModal({ message, onConfirm, onCancel }) {
+function ConfirmModal({ message, onConfirm, onCancel, confirmLabel = "Yes, Delete", confirmColor = "#A32D2D" }) {
   return (
     <div
       style={{
@@ -152,7 +152,7 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
             onClick={onConfirm}
             style={{
               flex: 1,
-              background: "#A32D2D",
+              background: confirmColor,
               color: "#fff",
               border: "none",
               borderRadius: "9px",
@@ -162,7 +162,7 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
               cursor: "pointer",
             }}
           >
-            Yes, Delete
+            {confirmLabel}
           </button>
         </div>
       </div>
@@ -546,14 +546,18 @@ export default function MyListingsPage() {
         queryClient.invalidateQueries({ queryKey: ["my-listings"] });
         clearSelection();
         addToast("Listings marked as filled.", "success");
-      }
+      },
+      "Yes, Mark filled",
+      "#534AB7"
     );
   };
 
   /* ── modal helpers ── */
-  const confirmDelete = (message, fn) =>
+  const confirmDelete = (message, fn, confirmLabel = "Yes, Delete", confirmColor = "#A32D2D") =>
     setConfirmModal({
       message,
+      confirmLabel,
+      confirmColor,
       onConfirm: () => {
         setConfirmModal(null);
         fn();
