@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConversation, sendMessage } from "../api/messages";
 import useAuthStore from "../store/authStore";
@@ -169,30 +169,32 @@ export default function ConversationPage() {
         >
           ←
         </button>
-        <div style={{
-          width: 38,
-          height: 38,
-          borderRadius: "50%",
-          background: "#534AB7",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontWeight: 700,
-          fontSize: 14,
-          overflow: "hidden",
-          flexShrink: 0,
-        }}>
-          {other?.avatar
-            ? <img src={other.avatar} alt={other.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            : other?.name?.[0]?.toUpperCase() || "?"}
-        </div>
-        <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#26215C" }}>{other?.name}</div>
-          {conversation.listing_title && (
-            <div style={{ fontSize: 11, color: "#888" }}>Re: {conversation.listing_title}</div>
-          )}
-        </div>
+        <Link to={`/users/${other?.id}`} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            width: 38,
+            height: 38,
+            borderRadius: "50%",
+            background: "#534AB7",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: 700,
+            fontSize: 14,
+            overflow: "hidden",
+            flexShrink: 0,
+          }}>
+            {other?.avatar
+              ? <img src={other.avatar} alt={other.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              : other?.name?.[0]?.toUpperCase() || "?"}
+          </div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#26215C" }}>{other?.name}</div>
+            {conversation.listing_title && (
+              <div style={{ fontSize: 11, color: "#888" }}>Re: {conversation.listing_title}</div>
+            )}
+          </div>
+        </Link>
       </div>
 
       {/* Messages */}

@@ -118,6 +118,14 @@ export default function GetInTouchSection({
                 {joinedLabel}
               </div>
             )}
+            {recipientId && (
+              <Link
+                to={`/users/${recipientId}`}
+                style={{ fontSize: "12px", color: "#534AB7", fontWeight: 600, textDecoration: "none", marginTop: "8px", display: "inline-block" }}
+              >
+                View profile →
+              </Link>
+            )}
           </div>
         </div>
 
