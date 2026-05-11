@@ -363,6 +363,26 @@ function Pagination({ page, count, pageSize, onChange }) {
   );
 }
 
+/* ── Section divider with label ── */
+function SectionHeader({ icon, label, count, accent, bg, line, collapsible, open, onToggle }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "10px 0 4px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "5px", background: bg, borderRadius: "20px", padding: "3px 10px", flexShrink: 0 }}>
+        <span style={{ fontSize: "11px", fontWeight: 700, color: accent, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          {icon} {label}
+        </span>
+        <span style={{ fontSize: "11px", fontWeight: 700, color: accent }}>· {count}</span>
+      </div>
+      <div style={{ flex: 1, height: "0.5px", background: line }} />
+      {collapsible && (
+        <button onClick={onToggle} style={{ background: "none", border: "none", color: accent, fontSize: "12px", cursor: "pointer", fontWeight: 600, padding: "2px 6px", flexShrink: 0 }}>
+          {open ? "▲ Hide" : "▼ Show"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ════════════════════════════════════════════════════ */
 export default function MyListingsPage() {
   usePageTitle("My Listings");
@@ -375,11 +395,11 @@ export default function MyListingsPage() {
   const [openMenu, setOpenMenu] = useState(null);
   const [selectedIds, setSelectedIds] = useState(new Set());
 
-  /* ── pagination state (one per tab) ── */
-  const [listingsPage, setListingsPage] = useState(1);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+
+  /* ── pagination state (businesses + saved only) ── */
   const [businessesPage, setBusinessesPage] = useState(1);
   const [savedPage, setSavedPage] = useState(1);
-  const [underReviewPage, setUnderReviewPage] = useState(1);
   const PAGE_SIZE = 5;
 
   /* ── queries — fetch all results, paginate client-side ── */
@@ -486,18 +506,25 @@ export default function MyListingsPage() {
   );
   const allSaved = savedData?.results || [];
 
-  // Stats always computed from ALL results (not just current page)
+  // Stats
   const activeCount = allListings.filter((l) => l.status === "active").length;
   const expiringCount = allListings.filter(
     (l) => isExpiringSoon(l.expires_at) && l.status === "active",
   ).length;
   const totalViews = allListings.reduce((s, l) => s + (l.view_count || 0), 0);
 
-  // Paginated slices shown in each tab
-  const listings = allListings.slice(
-    (listingsPage - 1) * PAGE_SIZE,
-    listingsPage * PAGE_SIZE,
+  // Listing groups (API already returns priority-sorted)
+  const needsAttention = allListings.filter(
+    (l) => l.is_under_review || (isExpiringSoon(l.expires_at) && l.status === "active"),
   );
+  const activeListings = allListings.filter(
+    (l) => l.status === "active" && !l.is_under_review && !isExpiringSoon(l.expires_at),
+  );
+  const archiveListings = allListings.filter(
+    (l) => l.status === "filled" || l.status === "expired",
+  );
+
+  // Paginated slices (businesses + saved only)
   const businesses = allBusinesses.slice(
     (businessesPage - 1) * PAGE_SIZE,
     businessesPage * PAGE_SIZE,
@@ -505,11 +532,6 @@ export default function MyListingsPage() {
   const saved = allSaved.slice(
     (savedPage - 1) * PAGE_SIZE,
     savedPage * PAGE_SIZE,
-  );
-  const allUnderReview = allListings.filter((l) => l.is_under_review);
-  const underReview = allUnderReview.slice(
-    (underReviewPage - 1) * PAGE_SIZE,
-    underReviewPage * PAGE_SIZE,
   );
 
   /* ── bulk selection helpers ── */
@@ -520,7 +542,8 @@ export default function MyListingsPage() {
       return next;
     });
   };
-  const selectAllPage = () => setSelectedIds(new Set(listings.map((l) => l.id)));
+  const selectableListings = [...needsAttention, ...activeListings];
+  const selectAllActive = () => setSelectedIds(new Set(selectableListings.map((l) => l.id)));
   const clearSelection = () => setSelectedIds(new Set());
 
   const bulkDelete = () => {
@@ -564,6 +587,164 @@ export default function MyListingsPage() {
       },
       onCancel: () => setConfirmModal(null),
     });
+
+  /* ── render a single listing card (used by all three groups) ── */
+  const renderListingCard = (listing) => {
+    const typeColor = TYPE_COLORS[listing.listing_type] || TYPE_COLORS.job;
+    const statusColor = STATUS_COLORS[listing.status] || STATUS_COLORS.active;
+    const typeEmoji = TYPE_EMOJIS[listing.listing_type] || "📌";
+    const expiring = isExpiringSoon(listing.expires_at) && listing.status === "active";
+    const isExpired = listing.status === "expired";
+    const isArchive = listing.status === "filled" || isExpired;
+
+    const borderLeft = listing.is_under_review
+      ? "3px solid #E87722"
+      : expiring
+        ? "3px solid #E87722"
+        : isExpired
+          ? "3px solid #ccc"
+          : listing.status === "filled"
+            ? "3px solid #aaa"
+            : `3px solid ${statusColor.dot}`;
+
+    return (
+      <div
+        key={listing.id}
+        style={{
+          background: isArchive ? "#F9F8F5" : "#fff",
+          border: "0.5px solid #e5e5e5",
+          borderRadius: "12px",
+          padding: "16px",
+          display: "flex",
+          gap: "12px",
+          alignItems: "flex-start",
+          borderLeft,
+          opacity: isExpired ? 0.72 : 1,
+          transition: "border-color 0.15s",
+        }}
+        onMouseEnter={(e) => !isArchive && (e.currentTarget.style.borderColor = "#AFA9EC")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}
+      >
+        {/* Checkbox (not on archive cards) */}
+        {!isArchive && (
+          <input
+            type="checkbox"
+            checked={selectedIds.has(listing.id)}
+            onChange={() => toggleSelect(listing.id)}
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: "15px", height: "15px", flexShrink: 0, cursor: "pointer", accentColor: "#534AB7", marginTop: "2px" }}
+          />
+        )}
+
+        {/* Type icon */}
+        <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: typeColor.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
+          {typeEmoji}
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Title + badges */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "5px", flexWrap: "wrap" }}>
+            <h3 style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {listing.title}
+            </h3>
+            <span style={{ background: statusColor.bg, color: statusColor.color, fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap" }}>
+              ● {listing.status}
+            </span>
+            {listing.is_featured && (
+              <span style={{ background: "#FFF1E0", color: "#E87722", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #EFD9C0" }}>
+                ⭐ Featured
+              </span>
+            )}
+            {listing.is_under_review && (
+              <span style={{ background: "#FFF8E0", color: "#8B6914", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #E8D5A0" }}>
+                🔍 Under Review
+              </span>
+            )}
+            {expiring && (
+              <span style={{ background: "#FFF1E0", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap" }}>
+                ⚠️ Expires soon
+              </span>
+            )}
+          </div>
+
+          {/* Meta */}
+          <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>
+            <span style={{ background: typeColor.bg, color: typeColor.color, fontSize: "10px", fontWeight: 500, padding: "1px 7px", borderRadius: "8px", marginRight: "6px" }}>
+              {listing.listing_type}
+            </span>
+            📍 {listing.location}, {listing.state}
+            {listing.view_count > 0 && (
+              <span style={{ marginLeft: "8px" }}>· 👁️ {listing.view_count} views</span>
+            )}
+          </div>
+
+          {/* Dates */}
+          <div style={{ fontSize: "11px", color: "#aaa" }}>
+            Posted {fmtDate(listing.created_at)}
+            {listing.expires_at && (
+              <span style={{ color: expiring ? "#E87722" : "#aaa" }}>
+                {" "}· {isExpired ? "Expired" : "Expires"} {fmtDate(listing.expires_at)}
+              </span>
+            )}
+          </div>
+
+          {/* Renew pill — for expiring/expired */}
+          {(expiring || isExpired) && (
+            listing.is_under_review || listing.renewal_blocked ? (
+              <span title={listing.is_under_review ? "Under review — cannot renew" : "Renewal restricted"} style={{ marginTop: "8px", display: "inline-block", background: "#FFF1E0", color: "#E87722", border: "0.5px solid #EFD9C0", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600 }}>
+                🚫 Renewal blocked
+              </span>
+            ) : (
+              <button onClick={() => renewMutation.mutate(listing.id)} disabled={renewMutation.isPending} style={{ marginTop: "8px", background: "#EEEDFE", color: "#534AB7", border: "none", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600, cursor: "pointer", opacity: renewMutation.isPending ? 0.6 : 1 }}>
+                🔄 Renew for 30 days
+              </button>
+            )
+          )}
+        </div>
+
+        {/* ⋮ menu */}
+        <ActionMenu
+          open={openMenu === listing.id}
+          onToggle={() => setOpenMenu(openMenu === listing.id ? null : listing.id)}
+          items={[
+            { label: "👁️ View listing", onClick: () => { setOpenMenu(null); navigate(getDetailPath(listing)); } },
+            { label: "✏️ Edit listing", onClick: () => { setOpenMenu(null); navigate(`/edit-listing/${listing.slug}`); } },
+            (listing.status === "active" || listing.status === "expired") && !listing.is_under_review && !listing.renewal_blocked && {
+              label: "🔄 Renew 30 days", highlight: true,
+              onClick: () => { setOpenMenu(null); renewMutation.mutate(listing.id); },
+            },
+            listing.status === "active" && !listing.is_featured && {
+              label: "⭐ Feature listing — $9.99",
+              onClick: () => { setOpenMenu(null); featureMutation.mutate(listing.id); },
+            },
+            listing.is_featured && {
+              label: "🧾 Download invoice",
+              onClick: () => { setOpenMenu(null); downloadInvoice(listing.id, `NepSaathi-Invoice-${listing.id}.pdf`); },
+            },
+            listing.status === "active" && {
+              label: "✓ Mark as filled",
+              onClick: () => {
+                setOpenMenu(null);
+                confirmDelete(`Mark "${listing.title}" as filled/taken?`, () => markStatusMutation.mutate({ id: listing.id, status: "filled" }), "Yes, Mark filled", "#534AB7");
+              },
+            },
+            listing.status === "filled" && {
+              label: "↺ Reopen listing",
+              onClick: () => { setOpenMenu(null); markStatusMutation.mutate({ id: listing.id, status: "active" }); },
+            },
+            {
+              label: "🗑️ Delete listing", danger: true,
+              onClick: () => {
+                setOpenMenu(null);
+                confirmDelete("This listing will be permanently deleted.", () => { setDeletingId(listing.id); deleteListingMutation.mutate(listing.id); });
+              },
+            },
+          ].filter(Boolean)}
+        />
+      </div>
+    );
+  };
 
   return (
     <>
@@ -732,10 +913,7 @@ export default function MyListingsPage() {
             { key: "listings", label: "Listings", count: allListings.length },
             { key: "businesses", label: "Businesses", count: allBusinesses.length },
             { key: "saved", label: "Saved", count: allSaved.length },
-            ...(allUnderReview.length > 0
-              ? [{ key: "under-review", label: "Under Review", count: allUnderReview.length, alert: true }]
-              : []),
-          ].map(({ key, label, count, alert }) => (
+          ].map(({ key, label, count }) => (
             <button
               key={key}
               onClick={() => {
@@ -745,23 +923,23 @@ export default function MyListingsPage() {
               style={{
                 flex: 1,
                 minWidth: "fit-content",
-                background: activeTab === key ? (alert ? "#E87722" : "#26215C") : "transparent",
+                background: activeTab === key ? "#26215C" : "transparent",
                 border: "none",
                 borderRadius: "8px",
                 padding: "8px 12px",
                 fontSize: "13px",
                 fontWeight: activeTab === key ? 600 : 400,
-                color: activeTab === key ? "#fff" : alert ? "#E87722" : "#888",
+                color: activeTab === key ? "#fff" : "#888",
                 cursor: "pointer",
                 transition: "all 0.15s",
                 whiteSpace: "nowrap",
               }}
             >
-              {alert && activeTab !== key ? "⚠️ " : ""}{label}
+              {label}
               <span style={{
                 marginLeft: "5px",
                 background: activeTab === key ? "rgba(255,255,255,0.25)" : "#f0f0f0",
-                color: activeTab === key ? "#fff" : alert ? "#E87722" : "#666",
+                color: activeTab === key ? "#fff" : "#666",
                 borderRadius: "10px",
                 padding: "1px 6px",
                 fontSize: "11px",
@@ -773,465 +951,78 @@ export default function MyListingsPage() {
           ))}
         </div>
 
-        {/* ══ LISTINGS + UNDER REVIEW TABS ══ */}
-        {(activeTab === "listings" || activeTab === "under-review") && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-          >
-            {/* Select all checkbox — always visible when on listings tab */}
-            {activeTab === "listings" && listings.length > 0 && (
+        {/* ══ LISTINGS TAB ══ */}
+        {activeTab === "listings" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+
+            {/* Select all + floating bulk bar */}
+            {selectableListings.length > 0 && (
               <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#888", cursor: "pointer", userSelect: "none", alignSelf: "flex-start" }}>
                 <input
                   type="checkbox"
-                  checked={selectedIds.size === listings.length && listings.length > 0}
-                  onChange={(e) => e.target.checked ? selectAllPage() : clearSelection()}
+                  checked={selectableListings.length > 0 && selectableListings.every((l) => selectedIds.has(l.id))}
+                  onChange={(e) => e.target.checked ? selectAllActive() : clearSelection()}
                   style={{ width: "15px", height: "15px", cursor: "pointer", accentColor: "#534AB7" }}
                 />
                 Select all
               </label>
             )}
-
-            {/* Floating bulk action bar */}
             <style>{`
               @keyframes slideDown { from { transform: translateX(-50%) translateY(-20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
             `}</style>
             {selectedIds.size > 0 && (
-              <div style={{
-                position: "fixed",
-                top: "80px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "#fff",
-                borderRadius: "16px",
-                padding: "10px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.14)",
-                border: "0.5px solid #e5e5e5",
-                zIndex: 1000,
-                animation: "slideDown 0.2s ease",
-                whiteSpace: "nowrap",
-              }}>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>
-                  {selectedIds.size} selected
-                </span>
+              <div style={{ position: "fixed", top: "80px", left: "50%", transform: "translateX(-50%)", background: "#fff", borderRadius: "16px", padding: "10px 16px", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 4px 24px rgba(0,0,0,0.14)", border: "0.5px solid #e5e5e5", zIndex: 1000, animation: "slideDown 0.2s ease", whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>{selectedIds.size} selected</span>
                 <div style={{ width: "1px", height: "20px", background: "#e5e5e5" }} />
-                <button onClick={bulkMarkFilled} style={{ background: "#F0EFF9", color: "#534AB7", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
-                  ✓ Mark filled
-                </button>
-                <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
-                  🗑️ Delete
-                </button>
-                <button onClick={clearSelection} style={{ background: "none", border: "none", color: "#aaa", fontSize: "20px", cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>
-                  ×
-                </button>
+                <button onClick={bulkMarkFilled} style={{ background: "#F0EFF9", color: "#534AB7", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>✓ Mark filled</button>
+                <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>🗑️ Delete</button>
+                <button onClick={clearSelection} style={{ background: "none", border: "none", color: "#aaa", fontSize: "20px", cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>×</button>
               </div>
             )}
 
             {listingsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
 
-            {!listingsLoading && underReview.length === 0 && activeTab === "under-review" && (
+            {/* Empty state */}
+            {!listingsLoading && allListings.length === 0 && (
               <div style={{ textAlign: "center", padding: "48px", background: "#fff", borderRadius: "16px", border: "0.5px solid #e5e5e5" }}>
-                <div style={{ fontSize: "36px", marginBottom: "14px" }}>✅</div>
-                <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", marginBottom: "6px" }}>No listings under review</h3>
-                <p style={{ fontSize: "14px", color: "#888" }}>All your listings are in good standing</p>
-              </div>
-            )}
-
-            {!listingsLoading && allListings.length === 0 && activeTab === "listings" && (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "48px",
-                  background: "#fff",
-                  borderRadius: "16px",
-                  border: "0.5px solid #e5e5e5",
-                }}
-              >
                 <div style={{ fontSize: "36px", marginBottom: "14px" }}>📭</div>
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: 700,
-                    color: "#26215C",
-                    marginBottom: "6px",
-                  }}
-                >
-                  No listings yet
-                </h3>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    color: "#888",
-                    marginBottom: "20px",
-                  }}
-                >
-                  Post a job, room, event or notice for free
-                </p>
-                <button
-                  onClick={() => navigate("/post-ad")}
-                  style={{
-                    background: "#534AB7",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "9px",
-                    padding: "11px 24px",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
+                <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", marginBottom: "6px" }}>No listings yet</h3>
+                <p style={{ fontSize: "14px", color: "#888", marginBottom: "20px" }}>Post a job, room, event or notice for free</p>
+                <button onClick={() => navigate("/post-ad")} style={{ background: "#534AB7", color: "#fff", border: "none", borderRadius: "9px", padding: "11px 24px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
                   Post your first ad →
                 </button>
               </div>
             )}
 
-            {(activeTab === "under-review" ? underReview : listings).map((listing) => {
-              const typeColor =
-                TYPE_COLORS[listing.listing_type] || TYPE_COLORS.job;
-              const statusColor =
-                STATUS_COLORS[listing.status] || STATUS_COLORS.active;
-              const typeEmoji = TYPE_EMOJIS[listing.listing_type] || "📌";
-              const expiring =
-                isExpiringSoon(listing.expires_at) &&
-                listing.status === "active";
-              const isExpired = listing.status === "expired";
+            {/* ── Group: Needs Attention ── */}
+            {!listingsLoading && needsAttention.length > 0 && (
+              <>
+                <SectionHeader icon="⚠️" label="Needs attention" count={needsAttention.length} accent="#8B4800" bg="#FFF1E0" line="#EFD9C0" />
+                {needsAttention.map((listing) => renderListingCard(listing))}
+              </>
+            )}
 
-              const borderLeft = isExpired
-                ? "3px solid #ccc"
-                : expiring
-                  ? "3px solid #E87722"
-                  : listing.status === "filled"
-                    ? "3px solid #E87722"
-                    : `3px solid ${statusColor.dot}`;
+            {/* ── Group: Active ── */}
+            {!listingsLoading && activeListings.length > 0 && (
+              <>
+                {needsAttention.length > 0 && (
+                  <SectionHeader icon="✓" label="Active" count={activeListings.length} accent="#085041" bg="#E1F5EE" line="#B6DCC7" />
+                )}
+                {activeListings.map((listing) => renderListingCard(listing))}
+              </>
+            )}
 
-              return (
-                <div
-                  key={listing.id}
-                  style={{
-                    background: isExpired ? "#F5F4F0" : "#fff",
-                    border: "0.5px solid #e5e5e5",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    display: "flex",
-                    gap: "12px",
-                    alignItems: "flex-start",
-                    borderLeft,
-                    opacity: isExpired ? 0.75 : 1,
-                    transition: "border-color 0.15s",
-                  }}
-                  onMouseEnter={(e) =>
-                    !isExpired &&
-                    (e.currentTarget.style.borderColor = "#AFA9EC")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "#e5e5e5")
-                  }
-                >
-                  {/* Checkbox — only on listings tab */}
-                  {activeTab === "listings" && (
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(listing.id)}
-                      onChange={() => toggleSelect(listing.id)}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ width: "15px", height: "15px", flexShrink: 0, cursor: "pointer", accentColor: "#534AB7", marginTop: "2px" }}
-                    />
-                  )}
-
-                  {/* Type icon */}
-                  <div
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "10px",
-                      background: typeColor.bg,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "20px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {typeEmoji}
-                  </div>
-
-                  {/* Content */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    {/* Title + status */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        marginBottom: "5px",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: 600,
-                          color: "#26215C",
-                          margin: 0,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {listing.title}
-                      </h3>
-                      <span
-                        style={{
-                          background: statusColor.bg,
-                          color: statusColor.color,
-                          fontSize: "10px",
-                          fontWeight: 600,
-                          padding: "2px 9px",
-                          borderRadius: "20px",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        ● {listing.status}
-                      </span>
-                      {listing.is_featured && (
-                        <span
-                          style={{
-                            background: "#FFF1E0",
-                            color: "#E87722",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            padding: "2px 9px",
-                            borderRadius: "20px",
-                            whiteSpace: "nowrap",
-                            border: "0.5px solid #EFD9C0",
-                          }}
-                        >
-                          ⭐ Featured
-                        </span>
-                      )}
-                      {listing.is_under_review && (
-                        <span
-                          style={{
-                            background: "#FFF8E0",
-                            color: "#8B6914",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            padding: "2px 9px",
-                            borderRadius: "20px",
-                            whiteSpace: "nowrap",
-                            border: "0.5px solid #E8D5A0",
-                          }}
-                        >
-                          🔍 Under Review
-                        </span>
-                      )}
-                      {expiring && (
-                        <span
-                          style={{
-                            background: "#FFF1E0",
-                            color: "#633806",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            padding: "2px 9px",
-                            borderRadius: "20px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          ⚠️ Expires soon
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Meta */}
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        color: "#888",
-                        marginBottom: "6px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          background: typeColor.bg,
-                          color: typeColor.color,
-                          fontSize: "10px",
-                          fontWeight: 500,
-                          padding: "1px 7px",
-                          borderRadius: "8px",
-                          marginRight: "6px",
-                        }}
-                      >
-                        {listing.listing_type}
-                      </span>
-                      📍 {listing.location}, {listing.state}
-                      {listing.view_count > 0 && (
-                        <span style={{ marginLeft: "8px" }}>
-                          · 👁️ {listing.view_count} views
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Dates */}
-                    <div style={{ fontSize: "11px", color: "#aaa" }}>
-                      Posted {fmtDate(listing.created_at)}
-                      {listing.expires_at && (
-                        <span style={{ color: expiring ? "#E87722" : "#aaa" }}>
-                          {" "}
-                          · {isExpired ? "Expired" : "Expires"}{" "}
-                          {fmtDate(listing.expires_at)}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Renew pill — inline for expiring */}
-                    {(expiring || isExpired) && (
-                      <>
-                        {listing.is_under_review || listing.renewal_blocked ? (
-                          <span
-                            title={
-                              listing.is_under_review
-                                ? "This listing is under review and cannot be renewed"
-                                : "Renewal has been restricted on this listing"
-                            }
-                            style={{
-                              marginTop: "8px",
-                              display: "inline-block",
-                              background: "#FFF1E0",
-                              color: "#E87722",
-                              border: "0.5px solid #EFD9C0",
-                              borderRadius: "20px",
-                              padding: "4px 12px",
-                              fontSize: "11px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            🚫 Renewal blocked
-                          </span>
-                        ) : (
-                          <button
-                            onClick={() => renewMutation.mutate(listing.id)}
-                            disabled={renewMutation.isPending}
-                            style={{
-                              marginTop: "8px",
-                              background: "#EEEDFE",
-                              color: "#534AB7",
-                              border: "none",
-                              borderRadius: "20px",
-                              padding: "4px 12px",
-                              fontSize: "11px",
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              opacity: renewMutation.isPending ? 0.6 : 1,
-                            }}
-                          >
-                            🔄 Renew for 30 days
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </div>
-
-                  {/* ⋮ menu */}
-                  <ActionMenu
-                    open={openMenu === listing.id}
-                    onToggle={() =>
-                      setOpenMenu(openMenu === listing.id ? null : listing.id)
-                    }
-                    items={[
-                      {
-                        label: "👁️ View listing",
-                        onClick: () => {
-                          setOpenMenu(null);
-                          navigate(getDetailPath(listing));
-                        },
-                      },
-                      {
-                        label: "✏️ Edit listing",
-                        onClick: () => {
-                          setOpenMenu(null);
-                          navigate(`/edit-listing/${listing.slug}`);
-                        },
-                      },
-                      (listing.status === "active" ||
-                        listing.status === "expired") &&
-                        !listing.is_under_review &&
-                        !listing.renewal_blocked && {
-                          label: "🔄 Renew 30 days",
-                          highlight: true,
-                          onClick: () => {
-                            setOpenMenu(null);
-                            renewMutation.mutate(listing.id);
-                          },
-                        },
-                      listing.status === "active" &&
-                        !listing.is_featured && {
-                          label: "⭐ Feature listing — $9.99",
-                          onClick: () => {
-                            setOpenMenu(null);
-                            featureMutation.mutate(listing.id);
-                          },
-                        },
-                      listing.is_featured && {
-                        label: "🧾 Download invoice",
-                        onClick: () => {
-                          setOpenMenu(null);
-                          downloadInvoice(listing.id, `NepSaathi-Invoice-${listing.id}.pdf`);
-                        },
-                      },
-                      listing.status === "active" && {
-                        label: "✓ Mark as filled",
-                        onClick: () => {
-                          setOpenMenu(null);
-                          confirmDelete(
-                            `Mark "${listing.title}" as filled/taken?`,
-                            () =>
-                              markStatusMutation.mutate({
-                                id: listing.id,
-                                status: "filled",
-                              }),
-                          );
-                        },
-                      },
-                      listing.status === "filled" && {
-                        label: "↺ Reopen listing",
-                        onClick: () => {
-                          setOpenMenu(null);
-                          markStatusMutation.mutate({
-                            id: listing.id,
-                            status: "active",
-                          });
-                        },
-                      },
-                      {
-                        label: "🗑️ Delete listing",
-                        danger: true,
-                        onClick: () => {
-                          setOpenMenu(null);
-                          confirmDelete(
-                            "This listing will be permanently deleted.",
-                            () => {
-                              setDeletingId(listing.id);
-                              deleteListingMutation.mutate(listing.id);
-                            },
-                          );
-                        },
-                      },
-                    ].filter(Boolean)}
-                  />
-                </div>
-              );
-            })}
-            <Pagination
-              page={activeTab === "under-review" ? underReviewPage : listingsPage}
-              count={activeTab === "under-review" ? allUnderReview.length : allListings.length}
-              pageSize={PAGE_SIZE}
-              onChange={(p) => {
-                activeTab === "under-review" ? setUnderReviewPage(p) : setListingsPage(p);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            />
+            {/* ── Group: Archive ── */}
+            {!listingsLoading && archiveListings.length > 0 && (
+              <>
+                <SectionHeader
+                  icon="📦" label="Archive" count={archiveListings.length}
+                  accent="#666" bg="#F1EFE8" line="#e5e5e5"
+                  collapsible open={archiveOpen} onToggle={() => setArchiveOpen((v) => !v)}
+                />
+                {archiveOpen && archiveListings.map((listing) => renderListingCard(listing))}
+              </>
+            )}
           </div>
         )}
         {activeTab === "businesses" && (

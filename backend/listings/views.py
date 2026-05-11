@@ -10,7 +10,7 @@ from django.db.models import Q
 from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from businesses.models import Business
-from django.db.models import Count
+from django.db.models import Count, Case, When, IntegerField, Value
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -174,6 +174,7 @@ class MyListingsView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
+        now = timezone.now()
         return Listing.objects.filter(
             user=self.request.user,
         ).exclude(
@@ -181,8 +182,17 @@ class MyListingsView(generics.ListAPIView):
         ).select_related('user').prefetch_related(
             'images', 'job_detail', 'room_detail'
         ).annotate(
-            view_count_annotated=Count('views')
-        ).order_by('-is_featured', '-created_at')
+            view_count_annotated=Count('views'),
+            sort_priority=Case(
+                When(is_under_review=True, then=Value(0)),
+                When(status='active', expires_at__lte=now + timedelta(days=5), then=Value(1)),
+                When(status='active', then=Value(2)),
+                When(status='filled', then=Value(3)),
+                When(status='expired', then=Value(4)),
+                default=Value(5),
+                output_field=IntegerField(),
+            )
+        ).order_by('sort_priority', '-created_at')
 
 
 class ListingImageUploadView(APIView):
