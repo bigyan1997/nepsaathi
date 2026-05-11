@@ -1183,3 +1183,51 @@ def send_listing_expired_email(listing):
         })
     except Exception as e:
         print(f'Listing expired email failed: {e}', flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# 14. EVENT RSVP REMINDER
+# ─────────────────────────────────────────────────────────────
+
+def send_event_reminder_email(user, event):
+    event_url = f"{FRONTEND_URL}/events/{event.listing.slug}"
+    try:
+        first_name = user.first_name or 'there'
+        event_date_str = event.event_date.strftime('%A, %d %B %Y at %I:%M %p')
+        venue_str = event.venue if event.venue else ('Online' if event.is_online else 'TBA')
+        body = f"""
+<h1 {_H1}>Your event is tomorrow! &#127881;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, just a friendly reminder that you're attending an event tomorrow.
+  Here are the details:
+</p>
+
+{_listing_card(
+    event.listing.title,
+    event_url,
+    f"{event_date_str} &middot; {venue_str}",
+    emoji="&#127881;",
+    bg="#EEEDFE"
+)}
+
+{_info_box(
+    f"&#128205; Venue: {venue_str}<br>"
+    + (f"&#127760; Online: <a href='{event.event_url}' style='color:#534AB7;'>{event.event_url}</a><br>" if event.is_online and event.event_url else "")
+    + f"&#127903; Ticket: {event.ticket_display}",
+    bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
+)}
+
+{_btn("View event details &rarr;", event_url, color="#534AB7")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  You received this because you RSVP'd to this event on NepSaathi.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [user.email],
+            'subject': f'[NepSaathi] Reminder: {event.listing.title} is tomorrow!',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Event reminder email failed: {e}', flush=True)

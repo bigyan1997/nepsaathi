@@ -108,6 +108,15 @@ class Business(models.Model):
         default=True,
         help_text='Is the business currently active?'
     )
+    is_featured = models.BooleanField(
+        default=False,
+        help_text='Featured via Stripe payment — shown at top of directory'
+    )
+    featured_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='When the featured status expires'
+    )
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

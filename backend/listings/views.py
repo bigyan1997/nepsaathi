@@ -41,7 +41,7 @@ class ListingListView(generics.ListAPIView):
     serializer_class = ListingSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filterset_fields = ('listing_type', 'state', 'status', 'is_featured')
+    filterset_fields = ('listing_type', 'state', 'status', 'is_featured', 'user')
     search_fields = ('title', 'description', 'location')
     ordering_fields = ('created_at', 'updated_at')
     ordering = ('-created_at',)

@@ -17,6 +17,8 @@ import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
 import FeedbackModal from "./components/ui/FeedbackModal";
+import CookieConsent from "./components/ui/CookieConsent";
+import UserProfilePage from "./pages/UserProfilePage";
 import useExitIntent from "./hooks/useExitIntent";
 
 import HomePage              from "./pages/HomePage";
@@ -122,6 +124,7 @@ function App() {
                         <Route path="/businesses/:slug" element={<BusinessDetailPage />} />
                         {/* Other public */}
                         <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
+                        <Route path="/users/:id" element={<UserProfilePage />} />
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/privacy" element={<PrivacyPage />} />
                         <Route path="/terms" element={<TermsPage />} />
@@ -152,6 +155,7 @@ function App() {
               <PushInit />
               <PWAInstallPrompt />
               <FeedbackTrigger />
+              <CookieConsent />
             </ToastProvider>
           </ProgressProvider>
         </BrowserRouter>

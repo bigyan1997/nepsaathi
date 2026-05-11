@@ -42,7 +42,7 @@ class BusinessListView(generics.ListAPIView):
         'state',
     )
     ordering_fields = ('created_at', 'business_name')
-    ordering = ('-is_verified', '-created_at')
+    ordering = ('-is_featured', '-is_verified', '-created_at')
 
     def get_queryset(self):
         return Business.objects.filter(

@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConversation, sendMessage } from "../api/messages";
 import useAuthStore from "../store/authStore";
 
+const WS_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/^http/, "ws");
+
 function timeStr(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -33,11 +35,39 @@ export default function ConversationPage() {
   const prevMsgCountRef = useRef(0);
   const initialScrollDone = useRef(false);
   const isVisible = usePageVisible();
+  const wsRef = useRef(null);
+  const [wsConnected, setWsConnected] = useState(false);
+
+  // WebSocket — real-time receive; HTTP send still goes through REST
+  useEffect(() => {
+    const token = localStorage.getItem("nepsaathi_access_token");
+    if (!token) return;
+    const ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?token=${token}`);
+    ws.onopen = () => setWsConnected(true);
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        queryClient.setQueryData(["conversation", id], (old) => {
+          if (!old) return old;
+          // Ignore if already in the list (sender sees it instantly from sendMutation)
+          if (old.messages.some((m) => m.id === msg.id)) return old;
+          return { ...old, messages: [...old.messages, msg] };
+        });
+        queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      } catch {}
+    };
+    ws.onclose = () => setWsConnected(false);
+    ws.onerror = () => setWsConnected(false);
+    wsRef.current = ws;
+    return () => ws.close();
+  }, [id]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["conversation", id],
     queryFn: () => getConversation(id),
-    refetchInterval: isVisible ? 3000 : false,
+    // Fall back to polling when WebSocket isn't connected
+    refetchInterval: wsConnected ? false : isVisible ? 3000 : false,
     retry: false,
   });
 

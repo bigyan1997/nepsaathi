@@ -13,6 +13,14 @@ class FeaturedPayment(models.Model):
         'listings.Listing',
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
+        related_name='featured_payments',
+    )
+    business = models.ForeignKey(
+        'businesses.Business',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='featured_payments',
     )
     user = models.ForeignKey(

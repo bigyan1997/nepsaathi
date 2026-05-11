@@ -127,6 +127,19 @@ class MessageSendView(APIView):
         )
         convo.save(update_fields=['updated_at'])
 
+        # Broadcast to WebSocket group so open conversation pages update instantly
+        try:
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                async_to_sync(channel_layer.group_send)(
+                    f"conversation_{convo.pk}",
+                    {"type": "chat_message", "message": MessageSerializer(msg).data},
+                )
+        except Exception:
+            pass  # WebSocket broadcast is best-effort; HTTP response always succeeds
+
         # Push notification to the other participant
         recipient = convo.participants.exclude(pk=request.user.pk).first()
         if recipient:

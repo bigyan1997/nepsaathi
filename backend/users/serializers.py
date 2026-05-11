@@ -84,3 +84,27 @@ class UserSerializer(serializers.ModelSerializer):
             'phone': {'max_length': 20},
             'bio': {'max_length': 500},
         }
+
+
+class PublicProfileSerializer(serializers.ModelSerializer):
+    """Public-facing profile — no email, no phone."""
+    full_name = serializers.ReadOnlyField()
+    listing_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'full_name',
+            'avatar',
+            'google_avatar',
+            'location',
+            'bio',
+            'is_verified',
+            'listing_count',
+            'created_at',
+        )
+        read_only_fields = fields
+
+    def get_listing_count(self, obj):
+        return obj.listings.filter(status='active').count()

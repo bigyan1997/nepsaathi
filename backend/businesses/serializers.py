@@ -2,6 +2,19 @@ from rest_framework import serializers
 from django.db.models import Avg
 from .models import Business, BusinessImage, BusinessReview
 import cloudinary.utils
+import re
+
+
+def _validate_abn(value):
+    """Australian Business Number: 11 digits, passes the ABN checksum."""
+    digits = re.sub(r'\s', '', value)
+    if not re.fullmatch(r'\d{11}', digits):
+        raise serializers.ValidationError("ABN must be 11 digits.")
+    weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+    total = sum((int(d) - (1 if i == 0 else 0)) * w for i, (d, w) in enumerate(zip(digits, weights)))
+    if total % 89 != 0:
+        raise serializers.ValidationError("ABN is not valid. Please double-check the number.")
+    return digits
 
 
 def _cloudinary_url(public_id, width):
@@ -81,6 +94,8 @@ class BusinessSerializer(serializers.ModelSerializer):
             'operating_hours',
             'is_verified',
             'is_active',
+            'is_featured',
+            'featured_until',
             'images',
             'avg_rating',
             'review_count',
@@ -91,6 +106,8 @@ class BusinessSerializer(serializers.ModelSerializer):
             'id',
             'slug',
             'is_verified',
+            'is_featured',
+            'featured_until',
             'owner_name',
             'owner_email',
             'is_owner',
@@ -101,8 +118,13 @@ class BusinessSerializer(serializers.ModelSerializer):
             'updated_at',
         )
         extra_kwargs = {
-            'abn': {'write_only': True},
+            'abn': {'write_only': True, 'required': False, 'allow_blank': True},
         }
+
+    def validate_abn(self, value):
+        if value:
+            return _validate_abn(value)
+        return value
 
     def get_is_owner(self, obj):
         request = self.context.get('request')

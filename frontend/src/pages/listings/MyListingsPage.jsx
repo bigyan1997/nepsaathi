@@ -9,7 +9,7 @@ import {
   markListingStatus,
   renewListing,
 } from "../../api/listings";
-import { createCheckoutSession, downloadInvoice } from "../../api/payments";
+import { createCheckoutSession, createBusinessCheckoutSession, downloadInvoice } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -373,6 +373,7 @@ export default function MyListingsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
   const [openMenu, setOpenMenu] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   /* ── pagination state (one per tab) ── */
   const [listingsPage, setListingsPage] = useState(1);
@@ -475,6 +476,18 @@ export default function MyListingsPage() {
     },
   });
 
+  const featureBusinessMutation = useMutation({
+    mutationFn: createBusinessCheckoutSession,
+    onSuccess: (data) => {
+      if (data.checkout_url) window.location.href = data.checkout_url;
+    },
+    onError: (err) => {
+      const data = err?.response?.data;
+      const msg = (Array.isArray(data) ? data[0] : data?.detail) || "Failed to start checkout.";
+      addToast(msg, "error");
+    },
+  });
+
   /* ── derived data ── */
   const allListings = (listingsData?.results || []).filter(
     (l) => l.status !== "deleted",
@@ -509,6 +522,44 @@ export default function MyListingsPage() {
     (underReviewPage - 1) * PAGE_SIZE,
     underReviewPage * PAGE_SIZE,
   );
+
+  /* ── bulk selection helpers ── */
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+  const selectAllPage = () => setSelectedIds(new Set(listings.map((l) => l.id)));
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const bulkDelete = () => {
+    confirmDelete(
+      `Delete ${selectedIds.size} selected listing${selectedIds.size > 1 ? "s" : ""}? This cannot be undone.`,
+      async () => {
+        await Promise.all([...selectedIds].map((id) => deleteListing(id)));
+        ["my-listings","jobs","rooms","events","notices","home-jobs","home-rooms","home-events"].forEach(
+          (k) => queryClient.invalidateQueries({ queryKey: [k] })
+        );
+        queryClient.invalidateQueries({ queryKey: ["stats"] });
+        clearSelection();
+        addToast(`${selectedIds.size} listing${selectedIds.size > 1 ? "s" : ""} deleted.`, "success");
+      }
+    );
+  };
+
+  const bulkMarkFilled = () => {
+    confirmDelete(
+      `Mark ${selectedIds.size} listing${selectedIds.size > 1 ? "s" : ""} as filled?`,
+      async () => {
+        await Promise.all([...selectedIds].map((id) => markListingStatus(id, "filled")));
+        queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+        clearSelection();
+        addToast("Listings marked as filled.", "success");
+      }
+    );
+  };
 
   /* ── modal helpers ── */
   const confirmDelete = (message, fn) =>
@@ -734,6 +785,34 @@ export default function MyListingsPage() {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "10px" }}
           >
+            {/* Bulk action toolbar */}
+            {activeTab === "listings" && listings.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === listings.length && listings.length > 0}
+                    onChange={(e) => e.target.checked ? selectAllPage() : clearSelection()}
+                    style={{ width: "15px", height: "15px", cursor: "pointer", accentColor: "#534AB7" }}
+                  />
+                  {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
+                </label>
+                {selectedIds.size > 0 && (
+                  <>
+                    <button onClick={bulkMarkFilled} style={{ background: "#FFF1E0", color: "#633806", border: "0.5px solid #EFD9C0", borderRadius: "8px", padding: "6px 14px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>
+                      ✓ Mark filled
+                    </button>
+                    <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "0.5px solid #F09595", borderRadius: "8px", padding: "6px 14px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}>
+                      🗑️ Delete selected
+                    </button>
+                    <button onClick={clearSelection} style={{ background: "transparent", color: "#aaa", border: "none", fontSize: "12px", cursor: "pointer" }}>
+                      Clear
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+
             {listingsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
 
             {!listingsLoading && underReview.length === 0 && activeTab === "under-review" && (
@@ -834,6 +913,17 @@ export default function MyListingsPage() {
                     (e.currentTarget.style.borderColor = "#e5e5e5")
                   }
                 >
+                  {/* Checkbox — only on listings tab */}
+                  {activeTab === "listings" && (
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(listing.id)}
+                      onChange={() => toggleSelect(listing.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ width: "15px", height: "15px", flexShrink: 0, cursor: "pointer", accentColor: "#534AB7", marginTop: "2px" }}
+                    />
+                  )}
+
                   {/* Type icon */}
                   <div
                     style={{
@@ -1249,30 +1339,17 @@ export default function MyListingsPage() {
                         {business.business_name}
                       </h3>
                       {business.is_verified ? (
-                        <span
-                          style={{
-                            background: "#E1F5EE",
-                            color: "#085041",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            padding: "2px 8px",
-                            borderRadius: "20px",
-                          }}
-                        >
+                        <span style={{ background: "#E1F5EE", color: "#085041", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px" }}>
                           ✓ Verified
                         </span>
                       ) : (
-                        <span
-                          style={{
-                            background: "#FAEEDA",
-                            color: "#633806",
-                            fontSize: "10px",
-                            fontWeight: 600,
-                            padding: "2px 8px",
-                            borderRadius: "20px",
-                          }}
-                        >
+                        <span style={{ background: "#FAEEDA", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px" }}>
                           Pending verification
+                        </span>
+                      )}
+                      {business.is_featured && (
+                        <span style={{ background: "#FFF1E0", color: "#E87722", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px", border: "0.5px solid #EFD9C0" }}>
+                          ⭐ Featured
                         </span>
                       )}
                     </div>
@@ -1349,6 +1426,13 @@ export default function MyListingsPage() {
                           navigate(`/businesses/${business.slug}`);
                         },
                       },
+                      !business.is_featured && {
+                        label: "⭐ Feature business — $9.99",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          featureBusinessMutation.mutate(business.id);
+                        },
+                      },
                       {
                         label: "🗑️ Remove business",
                         danger: true,
@@ -1363,7 +1447,7 @@ export default function MyListingsPage() {
                           );
                         },
                       },
-                    ]}
+                    ].filter(Boolean)}
                   />
                 </div>
               );

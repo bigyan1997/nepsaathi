@@ -7,7 +7,10 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from decouple import config
-from .serializers import UserSerializer
+from .serializers import UserSerializer, PublicProfileSerializer
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -266,3 +269,15 @@ class PushSubscribeView(APIView):
         from users.models import PushSubscription
         PushSubscription.objects.filter(user=request.user, endpoint=endpoint).delete()
         return Response({'detail': 'Unsubscribed.'}, status=status.HTTP_200_OK)
+
+
+class PublicProfileView(generics.RetrieveAPIView):
+    """
+    GET /api/users/<id>/public/
+    Returns a user's public profile and their active listing count.
+    No email or phone exposed.
+    """
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = PublicProfileSerializer
+    queryset = User.objects.filter(is_active=True, is_banned=False)
+    lookup_field = 'id'

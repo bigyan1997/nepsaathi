@@ -79,3 +79,8 @@ export const googleLogin = async (accessToken) => {
 
   return data;
 };
+
+export const getPublicProfile = async (userId) => {
+  const response = await api.get(`/api/users/${userId}/public/`);
+  return response.data;
+};
