@@ -9,7 +9,7 @@ import {
   markListingStatus,
   renewListing,
 } from "../../api/listings";
-import { createCheckoutSession, createBusinessCheckoutSession, downloadInvoice } from "../../api/payments";
+import { createCheckoutSession, downloadInvoice } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -476,17 +476,6 @@ export default function MyListingsPage() {
     },
   });
 
-  const featureBusinessMutation = useMutation({
-    mutationFn: createBusinessCheckoutSession,
-    onSuccess: (data) => {
-      if (data.checkout_url) window.location.href = data.checkout_url;
-    },
-    onError: (err) => {
-      const data = err?.response?.data;
-      const msg = (Array.isArray(data) ? data[0] : data?.detail) || "Failed to start checkout.";
-      addToast(msg, "error");
-    },
-  });
 
   /* ── derived data ── */
   const allListings = (listingsData?.results || []).filter(
@@ -1347,11 +1336,6 @@ export default function MyListingsPage() {
                           Pending verification
                         </span>
                       )}
-                      {business.is_featured && (
-                        <span style={{ background: "#FFF1E0", color: "#E87722", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px", border: "0.5px solid #EFD9C0" }}>
-                          ⭐ Featured
-                        </span>
-                      )}
                     </div>
                     <div style={{ fontSize: "12px", color: "#888" }}>
                       <span
@@ -1424,13 +1408,6 @@ export default function MyListingsPage() {
                         onClick: () => {
                           setOpenMenu(null);
                           navigate(`/businesses/${business.slug}`);
-                        },
-                      },
-                      !business.is_featured && {
-                        label: "⭐ Feature business — $9.99",
-                        onClick: () => {
-                          setOpenMenu(null);
-                          featureBusinessMutation.mutate(business.id);
                         },
                       },
                       {

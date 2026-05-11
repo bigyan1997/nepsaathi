@@ -398,21 +398,6 @@ function BusinessMobileCard({ biz }) {
             zIndex: 2,
           }}
         >
-          {biz.is_featured && (
-            <span
-              style={{
-                background: "linear-gradient(135deg,#E87722,#534AB7)",
-                color: "#fff",
-                fontSize: "9px",
-                fontWeight: 700,
-                padding: "2px 8px",
-                borderRadius: "5px",
-                alignSelf: "flex-start",
-              }}
-            >
-              ⭐ Featured
-            </span>
-          )}
           {biz.is_nepalese_owned && (
             <span
               style={{

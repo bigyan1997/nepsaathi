@@ -5,10 +5,6 @@ export const createCheckoutSession = async (listingId) => {
   return response.data;
 };
 
-export const createBusinessCheckoutSession = async (businessId) => {
-  const response = await api.post(`/api/payments/feature-business/${businessId}/`);
-  return response.data;
-};
 
 export const getPaymentStatus = async (listingId) => {
   const response = await api.get(`/api/payments/status/${listingId}/`);

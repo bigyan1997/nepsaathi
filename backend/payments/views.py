@@ -83,58 +83,6 @@ class CreateCheckoutSessionView(APIView):
         return Response({'checkout_url': session.url})
 
 
-class CreateBusinessCheckoutSessionView(APIView):
-    """
-    POST /api/payments/feature-business/<business_id>/
-    Creates a Stripe checkout session to feature a business for 7 days.
-    Owner only.
-    """
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request, business_id):
-        try:
-            business = Business.objects.get(pk=business_id, owner=request.user, is_active=True)
-        except Business.DoesNotExist:
-            raise NotFound('Active business not found or not yours.')
-
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        frontend_url = settings.FRONTEND_URL
-
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'aud',
-                    'unit_amount': settings.STRIPE_FEATURED_PRICE_CENTS,
-                    'product_data': {
-                        'name': f'Feature business: {business.business_name}',
-                        'description': 'Your business will appear at the top of the directory for 7 days.',
-                    },
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url=f'{frontend_url}/payment/success?session_id={{CHECKOUT_SESSION_ID}}&business_id={business.id}',
-            cancel_url=f'{frontend_url}/payment/cancel',
-            metadata={
-                'business_id': str(business.id),
-                'user_id': str(request.user.id),
-                'duration_days': '7',
-            },
-        )
-
-        FeaturedPayment.objects.create(
-            business=business,
-            user=request.user,
-            stripe_session_id=session.id,
-            amount_paid=settings.STRIPE_FEATURED_PRICE_CENTS,
-            duration_days=7,
-            status='pending',
-        )
-
-        return Response({'checkout_url': session.url})
-
-
 class StripeWebhookView(APIView):
     """
     POST /api/payments/webhook/
