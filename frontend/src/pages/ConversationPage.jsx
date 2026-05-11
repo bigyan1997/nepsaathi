@@ -42,14 +42,15 @@ export default function ConversationPage() {
   useEffect(() => {
     let ws;
     let reconnectTimer;
-    let dead = false; // set true on cleanup to stop reconnect loop
+    let dead = false;
+    let delay = 2000; // backoff: 2s → 4s → 8s … capped at 30s
 
     const connect = () => {
       const token = localStorage.getItem("nepsaathi_access_token");
       if (!token || dead) return;
       ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?token=${token}`);
       wsRef.current = ws;
-      ws.onopen = () => setWsConnected(true);
+      ws.onopen = () => { setWsConnected(true); delay = 2000; }; // reset backoff on success
       ws.onmessage = (e) => {
         try {
           const msg = JSON.parse(e.data);
@@ -64,7 +65,10 @@ export default function ConversationPage() {
       };
       ws.onclose = () => {
         setWsConnected(false);
-        if (!dead) reconnectTimer = setTimeout(connect, 3000);
+        if (!dead) {
+          reconnectTimer = setTimeout(connect, delay);
+          delay = Math.min(delay * 2, 30000);
+        }
       };
       ws.onerror = () => setWsConnected(false);
     };
