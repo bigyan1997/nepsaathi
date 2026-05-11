@@ -171,8 +171,10 @@ export default function RoomDetailPage() {
         "url": window.location.href,
         "address": {
           "@type": "PostalAddress",
-          "addressLocality": room.location,
-          "addressRegion": room.state,
+          ...(room.street_address && { "streetAddress": room.street_address }),
+          "addressLocality": room.listing_location,
+          "addressRegion": room.listing_state,
+          ...(room.listing_postcode && { "postalCode": room.listing_postcode }),
           "addressCountry": "AU",
         },
         ...(room.price && {
@@ -407,7 +409,11 @@ export default function RoomDetailPage() {
             <span
               style={{ fontSize: "14px", color: "#E87722", fontWeight: 600 }}
             >
-              📍 {room.listing_location}, {room.listing_state}
+              📍{" "}
+              {room.street_address ? `${room.street_address}, ` : ""}
+              {room.listing_location}
+              {room.listing_postcode ? ` ${room.listing_postcode}` : ""},{" "}
+              {room.listing_state}
             </span>
             {room.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
@@ -812,7 +818,10 @@ export default function RoomDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    {room.listing_location}, {room.listing_state}
+                    {room.street_address ? `${room.street_address}, ` : ""}
+                    {room.listing_location}
+                    {room.listing_postcode ? ` ${room.listing_postcode}` : ""},{" "}
+                    {room.listing_state}
                   </span>
                 </div>
                 {room.available_from && (
@@ -997,7 +1006,7 @@ export default function RoomDetailPage() {
                       {listing.title}
                     </div>
                     <div style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {listing.location}, {listing.state}
+                      📍 {listing.location}{listing.postcode ? ` ${listing.postcode}` : ""}, {listing.state}
                     </div>
                   </div>
                   <span style={{ color: "#E87722", flexShrink: 0 }}>

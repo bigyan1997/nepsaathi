@@ -56,6 +56,7 @@ export default function EditListingPage() {
     description: "",
     location: "",
     state: "NSW",
+    postcode: "",
     contact_email: "",
     contact_phone: "",
     contact_whatsapp: "",
@@ -97,6 +98,7 @@ export default function EditListingPage() {
         description: listing.description || "",
         location: listing.location || "",
         state: listing.state || "NSW",
+        postcode: listing.postcode || "",
         contact_email: listing.contact_email || "",
         contact_phone: listing.contact_phone || "",
         contact_whatsapp: listing.contact_whatsapp || "",
@@ -132,6 +134,7 @@ export default function EditListingPage() {
           nepalese_household: typeData.nepalese_household || false,
           pets_allowed: typeData.pets_allowed || false,
           parking_available: typeData.parking_available || false,
+          street_address: typeData.street_address || "",
         });
       } else if (listingType === "event") {
         setTypeForm({
@@ -308,21 +311,33 @@ export default function EditListingPage() {
             />
           </div>
           <div>
-            <label style={labelStyle}>State *</label>
-            <select
+            <label style={labelStyle}>Postcode</label>
+            <input
               style={inputStyle}
-              value={baseForm.state}
+              placeholder="e.g. 2150"
+              value={baseForm.postcode}
               onChange={(e) =>
-                setBaseForm({ ...baseForm, state: e.target.value })
+                setBaseForm({ ...baseForm, postcode: e.target.value })
               }
-            >
-              {STATES.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              maxLength={10}
+            />
           </div>
+        </div>
+        <div>
+          <label style={labelStyle}>State *</label>
+          <select
+            style={inputStyle}
+            value={baseForm.state}
+            onChange={(e) =>
+              setBaseForm({ ...baseForm, state: e.target.value })
+            }
+          >
+            {STATES.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -579,6 +594,17 @@ export default function EditListingPage() {
                 {label}
               </label>
             ))}
+            <div>
+              <label style={labelStyle}>Street address</label>
+              <input
+                style={inputStyle}
+                placeholder="e.g. 12/34 Main St"
+                value={typeForm.street_address || ""}
+                onChange={(e) =>
+                  setTypeForm({ ...typeForm, street_address: e.target.value })
+                }
+              />
+            </div>
           </>
         )}
 

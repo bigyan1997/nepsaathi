@@ -61,6 +61,7 @@ class Listing(models.Model):
         choices=State.choices,
         default=State.NSW,
     )
+    postcode = models.CharField(max_length=10, blank=True)
 
     # Status
     status = models.CharField(

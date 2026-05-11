@@ -345,6 +345,7 @@ export default function PostAdPage() {
     description: "",
     location: "",
     state: "NSW",
+    postcode: "",
     contact_email: "",
     contact_phone: "",
     contact_whatsapp: "",
@@ -372,6 +373,7 @@ export default function PostAdPage() {
     nepalese_household: false,
     pets_allowed: false,
     parking_available: false,
+    street_address: "",
   });
   const [noticeForm, setNoticeForm] = useState({
     category: "general",
@@ -915,20 +917,30 @@ export default function PostAdPage() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>State *</label>
-                  <select
+                  <label style={labelStyle}>Postcode</label>
+                  <input
                     style={inputStyle}
-                    value={baseForm.state}
-                    onChange={setBase("state")}
-                  >
-                    {STATES.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="e.g. 2150"
+                    value={baseForm.postcode}
+                    onChange={setBase("postcode")}
+                    maxLength={10}
+                  />
                 </div>
               </Grid2>
+              <div>
+                <label style={labelStyle}>State *</label>
+                <select
+                  style={inputStyle}
+                  value={baseForm.state}
+                  onChange={setBase("state")}
+                >
+                  {STATES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </SectionCard>
 
             <SectionCard
@@ -1350,6 +1362,38 @@ export default function PostAdPage() {
                 border="#e5e5e5"
               />
             </SectionCard>
+
+            {!baseForm.is_wanted && (
+              <SectionCard
+                title="Property address"
+                accent="#1A6B3C"
+                accentBg="#E8F5EE"
+                accentBorder="#B6DCC7"
+              >
+                <div
+                  style={{
+                    background: "#E8F5EE",
+                    border: "0.5px solid #B6DCC7",
+                    borderRadius: "8px",
+                    padding: "10px 12px",
+                    fontSize: "12px",
+                    color: "#1A6B3C",
+                  }}
+                >
+                  💡 Street address helps renters find the property. Leave blank
+                  if you prefer to share it privately.
+                </div>
+                <div>
+                  <label style={labelStyle}>Street address</label>
+                  <input
+                    style={inputStyle}
+                    placeholder="e.g. 12/34 Main St"
+                    value={roomForm.street_address}
+                    onChange={setRoom("street_address")}
+                  />
+                </div>
+              </SectionCard>
+            )}
 
             <NavButtons
               onBack={() => {

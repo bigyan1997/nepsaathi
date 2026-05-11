@@ -10,6 +10,7 @@ class RoomSerializer(serializers.ModelSerializer):
     listing_title = serializers.CharField(source='listing.title', read_only=True)
     listing_location = serializers.CharField(source='listing.location', read_only=True)
     listing_state = serializers.CharField(source='listing.state', read_only=True)
+    listing_postcode = serializers.CharField(source='listing.postcode', read_only=True)
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     listing_id = serializers.IntegerField(source='listing.id', read_only=True)
     listing_slug = serializers.SlugField(source='listing.slug', read_only=True)
@@ -54,6 +55,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'listing_title',
             'listing_location',
             'listing_state',
+            'listing_postcode',
             'listing_status',
             'posted_by',
             'user_id',
@@ -74,6 +76,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'nepalese_household',
             'pets_allowed',
             'parking_available',
+            'street_address',
             'created_at',
             'expires_at',
             'is_under_review',
@@ -89,6 +92,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'listing_title',
             'listing_location',
             'listing_state',
+            'listing_postcode',
             'listing_status',
             'listing_id',
             'listing_slug',

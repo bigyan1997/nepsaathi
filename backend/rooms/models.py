@@ -72,6 +72,7 @@ class Room(models.Model):
     )
     pets_allowed = models.BooleanField(default=False)
     parking_available = models.BooleanField(default=False)
+    street_address = models.CharField(max_length=200, blank=True)
 
     class Meta:
         db_table = 'rooms'
