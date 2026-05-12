@@ -143,10 +143,6 @@ class MessageSendView(APIView):
             content=content,
         )
         convo.save(update_fields=['updated_at'])
-        try:
-            convo.hidden_by.clear()
-        except Exception:
-            pass
 
         # Broadcast via channel layer (async_to_sync is the documented way from sync views)
         try:
