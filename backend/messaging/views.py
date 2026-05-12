@@ -69,6 +69,18 @@ class ConversationListView(APIView):
         ).filter(participants=recipient).first()
 
         if existing:
+            Message.objects.create(
+                conversation=existing,
+                sender=request.user,
+                content=initial_message,
+            )
+            existing.save(update_fields=['updated_at'])
+            try:
+                # Unhide for both parties so the conversation reappears in both inboxes
+                existing.hidden_by.remove(request.user, recipient)
+            except Exception:
+                pass
+            self._notify(recipient, request.user, initial_message, existing.pk)
             serializer = ConversationSerializer(existing, context={'request': request})
             return Response({**serializer.data, 'existing': True})
 
@@ -85,8 +97,21 @@ class ConversationListView(APIView):
             content=initial_message,
         )
 
+        self._notify(recipient, request.user, initial_message, convo.pk)
         serializer = ConversationSerializer(convo, context={'request': request})
         return Response({**serializer.data, 'existing': False}, status=201)
+
+    @staticmethod
+    def _notify(recipient, sender, content, convo_pk):
+        try:
+            from core.push import send_push_notification
+            sender_name = sender.full_name or sender.email
+            threading.Thread(
+                target=send_push_notification,
+                args=(recipient, f'New message from {sender_name}', content[:80], f'/messages/{convo_pk}'),
+            ).start()
+        except Exception as e:
+            logger.warning('Push notification failed for initial message: %s', e)
 
 
 class ConversationDetailView(APIView):
