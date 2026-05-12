@@ -10,6 +10,11 @@ class Conversation(models.Model):
     listing_id = models.IntegerField(null=True, blank=True)
     listing_title = models.CharField(max_length=300, blank=True)
     listing_type = models.CharField(max_length=20, blank=True)
+    hidden_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='hidden_conversations',
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

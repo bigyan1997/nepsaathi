@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getConversation, sendMessage } from "../api/messages";
+import { getConversation, sendMessage, deleteConversation } from "../api/messages";
 import useAuthStore from "../store/authStore";
 
 const WS_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/^http/, "ws");
@@ -31,6 +31,7 @@ export default function ConversationPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const messagesContainerRef = useRef(null);
   const prevMsgCountRef = useRef(0);
   const initialScrollDone = useRef(false);
@@ -119,6 +120,14 @@ export default function ConversationPage() {
     }
   }, [data]);
 
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteConversation(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      navigate("/messages");
+    },
+  });
+
   const scrollToBottom = (behavior = "smooth") => {
     const el = messagesContainerRef.current;
     if (!el) return;
@@ -177,7 +186,7 @@ export default function ConversationPage() {
         >
           ←
         </button>
-        <Link to={`/users/${other?.id}`} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+        <Link to={`/users/${other?.id}`} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
           <div style={{
             width: 38,
             height: 38,
@@ -203,6 +212,32 @@ export default function ConversationPage() {
             )}
           </div>
         </Link>
+        {confirmDelete ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "#888" }}>Delete chat?</span>
+            <button
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+              style={{ background: "#A32D2D", color: "#fff", border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              {deleteMutation.isPending ? "..." : "Yes"}
+            </button>
+            <button
+              onClick={() => setConfirmDelete(false)}
+              style={{ background: "#f0f0f0", color: "#444", border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              No
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            title="Delete chat"
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#bbb", fontSize: 18, padding: 4, display: "flex", alignItems: "center", flexShrink: 0 }}
+          >
+            🗑
+          </button>
+        )}
       </div>
 
       {/* Messages */}

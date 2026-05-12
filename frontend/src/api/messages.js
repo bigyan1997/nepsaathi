@@ -24,3 +24,7 @@ export const getUnreadCount = async () => {
   const response = await api.get("/api/messages/unread-count/");
   return response.data;
 };
+
+export const deleteConversation = async (id) => {
+  await api.delete(`/api/messages/${id}/`);
+};

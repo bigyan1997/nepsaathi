@@ -23,6 +23,8 @@ class ConversationListView(APIView):
     def get(self, request):
         convos = Conversation.objects.filter(
             participants=request.user
+        ).exclude(
+            hidden_by=request.user
         ).prefetch_related('participants', 'messages').order_by('-updated_at')
         serializer = ConversationSerializer(convos, many=True, context={'request': request})
         return Response(serializer.data)
@@ -110,6 +112,11 @@ class ConversationDetailView(APIView):
         convo_data = ConversationSerializer(convo, context={'request': request}).data
         return Response({'conversation': convo_data, 'messages': serializer.data})
 
+    def delete(self, request, pk):
+        convo = self._get_conversation(pk, request.user)
+        convo.hidden_by.add(request.user)
+        return Response(status=204)
+
 
 class MessageSendView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -135,6 +142,7 @@ class MessageSendView(APIView):
             sender=request.user,
             content=content,
         )
+        convo.hidden_by.clear()
         convo.save(update_fields=['updated_at'])
 
         # Broadcast via channel layer (async_to_sync is the documented way from sync views)
