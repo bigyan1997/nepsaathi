@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 624" width="1640" height="624">
+  <defs>
+    <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#26215C"/>
+      <stop offset="60%" style="stop-color:#534AB7"/>
+      <stop offset="100%" style="stop-color:#3D3499"/>
+    </linearGradient>
+    <linearGradient id="ctaBg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E87722"/>
+      <stop offset="100%" style="stop-color:#C45E0A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1640" height="624" fill="url(#heroBg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="1560" cy="80"  r="400" fill="#E87722" fill-opacity="0.06"/>
+  <circle cx="60"   cy="560" r="300" fill="#AFA9EC" fill-opacity="0.06"/>
+  <circle cx="820"  cy="312" r="560" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="100"/>
+
+  <!-- ── LEFT CONTENT (profile pic safe zone ends ~200px from left) ── -->
+
+  <!-- Logo -->
+  <circle cx="240" cy="88" r="22" fill="#E87722"/>
+  <circle cx="261" cy="88" r="22" fill="#AFA9EC" fill-opacity="0.88"/>
+  <text x="296" y="97" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700">
+    <tspan fill="#E87722">Nep</tspan><tspan fill="#FFFFFF">Saathi</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="240" y="128" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="rgba(255,255,255,0.45)" letter-spacing="1.5">your Nepali friend, wherever you are</text>
+
+  <!-- Main headline -->
+  <text x="240" y="230" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="68" font-weight="700" fill="#FFFFFF" letter-spacing="-1.5">Find your</text>
+  <text x="240" y="316" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="68" font-weight="700" fill="#E87722" letter-spacing="-1.5">Nepali</text>
+  <text x="240" y="402" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="68" font-weight="700" fill="#FFFFFF" letter-spacing="-1.5">community.</text>
+
+  <!-- Category pills -->
+  <rect x="240" y="432" width="110" height="38" rx="19" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="262" cy="451" r="5" fill="#E87722"/>
+  <text x="305" y="456" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Jobs</text>
+
+  <rect x="362" y="432" width="120" height="38" rx="19" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="384" cy="451" r="5" fill="#AFA9EC"/>
+  <text x="432" y="456" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Rooms</text>
+
+  <rect x="494" y="432" width="122" height="38" rx="19" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="516" cy="451" r="5" fill="#E87722"/>
+  <text x="561" y="456" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Events</text>
+
+  <rect x="628" y="432" width="164" height="38" rx="19" fill="rgba(232,119,34,0.25)"/>
+  <circle cx="650" cy="451" r="5" fill="#E87722"/>
+  <text x="720" y="456" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" font-weight="600" fill="#E87722" text-anchor="middle">Businesses</text>
+
+  <!-- CTA -->
+  <rect x="240" y="500" width="200" height="52" rx="26" fill="url(#ctaBg)"/>
+  <text x="340" y="531" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">nepsaathi.com →</text>
+
+  <!-- ── RIGHT CONTENT — decorative large mark ── -->
+
+  <!-- Giant overlapping circles (decorative) -->
+  <!-- r=200, overlap=192, markW=592, center at x=1300, y=312 -->
+  <!-- cx1 = 1300-(592/2)+200 = 1300-296+200 = 1204, cx2=1204+192=1396 -->
+  <circle cx="1204" cy="312" r="200" fill="#E87722" fill-opacity="0.18"/>
+  <circle cx="1396" cy="312" r="200" fill="#AFA9EC" fill-opacity="0.12"/>
+
+  <!-- Stats floating chips -->
+  <rect x="1080" y="140" width="220" height="72" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="1190" y="170" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700" fill="#E87722" text-anchor="middle">1000+</text>
+  <text x="1190" y="196" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.60)" text-anchor="middle">Active Listings</text>
+
+  <rect x="1340" y="200" width="220" height="72" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="1450" y="230" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700" fill="#E87722" text-anchor="middle">Free</text>
+  <text x="1450" y="256" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.60)" text-anchor="middle">Always &amp; forever</text>
+
+  <rect x="1080" y="400" width="220" height="72" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="1190" y="430" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700" fill="#E87722" text-anchor="middle">Australia</text>
+  <text x="1190" y="456" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.60)" text-anchor="middle">Nationwide coverage</text>
+
+  <rect x="1340" y="340" width="220" height="72" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="1450" y="370" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700" fill="#E87722" text-anchor="middle">Nepal</text>
+  <text x="1450" y="396" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.60)" text-anchor="middle">Nepali community</text>
+
+  <!-- Bottom bar URL -->
+  <text x="820" y="598" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.25)" text-anchor="middle" letter-spacing="2">NEPSAATHI.COM</text>
+</svg>

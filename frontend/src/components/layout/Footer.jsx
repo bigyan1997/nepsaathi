@@ -30,7 +30,7 @@ export default function Footer() {
             to="/"
             style={{ textDecoration: "none", display: "inline-block", marginBottom: "16px" }}
           >
-            <NepSaathiLogo size={20} dark />
+            <NepSaathiLogo size={24} dark />
           </Link>
 
           <p

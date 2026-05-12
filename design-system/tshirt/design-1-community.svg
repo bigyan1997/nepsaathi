@@ -1,0 +1,63 @@
+<!--
+  T-SHIRT DESIGN 1 — "Two Worlds, One Community"
+  Best on: White / cream / natural shirts
+  Colors: Full brand (saffron + deep purple)
+  Print area: 30 × 38 cm (represented as 600×760 px)
+  Send this vector file to your DTG/screen printer.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760" width="600" height="760">
+
+  <!-- Print area guide — REMOVE THIS RECT BEFORE PRINTING -->
+  <rect x="1" y="1" width="598" height="758" fill="none" stroke="#e0ddd8" stroke-width="1.5" stroke-dasharray="8,4"/>
+
+  <!-- ── Country labels ── -->
+  <text x="178" y="60" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#26215C" text-anchor="middle" letter-spacing="3">NEPAL</text>
+  <text x="422" y="60" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#534AB7" text-anchor="middle" letter-spacing="3">AUSTRALIA</text>
+
+  <!-- Connector line -->
+  <line x1="200" y1="52" x2="280" y2="52" stroke="#E87722" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <line x1="320" y1="52" x2="400" y2="52" stroke="#534AB7" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <circle cx="300" cy="52" r="4" fill="#E87722"/>
+
+  <!-- ── Giant overlapping circles — the hero mark ── -->
+  <!-- r=130, overlap=125 (48%), markW=385 -->
+  <!-- Center 600px: (600-385)/2 = 107.5 → cx1=107.5+130=237.5≈238, cx2=238+125=363 -->
+  <circle cx="238" cy="200" r="130" fill="#E87722" fill-opacity="0.15"/>
+  <circle cx="362" cy="200" r="130" fill="#534AB7" fill-opacity="0.12"/>
+
+  <!-- Outlines only (for crisp print) -->
+  <circle cx="238" cy="200" r="130" fill="none" stroke="#E87722" stroke-width="3"/>
+  <circle cx="362" cy="200" r="130" fill="none" stroke="#534AB7" stroke-width="3"/>
+
+  <!-- Overlap fill — where both worlds meet -->
+  <!-- Using a filled path for the intersection would require complex clipping.
+       Instead, layer filled circles with clip to give the overlap a distinct feel. -->
+  <circle cx="238" cy="200" r="130" fill="#E87722" fill-opacity="0.20"/>
+  <circle cx="362" cy="200" r="130" fill="#534AB7" fill-opacity="0.20"/>
+
+  <!-- Wordmark inside / below circles -->
+  <text x="300" y="188" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="38" font-weight="700" fill="#E87722" text-anchor="middle" letter-spacing="-0.5">Nep</text>
+  <text x="300" y="230" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="38" font-weight="700" fill="#26215C" text-anchor="middle" letter-spacing="-0.5">Saathi</text>
+
+  <!-- ── Divider ── -->
+  <line x1="160" y1="370" x2="440" y2="370" stroke="#E87722" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="300" cy="370" r="5" fill="#E87722"/>
+  <circle cx="275" cy="370" r="3" fill="#AFA9EC"/>
+  <circle cx="325" cy="370" r="3" fill="#AFA9EC"/>
+
+  <!-- ── Main tagline ── -->
+  <text x="300" y="420" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="600" fill="#26215C" text-anchor="middle" letter-spacing="1">YOUR NEPALI FRIEND</text>
+  <text x="300" y="455" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="600" fill="#534AB7" text-anchor="middle" letter-spacing="1">WHEREVER YOU ARE</text>
+
+  <!-- ── Category dots ── -->
+  <text x="300" y="510" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="12" fill="#A0A0B0" text-anchor="middle" letter-spacing="3">JOBS · ROOMS · EVENTS · BUSINESSES</text>
+
+  <!-- ── Devanagari ── -->
+  <text x="300" y="580" font-family="'Noto Sans Devanagari','Arial Unicode MS',serif" font-size="42" font-weight="700" fill="#26215C" text-anchor="middle" fill-opacity="0.12" letter-spacing="4">नेपसाथी</text>
+  <!-- Devanagari (foreground) -->
+  <text x="300" y="580" font-family="'Noto Sans Devanagari','Arial Unicode MS',serif" font-size="42" font-weight="700" fill="#26215C" text-anchor="middle" fill-opacity="0.55" letter-spacing="4">नेपसाथी</text>
+
+  <!-- ── URL ── -->
+  <text x="300" y="650" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="15" fill="#534AB7" text-anchor="middle" letter-spacing="2">nepsaathi.com</text>
+
+</svg>

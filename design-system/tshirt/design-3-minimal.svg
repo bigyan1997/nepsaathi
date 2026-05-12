@@ -1,0 +1,26 @@
+<!--
+  T-SHIRT DESIGN 3 — "The Mark" (Minimal)
+  Best on: Any shirt colour — use white ink on dark, brand colours on light
+  Print area: 28 × 28 cm chest print (square, represented as 560×560 px)
+  Tip: Print at ~20×20 cm chest-centre for a clean, iconic look.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" width="560" height="560">
+
+  <!-- Print area guide — REMOVE BEFORE PRINTING -->
+  <rect x="1" y="1" width="558" height="558" fill="none" stroke="#e0ddd8" stroke-width="1.5" stroke-dasharray="8,4"/>
+
+  <!-- ── Giant mark — centered ── -->
+  <!-- r=160, overlap=154 (48%), markW=474 -->
+  <!-- Center 560px: cx1=(560-474)/2+160=43+160=203, cx2=203+154=357, cy=240 -->
+  <circle cx="203" cy="240" r="160" fill="#E87722"/>
+  <circle cx="357" cy="240" r="160" fill="#534AB7" fill-opacity="0.88"/>
+
+  <!-- ── Wordmark below ── -->
+  <text x="280" y="450" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="44" font-weight="600" text-anchor="middle" letter-spacing="-0.5">
+    <tspan fill="#E87722">Nep</tspan><tspan fill="#26215C">Saathi</tspan>
+  </text>
+
+  <!-- ── URL ── -->
+  <text x="280" y="510" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="#A0A0B0" text-anchor="middle" letter-spacing="2">nepsaathi.com</text>
+
+</svg>

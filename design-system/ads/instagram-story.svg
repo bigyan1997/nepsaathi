@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   style="stop-color:#26215C"/>
+      <stop offset="55%"  style="stop-color:#534AB7"/>
+      <stop offset="100%" style="stop-color:#3D3499"/>
+    </linearGradient>
+    <linearGradient id="cta" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   style="stop-color:#E87722"/>
+      <stop offset="100%" style="stop-color:#C45E0A"/>
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   style="stop-color:#FFFFFF"/>
+      <stop offset="100%" style="stop-color:#F0EFF8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+
+  <!-- Decorative ambient circles -->
+  <circle cx="1050" cy="260"  r="560" fill="#E87722" fill-opacity="0.06"/>
+  <circle cx="30"   cy="1700" r="430" fill="#AFA9EC" fill-opacity="0.06"/>
+  <circle cx="540"  cy="960"  r="790" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="130"/>
+
+  <!-- ── Logo top-left ── -->
+  <!-- mark: r=32, gap=33, cx1=100, cx2=133 -->
+  <circle cx="100" cy="130" r="32" fill="#E87722"/>
+  <circle cx="133" cy="130" r="32" fill="#AFA9EC" fill-opacity="0.88"/>
+  <text x="182" y="149" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="44" font-weight="700">
+    <tspan fill="#E87722">Nep</tspan><tspan fill="#FFFFFF">Saathi</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="100" y="196" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="18" fill="rgba(255,255,255,0.42)" letter-spacing="1.5">your Nepali friend, wherever you are</text>
+
+  <!-- ── Overline label ── -->
+  <text x="100" y="380" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="22" fill="rgba(255,255,255,0.50)" letter-spacing="3">AUSTRALIA'S NEPALI HUB</text>
+
+  <!-- ── Stacked hero words ── -->
+  <text x="100" y="510" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="120" font-weight="700" fill="#FFFFFF"               letter-spacing="-3">Find</text>
+  <text x="100" y="644" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="120" font-weight="700" fill="#E87722"                letter-spacing="-3">Jobs.</text>
+  <text x="100" y="778" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="120" font-weight="700" fill="#FFFFFF"               letter-spacing="-3">Rooms.</text>
+  <text x="100" y="912" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="120" font-weight="700" fill="rgba(255,255,255,0.30)" letter-spacing="-3">Events.</text>
+
+  <!-- ── Listing card ── -->
+  <!-- Drop shadow -->
+  <rect x="96" y="982" width="890" height="430" rx="28" fill="rgba(0,0,0,0.25)"/>
+  <!-- Card body -->
+  <rect x="90" y="972" width="890" height="430" rx="28" fill="url(#cardBg)"/>
+
+  <!-- Card image strip -->
+  <rect x="90" y="972" width="890" height="190" rx="28" fill="#EEEDFE"/>
+  <rect x="90" y="1100" width="890" height="62" fill="#EEEDFE"/>
+
+  <!-- House icon (SVG path, no emoji) -->
+  <!-- Simple house: roof triangle + walls rectangle -->
+  <polygon points="540,1010 460,1080 620,1080" fill="#534AB7" fill-opacity="0.35"/>
+  <rect x="478" y="1080" width="124" height="72" fill="#534AB7" fill-opacity="0.35"/>
+  <rect x="516" y="1104" width="48" height="48" fill="#534AB7" fill-opacity="0.50"/>
+
+  <!-- Featured badge -->
+  <rect x="114" y="994" width="148" height="34" rx="17" fill="#E87722"/>
+  <text x="188" y="1017" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">FEATURED</text>
+
+  <!-- Card content -->
+  <text x="120" y="1220" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#534AB7" letter-spacing="1.5">ROOM FOR RENT</text>
+  <text x="120" y="1262" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700" fill="#26215C">Furnished Room — Nepali Household</text>
+  <text x="120" y="1302" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" fill="#A0A0AB">Parramatta, NSW  ·  Bills included</text>
+  <text x="120" y="1362" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="52" font-weight="700" fill="#26215C">$250</text>
+  <text x="210" y="1362" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" fill="#A0A0AB"> / week</text>
+
+  <!-- Card footer bar -->
+  <rect x="90" y="1346" width="890" height="56" rx="0" fill="#26215C"/>
+  <rect x="90" y="1346" width="890" height="56" fill="#26215C"/>
+  <rect x="90" y="1374" width="890" height="28" fill="#26215C"/>
+  <!-- rounded bottom corners only via two overlapping rects -->
+  <rect x="90" y="1346" width="890" height="56" rx="28" fill="#26215C"/>
+  <rect x="90" y="1346" width="890" height="30" fill="#26215C"/>
+  <text x="540" y="1387" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" text-anchor="middle">View Listing</text>
+
+  <!-- ── Category pills ── -->
+  <rect x="90"  y="1480" width="250" height="54" rx="27" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="118" cy="1507" r="7" fill="#E87722"/>
+  <text x="220" y="1513" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="600" fill="#FFFFFF" text-anchor="middle">Jobs</text>
+
+  <rect x="360" y="1480" width="250" height="54" rx="27" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="388" cy="1507" r="7" fill="#AFA9EC"/>
+  <text x="490" y="1513" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="600" fill="#FFFFFF" text-anchor="middle">Rooms</text>
+
+  <rect x="630" y="1480" width="250" height="54" rx="27" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="658" cy="1507" r="7" fill="#E87722"/>
+  <text x="760" y="1513" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="600" fill="#FFFFFF" text-anchor="middle">Events</text>
+
+  <!-- ── Stats ── -->
+  <text x="540" y="1610" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="22" fill="rgba(255,255,255,0.38)" text-anchor="middle">Thousands of free listings across Australia</text>
+
+  <rect x="90"  y="1636" width="260" height="88" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="220" y="1673" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="700" fill="#E87722" text-anchor="middle">1000+</text>
+  <text x="220" y="1703" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.55)" text-anchor="middle">Listings</text>
+
+  <rect x="410" y="1636" width="260" height="88" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="540" y="1673" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="700" fill="#E87722" text-anchor="middle">Free</text>
+  <text x="540" y="1703" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.55)" text-anchor="middle">Always</text>
+
+  <rect x="730" y="1636" width="260" height="88" rx="16" fill="rgba(255,255,255,0.08)"/>
+  <text x="860" y="1673" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="700" fill="#E87722" text-anchor="middle">AUS</text>
+  <text x="860" y="1703" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" fill="rgba(255,255,255,0.55)" text-anchor="middle">Nationwide</text>
+
+  <!-- ── CTA button ── -->
+  <rect x="140" y="1780" width="800" height="80" rx="40" fill="url(#cta)"/>
+  <text x="540" y="1829" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="26" font-weight="700" fill="#FFFFFF" text-anchor="middle">Visit nepsaathi.com</text>
+
+</svg>

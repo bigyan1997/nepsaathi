@@ -126,7 +126,7 @@ export default function Navbar() {
           onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.04)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
         >
-          <NepSaathiLogo size={20} animated />
+          <NepSaathiLogo size={24} animated />
         </Link>
 
         {/* Desktop nav links */}

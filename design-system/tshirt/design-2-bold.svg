@@ -1,0 +1,56 @@
+<!--
+  T-SHIRT DESIGN 2 — "Bold Statement"
+  Best on: Black / navy / dark shirts
+  Colors: White + saffron (prints well on dark fabric)
+  Print area: 30 × 38 cm (represented as 600×760 px)
+  Note: Background is transparent — the shirt colour shows through.
+        Printer uses white ink underbase + saffron overprint.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760" width="600" height="760">
+
+  <!-- Print area guide — REMOVE BEFORE PRINTING -->
+  <rect x="1" y="1" width="598" height="758" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="8,4"/>
+
+  <!-- Dark shirt preview background — REMOVE BEFORE PRINTING -->
+  <rect x="2" y="2" width="596" height="756" fill="#1a1a1a" opacity="0.85"/>
+
+  <!-- ── Top: small mark + brand ── -->
+  <!-- Small circles mark top-center -->
+  <circle cx="278" cy="68" r="18" fill="#E87722"/>
+  <circle cx="295" cy="68" r="18" fill="#AFA9EC" fill-opacity="0.88"/>
+  <text x="328" y="76" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="700" fill="#E87722">Nep</text>
+  <text x="362" y="76" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">Saathi</text>
+
+  <!-- ── Large decorative circles (ghost) ── -->
+  <circle cx="150" cy="280" r="280" fill="none" stroke="#E87722" stroke-width="1" stroke-opacity="0.15"/>
+  <circle cx="450" cy="280" r="280" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.08"/>
+
+  <!-- ── Giant typography ── -->
+  <text x="300" y="210" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="112" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="-4" opacity="0.95">NEP</text>
+  <text x="300" y="330" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="112" font-weight="700" fill="#E87722" text-anchor="middle" letter-spacing="-4">SAATHI</text>
+
+  <!-- ── Thin separator ── -->
+  <line x1="100" y1="368" x2="500" y2="368" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+
+  <!-- ── Sub line ── -->
+  <text x="300" y="408" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="rgba(255,255,255,0.55)" text-anchor="middle" letter-spacing="4">NEPALI COMMUNITY · AUSTRALIA</text>
+
+  <!-- ── Devanagari as a texture/watermark ── -->
+  <text x="300" y="530" font-family="'Noto Sans Devanagari','Arial Unicode MS',serif" font-size="96" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.05">नेपसाथी</text>
+
+  <!-- ── Tagline ── -->
+  <text x="300" y="570" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="16" fill="rgba(255,255,255,0.40)" text-anchor="middle" letter-spacing="2">your Nepali friend, wherever you are</text>
+
+  <!-- ── Dot pattern row ── -->
+  <circle cx="228" cy="614" r="3" fill="#E87722" opacity="0.6"/>
+  <circle cx="248" cy="614" r="3" fill="#E87722" opacity="0.6"/>
+  <circle cx="268" cy="614" r="3" fill="#E87722" opacity="0.6"/>
+  <circle cx="300" cy="614" r="5" fill="#E87722"/>
+  <circle cx="332" cy="614" r="3" fill="#E87722" opacity="0.6"/>
+  <circle cx="352" cy="614" r="3" fill="#E87722" opacity="0.6"/>
+  <circle cx="372" cy="614" r="3" fill="#E87722" opacity="0.6"/>
+
+  <!-- ── URL ── -->
+  <text x="300" y="660" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="rgba(255,255,255,0.30)" text-anchor="middle" letter-spacing="3">NEPSAATHI.COM</text>
+
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#26215C;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#534AB7;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="featGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E87722;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#534AB7;stop-opacity:1"/>
+    </linearGradient>
+    <clipPath id="roundCard">
+      <rect x="720" y="80" width="400" height="470" rx="20"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#heroGrad)"/>
+
+  <!-- Decorative circles (background) -->
+  <circle cx="80"  cy="580" r="180" fill="#534AB7" fill-opacity="0.18"/>
+  <circle cx="1160" cy="60"  r="220" fill="#E87722" fill-opacity="0.10"/>
+  <circle cx="600" cy="-40" r="160" fill="#AFA9EC" fill-opacity="0.08"/>
+
+  <!-- ── Left side: Brand + copy ─────────────────────────────── -->
+
+  <!-- Logo mark -->
+  <circle cx="80"  cy="72" r="32" fill="#E87722"/>
+  <circle cx="111" cy="72" r="32" fill="#AFA9EC" fill-opacity="0.88"/>
+
+  <!-- Wordmark -->
+  <text x="158" y="88" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="36" font-weight="700" fill="#E87722">Nep</text>
+  <text x="218" y="88" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="36" font-weight="700" fill="#FFFFFF">Saathi</text>
+
+  <!-- Tagline -->
+  <text x="80" y="120" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="16" fill="rgba(255,255,255,0.55)" letter-spacing="1">your Nepali friend, wherever you are</text>
+
+  <!-- Main headline -->
+  <text x="80" y="230" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="700" fill="#FFFFFF" letter-spacing="-1">Find your</text>
+  <text x="80" y="310" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="700" fill="#E87722" letter-spacing="-1">Nepali</text>
+  <text x="80" y="390" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="62" font-weight="700" fill="#FFFFFF" letter-spacing="-1">community.</text>
+
+  <!-- Subtext -->
+  <text x="80" y="440" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" fill="rgba(255,255,255,0.70)">Jobs · Rooms · Events · Businesses</text>
+
+  <!-- CTA pill -->
+  <rect x="80" y="475" width="220" height="54" rx="27" fill="#E87722"/>
+  <text x="190" y="508" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle">Visit nepsaathi.com</text>
+
+  <!-- ── Right side: Listing card mockup ────────────────────── -->
+
+  <!-- Card shadow -->
+  <rect x="726" y="92" width="400" height="470" rx="20" fill="rgba(0,0,0,0.25)"/>
+
+  <!-- Card background -->
+  <rect x="720" y="80" width="400" height="470" rx="20" fill="#FFFFFF" clip-path="url(#roundCard)"/>
+
+  <!-- Card image area -->
+  <rect x="720" y="80" width="400" height="180" fill="#EEEDFE"/>
+  <text x="920" y="180" font-family="serif" font-size="72" text-anchor="middle">🏠</text>
+
+  <!-- Featured badge on card -->
+  <rect x="738" y="98" width="108" height="26" rx="13" fill="url(#featGrad)"/>
+  <text x="792" y="115" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">⭐ FEATURED</text>
+
+  <!-- Card body -->
+  <text x="744" y="292" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" fill="#534AB7" letter-spacing="1">🏠  ROOM FOR RENT</text>
+  <text x="744" y="326" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="700" fill="#26215C">Furnished Room — Nepali</text>
+  <text x="744" y="352" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="700" fill="#26215C">Household, Parramatta</text>
+  <text x="744" y="384" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="14" fill="#A0A0AB">📍 Parramatta NSW  ·  Bills included  ·  1 bed</text>
+  <text x="744" y="426" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="28" font-weight="700" fill="#26215C">$250</text>
+  <text x="800" y="426" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="15" fill="#A0A0AB"> / week</text>
+
+  <!-- Card button -->
+  <rect x="744" y="456" width="352" height="72" rx="0"/>
+  <rect x="744" y="456" width="352" height="80" fill="#26215C" rx="0"/>
+  <rect x="720" y="456" width="400" height="94" fill="#26215C"/>
+  <text x="920" y="508" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">View Listing →</text>
+
+  <!-- Bottom URL -->
+  <text x="600" y="610" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="15" fill="rgba(255,255,255,0.35)" text-anchor="middle" letter-spacing="1">nepsaathi.com</text>
+</svg>

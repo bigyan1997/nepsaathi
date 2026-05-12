@@ -15,11 +15,11 @@ _LOGO = """
 <div style="background:#26215C;border-radius:16px 16px 0 0;padding:28px 40px 24px;text-align:center;">
   <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 12px;">
     <tr>
-      <!-- SVG overlapping circles — email-safe, matches website logo exactly -->
+      <!-- SVG overlapping circles — matches logo-dark.svg exactly (r=15, 48% overlap → cx=29) -->
       <td style="vertical-align:middle;padding-right:10px;">
-        <svg width="46" height="30" viewBox="0 0 46 30" xmlns="http://www.w3.org/2000/svg">
+        <svg width="44" height="30" viewBox="0 0 44 30" xmlns="http://www.w3.org/2000/svg">
           <circle cx="15" cy="15" r="15" fill="#E87722"/>
-          <circle cx="31" cy="15" r="15" fill="#534AB7"/>
+          <circle cx="29" cy="15" r="15" fill="#AFA9EC" fill-opacity="0.88"/>
         </svg>
       </td>
       <!-- Wordmark -->
@@ -158,7 +158,13 @@ _SMALL   = 'style="font-size:12px;color:#aaaaaa;line-height:1.6;text-align:cente
 def _send_resend(params: dict):
     resend.api_key = config('RESEND_API_KEY')
     try:
-        response = resend.Emails.send(params)
+        send_params = dict(params)
+        if 'attachments' in send_params:
+            send_params['attachments'] = [
+                {'filename': a['filename'], 'content': list(a['content'])}
+                for a in send_params['attachments']
+            ]
+        response = resend.Emails.send(send_params)
         print(f'[EMAIL OK] {params["subject"]} -> {params["to"]} | id={getattr(response, "id", response)}', flush=True)
     except Exception as e:
         import traceback
@@ -179,6 +185,8 @@ def _send_smtp(params: dict):
             connection=connection,
         )
         msg.content_subtype = 'html'
+        for att in params.get('attachments', []):
+            msg.attach(att['filename'], att['content'], att.get('content_type', 'application/octet-stream'))
         msg.send()
         print(f'[EMAIL OK] {params["subject"]} -> {params["to"]} (SMTP)', flush=True)
     except Exception as e:
@@ -1043,6 +1051,7 @@ def send_business_saved_search_alert_email(user, business, saved_search_id):
 
 
 def send_payment_invoice_email(payment):
+    from payments.pdf import generate_invoice_pdf
     listing = payment.listing
     listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     try:
@@ -1052,6 +1061,7 @@ def send_payment_invoice_email(payment):
         date_paid = payment.completed_at.strftime('%d %B %Y')
         featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime('%d %B %Y')
         ref = payment.stripe_session_id[:32] + '...'
+        pdf_bytes = generate_invoice_pdf(payment)
 
         body = f"""
 <h1 {_H1}>Payment confirmed &#9989;</h1>
@@ -1139,6 +1149,9 @@ def send_payment_invoice_email(payment):
             'to':      [payment.user.email],
             'subject': f'Payment receipt {invoice_number} — NepSaathi',
             'html':    _wrap(body),
+            'attachments': [
+                {'filename': f'{invoice_number}.pdf', 'content': pdf_bytes, 'content_type': 'application/pdf'},
+            ],
         })
     except Exception as e:
         print(f'Invoice email failed: {e}', flush=True)
