@@ -37,7 +37,12 @@ class ConversationListView(APIView):
         if not recipient_id:
             raise ValidationError({'recipient_id': 'This field is required.'})
 
-        if int(recipient_id) == request.user.id:
+        try:
+            recipient_id = int(recipient_id)
+        except (TypeError, ValueError):
+            raise ValidationError({'recipient_id': 'Must be a valid user ID.'})
+
+        if recipient_id == request.user.id:
             raise ValidationError('You cannot message yourself.')
 
         if not initial_message:
@@ -56,7 +61,7 @@ class ConversationListView(APIView):
         # Find existing conversation between these two users about this listing
         existing = Conversation.objects.filter(
             participants=request.user,
-            listing_id=listing_id or None,
+            listing_id=listing_id if listing_id else None,
         ).filter(participants=recipient).first()
 
         if existing:
@@ -64,7 +69,7 @@ class ConversationListView(APIView):
             return Response({**serializer.data, 'existing': True})
 
         convo = Conversation.objects.create(
-            listing_id=listing_id or None,
+            listing_id=listing_id if listing_id else None,
             listing_title=listing_title[:300],
             listing_type=listing_type[:20],
         )

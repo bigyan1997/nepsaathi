@@ -175,10 +175,12 @@ class ThrottledLoginView(APIView):
         from dj_rest_auth.views import LoginView
         from django.core.cache import cache
 
-        # Track failed attempts per IP
+        # Track failed attempts per IP.
+        # Take the rightmost entry from X-Forwarded-For — Railway (1 trusted proxy)
+        # appends the real client IP there, so the rightmost cannot be spoofed.
         ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
         if ip:
-            ip = ip.split(',')[0].strip()
+            ip = ip.split(',')[-1].strip()
         else:
             ip = request.META.get('REMOTE_ADDR', '127.0.0.1')
 

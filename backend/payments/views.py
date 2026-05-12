@@ -113,7 +113,7 @@ class StripeWebhookView(APIView):
         session_id = session['id']
 
         # Validate the amount matches our expected price before fulfilling
-        amount_total = session.get('amount_total')
+        amount_total = session['amount_total']
         if amount_total != settings.STRIPE_FEATURED_PRICE_CENTS:
             logger.error(
                 'Stripe webhook amount mismatch: expected %s, got %s for session %s',

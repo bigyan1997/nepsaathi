@@ -63,7 +63,7 @@ class ListingCreateView(generics.CreateAPIView):
 
     Security:
     - Must be authenticated
-    - Max 10 active listings per user
+    - Max 20 active listings per user
     - 5 minute cooldown between posts
     - Duplicate title detection within 24 hours
     """
