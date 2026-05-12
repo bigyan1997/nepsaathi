@@ -31,7 +31,7 @@ export default function ConversationPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
-  const bottomRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const prevMsgCountRef = useRef(0);
   const initialScrollDone = useRef(false);
   const isVisible = usePageVisible();
@@ -105,6 +105,8 @@ export default function ConversationPage() {
       });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
       queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+      // Scroll immediately after optimistic update — don't wait for the effect
+      requestAnimationFrame(() => scrollToBottom("smooth"));
     },
   });
 
@@ -117,16 +119,22 @@ export default function ConversationPage() {
     }
   }, [data]);
 
+  const scrollToBottom = (behavior = "smooth") => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+  };
+
   // Scroll to bottom on initial load (instant), then smooth for new messages
   useEffect(() => {
     const count = data?.messages?.length ?? 0;
     if (count === 0) return;
     if (!initialScrollDone.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "instant" });
+      scrollToBottom("instant");
       initialScrollDone.current = true;
       prevMsgCountRef.current = count;
     } else if (count > prevMsgCountRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollToBottom("smooth");
       prevMsgCountRef.current = count;
     }
   }, [data?.messages?.length]);
@@ -198,7 +206,7 @@ export default function ConversationPage() {
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, paddingBottom: 12 }}>
+      <div ref={messagesContainerRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, paddingBottom: 12 }}>
         {messages.length === 0 ? (
           <div style={{ textAlign: "center", color: "#aaa", fontSize: 13, marginTop: 40 }}>No messages yet. Say hi!</div>
         ) : (
@@ -227,7 +235,6 @@ export default function ConversationPage() {
             );
           })
         )}
-        <div ref={bottomRef} />
       </div>
 
       {/* Input */}
