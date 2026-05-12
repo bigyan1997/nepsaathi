@@ -11,7 +11,7 @@
   <rect x="1" y="1" width="598" height="758" fill="none" stroke="#e0ddd8" stroke-width="1.5" stroke-dasharray="8,4"/>
 
   <!-- ── Country labels ── -->
-  <text x="178" y="60" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#26215C" text-anchor="middle" letter-spacing="3">NEPAL</text>
+  <text x="178" y="60" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#E87722" text-anchor="middle" letter-spacing="3">NEPAL</text>
   <text x="422" y="60" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-size="13" font-weight="700" fill="#534AB7" text-anchor="middle" letter-spacing="3">AUSTRALIA</text>
 
   <!-- Connector line -->
