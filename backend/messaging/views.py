@@ -23,9 +23,11 @@ class ConversationListView(APIView):
     def get(self, request):
         convos = Conversation.objects.filter(
             participants=request.user
-        ).exclude(
-            hidden_by=request.user
         ).prefetch_related('participants', 'messages').order_by('-updated_at')
+        try:
+            convos = convos.exclude(hidden_by=request.user)
+        except Exception:
+            pass
         serializer = ConversationSerializer(convos, many=True, context={'request': request})
         return Response(serializer.data)
 
