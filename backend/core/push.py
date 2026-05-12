@@ -33,6 +33,9 @@ def send_push_notification(user, title, body, url='/messages'):
                 data=payload,
                 vapid_private_key=settings.VAPID_PRIVATE_KEY,
                 vapid_claims={'sub': f'mailto:{settings.VAPID_ADMIN_EMAIL}'},
+                ttl=0,
+                headers={'urgency': 'high'},
+                timeout=10,
             )
         except WebPushException as e:
             status = e.response.status_code if e.response is not None else None
