@@ -383,6 +383,10 @@ function EventMobileCard({ event }) {
         (e.currentTarget.style.boxShadow = "0 4px 16px rgba(29,158,117,0.12)")
       }
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      onTouchStart={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(29,158,117,0.12)")
+      }
+      onTouchEnd={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
       {/* Strip — date centred, badges bottom-left, ticket top-right */}
       <div
@@ -585,6 +589,8 @@ function EventCard({ event }) {
       to={`/events/${event.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
       style={{
         display: "flex",
         flexDirection: "column",

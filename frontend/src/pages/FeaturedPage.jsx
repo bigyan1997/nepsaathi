@@ -87,6 +87,8 @@ function FeaturedCard({ listing }) {
       to={`/${cfg.path}/${listing.slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
       style={{
         display: "flex",
         flexDirection: "column",

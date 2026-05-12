@@ -317,6 +317,10 @@ function NoticeMobileCard({ notice }) {
         (e.currentTarget.style.boxShadow = "0 4px 16px rgba(12,68,124,0.1)")
       }
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      onTouchStart={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(12,68,124,0.1)")
+      }
+      onTouchEnd={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
       {/* Strip */}
       <div
@@ -498,6 +502,8 @@ function NoticeCard({ notice }) {
       to={`/notices/${notice.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
       style={{
         display: "flex",
         flexDirection: "column",

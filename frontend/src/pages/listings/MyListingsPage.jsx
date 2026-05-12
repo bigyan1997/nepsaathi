@@ -620,10 +620,30 @@ export default function MyListingsPage() {
           alignItems: "flex-start",
           borderLeft,
           opacity: isExpired ? 0.72 : 1,
-          transition: "border-color 0.15s",
+          transition: "transform 0.2s, box-shadow 0.2s, border-color 0.15s",
         }}
-        onMouseEnter={(e) => !isArchive && (e.currentTarget.style.borderColor = "#AFA9EC")}
-        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}
+        onMouseEnter={(e) => {
+          if (!isArchive) {
+            e.currentTarget.style.borderColor = "#AFA9EC";
+            e.currentTarget.style.transform = "translateY(-3px)";
+            e.currentTarget.style.boxShadow = "0 6px 20px rgba(83,74,183,0.10)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "#e5e5e5";
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "none";
+        }}
+        onTouchStart={(e) => {
+          if (!isArchive) {
+            e.currentTarget.style.transform = "translateY(-3px)";
+            e.currentTarget.style.boxShadow = "0 6px 20px rgba(83,74,183,0.10)";
+          }
+        }}
+        onTouchEnd={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "none";
+        }}
       >
         {/* Checkbox (not on archive cards) */}
         {!isArchive && (
@@ -1096,14 +1116,26 @@ export default function MyListingsPage() {
                     alignItems: "center",
                     gap: "14px",
                     borderLeft: "3px solid #8B5E00",
-                    transition: "border-color 0.15s",
+                    transition: "transform 0.2s, box-shadow 0.2s, border-color 0.15s",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.borderColor = "#FAC775")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "#e5e5e5")
-                  }
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "#FAC775";
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.08)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "#e5e5e5";
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                  onTouchStart={(e) => {
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.08)";
+                  }}
+                  onTouchEnd={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
                 >
                   {/* Category icon */}
                   <div

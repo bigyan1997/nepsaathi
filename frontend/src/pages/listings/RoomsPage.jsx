@@ -371,6 +371,10 @@ function RoomMobileCard({ room }) {
         (e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,119,34,0.12)")
       }
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      onTouchStart={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(232,119,34,0.12)")
+      }
+      onTouchEnd={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
       {/* ── Image / colour strip ── */}
       <div
@@ -582,6 +586,8 @@ function RoomCard({ room }) {
       to={`/rooms/${room.listing_slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
       style={{
         display: "flex",
         flexDirection: "column",

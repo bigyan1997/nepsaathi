@@ -331,6 +331,10 @@ function BusinessMobileCard({ biz }) {
         (e.currentTarget.style.boxShadow = "0 4px 16px rgba(139,94,0,0.12)")
       }
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      onTouchStart={(e) =>
+        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(139,94,0,0.12)")
+      }
+      onTouchEnd={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
       {/* Strip */}
       <div
@@ -535,6 +539,8 @@ function BusinessCard({ business }) {
       to={`/businesses/${business.slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
       style={{
         display: "flex",
         flexDirection: "column",
