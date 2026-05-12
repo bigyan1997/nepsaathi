@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -85,6 +85,14 @@ function FeedbackTrigger() {
 }
 
 function App() {
+  useEffect(() => {
+    const el = document.getElementById("splash");
+    if (!el) return;
+    el.style.opacity = "0";
+    const t = setTimeout(() => el.remove(), 400);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>

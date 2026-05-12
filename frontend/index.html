@@ -85,22 +85,24 @@
     </script>
   </head>
   <body>
-    <div id="root">
-      <!-- Splash screen — replaced by React on load -->
-      <div
-        id="splash"
-        style="
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-          background: linear-gradient(135deg, #26215c 0%, #534ab7 100%);
-          position: fixed;
-          inset: 0;
-          z-index: 9999;
-        "
-      >
+    <div id="root"></div>
+
+    <!-- Splash screen — faded out by React after first mount -->
+    <div
+      id="splash"
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #26215c 0%, #534ab7 100%);
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        transition: opacity 0.4s ease;
+      "
+    >
         <img
           src="/logo-dark.svg"
           alt="NepSaathi"
@@ -159,9 +161,7 @@
         >
           Your Nepali friend, wherever you are 🇳🇵
         </div>
-      </div>
     </div>
-
     <style>
       @keyframes dot {
         0%,
