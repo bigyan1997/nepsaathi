@@ -41,14 +41,18 @@ def _flag_if_phone_duplicate(listing, poster):
         Listing.objects
         .filter(created_at__gte=thirty_days_ago, status__in=['active', 'filled'])
         .exclude(user=poster)
-        .values_list('contact_phone', 'contact_whatsapp')
+        .values_list('id', 'contact_phone', 'contact_whatsapp')
     )
-    for raw_p, raw_w in others:
+    for other_id, raw_p, raw_w in others:
         other_nums = {_normalize_phone(raw_p), _normalize_phone(raw_w)}
         if any(n in other_nums for n in numbers):
             listing.is_under_review = True
             listing.save(update_fields=['is_under_review'])
-            send_spam_detected_email(listing, 'phone_match')
+            try:
+                matched = Listing.objects.select_related('user').get(pk=other_id)
+            except Listing.DoesNotExist:
+                matched = None
+            send_spam_detected_email(listing, 'phone_match', matched_listing=matched)
             return
 
 
@@ -302,12 +306,13 @@ class ListingImageUploadView(APIView):
 
             img_hash = _image_md5(image)
             # Cross-user image duplicate check — flags listing for admin review
-            if img_hash and ListingImage.objects.filter(
+            matched_img = ListingImage.objects.filter(
                 image_hash=img_hash
-            ).exclude(listing__user=request.user).exists():
+            ).exclude(listing__user=request.user).select_related('listing__user').first() if img_hash else None
+            if matched_img:
                 listing.is_under_review = True
                 listing.save(update_fields=['is_under_review'])
-                send_spam_detected_email(listing, 'image_hash')
+                send_spam_detected_email(listing, 'image_hash', matched_listing=matched_img.listing)
 
             listing_image = ListingImage.objects.create(
                 listing=listing,

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView
 
 
@@ -20,7 +20,6 @@ class ListingAdmin(admin.ModelAdmin):
     Admin configuration for the base Listing model.
     """
     inlines = [ListingImageInline]
-    
 
     list_display = (
         'title',
@@ -29,14 +28,16 @@ class ListingAdmin(admin.ModelAdmin):
         'location',
         'state',
         'status',
+        'review_badge',
         'is_featured',
-        'created_at'
+        'created_at',
     )
     list_filter = (
         'listing_type',
         'status',
         'state',
         'is_featured',
+        'is_under_review',
     )
     search_fields = (
         'title',
@@ -44,7 +45,7 @@ class ListingAdmin(admin.ModelAdmin):
         'location',
         'user__email',
     )
-    ordering = ('-created_at',)
+    ordering = ('-is_under_review', '-created_at')
     readonly_fields = ('created_at', 'updated_at')
 
     fieldsets = (
@@ -65,7 +66,34 @@ class ListingAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    actions = ['mark_featured', 'unmark_featured']
+    actions = ['approve_listings', 'mark_featured', 'unmark_featured']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('reports')
+
+    def review_badge(self, obj):
+        badges = []
+        if obj.is_under_review:
+            badges.append(
+                '<span style="background:#A32D2D;color:#fff;padding:2px 8px;'
+                'border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;'
+                'display:inline-block;margin-bottom:2px;">&#9888; Spam</span>'
+            )
+        if obj.reports.exists():
+            badges.append(
+                '<span style="background:#B45309;color:#fff;padding:2px 8px;'
+                'border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;'
+                'display:inline-block;">&#128681; Reported</span>'
+            )
+        if badges:
+            return mark_safe('<br>'.join(badges))
+        return mark_safe('<span style="color:#aaa;font-size:11px;">&mdash;</span>')
+    review_badge.short_description = 'Flags'
+
+    def approve_listings(self, request, queryset):
+        updated = queryset.filter(is_under_review=True).update(is_under_review=False)
+        self.message_user(request, f'{updated} listing(s) approved and made public.')
+    approve_listings.short_description = '✅ Approve — make listing public'
 
     def mark_featured(self, request, queryset):
         queryset.update(is_featured=True)

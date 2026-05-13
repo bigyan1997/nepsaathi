@@ -5,7 +5,7 @@ from datetime import timedelta
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
-ADMIN_URL    = config('ADMIN_URL',    default='https://nepsaathi-production.up.railway.app/nepsaathi-admin')
+ADMIN_URL    = config('ADMIN_PANEL_URL', default='http://localhost:8000/ADMIN_PATH_REDACTED')
 
 # ─────────────────────────────────────────────────────────────
 # SHARED BASE COMPONENTS
@@ -1157,13 +1157,26 @@ def send_payment_invoice_email(payment):
         print(f'Invoice email failed: {e}', flush=True)
 
 
-def send_spam_detected_email(listing, reason):
+def send_spam_detected_email(listing, reason, matched_listing=None):
     admin_url_for_listing = f"{ADMIN_URL}/listings/listing/{listing.id}/change/"
     reason_text = {
         'phone_match': 'Phone number matches an existing listing from a different account.',
         'image_hash':  'Image hash matches an image used in a different account\'s listing.',
     }.get(reason, reason)
     try:
+        matched_card = ''
+        if matched_listing:
+            admin_url_for_matched = f"{ADMIN_URL}/listings/listing/{matched_listing.id}/change/"
+            matched_card = f"""
+<p {_P} style="margin-top:20px;"><strong>Matched against this existing listing:</strong></p>
+{_listing_card(
+    html_module.escape(matched_listing.title),
+    admin_url_for_matched,
+    f"Posted by: {matched_listing.user.email} &middot; Type: {matched_listing.listing_type} &middot; ID: {matched_listing.id}",
+    emoji="&#128279;",
+    bg="#EBF3FC"
+)}"""
+
         body = f"""
 <h1 {_H1}>&#9888; Duplicate listing detected — action required</h1>
 <p {_P}>
@@ -1172,13 +1185,16 @@ def send_spam_detected_email(listing, reason):
   it in the admin panel and either approve or remove it.
 </p>
 
+<p {_P}><strong>Flagged listing (hidden from public):</strong></p>
 {_listing_card(
     html_module.escape(listing.title),
     admin_url_for_listing,
-    f"Posted by: {listing.user.email} &middot; Type: {listing.listing_type}",
+    f"Posted by: {listing.user.email} &middot; Type: {listing.listing_type} &middot; ID: {listing.id}",
     emoji="&#9888;",
     bg="#FCEBEB"
 )}
+
+{matched_card}
 
 {_info_box(
     f"<strong>Detection reason:</strong> {reason_text}<br>"
@@ -1186,7 +1202,7 @@ def send_spam_detected_email(listing, reason):
     bg="#FCEBEB", border="#F09595", color="#A32D2D"
 )}
 
-{_btn("Review in admin panel &rarr;", admin_url_for_listing, color="#26215C")}
+{_btn("Review flagged listing in admin &rarr;", admin_url_for_listing, color="#26215C")}
 
 {_DIVIDER}
 <p {_SMALL}>This is an automated message from NepSaathi spam detection.</p>"""
