@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Avg, Count, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.throttles import BusinessCreateThrottle
 from .models import Business, BusinessImage, BusinessReport, BusinessReview
@@ -47,7 +48,10 @@ class BusinessListView(generics.ListAPIView):
     def get_queryset(self):
         return Business.objects.filter(
             is_active=True
-        ).select_related('owner').prefetch_related('images')
+        ).select_related('owner').prefetch_related('images').annotate(
+            avg_rating_annotated=Avg('reviews__rating'),
+            review_count_annotated=Count('reviews', distinct=True),
+        )
 
 
 class BusinessCreateView(generics.CreateAPIView):
@@ -143,7 +147,14 @@ class BusinessDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'slug'
 
     def get_queryset(self):
-        return Business.objects.select_related('owner').prefetch_related('images')
+        user = self.request.user
+        base = Business.objects.select_related('owner').prefetch_related('images').annotate(
+            avg_rating_annotated=Avg('reviews__rating'),
+            review_count_annotated=Count('reviews', distinct=True),
+        )
+        if user.is_authenticated:
+            return base.filter(Q(is_active=True) | Q(owner=user))
+        return base.filter(is_active=True)
 
     def destroy(self, request, *args, **kwargs):
         business = self.get_object()
@@ -166,7 +177,10 @@ class MyBusinessesView(generics.ListAPIView):
     def get_queryset(self):
         return Business.objects.filter(
             owner=self.request.user
-        ).select_related('owner').prefetch_related('images')
+        ).select_related('owner').prefetch_related('images').annotate(
+            avg_rating_annotated=Avg('reviews__rating'),
+            review_count_annotated=Count('reviews', distinct=True),
+        )
 
 
 class BusinessReviewListCreateView(APIView):

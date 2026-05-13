@@ -210,8 +210,9 @@ class ListingCreateView(generics.CreateAPIView):
         expires_at = timezone.now() + timedelta(days=30)
         listing = serializer.save(user=user, expires_at=expires_at)
 
-        # Cross-user phone duplicate check — flags for admin review
-        _flag_if_duplicate(listing, user)
+        # Cross-user duplicate check — run in background so it doesn't block the response
+        import threading
+        threading.Thread(target=_flag_if_duplicate, args=(listing, user), daemon=True).start()
 
         # Fire saved search alerts in background
         try:
@@ -696,7 +697,8 @@ class SearchSuggestionsView(APIView):
         listings = Listing.objects.filter(
             Q(title__icontains=query) |
             Q(location__icontains=query),
-            status='active'
+            status='active',
+            is_under_review=False,
         ).values('title', 'listing_type', 'location', 'state', 'id')[:8]
 
         for listing in listings:

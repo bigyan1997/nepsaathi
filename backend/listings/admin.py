@@ -237,7 +237,7 @@ class ListingReportAdmin(admin.ModelAdmin):
                     listing__user=owner,
                     is_reviewed=True,
                     listing__status='deleted'
-                ).count()
+                ).values('listing').distinct().count()
                 if removed_count >= 3 and not owner.is_banned:
                     owner.is_banned = True
                     owner.ban_reason = 'Multiple listing violations'

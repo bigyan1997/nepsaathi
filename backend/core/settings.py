@@ -102,7 +102,7 @@ DATABASE_URL = config('DATABASE_URL', default=None)
 
 if DATABASE_URL:
     DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, conn_health_checks=True)
     }
 else:
     DATABASES = {
@@ -150,7 +150,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '300/day' if not DEBUG else '10000/day',
+        'anon': '2000/day' if not DEBUG else '10000/day',
         'user': '2000/hour' if not DEBUG else '10000/day',
         'listing_create': '10/hour',
         'business_create': '3/hour',

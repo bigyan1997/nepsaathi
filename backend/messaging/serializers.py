@@ -32,9 +32,10 @@ class ConversationSerializer(serializers.ModelSerializer):
         }
 
     def get_last_message(self, obj):
-        msg = obj.messages.order_by('-created_at').first()
-        if not msg:
+        msgs = obj.messages.all()  # uses prefetch cache
+        if not msgs:
             return None
+        msg = max(msgs, key=lambda m: m.created_at)
         return {
             'content': msg.content[:80],
             'created_at': msg.created_at,
@@ -43,7 +44,10 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def get_unread_count(self, obj):
         request = self.context.get('request')
-        return obj.messages.filter(is_read=False).exclude(sender=request.user).count()
+        return sum(
+            1 for m in obj.messages.all()  # uses prefetch cache
+            if not m.is_read and m.sender_id != request.user.id
+        )
 
     class Meta:
         model = Conversation

@@ -146,6 +146,12 @@ class ContactView(APIView):
                 {'detail': 'Name, email and message are required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        if len(name) > 100:
+            return Response({'detail': 'Name cannot exceed 100 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(subject) > 200:
+            return Response({'detail': 'Subject cannot exceed 200 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(message) > 5000:
+            return Response({'detail': 'Message cannot exceed 5000 characters.'}, status=status.HTTP_400_BAD_REQUEST)
         if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
             return Response(
                 {'detail': 'Please enter a valid email address.'},

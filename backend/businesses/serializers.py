@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.db.models import Avg
+from django.db.models import Avg  # used as fallback when annotation not present
 from .models import Business, BusinessImage, BusinessReview
 import cloudinary.utils
 import re
@@ -133,11 +133,16 @@ class BusinessSerializer(serializers.ModelSerializer):
         return False
 
     def get_avg_rating(self, obj):
+        if hasattr(obj, 'avg_rating_annotated'):
+            avg = obj.avg_rating_annotated
+            return round(avg, 1) if avg is not None else None
         result = obj.reviews.aggregate(avg=Avg('rating'))
         avg = result['avg']
         return round(avg, 1) if avg is not None else None
 
     def get_review_count(self, obj):
+        if hasattr(obj, 'review_count_annotated'):
+            return obj.review_count_annotated
         return obj.reviews.count()
 
     def to_representation(self, instance):

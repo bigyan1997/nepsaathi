@@ -140,6 +140,9 @@ class EventRSVPToggleView(APIView):
         except Event.DoesNotExist:
             raise NotFound('Event not found.')
 
+        if event.listing.user == request.user:
+            raise ValidationError('You cannot RSVP to your own event.')
+
         if not event.is_free:
             raise ValidationError('RSVP is only available for free events.')
 

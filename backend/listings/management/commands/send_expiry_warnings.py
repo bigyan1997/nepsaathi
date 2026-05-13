@@ -30,11 +30,17 @@ class Command(BaseCommand):
                 from core.emails import send_expiry_warning_email
                 from core.push import send_push_notification
                 send_expiry_warning_email(listing)
+                type_path = {
+                    'job': 'jobs',
+                    'room': 'rooms',
+                    'event': 'events',
+                    'notice': 'notices',
+                }.get(listing.listing_type, 'listings')
                 send_push_notification(
                     listing.user,
                     'Listing expiring soon',
                     f'"{listing.title}" expires in 3 days. Renew now to keep it active.',
-                    f'/listings/{listing.slug}',
+                    f'/{type_path}/{listing.slug}',
                 )
                 self.stdout.write(f'  ✓ Sent warning for: {listing.title}')
             except Exception as e:
