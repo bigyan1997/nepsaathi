@@ -269,7 +269,10 @@ export default function RoomDetailPage() {
               <div
                 style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
               >
-                A similar listing was detected. Our team will review and make it visible within 24 hours.
+                {room.is_reported
+                  ? "A user has reported this listing. Our team will review it within 24 hours."
+                  : "A similar listing was detected. Our team will review and make it visible within 24 hours."
+                }
               </div>
             </div>
           </div>

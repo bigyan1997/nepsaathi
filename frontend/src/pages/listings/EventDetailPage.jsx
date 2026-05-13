@@ -360,7 +360,10 @@ export default function EventDetailPage() {
               <div
                 style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
               >
-                A similar listing was detected. Our team will review and make it visible within 24 hours.
+                {event?.is_reported
+                  ? "A user has reported this listing. Our team will review it within 24 hours."
+                  : "A similar listing was detected. Our team will review and make it visible within 24 hours."
+                }
               </div>
             </div>
           </div>
