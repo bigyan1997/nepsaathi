@@ -561,7 +561,10 @@ export default function MyListingsPage() {
     confirmDelete(
       `Delete ${selectedIds.size} selected listing${selectedIds.size > 1 ? "s" : ""}? This cannot be undone.`,
       async () => {
-        await Promise.all([...selectedIds].map((id) => deleteListing(id)));
+        await Promise.all([...selectedIds].map((id) => {
+          const listing = allListings.find((l) => l.id === id);
+          return deleteListing(listing?.slug ?? id);
+        }));
         ["my-listings","jobs","rooms","events","notices","home-jobs","home-rooms","home-events"].forEach(
           (k) => queryClient.invalidateQueries({ queryKey: [k] })
         );
@@ -768,7 +771,7 @@ export default function MyListingsPage() {
               label: "🗑️ Delete listing", danger: true,
               onClick: () => {
                 setOpenMenu(null);
-                confirmDelete("This listing will be permanently deleted.", () => { setDeletingId(listing.id); deleteListingMutation.mutate(listing.id); });
+                confirmDelete("This listing will be permanently deleted.", () => { setDeletingId(listing.id); deleteListingMutation.mutate(listing.slug); });
               },
             },
           ].filter(Boolean)}
