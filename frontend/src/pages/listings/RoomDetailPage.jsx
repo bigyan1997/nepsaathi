@@ -113,6 +113,7 @@ export default function RoomDetailPage() {
   } = useQuery({
     queryKey: ["room", slug],
     queryFn: () => getRoomByListing(slug),
+    staleTime: 0,
   });
 
   const { data: similarListings } = useQuery({

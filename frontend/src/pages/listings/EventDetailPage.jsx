@@ -159,6 +159,7 @@ export default function EventDetailPage() {
   } = useQuery({
     queryKey: ["event", slug],
     queryFn: () => getEventByListing(slug),
+    staleTime: 0,
   });
 
   const { data: similarListings } = useQuery({
