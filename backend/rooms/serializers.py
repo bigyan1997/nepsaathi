@@ -23,6 +23,7 @@ class RoomSerializer(serializers.ModelSerializer):
     contact_whatsapp = serializers.CharField(source='listing.contact_whatsapp', read_only=True)
     contact_email = serializers.EmailField(source='listing.contact_email', read_only=True)
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
+    is_reported = serializers.SerializerMethodField()
     description = serializers.CharField(source='listing.description', read_only=True)
     images = serializers.SerializerMethodField()
     is_wanted = serializers.BooleanField(source='listing.is_wanted', read_only=True)
@@ -34,6 +35,8 @@ class RoomSerializer(serializers.ModelSerializer):
             return obj.listing.view_count_annotated
         return obj.listing.views.count()
 
+    def get_is_reported(self, obj):
+        return obj.listing.reports.exists()
 
     def get_images(self, obj):
         return [
@@ -80,6 +83,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'created_at',
             'expires_at',
             'is_under_review',
+            'is_reported',
             'view_count',
             'description',
             'images',
@@ -104,6 +108,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'created_at',
             'expires_at',
             'is_under_review',
+            'is_reported',
             'view_count',
             'description',
             'is_wanted',

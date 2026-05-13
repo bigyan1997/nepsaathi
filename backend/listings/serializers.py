@@ -56,6 +56,7 @@ class ListingSerializer(serializers.ModelSerializer):
     is_owner = serializers.SerializerMethodField()
     expires_at = serializers.DateTimeField(read_only=True)
     view_count = serializers.SerializerMethodField()
+    is_reported = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -77,6 +78,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'contact_whatsapp',
             'is_featured',
             'is_under_review',
+            'is_reported',
             'renewal_blocked',
             'images',
             'job_detail',
@@ -98,6 +100,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'listing_type',
             'is_featured',
             'is_under_review',
+            'is_reported',
             'renewal_blocked',
         )
 
@@ -124,6 +127,9 @@ class ListingSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'view_count_annotated'):
             return obj.view_count_annotated
         return obj.views.count()
+
+    def get_is_reported(self, obj):
+        return obj.reports.exists()
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

@@ -13,6 +13,7 @@ from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from businesses.models import Business
 from django.db.models import Count, Case, When, IntegerField, Value
+from core.emails import send_spam_detected_email
 
 
 def _normalize_phone(phone):
@@ -47,6 +48,7 @@ def _flag_if_phone_duplicate(listing, poster):
         if any(n in other_nums for n in numbers):
             listing.is_under_review = True
             listing.save(update_fields=['is_under_review'])
+            send_spam_detected_email(listing, 'phone_match')
             return
 
 
@@ -96,7 +98,7 @@ class ListingListView(generics.ListAPIView):
             status='active',
             is_under_review=False,
         ).select_related('user').prefetch_related(
-            'images', 'job_detail', 'room_detail'
+            'images', 'job_detail', 'room_detail', 'reports'
         ).annotate(
             view_count_annotated=Count('views')
         )
@@ -305,6 +307,7 @@ class ListingImageUploadView(APIView):
             ).exclude(listing__user=request.user).exists():
                 listing.is_under_review = True
                 listing.save(update_fields=['is_under_review'])
+                send_spam_detected_email(listing, 'image_hash')
 
             listing_image = ListingImage.objects.create(
                 listing=listing,

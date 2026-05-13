@@ -1157,6 +1157,49 @@ def send_payment_invoice_email(payment):
         print(f'Invoice email failed: {e}', flush=True)
 
 
+def send_spam_detected_email(listing, reason):
+    admin_url_for_listing = f"{ADMIN_URL}/listings/listing/{listing.id}/change/"
+    reason_text = {
+        'phone_match': 'Phone number matches an existing listing from a different account.',
+        'image_hash':  'Image hash matches an image used in a different account\'s listing.',
+    }.get(reason, reason)
+    try:
+        body = f"""
+<h1 {_H1}>&#9888; Duplicate listing detected — action required</h1>
+<p {_P}>
+  A listing was automatically flagged and hidden from public view because
+  it matched an existing listing from a different account. Please review
+  it in the admin panel and either approve or remove it.
+</p>
+
+{_listing_card(
+    html_module.escape(listing.title),
+    admin_url_for_listing,
+    f"Posted by: {listing.user.email} &middot; Type: {listing.listing_type}",
+    emoji="&#9888;",
+    bg="#FCEBEB"
+)}
+
+{_info_box(
+    f"<strong>Detection reason:</strong> {reason_text}<br>"
+    f"<strong>Status:</strong> Hidden from public (is_under_review = True)",
+    bg="#FCEBEB", border="#F09595", color="#A32D2D"
+)}
+
+{_btn("Review in admin panel &rarr;", admin_url_for_listing, color="#26215C")}
+
+{_DIVIDER}
+<p {_SMALL}>This is an automated message from NepSaathi spam detection.</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      ['support@nepsaathi.com'],
+            'subject': f'[URGENT] Duplicate listing flagged — {listing.title}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Spam detected email failed: {e}', flush=True)
+
+
 def send_listing_expired_email(listing):
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:

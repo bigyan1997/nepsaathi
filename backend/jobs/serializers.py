@@ -23,6 +23,7 @@ class JobSerializer(serializers.ModelSerializer):
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
     is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
+    is_reported = serializers.SerializerMethodField()
     description = serializers.CharField(source='listing.description', read_only=True)
     images = serializers.SerializerMethodField()
     is_wanted = serializers.BooleanField(source='listing.is_wanted', read_only=True)
@@ -32,6 +33,9 @@ class JobSerializer(serializers.ModelSerializer):
         if hasattr(obj.listing, 'view_count_annotated'):
             return obj.listing.view_count_annotated
         return obj.listing.views.count()
+
+    def get_is_reported(self, obj):
+        return obj.listing.reports.exists()
 
     def get_images(self, obj):
         return [
@@ -71,6 +75,7 @@ class JobSerializer(serializers.ModelSerializer):
             'expires_at',
             'is_featured',
             'is_under_review',
+            'is_reported',
             'view_count',
             'description',
             'images',
@@ -94,6 +99,7 @@ class JobSerializer(serializers.ModelSerializer):
             'expires_at',
             'is_featured',
             'is_under_review',
+            'is_reported',
             'view_count',
             'description',
             'is_wanted',

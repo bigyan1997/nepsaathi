@@ -245,7 +245,7 @@ export default function RoomDetailPage() {
           </div>
         </div>
 
-        {/* ── Under review ── */}
+        {/* ── Under review (spam detection — owner only sees this) ── */}
         {room.is_under_review && (
           <div
             style={{
@@ -264,12 +264,42 @@ export default function RoomDetailPage() {
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
               >
-                This listing is under review
+                Your listing is pending review
               </div>
               <div
                 style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
               >
-                A report has been submitted and our admin team is reviewing it.
+                A similar listing was detected. Our team will review and make it visible within 24 hours.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Reported banner (visible to all) ── */}
+        {!room.is_under_review && room.is_reported && (
+          <div
+            style={{
+              background: "#FCEBEB",
+              border: "0.5px solid #F09595",
+              borderRadius: "12px",
+              padding: "12px 18px",
+              marginBottom: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <span>🚩</span>
+            <div>
+              <div
+                style={{ fontSize: "13px", fontWeight: 600, color: "#A32D2D" }}
+              >
+                This listing has been reported
+              </div>
+              <div
+                style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
+              >
+                A community member has flagged this post. Our team is reviewing it.
               </div>
             </div>
           </div>

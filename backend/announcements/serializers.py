@@ -37,6 +37,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     listing_status = serializers.CharField(source='listing.status', read_only=True)
     expires_at = serializers.DateTimeField(source='listing.expires_at', read_only=True)
     is_under_review = serializers.BooleanField(source='listing.is_under_review', read_only=True)
+    is_reported = serializers.SerializerMethodField()
     is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     images = serializers.SerializerMethodField()
     view_count = serializers.SerializerMethodField()
@@ -45,6 +46,9 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         if hasattr(obj.listing, 'view_count_annotated'):
             return obj.listing.view_count_annotated
         return obj.listing.views.count()
+
+    def get_is_reported(self, obj):
+        return obj.listing.reports.exists()
 
     def get_images(self, obj):
         return [
@@ -85,6 +89,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'listing_status',
             'expires_at',
             'is_under_review',
+            'is_reported',
             'view_count',
             'images',
             'is_featured',
@@ -106,6 +111,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'listing_status',
             'expires_at',
             'is_under_review',
+            'is_reported',
             'view_count',
             'description',
             'is_featured',

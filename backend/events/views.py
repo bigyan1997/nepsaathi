@@ -43,7 +43,9 @@ class EventListView(generics.ListAPIView):
         queryset = Event.objects.filter(
             listing__status='active',
             listing__is_under_review=False,
-        ).select_related('listing', 'listing__user').annotate(
+        ).select_related('listing', 'listing__user').prefetch_related(
+            'listing__reports'
+        ).annotate(
             view_count_annotated=Count('listing__views'),
             rsvp_count_annotated=Count('rsvps'),
         )
