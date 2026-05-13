@@ -1162,6 +1162,7 @@ def send_spam_detected_email(listing, reason, matched_listing=None):
     reason_text = {
         'phone_match': 'Phone number matches an existing listing from a different account.',
         'image_hash':  'Image hash matches an image used in a different account\'s listing.',
+        'title_match': 'Title is 80%+ similar to an existing listing from a different account.',
     }.get(reason, reason)
     try:
         matched_card = ''

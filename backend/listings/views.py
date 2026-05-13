@@ -21,11 +21,26 @@ def _normalize_phone(phone):
     return re.sub(r'\D', '', phone or '')
 
 
-def _flag_if_phone_duplicate(listing, poster):
+def _normalize_title(title):
+    """Lowercase and strip punctuation/extra spaces for fuzzy title comparison."""
+    return re.sub(r'[^a-z0-9\s]', '', (title or '').lower()).split()
+
+
+def _flag_if_duplicate(listing, poster):
     """
-    If listing's contact phone/whatsapp matches another user's recent listing,
-    set is_under_review=True so admin can verify before it goes live.
+    Flag listing for admin review if it matches another user's recent listing by:
+      1. Same contact phone or WhatsApp number
+      2. Same normalised title (word-set overlap >= 80%)
     """
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    recent_others = (
+        Listing.objects
+        .filter(created_at__gte=thirty_days_ago, status__in=['active', 'filled'])
+        .exclude(user=poster)
+        .select_related('user')
+    )
+
+    # ── 1. Phone match ──────────────────────────────────────────
     numbers = [
         n for n in [
             _normalize_phone(listing.contact_phone),
@@ -33,26 +48,33 @@ def _flag_if_phone_duplicate(listing, poster):
         ]
         if len(n) >= 8
     ]
-    if not numbers:
-        return
+    if numbers:
+        for other in recent_others.values_list('id', 'contact_phone', 'contact_whatsapp'):
+            other_id, raw_p, raw_w = other
+            other_nums = {_normalize_phone(raw_p), _normalize_phone(raw_w)}
+            if any(n in other_nums for n in numbers):
+                listing.is_under_review = True
+                listing.save(update_fields=['is_under_review'])
+                try:
+                    matched = Listing.objects.select_related('user').get(pk=other_id)
+                except Listing.DoesNotExist:
+                    matched = None
+                send_spam_detected_email(listing, 'phone_match', matched_listing=matched)
+                return
 
-    thirty_days_ago = timezone.now() - timedelta(days=30)
-    others = (
-        Listing.objects
-        .filter(created_at__gte=thirty_days_ago, status__in=['active', 'filled'])
-        .exclude(user=poster)
-        .values_list('id', 'contact_phone', 'contact_whatsapp')
-    )
-    for other_id, raw_p, raw_w in others:
-        other_nums = {_normalize_phone(raw_p), _normalize_phone(raw_w)}
-        if any(n in other_nums for n in numbers):
+    # ── 2. Title similarity match ───────────────────────────────
+    new_words = set(_normalize_title(listing.title))
+    if len(new_words) < 2:
+        return
+    for other in recent_others.only('id', 'title', 'listing_type', 'user'):
+        other_words = set(_normalize_title(other.title))
+        if len(other_words) < 2:
+            continue
+        overlap = len(new_words & other_words) / max(len(new_words), len(other_words))
+        if overlap >= 0.8:
             listing.is_under_review = True
             listing.save(update_fields=['is_under_review'])
-            try:
-                matched = Listing.objects.select_related('user').get(pk=other_id)
-            except Listing.DoesNotExist:
-                matched = None
-            send_spam_detected_email(listing, 'phone_match', matched_listing=matched)
+            send_spam_detected_email(listing, 'title_match', matched_listing=other)
             return
 
 
@@ -169,7 +191,7 @@ class ListingCreateView(generics.CreateAPIView):
         listing = serializer.save(user=user, expires_at=expires_at)
 
         # Cross-user phone duplicate check — flags for admin review
-        _flag_if_phone_duplicate(listing, user)
+        _flag_if_duplicate(listing, user)
 
         # Fire saved search alerts in background
         try:
