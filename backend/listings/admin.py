@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView
 
@@ -132,6 +133,9 @@ class ListingReportAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
     readonly_fields = ('user', 'listing', 'reason', 'details', 'created_at', 'listing_info')
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('listing', 'listing__user', 'user')
+
     fieldsets = (
         ('Report Details', {
             'fields': ('user', 'reason', 'details', 'created_at')
@@ -179,12 +183,13 @@ class ListingReportAdmin(admin.ModelAdmin):
 
     def delete_listing_button(self, obj):
         if obj.listing.status != 'deleted':
+            url = reverse('admin:listings_listing_delete', args=[obj.listing.id])
             return format_html(
-                '<a href="/admin/listings/listing/{}/delete/" '
+                '<a href="{}" '
                 'style="background:#A32D2D;color:#fff;padding:4px 10px;'
                 'border-radius:4px;text-decoration:none;font-size:11px;">'
                 '🗑 Delete listing</a>',
-                obj.listing.id
+                url
             )
         return format_html(
             '<span style="color:#888;font-size:11px;">Already deleted</span>'

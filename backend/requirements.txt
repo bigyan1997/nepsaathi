@@ -40,3 +40,4 @@ google-auth>=2.0
 channels==4.3.2
 channels-redis==4.3.0
 uvicorn[standard]==0.46.0
+aiofiles>=24.0
