@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -172,9 +173,21 @@ function ConfirmModal({ message, onConfirm, onCancel, confirmLabel = "Yes, Delet
 
 /* ── Three-dot dropdown menu ── */
 function ActionMenu({ items, open, onToggle }) {
+  const btnRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, right: 0 });
+
+  // Recalculate position every time the menu opens
+  useEffect(() => {
+    if (open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 6, right: window.innerWidth - r.right });
+    }
+  }, [open]);
+
   return (
-    <div style={{ position: "relative", flexShrink: 0 }}>
+    <div style={{ flexShrink: 0 }}>
       <button
+        ref={btnRef}
         onClick={onToggle}
         style={{
           background: "#F5F4F0",
@@ -192,22 +205,19 @@ function ActionMenu({ items, open, onToggle }) {
       >
         ⋮
       </button>
-      {open && (
+      {open && createPortal(
         <>
-          <div
-            onClick={onToggle}
-            style={{ position: "fixed", inset: 0, zIndex: 10 }}
-          />
+          <div onClick={onToggle} style={{ position: "fixed", inset: 0, zIndex: 1000 }} />
           <div
             style={{
-              position: "absolute",
-              right: 0,
-              top: "40px",
+              position: "fixed",
+              top: pos.top,
+              right: pos.right,
               background: "#fff",
               borderRadius: "12px",
               border: "0.5px solid #e5e5e5",
               boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-              zIndex: 11,
+              zIndex: 1001,
               minWidth: "170px",
               overflow: "hidden",
             }}
@@ -242,7 +252,8 @@ function ActionMenu({ items, open, onToggle }) {
                 ),
             )}
           </div>
-        </>
+        </>,
+        document.body,
       )}
     </div>
   );
