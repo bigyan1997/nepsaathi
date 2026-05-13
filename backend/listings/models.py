@@ -146,6 +146,12 @@ class ListingImage(models.Model):
         default=False,
         help_text='Primary image shown as the listing thumbnail'
     )
+    image_hash = models.CharField(
+        max_length=32,
+        blank=True,
+        db_index=True,
+        help_text='MD5 hash of image bytes — used for cross-user duplicate detection'
+    )
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

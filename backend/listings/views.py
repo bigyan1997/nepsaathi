@@ -1,3 +1,5 @@
+import re
+import hashlib
 from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +13,49 @@ from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from businesses.models import Business
 from django.db.models import Count, Case, When, IntegerField, Value
+
+
+def _normalize_phone(phone):
+    """Strip all non-digit characters so '0412 345 678' and '+61412345678' compare equal."""
+    return re.sub(r'\D', '', phone or '')
+
+
+def _flag_if_phone_duplicate(listing, poster):
+    """
+    If listing's contact phone/whatsapp matches another user's recent listing,
+    set is_under_review=True so admin can verify before it goes live.
+    """
+    numbers = [
+        n for n in [
+            _normalize_phone(listing.contact_phone),
+            _normalize_phone(listing.contact_whatsapp),
+        ]
+        if len(n) >= 8
+    ]
+    if not numbers:
+        return
+
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    others = (
+        Listing.objects
+        .filter(created_at__gte=thirty_days_ago, status__in=['active', 'filled'])
+        .exclude(user=poster)
+        .values_list('contact_phone', 'contact_whatsapp')
+    )
+    for raw_p, raw_w in others:
+        other_nums = {_normalize_phone(raw_p), _normalize_phone(raw_w)}
+        if any(n in other_nums for n in numbers):
+            listing.is_under_review = True
+            listing.save(update_fields=['is_under_review'])
+            return
+
+
+def _image_md5(file_obj):
+    """Return MD5 hex digest of an uploaded file without consuming the stream."""
+    file_obj.seek(0)
+    digest = hashlib.md5(file_obj.read()).hexdigest()
+    file_obj.seek(0)
+    return digest
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -115,6 +160,9 @@ class ListingCreateView(generics.CreateAPIView):
         # Set expiry to 30 days from now
         expires_at = timezone.now() + timedelta(days=30)
         listing = serializer.save(user=user, expires_at=expires_at)
+
+        # Cross-user phone duplicate check — flags for admin review
+        _flag_if_phone_duplicate(listing, user)
 
         # Fire saved search alerts in background
         try:
@@ -249,10 +297,19 @@ class ListingImageUploadView(APIView):
             if image.size > 5 * 1024 * 1024:
                 continue
 
+            img_hash = _image_md5(image)
+            # Cross-user image duplicate check — flags listing for admin review
+            if img_hash and ListingImage.objects.filter(
+                image_hash=img_hash
+            ).exclude(listing__user=request.user).exists():
+                listing.is_under_review = True
+                listing.save(update_fields=['is_under_review'])
+
             listing_image = ListingImage.objects.create(
                 listing=listing,
                 image=image,
-                is_primary=(i == 0 and not has_existing_images)
+                is_primary=(i == 0 and not has_existing_images),
+                image_hash=img_hash,
             )
             uploaded.append(ListingImageSerializer(listing_image).data)
 
