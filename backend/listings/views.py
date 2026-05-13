@@ -21,16 +21,25 @@ def _normalize_phone(phone):
     return re.sub(r'\D', '', phone or '')
 
 
-def _normalize_title(title):
-    """Lowercase and strip punctuation/extra spaces for fuzzy title comparison."""
-    return re.sub(r'[^a-z0-9\s]', '', (title or '').lower()).split()
+def _normalize_text(text):
+    """Lowercase, strip punctuation, return word list."""
+    return re.sub(r'[^a-z0-9\s]', '', (text or '').lower()).split()
+
+
+def _word_overlap(words_a, words_b):
+    """Jaccard-style overlap: intersection / max(len_a, len_b)."""
+    set_a, set_b = set(words_a), set(words_b)
+    if not set_a or not set_b:
+        return 0.0
+    return len(set_a & set_b) / max(len(set_a), len(set_b))
 
 
 def _flag_if_duplicate(listing, poster):
     """
     Flag listing for admin review if it matches another user's recent listing by:
       1. Same contact phone or WhatsApp number
-      2. Same normalised title (word-set overlap >= 80%)
+      2. Title word overlap >= 80%
+      3. Description word overlap >= 75% (first 120 words compared)
     """
     thirty_days_ago = timezone.now() - timedelta(days=30)
     recent_others = (
@@ -62,19 +71,30 @@ def _flag_if_duplicate(listing, poster):
                 send_spam_detected_email(listing, 'phone_match', matched_listing=matched)
                 return
 
-    # ── 2. Title similarity match ───────────────────────────────
-    new_words = set(_normalize_title(listing.title))
-    if len(new_words) < 2:
+    # ── 2. Title + description similarity ──────────────────────
+    new_title_words = _normalize_text(listing.title)
+    new_desc_words  = _normalize_text(listing.description)[:120]
+
+    if len(new_title_words) < 2 and len(new_desc_words) < 10:
         return
-    for other in recent_others.only('id', 'title', 'listing_type', 'user'):
-        other_words = set(_normalize_title(other.title))
-        if len(other_words) < 2:
-            continue
-        overlap = len(new_words & other_words) / max(len(new_words), len(other_words))
-        if overlap >= 0.8:
+
+    for other in recent_others.only('id', 'title', 'description', 'user'):
+        other_title_words = _normalize_text(other.title)
+        other_desc_words  = _normalize_text(other.description)[:120]
+
+        title_overlap = _word_overlap(new_title_words, other_title_words)
+        desc_overlap  = _word_overlap(new_desc_words, other_desc_words)
+
+        reason = None
+        if title_overlap >= 0.8:
+            reason = 'title_match'
+        elif len(new_desc_words) >= 10 and len(other_desc_words) >= 10 and desc_overlap >= 0.75:
+            reason = 'description_match'
+
+        if reason:
             listing.is_under_review = True
             listing.save(update_fields=['is_under_review'])
-            send_spam_detected_email(listing, 'title_match', matched_listing=other)
+            send_spam_detected_email(listing, reason, matched_listing=other)
             return
 
 

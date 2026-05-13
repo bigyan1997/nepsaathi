@@ -1160,9 +1160,10 @@ def send_payment_invoice_email(payment):
 def send_spam_detected_email(listing, reason, matched_listing=None):
     admin_url_for_listing = f"{ADMIN_URL}/listings/listing/{listing.id}/change/"
     reason_text = {
-        'phone_match': 'Phone number matches an existing listing from a different account.',
-        'image_hash':  'Image hash matches an image used in a different account\'s listing.',
-        'title_match': 'Title is 80%+ similar to an existing listing from a different account.',
+        'phone_match':       'Phone number matches an existing listing from a different account.',
+        'image_hash':        'Image hash matches an image used in a different account\'s listing.',
+        'title_match':       'Title is 80%+ similar to an existing listing from a different account.',
+        'description_match': 'Description is 75%+ similar to an existing listing from a different account.',
     }.get(reason, reason)
     try:
         matched_card = ''
