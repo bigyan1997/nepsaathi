@@ -41,7 +41,8 @@ class EventListView(generics.ListAPIView):
     def get_queryset(self):
         from django.db.models import Count
         queryset = Event.objects.filter(
-            listing__status='active'
+            listing__status='active',
+            listing__is_under_review=False,
         ).select_related('listing', 'listing__user').annotate(
             view_count_annotated=Count('listing__views'),
             rsvp_count_annotated=Count('rsvps'),

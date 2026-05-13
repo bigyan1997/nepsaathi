@@ -93,7 +93,8 @@ class ListingListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Listing.objects.filter(
-            status='active'
+            status='active',
+            is_under_review=False,
         ).select_related('user').prefetch_related(
             'images', 'job_detail', 'room_detail'
         ).annotate(
@@ -186,10 +187,10 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         if user.is_authenticated:
             return Listing.objects.select_related('user').prefetch_related('images').filter(
-                Q(status='active') | Q(user=user)
+                Q(status='active', is_under_review=False) | Q(user=user)
             ).exclude(status='deleted')
         return Listing.objects.select_related('user').prefetch_related('images').filter(
-            status='active'
+            status='active', is_under_review=False
         )
 
     def perform_update(self, serializer):
@@ -356,16 +357,16 @@ class StatsView(APIView):
 
         stats = {
             'total_jobs': Listing.objects.filter(
-                listing_type='job', status='active'
+                listing_type='job', status='active', is_under_review=False
             ).count(),
             'total_rooms': Listing.objects.filter(
-                listing_type='room', status='active'
+                listing_type='room', status='active', is_under_review=False
             ).count(),
             'total_members': User.objects.filter(
                 is_active=True
             ).count(),
             'total_events': Listing.objects.filter(
-                listing_type='event', status='active'
+                listing_type='event', status='active', is_under_review=False
             ).count(),
             'total_businesses': Business.objects.filter(
                 is_active=True
@@ -601,6 +602,7 @@ class SimilarListingsView(APIView):
         similar = Listing.objects.filter(
             listing_type=listing.listing_type,
             status='active',
+            is_under_review=False,
             state=listing.state,
         ).exclude(pk=pk).order_by('-is_featured', '-created_at')[:3]
 
@@ -610,6 +612,7 @@ class SimilarListingsView(APIView):
             extra = Listing.objects.filter(
                 listing_type=listing.listing_type,
                 status='active',
+                is_under_review=False,
             ).exclude(
                 pk=pk
             ).exclude(
@@ -690,22 +693,26 @@ class GlobalSearchView(APIView):
 
         jobs = Job.objects.filter(
             base_filter & state_filter,
-            listing__status='active'
+            listing__status='active',
+            listing__is_under_review=False,
         ).select_related('listing', 'listing__user')[:5]
 
         rooms = Room.objects.filter(
             base_filter & state_filter,
-            listing__status='active'
+            listing__status='active',
+            listing__is_under_review=False,
         ).select_related('listing', 'listing__user')[:5]
 
         events = Event.objects.filter(
             base_filter & state_filter,
-            listing__status='active'
+            listing__status='active',
+            listing__is_under_review=False,
         ).select_related('listing', 'listing__user')[:5]
 
         announcements = Announcement.objects.filter(
             base_filter & state_filter,
-            listing__status='active'
+            listing__status='active',
+            listing__is_under_review=False,
         ).select_related('listing', 'listing__user')[:5]
 
         businesses = Business.objects.filter(

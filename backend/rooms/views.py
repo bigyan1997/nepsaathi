@@ -36,7 +36,8 @@ class RoomListView(generics.ListAPIView):
     def get_queryset(self):
         from django.db.models import Count
         queryset = Room.objects.filter(
-            listing__status='active'
+            listing__status='active',
+            listing__is_under_review=False,
         ).select_related('listing', 'listing__user').annotate(
             view_count_annotated=Count('listing__views')
         )
