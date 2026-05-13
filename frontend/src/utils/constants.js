@@ -1,3 +1,7 @@
+export function mapsUrl(address) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
 export const STATES = [
   { value: "", label: "All states" },
   { value: "NSW", label: "NSW" },

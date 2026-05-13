@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { mapsUrl } from "../../utils/constants";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getEventByListing, toggleRSVP } from "../../api/events";
 import { getSimilarListings } from "../../api/listings";
@@ -792,10 +793,18 @@ export default function EventDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    {event.is_online
-                      ? "Online event"
-                      : event.venue ||
-                        `${event.listing_location}, ${event.listing_state}`}
+                    {event.is_online ? (
+                      "Online event"
+                    ) : (
+                      <a
+                        href={mapsUrl(event.venue || [event.listing_location, event.listing_state, "Australia"].filter(Boolean).join(", "))}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "inherit", textDecoration: "none" }}
+                      >
+                        {event.venue || `${event.listing_location}, ${event.listing_state}`}
+                      </a>
+                    )}
                   </span>
                 </div>
               </div>

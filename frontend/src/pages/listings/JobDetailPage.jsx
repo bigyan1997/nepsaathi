@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { mapsUrl } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { getJobByListing } from "../../api/jobs";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -418,11 +419,14 @@ export default function JobDetailPage() {
                   <span style={{ color: "#AFA9EC" }}>·</span>
                 </>
               )}
-              <span
-                style={{ fontSize: "14px", color: "#534AB7", fontWeight: 600 }}
+              <a
+                href={mapsUrl([job.listing_location, job.listing_state, "Australia"].filter(Boolean).join(", "))}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: "14px", color: "#534AB7", fontWeight: 600, textDecoration: "none" }}
               >
                 📍 {job.listing_location}, {job.listing_state}
-              </span>
+              </a>
             </div>
             {job.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
@@ -782,7 +786,14 @@ export default function JobDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    {job.listing_location}, {job.listing_state}
+                    <a
+                      href={mapsUrl([job.listing_location, job.listing_state, "Australia"].filter(Boolean).join(", "))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "inherit", textDecoration: "none" }}
+                    >
+                      {job.listing_location}, {job.listing_state}
+                    </a>
                   </span>
                 </div>
                 <div

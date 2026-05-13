@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { mapsUrl } from "../../utils/constants";
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -510,7 +511,14 @@ export default function BusinessDetailPage() {
                 fontWeight: 600,
               }}
             >
-              📍 {business.suburb}, {business.state}
+              <a
+                href={mapsUrl([business.suburb, business.state, "Australia"].filter(Boolean).join(", "))}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "inherit", textDecoration: "none" }}
+              >
+                📍 {business.suburb}, {business.state}
+              </a>
             </span>
           </div>
         </div>
@@ -997,7 +1005,14 @@ export default function BusinessDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    {business.suburb}, {business.state}
+                    <a
+                      href={mapsUrl([business.suburb, business.state, "Australia"].filter(Boolean).join(", "))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "inherit", textDecoration: "none" }}
+                    >
+                      {business.suburb}, {business.state}
+                    </a>
                   </span>
                 </div>
                 {business.operating_hours && (

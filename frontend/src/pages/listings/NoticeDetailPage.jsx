@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { mapsUrl } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { getNoticeByListing } from "../../api/notices";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -368,7 +369,14 @@ export default function NoticeDetailPage() {
                 fontWeight: 600,
               }}
             >
-              📍 {notice.listing_location}, {notice.listing_state}
+              <a
+                href={mapsUrl([notice.listing_location, notice.listing_state, "Australia"].filter(Boolean).join(", "))}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "inherit", textDecoration: "none" }}
+              >
+                📍 {notice.listing_location}, {notice.listing_state}
+              </a>
             </span>
             {notice.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
@@ -649,8 +657,15 @@ export default function NoticeDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    {notice.listing_location},{" "}
-                    {notice.listing_state}
+                    <a
+                      href={mapsUrl([notice.listing_location, notice.listing_state, "Australia"].filter(Boolean).join(", "))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "inherit", textDecoration: "none" }}
+                    >
+                      {notice.listing_location},{" "}
+                      {notice.listing_state}
+                    </a>
                   </span>
                 </div>
                 <div

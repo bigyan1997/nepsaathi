@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { mapsUrl } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { getRoomByListing } from "../../api/rooms";
 import { SkeletonDetailPage } from "../../components/ui/Skeleton";
@@ -406,15 +407,18 @@ export default function RoomDetailPage() {
             >
               {room.listing_title}
             </h1>
-            <span
-              style={{ fontSize: "14px", color: "#E87722", fontWeight: 600 }}
+            <a
+              href={mapsUrl([room.street_address, room.listing_state, "Australia"].filter(Boolean).join(", "))}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "14px", color: "#E87722", fontWeight: 600, textDecoration: "none" }}
             >
               📍{" "}
               {room.street_address ? `${room.street_address}, ` : ""}
               {room.listing_location}
               {room.listing_postcode ? ` ${room.listing_postcode}` : ""},{" "}
               {room.listing_state}
-            </span>
+            </a>
             {room.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
                 🕐 Posted {timeAgo(room.created_at)}
@@ -811,18 +815,22 @@ export default function RoomDetailPage() {
                   }}
                 >
                   <IconPin />
-                  <span
+                  <a
+                    href={mapsUrl([room.street_address, room.listing_state, "Australia"].filter(Boolean).join(", "))}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     style={{
                       fontSize: "13px",
                       color: "#26215C",
                       fontWeight: 500,
+                      textDecoration: "none",
                     }}
                   >
                     {room.street_address ? `${room.street_address}, ` : ""}
                     {room.listing_location}
                     {room.listing_postcode ? ` ${room.listing_postcode}` : ""},{" "}
                     {room.listing_state}
-                  </span>
+                  </a>
                 </div>
                 {room.available_from && (
                   <div
