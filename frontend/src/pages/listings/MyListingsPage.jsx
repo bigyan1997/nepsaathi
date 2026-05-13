@@ -1283,7 +1283,7 @@ export default function MyListingsPage() {
                             "This business will be removed from NepSaathi.",
                             () => {
                               setDeletingId(business.id);
-                              deleteBusinessMutation.mutate(business.id);
+                              deleteBusinessMutation.mutate(business.slug);
                             },
                           );
                         },
