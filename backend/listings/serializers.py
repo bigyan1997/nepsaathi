@@ -129,7 +129,7 @@ class ListingSerializer(serializers.ModelSerializer):
         return obj.views.count()
 
     def get_is_reported(self, obj):
-        return obj.reports.exists()
+        return obj.reports.filter(is_reviewed=False).exists()
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
