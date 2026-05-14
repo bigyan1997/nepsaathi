@@ -3,9 +3,13 @@ Allow: /
 Disallow: /nepsaathi-admin/
 Disallow: /login
 Disallow: /register
+Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /reset-password/
 Disallow: /profile
 Disallow: /my-listings
 Disallow: /post-ad
+Disallow: /register-business
 Disallow: /edit-listing/
 Disallow: /messages
 Disallow: /saved-searches
