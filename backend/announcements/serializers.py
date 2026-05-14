@@ -48,7 +48,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         return obj.listing.views.count()
 
     def get_is_reported(self, obj):
-        return obj.listing.reports.exists()
+        return obj.listing.reports.filter(is_reviewed=False).exists()
 
     def get_images(self, obj):
         return [
