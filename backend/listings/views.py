@@ -773,12 +773,25 @@ class GlobalSearchView(APIView):
             is_active=True,
         ).select_related('owner')[:5]
 
+        biz_data = [
+            {
+                'id': b.id,
+                'listing_slug': b.slug,
+                'listing_title': b.business_name,
+                'listing_location': b.suburb,
+                'listing_state': b.state,
+                'posted_by': b.owner.full_name if b.owner else '',
+                'is_featured': b.is_featured,
+            }
+            for b in businesses
+        ]
+
         return Response({
             'jobs': JobSerializer(jobs, many=True, context={'request': request}).data,
             'rooms': RoomSerializer(rooms, many=True, context={'request': request}).data,
             'events': EventSerializer(events, many=True, context={'request': request}).data,
             'notices': AnnouncementSerializer(announcements, many=True, context={'request': request}).data,
-            'businesses': BusinessSerializer(businesses, many=True, context={'request': request}).data,
+            'businesses': biz_data,
         })
 
 class RenewListingView(APIView):
