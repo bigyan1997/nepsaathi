@@ -723,7 +723,7 @@ class GlobalSearchView(APIView):
         query = request.query_params.get('q', '').strip()
         state = request.query_params.get('state', '').strip()
 
-        if len(query) < 2:
+        if len(query) < 2 and not state:
             return Response({
                 'jobs': [], 'rooms': [], 'events': [], 'notices': [], 'businesses': []
             })

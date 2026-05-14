@@ -58,7 +58,7 @@ export default function SearchPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["global-search", query, state],
     queryFn: () => globalSearch(query, state),
-    enabled: query.length >= 2,
+    enabled: query.length >= 2 || !!state,
   });
 
   const totalResults = data
@@ -97,14 +97,14 @@ export default function SearchPage() {
         <p style={{ fontSize: "13px", color: "#AFA9EC", margin: 0 }}>
           {isLoading
             ? "Searching..."
-            : query
-              ? `${totalResults} result${totalResults !== 1 ? "s" : ""} for "${query}"${state ? ` in ${state}` : ""}`
+            : query || state
+              ? `${totalResults} result${totalResults !== 1 ? "s" : ""}${query ? ` for "${query}"` : ""}${state ? ` in ${state}` : ""}`
               : "Enter a search term to find listings"}
         </p>
       </div>
 
       {/* ── No query ── */}
-      {!query && (
+      {!query && !state && (
         <div
           style={{
             textAlign: "center",
