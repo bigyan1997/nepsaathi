@@ -916,4 +916,53 @@ class SavedSearchDetailView(APIView):
 
     def delete(self, request, pk):
         self._get(pk, request.user).delete()
+
+
+class SitemapDataView(APIView):
+    """
+    GET /api/listings/sitemap/
+    Returns all public listing slugs + business slugs for sitemap generation.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        now = timezone.now()
+        listings = (
+            Listing.objects
+            .filter(status='active', is_under_review=False)
+            .filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))
+            .values('slug', 'listing_type', 'created_at')
+            .order_by('-created_at')
+        )
+        businesses = (
+            Business.objects
+            .filter(is_active=True)
+            .values('slug', 'created_at')
+            .order_by('-created_at')
+        )
+
+        type_to_path = {
+            'job': 'jobs',
+            'room': 'rooms',
+            'event': 'events',
+            'notice': 'notices',
+        }
+
+        return Response({
+            'listings': [
+                {
+                    'path': f"/{type_to_path.get(l['listing_type'], l['listing_type'])}/{l['slug']}",
+                    'lastmod': l['created_at'].strftime('%Y-%m-%d'),
+                }
+                for l in listings
+                if l['listing_type'] in type_to_path
+            ],
+            'businesses': [
+                {
+                    'path': f"/businesses/{b['slug']}",
+                    'lastmod': b['created_at'].strftime('%Y-%m-%d'),
+                }
+                for b in businesses
+            ],
+        })
         return Response(status=status.HTTP_204_NO_CONTENT)

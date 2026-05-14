@@ -15,6 +15,7 @@ urlpatterns = [
     path('search/', views.GlobalSearchView.as_view(), name='global-search'),
     path('saved-searches/', views.SavedSearchListView.as_view(), name='saved-search-list'),
     path('saved-searches/<int:pk>/', views.SavedSearchDetailView.as_view(), name='saved-search-detail'),
+    path('sitemap/', views.SitemapDataView.as_view(), name='sitemap-data'),
 
     # ── Slug / PK dynamic paths ───────────────────────────────────────────────
 
