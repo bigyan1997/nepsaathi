@@ -209,21 +209,20 @@ class ListingReportAdmin(admin.ModelAdmin):
 
     def mark_reviewed(self, request, queryset):
         for report in queryset:
-            report.is_reviewed = True
-            report.save()
-            report.listing.is_under_review = False
-            report.listing.save()
+            listing = report.listing
+            listing.reports.filter(is_reviewed=False).update(is_reviewed=True)
+            listing.is_under_review = False
+            listing.save()
         self.message_user(request, f'{queryset.count()} reports marked as reviewed.')
     mark_reviewed.short_description = '✅ Mark as reviewed'
 
     def clear_listing(self, request, queryset):
         from core.emails import send_listing_cleared_email
         for report in queryset:
-            report.is_reviewed = True
-            report.save()
-            # Clear under review flag
-            report.listing.is_under_review = False
-            report.listing.save()
+            listing = report.listing
+            listing.reports.filter(is_reviewed=False).update(is_reviewed=True)
+            listing.is_under_review = False
+            listing.save()
             send_listing_cleared_email(report)
         self.message_user(request, f'{queryset.count()} listings cleared — owners notified.')
     clear_listing.short_description = '✅ Clear listing — notify owner'
@@ -239,8 +238,7 @@ class ListingReportAdmin(admin.ModelAdmin):
                 listing.status = 'deleted'
                 listing.is_under_review = False
                 listing.save()
-                report.is_reviewed = True
-                report.save()
+                listing.reports.filter(is_reviewed=False).update(is_reviewed=True)
                 send_listing_removed_email(report, reason)
 
                 # Check if user should be banned (3 removals)
