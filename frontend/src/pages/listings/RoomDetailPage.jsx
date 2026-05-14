@@ -949,7 +949,7 @@ export default function RoomDetailPage() {
             </div>
 
             <div style={{ textAlign: "center" }}>
-              <ReportButton listingId={room?.listing_id} />
+              <ReportButton listingId={room?.listing_id} backPath="/rooms" />
             </div>
           </div>
         </div>

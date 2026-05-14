@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useToast } from "./Toast";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import api from "../../utils/axios";
 
 const REASONS = [
@@ -14,11 +13,10 @@ const REASONS = [
   { value: "other", label: "Other" },
 ];
 
-export default function ReportButton({ listingId, endpoint }) {
+export default function ReportButton({ listingId, endpoint, backPath }) {
   const { isAuthenticated } = useAuthStore();
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("spam");
   const [details, setDetails] = useState("");
@@ -36,14 +34,10 @@ export default function ReportButton({ listingId, endpoint }) {
       await api.post(url, { reason, details });
       setSubmitted(true);
       addToast("Report submitted. Thank you! 🙏", "success");
-      queryClient.invalidateQueries({ queryKey: ["job", String(listingId)] });
-      queryClient.invalidateQueries({ queryKey: ["room", String(listingId)] });
-      queryClient.invalidateQueries({ queryKey: ["event", String(listingId)] });
-      queryClient.invalidateQueries({ queryKey: ["notice", String(listingId)] });
-      queryClient.invalidateQueries({ queryKey: ["listing", String(listingId)] });
       setTimeout(() => {
         setOpen(false);
         setSubmitted(false);
+        navigate(backPath ?? -1);
       }, 2000);
     } catch (err) {
       const msg = err.response?.data?.detail || "Failed to submit report.";

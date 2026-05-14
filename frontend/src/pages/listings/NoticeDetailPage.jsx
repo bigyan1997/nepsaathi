@@ -781,7 +781,7 @@ export default function NoticeDetailPage() {
             </div>
 
             <div style={{ textAlign: "center" }}>
-              <ReportButton listingId={notice?.listing_id} />
+              <ReportButton listingId={notice?.listing_id} backPath="/notices" />
             </div>
           </div>
         </div>

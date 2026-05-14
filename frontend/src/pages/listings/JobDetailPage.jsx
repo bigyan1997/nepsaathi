@@ -910,7 +910,7 @@ export default function JobDetailPage() {
 
             {/* Report — tucked in sidebar */}
             <div style={{ textAlign: "center" }}>
-              <ReportButton listingId={job?.listing_id} />
+              <ReportButton listingId={job?.listing_id} backPath="/jobs" />
             </div>
           </div>
         </div>

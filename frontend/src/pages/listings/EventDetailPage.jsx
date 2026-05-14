@@ -1112,7 +1112,7 @@ export default function EventDetailPage() {
 
             {/* Report — tucked inside sidebar, not floating */}
             <div style={{ textAlign: "center" }}>
-              <ReportButton listingId={event?.listing_id} />
+              <ReportButton listingId={event?.listing_id} backPath="/events" />
             </div>
           </div>
         </div>
