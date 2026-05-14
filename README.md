@@ -88,7 +88,8 @@ nepsaathi/
     │   ├── components/    # ~50 reusable components
     │   ├── pages/         # 32 page-level components
     │   └── utils/         # axios.js (interceptors)
-    ├── public/            # manifest.json, sw.js, icons
+    ├── public/            # manifest.json, sw.js, icons, sitemap.xml (generated at build)
+    ├── generate-sitemap.mjs  # Build-time sitemap generator (fetches slugs from API)
     ├── package.json
     ├── vite.config.js
     └── vercel.json
@@ -353,6 +354,7 @@ Rate limits: login 5/min · register 3/min · password reset 3/hr · contact 5/h
 | POST | `/api/listings/<id>/renew/` | Owner | Renew expired listing |
 | GET/POST | `/api/listings/saved-searches/` | Yes | Saved search filters |
 | PATCH/DELETE | `/api/listings/saved-searches/<id>/` | Yes | Edit/delete saved search |
+| GET | `/api/listings/sitemap/` | No | All public listing slugs + business slugs for sitemap generation |
 
 Rate limit: listing create 10/hr, max 20 active listings per user.
 
@@ -464,6 +466,12 @@ Email types sent:
 - Password reset
 - Contact form acknowledgement
 - Payment invoice (PDF attached, triggered by Stripe webhook)
+- Listing expiry warning (3 days before expiry, via `send_expiry_warnings` management command)
+- Listing expired notification
+- Listing renewed confirmation
+- Listing cleared by admin (notify owner)
+- Listing removed by admin (notify owner with reason)
+- Saved search alert (new listing matches a user's saved search, triggered on listing creation)
 
 SMTP settings must be outside the `if DEBUG` block in `settings.py` — otherwise Django falls back to `localhost:25` in development.
 
@@ -733,7 +741,7 @@ Exit-intent modal only activates on these routes.
 
 All non-asset paths are served `index.html` so React Router handles routing client-side.
 
-Build command: `npm run build` → `vite build` → output in `/dist/`.
+Build command: `npm run build` → runs `generate-sitemap.mjs` (fetches active listing slugs from the backend API and writes `public/sitemap.xml`) then `vite build` → output in `/dist/`.
 
 ---
 
@@ -776,9 +784,10 @@ Build command: `npm run build` → `vite build` → output in `/dist/`.
 
 | Variable | Description |
 |----------|-------------|
-| `VITE_API_URL` | Backend base URL e.g. `https://api.nepsaathi.com` |
+| `VITE_API_URL` | Backend base URL e.g. `https://nepsaathi-production.up.railway.app` |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `VITE_VAPID_PUBLIC_KEY` | VAPID public key for push notifications |
+| `VITE_GA_ID` | Google Analytics measurement ID (e.g. `G-XXXXXXXXXX`) |
 
 ---
 
