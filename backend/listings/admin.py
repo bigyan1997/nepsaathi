@@ -72,6 +72,11 @@ class ListingAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('reports')
 
+    def save_model(self, request, obj, form, change):
+        if change and 'is_under_review' in form.changed_data and not obj.is_under_review:
+            obj.reports.filter(is_reviewed=False).update(is_reviewed=True)
+        super().save_model(request, obj, form, change)
+
     def review_badge(self, obj):
         badges = []
         if obj.is_under_review:
@@ -92,7 +97,11 @@ class ListingAdmin(admin.ModelAdmin):
     review_badge.short_description = 'Flags'
 
     def approve_listings(self, request, queryset):
-        updated = queryset.filter(is_under_review=True).update(is_under_review=False)
+        to_approve = queryset.filter(is_under_review=True)
+        listing_ids = list(to_approve.values_list('id', flat=True))
+        updated = to_approve.update(is_under_review=False)
+        if listing_ids:
+            ListingReport.objects.filter(listing_id__in=listing_ids, is_reviewed=False).update(is_reviewed=True)
         self.message_user(request, f'{updated} listing(s) approved and made public.')
     approve_listings.short_description = '✅ Approve — make listing public'
 
