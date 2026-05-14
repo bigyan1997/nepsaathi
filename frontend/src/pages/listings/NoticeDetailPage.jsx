@@ -118,6 +118,7 @@ export default function NoticeDetailPage() {
     queryKey: ["notice", slug],
     queryFn: () => getNoticeByListing(slug),
     staleTime: 0,
+    gcTime: 0,
   });
 
   const { data: similarListings } = useQuery({

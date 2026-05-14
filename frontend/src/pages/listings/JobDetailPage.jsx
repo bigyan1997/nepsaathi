@@ -114,6 +114,7 @@ export default function JobDetailPage() {
     queryKey: ["job", slug],
     queryFn: () => getJobByListing(slug),
     staleTime: 0,
+    gcTime: 0,
   });
 
   usePageMeta(
