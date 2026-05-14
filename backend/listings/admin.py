@@ -85,7 +85,7 @@ class ListingAdmin(admin.ModelAdmin):
                 'border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;'
                 'display:inline-block;margin-bottom:2px;">&#9888; Spam</span>'
             )
-        if obj.reports.exists():
+        if any(not r.is_reviewed for r in obj.reports.all()):
             badges.append(
                 '<span style="background:#B45309;color:#fff;padding:2px 8px;'
                 'border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;'
