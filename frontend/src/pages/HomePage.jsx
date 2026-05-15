@@ -105,15 +105,17 @@ export default function HomePage() {
   return (
     <>
       <style>{`
+        @keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
         @media (max-width: 767px) {
           .listing-desktop { display: none !important; }
           .listing-mobile  { display: flex !important; }
-          .hero-section    { padding: 40px 16px 32px !important; }
-          .hero-title      { font-size: 28px !important; letter-spacing: -0.3px !important; }
+          .hero-section    { padding: 48px 16px 40px !important; }
+          .hero-title      { font-size: 30px !important; letter-spacing: -0.5px !important; }
           .home-section    { padding-left: 16px !important; padding-right: 16px !important; }
           .cta-inner       { padding: 24px 20px !important; }
-          .stats-grid      { gap: 8px !important; }
-          .stat-num        { font-size: 18px !important; }
+          .stat-num        { font-size: 20px !important; }
           .search-btn-text { display: none !important; }
           .feat-scroll     { padding-left: 16px !important; padding-right: 16px !important; }
           .feat-arrows     { display: none !important; }
@@ -123,103 +125,126 @@ export default function HomePage() {
           .listing-desktop { display: grid !important; }
           .search-btn-text { display: inline !important; }
         }
-        .feat-scroll                     { display: flex !important; overflow-x: auto; }
-        .feat-scroll::-webkit-scrollbar  { display: none; }
+        .feat-scroll                    { display: flex !important; overflow-x: auto; }
+        .feat-scroll::-webkit-scrollbar { display: none; }
         @media (max-width: 480px) { .search-btn-text { display: none !important; } }
         @media (min-width: 481px) and (max-width: 767px) { .search-btn-text { display: inline !important; } }
+
+        .hero-content { animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+
+        /* Listing card hover */
+        .lc { transition: border-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease; }
+        .lc:hover { transform: translateY(-1px); }
+        .lc-job:hover    { border-color: #AFA9EC !important; box-shadow: 0 4px 16px rgba(83,74,183,0.09); }
+        .lc-room:hover   { border-color: #EFD9C0 !important; box-shadow: 0 4px 16px rgba(232,119,34,0.09); }
+        .lc-event:hover  { border-color: #9FE1CB !important; box-shadow: 0 4px 16px rgba(29,158,117,0.09); }
+        .lc-notice:hover { border-color: #B5D4F4 !important; box-shadow: 0 4px 16px rgba(12,68,124,0.09); }
+
+        /* Search focus ring */
+        .search-wrap:focus-within { border-color: #534AB7 !important; box-shadow: 0 0 0 3px rgba(83,74,183,0.10) !important; }
+        .search-submit { transition: background 0.15s ease; }
+        .search-submit:hover { background: #463EA8 !important; }
+
+        /* State pills */
+        .state-pill { transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important; }
+        .state-pill:active { transform: scale(0.94); }
+
+        /* Dropdowns */
+        .type-opt  { transition: background 0.1s ease; }
+        .sugg-item { transition: background 0.1s ease; }
+        .type-opt:hover  { background: #F5F4F0 !important; }
+        .sugg-item:hover { background: #F5F4F0 !important; }
       `}</style>
 
       <div style={{ background: "#F5F4F0", minHeight: "100vh" }}>
 
         {/* ── HERO ── */}
-        <div className="hero-section" style={{ background: "#FFF1E0", borderBottom: "0.5px solid #EFD9C0", padding: "60px 28px 48px", textAlign: "center" }}>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
-            <NepSaathiLogo size={32} animated />
-          </div>
-          <div style={{ display: "inline-block", background: "#EEEDFE", border: "0.5px solid #AFA9EC", borderRadius: "20px", padding: "5px 14px", fontSize: "12px", color: "#534AB7", fontWeight: 500, marginBottom: "16px", letterSpacing: "0.03em" }}>
-            नेपसाथी · your Nepali friend, wherever you are
-          </div>
-          <h1 className="hero-title" style={{ fontSize: "42px", fontWeight: 700, color: "#26215C", maxWidth: "580px", margin: "0 auto 16px", lineHeight: 1.15, letterSpacing: "-0.5px" }}>
-            Find <span style={{ color: "#E87722" }}>work</span> and a place to{" "}
-            <span style={{ color: "#E87722" }}>call home</span>
-          </h1>
-          <p style={{ fontSize: "16px", color: "#633806", maxWidth: "460px", margin: "0 auto 32px", lineHeight: 1.7 }}>
-            The Nepalese community hub for jobs, rooms, events and businesses across Australia.
-          </p>
+        <div className="hero-section" style={{ background: "linear-gradient(160deg, #FFF9F2 0%, #FFF1E0 60%, #FEF0DE 100%)", borderBottom: "0.5px solid #EFD9C0", padding: "72px 28px 56px", textAlign: "center" }}>
+          <div className="hero-content">
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
+              <NepSaathiLogo size={36} animated />
+            </div>
+            <div style={{ display: "inline-block", background: "#EEEDFE", borderRadius: "20px", padding: "5px 14px", fontSize: "11px", color: "#534AB7", fontWeight: 600, marginBottom: "20px", letterSpacing: "0.04em" }}>
+              नेपसाथी · your Nepali friend, wherever you are
+            </div>
+            <h1 className="hero-title" style={{ fontSize: "44px", fontWeight: 800, color: "#26215C", maxWidth: "580px", margin: "0 auto 16px", lineHeight: 1.12, letterSpacing: "-0.8px" }}>
+              Find <span style={{ color: "#E87722" }}>work</span> and a place to{" "}
+              <span style={{ color: "#E87722" }}>call home</span>
+            </h1>
+            <p style={{ fontSize: "16px", color: "#7A6148", maxWidth: "440px", margin: "0 auto 36px", lineHeight: 1.65 }}>
+              The Nepalese community hub for jobs, rooms, events and businesses across Australia.
+            </p>
 
-          {/* Search bar */}
-          <form onSubmit={handleSearch} style={{ maxWidth: "600px", margin: "0 auto 24px", display: "flex", flexDirection: "column", gap: "8px", position: "relative", zIndex: 50 }}>
-            <div style={{ display: "flex", border: "1.5px solid #AFA9EC", borderRadius: "12px", overflow: "visible", background: "#fff", position: "relative" }}>
-              {/* Type dropdown */}
-              <div style={{ position: "relative", flexShrink: 0 }} ref={dropdownRef}>
-                <button type="button" onClick={() => setDropdownOpen(!dropdownOpen)}
-                  style={{ border: "none", outline: "none", background: "transparent", padding: "0 10px", height: "100%", borderRight: "0.5px solid #e5e5e5", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontSize: "18px", minWidth: "56px" }}>
-                  {SEARCH_TYPES.find((t) => t.value === searchType)?.emoji}
-                  <span style={{ fontSize: "10px", color: "#aaa" }}>▼</span>
-                </button>
-                {dropdownOpen && (
-                  <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, background: "#fff", borderRadius: "12px", border: "0.5px solid #e5e5e5", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 999, overflow: "hidden", minWidth: "160px" }}>
-                    {SEARCH_TYPES.map((type) => (
-                      <div key={type.value} onClick={() => { setSearchType(type.value); setDropdownOpen(false); }}
-                        style={{ padding: "10px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: searchType === type.value ? "#534AB7" : "#333", fontWeight: searchType === type.value ? 600 : 400, background: searchType === type.value ? "#EEEDFE" : "transparent", transition: "background 0.1s" }}
-                        onMouseEnter={(e) => { if (searchType !== type.value) e.currentTarget.style.background = "#F5F4F0"; }}
-                        onMouseLeave={(e) => { if (searchType !== type.value) e.currentTarget.style.background = "transparent"; }}>
-                        <span style={{ fontSize: "16px" }}>{type.emoji}</span>
-                        {type.label}
-                        {searchType === type.value && <span style={{ marginLeft: "auto", fontSize: "11px" }}>✓</span>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Input + suggestions */}
-              <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
-                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                  onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                  placeholder={searchType === "all" ? "Search jobs, rooms, events..." : searchType === "jobs" ? "Search jobs..." : searchType === "rooms" ? "Search rooms..." : searchType === "events" ? "Search events..." : searchType === "notices" ? "Search notices..." : "Search businesses..."}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: "14px", padding: "14px 12px", color: "#333", background: "transparent", boxSizing: "border-box" }} />
-                {showSuggestions && suggestions.length > 0 && (
-                  <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "#fff", borderRadius: "12px", border: "0.5px solid #e5e5e5", boxShadow: "0 8px 24px rgba(0,0,0,0.15)", zIndex: 999, overflow: "hidden" }}>
-                    {suggestions.map((suggestion, index) => (
-                      <div key={index}
-                        onClick={() => { setShowSuggestions(false); setSearch(suggestion.label); const p = new URLSearchParams(); p.set("search", suggestion.label); navigate(`/${suggestion.listing_type}s?${p}`); }}
-                        style={{ padding: "10px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", borderBottom: index < suggestions.length - 1 ? "0.5px solid #f5f5f5" : "none", transition: "background 0.1s" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F4F0")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}>
-                        <span style={{ fontSize: "16px" }}>{TYPE_EMOJI[suggestion.listing_type] || "🔍"}</span>
-                        <div>
-                          <div style={{ fontSize: "13px", fontWeight: 500, color: "#26215C" }}>{highlightMatch(suggestion.label, search)}</div>
-                          <div style={{ fontSize: "11px", color: "#888" }}>{suggestion.sublabel}</div>
+            {/* Search bar */}
+            <form onSubmit={handleSearch} style={{ maxWidth: "600px", margin: "0 auto 28px", display: "flex", flexDirection: "column", gap: "10px", position: "relative", zIndex: 50 }}>
+              <div className="search-wrap" style={{ display: "flex", border: "1.5px solid #AFA9EC", borderRadius: "12px", overflow: "visible", background: "#fff", position: "relative", transition: "border-color 0.15s ease, box-shadow 0.15s ease" }}>
+                {/* Type dropdown */}
+                <div style={{ position: "relative", flexShrink: 0 }} ref={dropdownRef}>
+                  <button type="button" onClick={() => setDropdownOpen(!dropdownOpen)}
+                    style={{ border: "none", outline: "none", background: "transparent", padding: "0 10px", height: "100%", borderRight: "0.5px solid #e5e5e5", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontSize: "18px", minWidth: "56px" }}>
+                    {SEARCH_TYPES.find((t) => t.value === searchType)?.emoji}
+                    <span style={{ fontSize: "10px", color: "#aaa" }}>▼</span>
+                  </button>
+                  {dropdownOpen && (
+                    <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, background: "#fff", borderRadius: "12px", border: "0.5px solid #e8e8e8", boxShadow: "0 8px 28px rgba(0,0,0,0.10)", zIndex: 999, overflow: "hidden", minWidth: "160px" }}>
+                      {SEARCH_TYPES.map((type) => (
+                        <div key={type.value} className="type-opt" onClick={() => { setSearchType(type.value); setDropdownOpen(false); }}
+                          style={{ padding: "10px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: searchType === type.value ? "#534AB7" : "#333", fontWeight: searchType === type.value ? 600 : 400, background: searchType === type.value ? "#EEEDFE" : "transparent" }}>
+                          <span style={{ fontSize: "16px" }}>{type.emoji}</span>
+                          {type.label}
+                          {searchType === type.value && <span style={{ marginLeft: "auto", fontSize: "11px" }}>✓</span>}
                         </div>
-                        <span style={{ marginLeft: "auto", fontSize: "11px", color: "#aaa" }}>{suggestion.listing_type}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Input + suggestions */}
+                <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
+                  <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                    onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                    placeholder={searchType === "all" ? "Search jobs, rooms, events..." : searchType === "jobs" ? "Search jobs..." : searchType === "rooms" ? "Search rooms..." : searchType === "events" ? "Search events..." : searchType === "notices" ? "Search notices..." : "Search businesses..."}
+                    style={{ width: "100%", border: "none", outline: "none", fontSize: "14px", padding: "14px 12px", color: "#333", background: "transparent", boxSizing: "border-box" }} />
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "#fff", borderRadius: "12px", border: "0.5px solid #e8e8e8", boxShadow: "0 8px 28px rgba(0,0,0,0.10)", zIndex: 999, overflow: "hidden" }}>
+                      {suggestions.map((suggestion, index) => (
+                        <div key={index} className="sugg-item"
+                          onClick={() => { setShowSuggestions(false); setSearch(suggestion.label); const p = new URLSearchParams(); p.set("search", suggestion.label); navigate(`/${suggestion.listing_type}s?${p}`); }}
+                          style={{ padding: "10px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", borderBottom: index < suggestions.length - 1 ? "0.5px solid #f5f5f5" : "none" }}>
+                          <span style={{ fontSize: "16px" }}>{TYPE_EMOJI[suggestion.listing_type] || "🔍"}</span>
+                          <div>
+                            <div style={{ fontSize: "13px", fontWeight: 500, color: "#26215C" }}>{highlightMatch(suggestion.label, search)}</div>
+                            <div style={{ fontSize: "11px", color: "#888" }}>{suggestion.sublabel}</div>
+                          </div>
+                          <span style={{ marginLeft: "auto", fontSize: "11px", color: "#aaa" }}>{suggestion.listing_type}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button type="submit" className="search-submit" aria-label="Search listings"
+                  style={{ background: "#534AB7", color: "#fff", border: "none", padding: "0 20px", fontSize: "14px", fontWeight: 500, cursor: "pointer", borderRadius: "0 10px 10px 0", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <span className="search-btn-text">Search</span>
+                </button>
               </div>
 
-              <button type="submit" aria-label="Search listings"
-                style={{ background: "#534AB7", color: "#fff", border: "none", padding: "0 20px", fontSize: "14px", fontWeight: 500, cursor: "pointer", borderRadius: "0 10px 10px 0", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "6px" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-                </svg>
-                <span className="search-btn-text">Search</span>
-              </button>
-            </div>
+              {/* State pills */}
+              <div style={{ display: "flex", gap: "6px", justifyContent: "center", flexWrap: "wrap" }}>
+                {STATES.filter((s) => s.value).map(({ value, label }) => (
+                  <button key={value} type="button" className="state-pill" onClick={() => setState(state === value ? "" : value)}
+                    style={{ background: state === value ? "#534AB7" : "rgba(255,255,255,0.85)", color: state === value ? "#fff" : "#534AB7", border: `0.5px solid ${state === value ? "#534AB7" : "#AFA9EC"}`, borderRadius: "20px", padding: "4px 14px", fontSize: "12px", fontWeight: 500, cursor: "pointer" }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </form>
 
-            {/* State pills */}
-            <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-              {STATES.filter((s) => s.value).map(({ value, label }) => (
-                <button key={value} type="button" onClick={() => setState(state === value ? "" : value)}
-                  style={{ background: state === value ? "#534AB7" : "rgba(255,255,255,0.8)", color: state === value ? "#fff" : "#534AB7", border: "0.5px solid #AFA9EC", borderRadius: "20px", padding: "4px 14px", fontSize: "12px", fontWeight: 500, cursor: "pointer", transition: "all 0.15s" }}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </form>
-
-          <ExchangeRates />
+            <ExchangeRates />
+          </div>
         </div>
 
         {/* ── CATEGORIES ── */}
@@ -241,10 +266,8 @@ export default function HomePage() {
           isLoading={jobsLoading}
           items={jobsData?.results?.slice(0, 6)}
           renderRow={(job) => (
-            <Link key={job.id} to={`/jobs/${job.listing_slug}`}
-              style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", transition: "border-color 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#AFA9EC")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}>
+            <Link key={job.id} to={`/jobs/${job.listing_slug}`} className="lc lc-job"
+              style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>💼</div>
                 <div>
@@ -252,7 +275,7 @@ export default function HomePage() {
                     {job.listing_title}{job.is_featured && FEATURED_BADGE}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888" }}>{job.company_name} · {job.listing_location}, {job.listing_state}</div>
-                  {job.created_at && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{timeAgo(job.created_at)}</div>}
+                  {job.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(job.created_at)}</div>}
                 </div>
               </div>
               <div style={{ background: "#EEEDFE", color: "#3C3489", fontSize: "13px", fontWeight: 500, padding: "4px 12px", borderRadius: "20px", whiteSpace: "nowrap" }}>{job.salary_display}</div>
@@ -275,10 +298,8 @@ export default function HomePage() {
           isLoading={roomsLoading}
           items={roomsData?.results?.slice(0, 6)}
           renderRow={(room) => (
-            <Link key={room.id} to={`/rooms/${room.listing_slug}`}
-              style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", transition: "border-color 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#EFD9C0")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}>
+            <Link key={room.id} to={`/rooms/${room.listing_slug}`} className="lc lc-room"
+              style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#FFF1E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>🏠</div>
                 <div>
@@ -290,7 +311,7 @@ export default function HomePage() {
                     {room.nepalese_household && <span>· 🇳🇵 Nepalese home</span>}
                     {room.room_type && <span>· {room.room_type.replace("_", " ")}</span>}
                   </div>
-                  {room.created_at && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{timeAgo(room.created_at)}</div>}
+                  {room.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(room.created_at)}</div>}
                 </div>
               </div>
               <div style={{ background: "#FFF1E0", color: "#633806", fontSize: "13px", fontWeight: 600, padding: "4px 12px", borderRadius: "20px", whiteSpace: "nowrap" }}>{room.price_display}</div>
@@ -313,20 +334,18 @@ export default function HomePage() {
           isLoading={eventsLoading}
           items={eventsData?.results?.slice(0, 6)}
           renderRow={(event) => (
-            <Link key={event.id} to={`/events/${event.listing_slug}`}
-              style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "14px 18px", textDecoration: "none", display: "flex", alignItems: "center", gap: "16px", transition: "border-color 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#9FE1CB")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}>
+            <Link key={event.id} to={`/events/${event.listing_slug}`} className="lc lc-event"
+              style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "14px 18px", textDecoration: "none", display: "flex", alignItems: "center", gap: "16px" }}>
               <div style={{ background: "#EEEDFE", borderRadius: "10px", padding: "8px 12px", textAlign: "center", minWidth: "48px", flexShrink: 0 }}>
                 <div style={{ fontSize: "18px", fontWeight: 700, color: "#26215C", lineHeight: 1 }}>{new Date(event.event_date).getDate()}</div>
-                <div style={{ fontSize: "10px", color: "#534AB7", fontWeight: 500 }}>{new Date(event.event_date).toLocaleDateString("en-AU", { month: "short" }).toUpperCase()}</div>
+                <div style={{ fontSize: "10px", color: "#534AB7", fontWeight: 600, letterSpacing: "0.03em" }}>{new Date(event.event_date).toLocaleDateString("en-AU", { month: "short" }).toUpperCase()}</div>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                   {event.listing_title}{event.is_featured && FEATURED_BADGE}
                 </div>
                 <div style={{ fontSize: "12px", color: "#888" }}>{event.venue || `${event.listing_location}, ${event.listing_state}`}</div>
-                {event.created_at && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{timeAgo(event.created_at)}</div>}
+                {event.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(event.created_at)}</div>}
               </div>
               <div style={{ background: event.is_free ? "#E1F5EE" : "#FFF1E0", color: event.is_free ? "#085041" : "#633806", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "20px", whiteSpace: "nowrap" }}>{event.ticket_display}</div>
             </Link>
@@ -348,10 +367,8 @@ export default function HomePage() {
           isLoading={noticesLoading}
           items={noticesData?.results?.slice(0, 6)}
           renderRow={(notice) => (
-            <Link key={notice.id} to={`/notices/${notice.listing_slug}`}
-              style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", transition: "border-color 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#B5D4F4")}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}>
+            <Link key={notice.id} to={`/notices/${notice.listing_slug}`} className="lc lc-notice"
+              style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>📢</div>
                 <div>
@@ -359,7 +376,7 @@ export default function HomePage() {
                     {notice.listing_title}{notice.is_featured && FEATURED_BADGE}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888" }}>📍 {notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
-                  {notice.created_at && <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>{timeAgo(notice.created_at)}</div>}
+                  {notice.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(notice.created_at)}</div>}
                 </div>
               </div>
               <div style={{ background: "#E6F1FB", color: "#0C447C", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "20px", whiteSpace: "nowrap" }}>
