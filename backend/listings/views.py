@@ -49,7 +49,9 @@ def _flag_if_duplicate(listing, poster):
         .select_related('user')
     )
 
-    # ── 1. Phone match ──────────────────────────────────────────
+    # ── 1. Phone match + title similarity ───────────────────────
+    # Phone alone is not enough — a legitimate employer can post "Cook" and
+    # "Aged Care Worker" with the same number. Require >= 40% title overlap too.
     numbers = [
         n for n in [
             _normalize_phone(listing.contact_phone),
@@ -58,18 +60,20 @@ def _flag_if_duplicate(listing, poster):
         if len(n) >= 8
     ]
     if numbers:
-        for other in recent_others.values_list('id', 'contact_phone', 'contact_whatsapp'):
-            other_id, raw_p, raw_w = other
-            other_nums = {_normalize_phone(raw_p), _normalize_phone(raw_w)}
+        new_title_words_for_phone = _normalize_text(listing.title)
+        for other in recent_others.only('id', 'contact_phone', 'contact_whatsapp', 'title'):
+            other_nums = {_normalize_phone(other.contact_phone), _normalize_phone(other.contact_whatsapp)}
             if any(n in other_nums for n in numbers):
-                listing.is_under_review = True
-                listing.save(update_fields=['is_under_review'])
-                try:
-                    matched = Listing.objects.select_related('user').get(pk=other_id)
-                except Listing.DoesNotExist:
-                    matched = None
-                send_spam_detected_email(listing, 'phone_match', matched_listing=matched)
-                return
+                other_title_words = _normalize_text(other.title)
+                if _word_overlap(new_title_words_for_phone, other_title_words) >= 0.4:
+                    listing.is_under_review = True
+                    listing.save(update_fields=['is_under_review'])
+                    try:
+                        matched = Listing.objects.select_related('user').get(pk=other.id)
+                    except Listing.DoesNotExist:
+                        matched = None
+                    send_spam_detected_email(listing, 'phone_match', matched_listing=matched)
+                    return
 
     # ── 2. Title + description similarity ──────────────────────
     new_title_words = _normalize_text(listing.title)
