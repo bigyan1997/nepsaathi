@@ -8,11 +8,11 @@ import { useToast } from "../ui/Toast";
 import NepSaathiLogo from "../ui/NepSaathiLogo";
 
 const NAV_LINKS = [
-  { to: "/jobs", label: "Jobs" },
-  { to: "/rooms", label: "Rooms" },
-  { to: "/events", label: "Events" },
-  { to: "/notices", label: "Notices" },
-  { to: "/businesses", label: "Businesses" },
+  { to: "/jobs",       label: "Jobs",       activeColor: "#534AB7", activeBg: "#EEEDFE" },
+  { to: "/rooms",      label: "Rooms",      activeColor: "#85510A", activeBg: "#FFF1E0" },
+  { to: "/events",     label: "Events",     activeColor: "#1D9E75", activeBg: "#E1F5EE" },
+  { to: "/notices",    label: "Notices",    activeColor: "#0C447C", activeBg: "#E6F1FB" },
+  { to: "/businesses", label: "Businesses", activeColor: "#633806", activeBg: "#FAEEDA" },
 ];
 
 export default function Navbar() {
@@ -97,7 +97,7 @@ export default function Navbar() {
     }
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname.startsWith(path);
 
   return (
     <>
@@ -134,18 +134,18 @@ export default function Navbar() {
           style={{ display: "flex", gap: "4px", alignItems: "center" }}
           className="desktop-nav"
         >
-          {NAV_LINKS.map(({ to, label }) => (
+          {NAV_LINKS.map(({ to, label, activeColor, activeBg }) => (
             <Link
               key={to}
               to={to}
               style={{
                 fontSize: "13px",
-                color: isActive(to) ? "#534AB7" : "#555",
+                color: isActive(to) ? activeColor : "#555",
                 textDecoration: "none",
                 fontWeight: isActive(to) ? 600 : 400,
                 padding: "6px 12px",
                 borderRadius: "7px",
-                background: isActive(to) ? "#EEEDFE" : "transparent",
+                background: isActive(to) ? activeBg : "transparent",
                 transition: "all 0.15s",
               }}
               onMouseEnter={(e) => {
@@ -517,18 +517,18 @@ export default function Navbar() {
           className="mobile-menu"
         >
           {/* Nav links */}
-          {NAV_LINKS.map(({ to, label }) => (
+          {NAV_LINKS.map(({ to, label, activeColor, activeBg }) => (
             <Link
               key={to}
               to={to}
               style={{
                 fontSize: "14px",
-                color: isActive(to) ? "#534AB7" : "#333",
+                color: isActive(to) ? activeColor : "#333",
                 textDecoration: "none",
                 fontWeight: isActive(to) ? 600 : 400,
                 padding: "10px 12px",
                 borderRadius: "8px",
-                background: isActive(to) ? "#EEEDFE" : "transparent",
+                background: isActive(to) ? activeBg : "transparent",
               }}
             >
               {label}
