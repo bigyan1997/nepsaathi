@@ -90,6 +90,8 @@ export default function ConversationPage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["conversation", id],
     queryFn: () => getConversation(id),
+    staleTime: 0,
+    gcTime: 0,
     // Fall back to polling when WebSocket isn't connected
     refetchInterval: wsConnected ? false : isVisible ? 3000 : false,
     retry: false,
