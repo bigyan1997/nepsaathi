@@ -123,15 +123,19 @@ export function SkeletonBusinessCard() {
         border: "0.5px solid #e5e5e5",
         borderRadius: "14px",
         overflow: "hidden",
+        minHeight: "300px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <Skeleton width="100%" height="100px" borderRadius="0" />
       <div
         style={{
           padding: "10px 12px 12px",
           display: "flex",
           flexDirection: "column",
           gap: "6px",
+          flex: 1,
         }}
       >
         <Skeleton width="80%" height="13px" />
@@ -141,6 +145,7 @@ export function SkeletonBusinessCard() {
         <Skeleton width="72%" height="11px" />
         <Skeleton width="44px" height="10px" />
       </div>
+      <div style={{ height: "36px", background: "#e8e4dc" }} />
     </div>
   );
 }
@@ -182,15 +187,19 @@ export function SkeletonNoticeCard() {
         border: "0.5px solid #e5e5e5",
         borderRadius: "14px",
         overflow: "hidden",
+        minHeight: "300px",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Skeleton width="100%" height="110px" borderRadius="0" />
+      <Skeleton width="100%" height="100px" borderRadius="0" />
       <div
         style={{
           padding: "10px 12px 12px",
           display: "flex",
           flexDirection: "column",
           gap: "6px",
+          flex: 1,
         }}
       >
         <Skeleton width="58px" height="18px" borderRadius="6px" />
@@ -199,6 +208,7 @@ export function SkeletonNoticeCard() {
         <Skeleton width="72%" height="11px" />
         <Skeleton width="54px" height="10px" />
       </div>
+      <div style={{ height: "36px", background: "#e8e4dc" }} />
     </div>
   );
 }

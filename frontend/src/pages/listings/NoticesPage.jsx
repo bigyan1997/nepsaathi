@@ -494,16 +494,12 @@ function NoticeMobileCard({ notice }) {
 
 /* ── Desktop card ─────────────────────────────────── */
 function NoticeCard({ notice }) {
-  const [hovered, setHovered] = useState(false);
   const catColor = CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
   const catEmoji = CATEGORY_EMOJIS[notice.category] || "📢";
   return (
     <Link
       to={`/notices/${notice.listing_slug}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onTouchStart={() => setHovered(true)}
-      onTouchEnd={() => setHovered(false)}
+      className="nc"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -511,12 +507,8 @@ function NoticeCard({ notice }) {
         borderRadius: "16px",
         overflow: "hidden",
         textDecoration: "none",
-        border: `0.5px solid ${hovered ? "#B5D4F4" : "#e5e5e5"}`,
-        boxShadow: hovered
-          ? "0 8px 28px rgba(12,68,124,0.13)"
-          : "0 2px 8px rgba(0,0,0,0.05)",
-        transform: hovered ? "translateY(-4px)" : "translateY(0)",
-        transition: "all 0.2s",
+        border: "0.5px solid #e5e5e5",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         minHeight: "300px",
       }}
     >
@@ -749,6 +741,7 @@ export default function NoticesPage() {
         ordering: filters.ordering || undefined,
         page,
       }),
+    staleTime: 30000,
   });
 
   useEffect(() => {
@@ -826,6 +819,8 @@ export default function NoticesPage() {
           .an-fmob    { display: none !important; }
           .an-fdesk   { display: flex !important; }
         }
+        .nc { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+        .nc:hover { border-color: #B5D4F4 !important; box-shadow: 0 8px 28px rgba(12,68,124,0.13) !important; transform: translateY(-4px) !important; }
       `}</style>
 
       {drawerOpen && (

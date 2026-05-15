@@ -353,6 +353,7 @@ function BusinessMobileCard({ biz }) {
           <img
             src={biz.logo_url}
             alt={biz.business_name}
+            loading="lazy"
             style={{
               width: "64px",
               height: "64px",
@@ -531,16 +532,12 @@ function BusinessMobileCard({ biz }) {
 
 /* ── Desktop card ─────────────────────────────────── */
 function BusinessCard({ business }) {
-  const [hovered, setHovered] = useState(false);
   const catColor = CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
   const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
   return (
     <Link
       to={`/businesses/${business.slug}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onTouchStart={() => setHovered(true)}
-      onTouchEnd={() => setHovered(false)}
+      className="bc"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -548,12 +545,8 @@ function BusinessCard({ business }) {
         borderRadius: "16px",
         overflow: "hidden",
         textDecoration: "none",
-        border: `0.5px solid ${hovered ? "#FAC775" : "#e5e5e5"}`,
-        boxShadow: hovered
-          ? "0 8px 28px rgba(139,94,0,0.13)"
-          : "0 2px 8px rgba(0,0,0,0.05)",
-        transform: hovered ? "translateY(-4px)" : "translateY(0)",
-        transition: "all 0.2s",
+        border: "0.5px solid #e5e5e5",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         minHeight: "300px",
       }}
     >
@@ -574,6 +567,7 @@ function BusinessCard({ business }) {
           <img
             src={business.logo_url}
             alt={business.business_name}
+            loading="lazy"
             style={{
               width: "64px",
               height: "64px",
@@ -807,6 +801,7 @@ export default function BusinessesPage() {
         is_verified: filters.is_verified || undefined,
         page,
       }),
+    staleTime: 30000,
   });
 
   useEffect(() => {
@@ -882,6 +877,8 @@ export default function BusinessesPage() {
           .bz-fmob    { display: none !important; }
           .bz-fdesk   { display: flex !important; }
         }
+        .bc { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+        .bc:hover { border-color: #FAC775 !important; box-shadow: 0 8px 28px rgba(139,94,0,0.13) !important; transform: translateY(-4px) !important; }
       `}</style>
 
       {drawerOpen && (
