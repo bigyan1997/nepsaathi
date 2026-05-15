@@ -31,7 +31,7 @@ export default function Navbar() {
     enabled: isAuthenticated,
     refetchInterval: 30000,
     refetchOnWindowFocus: true,
-    staleTime: 25000,
+    staleTime: 0,
   });
   const unreadCount = unreadData?.unread_count || 0;
 

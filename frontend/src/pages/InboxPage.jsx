@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getConversations } from "../api/messages";
@@ -16,6 +16,7 @@ function timeAgo(dateStr) {
 export default function InboxPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [visible, setVisible] = useState(!document.hidden);
   useEffect(() => {
     const handler = () => setVisible(!document.hidden);
@@ -28,6 +29,15 @@ export default function InboxPage() {
     queryFn: getConversations,
     refetchInterval: visible ? 5000 : false,
   });
+
+  // Derive the total unread count from the conversation list (already polling every 5s)
+  // and push it into the shared Navbar cache so the badge updates without a separate API call.
+  useEffect(() => {
+    if (!isLoading) {
+      const total = conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+      queryClient.setQueryData(["unread-count"], { unread_count: total });
+    }
+  }, [conversations, isLoading]);
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px" }}>
