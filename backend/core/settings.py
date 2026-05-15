@@ -188,6 +188,7 @@ REST_AUTH = {
     'JWT_AUTH_HTTPONLY': False,  # Tokens returned in JSON body; axios reads them from localStorage, not cookies
     'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer',
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
 }
 
 # ─── Allauth ─────────────────────────────────────────────────────────────────
