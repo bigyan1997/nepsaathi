@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Main pages -->
   <url>
     <loc>https://www.nepsaathi.com/</loc>
     <changefreq>daily</changefreq>
@@ -42,8 +41,6 @@
     <changefreq>always</changefreq>
     <priority>0.7</priority>
   </url>
-
-  <!-- Info pages -->
   <url>
     <loc>https://www.nepsaathi.com/privacy</loc>
     <changefreq>monthly</changefreq>
@@ -58,6 +55,72 @@
     <loc>https://www.nepsaathi.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/notices/car-for-sale-41</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/aged-care-worker-wanted-40</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/aged-care-worker-wanted-36</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/laundry-driver-35</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/pharmacy-assistant-34</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/events/nepa-jatra-live-in-melbourne-33</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/notices/car-for-sale-32</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/gardening-lawn-mowing-worker-wanted-31</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/couple-room-needed-nearby-rockdale-station-30</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/businesses/allawah-greens-3</loc>
+    <lastmod>2026-05-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/businesses/melbourne-quick-removal-2</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 
 </urlset>

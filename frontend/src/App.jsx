@@ -48,11 +48,20 @@ import ConversationPage      from "./pages/ConversationPage";
 import SavedSearchesPage     from "./pages/SavedSearchesPage";
 import PaymentSuccessPage    from "./pages/payment/PaymentSuccessPage";
 import PaymentCancelPage     from "./pages/payment/PaymentCancelPage";
+import AdminPanelPage        from "./pages/AdminPanelPage";
 import LoginPage             from "./pages/auth/LoginPage";
 import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
 import ForgotPasswordPage    from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage     from "./pages/auth/ResetPasswordPage";
+
+function SuperUserRoute({ children }) {
+  const { user, isAuthenticated } = useAuthStore();
+  if (!isAuthenticated || !user?.is_staff || !user?.is_superuser) {
+    return <NotFoundPage />;
+  }
+  return children;
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -153,6 +162,8 @@ function App() {
                         <Route path="/saved-searches" element={<ProtectedRoute><SavedSearchesPage /></ProtectedRoute>} />
                         <Route path="/payment/success" element={<PaymentSuccessPage />} />
                         <Route path="/payment/cancel" element={<PaymentCancelPage />} />
+                        {/* Internal panel — superuser only, renders 404 for everyone else */}
+                        <Route path="/panel" element={<SuperUserRoute><AdminPanelPage /></SuperUserRoute>} />
                         {/* 404 — must be last */}
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>

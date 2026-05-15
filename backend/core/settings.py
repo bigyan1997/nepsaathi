@@ -56,6 +56,7 @@ LOCAL_APPS = [
     'messaging',
     'payments',
     'feedback',
+    'panel',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
