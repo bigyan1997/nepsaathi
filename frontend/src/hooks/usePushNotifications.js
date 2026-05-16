@@ -10,6 +10,31 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
 
+export async function registerPushSubscription() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+  if (!VAPID_PUBLIC_KEY) return;
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    console.log("[push] service worker ready:", registration.active?.state);
+
+    let subscription = await registration.pushManager.getSubscription();
+    console.log("[push] existing subscription:", subscription ? subscription.endpoint : "none");
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+      console.log("[push] new subscription created:", subscription.endpoint);
+    }
+
+    await subscribePush(subscription);
+    console.log("[push] subscription saved to server OK");
+  } catch (err) {
+    console.warn("[push] subscription failed:", err);
+  }
+}
+
 export function usePushNotifications(isLoggedIn) {
   const attempted = useRef(false);
 
@@ -21,30 +46,10 @@ export function usePushNotifications(isLoggedIn) {
     attempted.current = true;
 
     (async () => {
-      try {
-        const permission = await Notification.requestPermission();
-        console.log("[push] notification permission:", permission);
-        if (permission !== "granted") return;
-
-        const registration = await navigator.serviceWorker.ready;
-        console.log("[push] service worker ready:", registration.active?.state);
-
-        let subscription = await registration.pushManager.getSubscription();
-        console.log("[push] existing subscription:", subscription ? subscription.endpoint : "none");
-
-        if (!subscription) {
-          subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-          });
-          console.log("[push] new subscription created:", subscription.endpoint);
-        }
-
-        await subscribePush(subscription);
-        console.log("[push] subscription saved to server OK");
-      } catch (err) {
-        console.warn("[push] subscription failed:", err);
-      }
+      const permission = await Notification.requestPermission();
+      console.log("[push] notification permission:", permission);
+      if (permission !== "granted") return;
+      await registerPushSubscription();
     })();
   }, [isLoggedIn]);
 }

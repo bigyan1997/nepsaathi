@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getConversations } from "../api/messages";
 import useAuthStore from "../store/authStore";
 import api from "../utils/axios";
+import { registerPushSubscription } from "../hooks/usePushNotifications";
 
 function PushDebugButton() {
   const [result, setResult] = useState(null);
@@ -53,6 +54,9 @@ function NotificationBanner() {
     if (permission === "default") {
       const result = await Notification.requestPermission();
       setPermission(result);
+      if (result === "granted") {
+        await registerPushSubscription();
+      }
     } else {
       // denied — open browser settings guidance
       alert("To enable notifications, click the lock icon in your browser address bar → Notifications → Allow.");
