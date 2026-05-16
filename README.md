@@ -114,6 +114,7 @@ nepsaathi/
 | `messaging` | 1-to-1 conversations tied to listings |
 | `payments` | Stripe Checkout for featured listings ($9.99 AUD / 7 days) + GST invoice PDF |
 | `feedback` | Exit-intent satisfaction survey + Google Sheets sync |
+| `panel` | Superuser-only admin dashboard stats (`/api/panel/stats/`) |
 | `core` | Settings, root URLs, `SilentJWTAuthentication`, dual email routing |
 
 ### Database Models
@@ -330,6 +331,8 @@ All endpoints are prefixed with `/api/`.
 | POST | `/api/users/contact/` | No | Contact form submission |
 | POST | `/api/users/push/subscribe/` | Yes | Register push subscription |
 | DELETE | `/api/users/push/subscribe/` | Yes | Remove push subscription |
+| GET | `/api/users/<id>/public/` | No | Public profile (name, avatar, listing count — no email/phone) |
+| GET | `/api/panel/stats/` | Superuser | Admin dashboard stats |
 
 Rate limits: login 5/min · register 3/min · password reset 3/hr · contact 5/hr
 
@@ -504,13 +507,18 @@ Flow:
 ### Push Notifications
 
 1. Service worker registered at app start (`public/sw.js`)
-2. User grants browser notification permission
-3. Frontend creates `PushSubscription` and sends endpoint + keys to `POST /api/users/push/subscribe/`
-4. Backend stores in `PushSubscription` model (VAPID authentication)
-5. Backend sends notifications via `pywebpush`
-6. Service worker receives push event, displays notification with icon/badge
-7. On click, opens or focuses the app window and navigates to the linked URL
-8. Stale subscriptions (404/410 responses) are cleaned up automatically
+2. User grants browser notification permission (prompted via `NotificationBanner` on `/messages`, or automatically on login)
+3. Any existing subscription is unsubscribed first (ensures the correct VAPID key is always used after key rotation)
+4. Frontend creates a new `PushSubscription` and sends endpoint + keys to `POST /api/users/push/subscribe/`
+5. Backend stores in `PushSubscription` model (VAPID authentication)
+6. Backend sends notifications via `pywebpush`
+7. Service worker receives push event, displays notification with `icon: /icon-192.png` and `badge: /badge.svg` (white monochrome SVG for Android status bar)
+8. On click, opens or focuses the app window and navigates to the URL in notification data
+9. Stale subscriptions (404/410 responses) are cleaned up automatically
+
+**VAPID key format:** Use raw base64url strings (not PEM) for both `VAPID_PRIVATE_KEY` and `VAPID_PUBLIC_KEY` in Railway. PEM keys lose newlines in env vars and cannot be parsed by pywebpush.
+
+**After rotating VAPID keys:** run `python manage.py clear_push_subscriptions` in the Railway shell to wipe stale DB subscriptions. Browsers will re-subscribe automatically on next visit.
 
 ---
 
@@ -591,6 +599,7 @@ Static files served by WhiteNoise. Database is PostgreSQL on Railway (via `DATAB
 | `/events/:slug` | `EventDetailPage` | Event detail + RSVP |
 | `/businesses` | `BusinessesPage` | Business directory |
 | `/businesses/:slug` | `BusinessDetailPage` | Business profile + reviews |
+| `/users/:id` | `UserProfilePage` | Public profile — listings by that user |
 | `/search` | `SearchPage` | Global search across all types |
 | `/privacy` | `PrivacyPage` | Privacy Policy (sticky TOC) |
 | `/terms` | `TermsPage` | Terms of Use (sticky TOC) |
@@ -614,7 +623,8 @@ Static files served by WhiteNoise. Database is PostgreSQL on Railway (via `DATAB
 | `/register-business` | `RegisterBusinessPage` |
 | `/my-listings` | `MyListingsPage` |
 | `/edit-listing/:slug` | `EditListingPage` |
-| `/profile` | `ProfilePage` |
+| `/profile` | `ProfilePage` | Edit profile, change password, delete account |
+| `/panel` | `AdminPanelPage` | Superuser-only stats dashboard (renders 404 for non-superusers) |
 | `/messages` | `InboxPage` |
 | `/messages/:id` | `ConversationPage` |
 | `/saved-searches` | `SavedSearchesPage` |
@@ -667,7 +677,7 @@ API modules in `src/api/`:
 
 | Module | Functions |
 |--------|-----------|
-| `auth.js` | register, login, logout, getProfile, updateProfile, deleteAccount, googleLogin, sendContactForm |
+| `auth.js` | register, login, logout, getProfile, updateProfile, deleteAccount, changePassword, googleLogin, sendContactForm, getPublicProfile |
 | `listings.js` | getListings, getListing, createListing, updateListing, deleteListing, getMyListings, uploadImages, getStats, saveListing, unsaveListing, checkSaved, getSavedListings, markListingStatus, trackView, getSimilarListings, reportListing, renewListing, getSavedSearches, createSavedSearch, deleteSavedSearch |
 | `jobs.js` | getJobs, getJob, getJobByListing, createJob, updateJob, deleteJob |
 | `rooms.js` | getRooms, getRoom, getRoomByListing, createRoom, updateRoom, deleteRoom |
@@ -720,11 +730,12 @@ Exit-intent modal only activates on these routes.
 }
 ```
 
-**`public/sw.js`** (service worker):
-- Cache-first for root + `index.html`
-- Listens for `push` events — displays notification with icon/badge/title/body
+**`public/sw.js`** (service worker, cache version `nepsaathi-v3`):
+- Network-first for same-origin GET requests; falls back to cache
+- Skips non-GET, cross-origin, and `/api/` requests entirely (no interference with API calls)
+- Navigation requests fall back to cached `index.html` for SPA routing
+- Listens for `push` events — displays notification with `icon` (color logo) and `badge` (white SVG for Android status bar)
 - On notification click: opens/focuses window, navigates to URL in notification data
-- Cleans up stale subscriptions (removes 404/410 endpoints)
 
 **`PWAInstallPrompt`** component: shown globally, lets user dismiss or install. Persists dismiss to `localStorage`.
 
