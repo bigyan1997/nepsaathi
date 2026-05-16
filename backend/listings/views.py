@@ -550,10 +550,10 @@ class ReportListingView(APIView):
                     {'detail': 'You have already reported this listing.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            # Mark listing as under review
-            listing.is_under_review = True
-            listing.save()
             # Send emails to admin and listing owner
+            # NOTE: is_under_review is NOT set here — admins review the report
+            # and hide the listing manually if warranted. Spam auto-detection
+            # is the only automated path that sets is_under_review=True.
             try:
                 from core.emails import send_report_emails
                 send_report_emails(report)
