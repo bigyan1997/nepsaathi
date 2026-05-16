@@ -311,35 +311,55 @@ class PushSubscribeView(APIView):
 
 class PushTestView(APIView):
     """
-    POST /api/users/push/test/ — send a test push to the current user and return diagnostic info.
+    POST /api/users/push/test/ — send a test push and return real per-subscription results.
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        import json
         from django.conf import settings
         from users.models import PushSubscription
 
-        vapid_set = bool(settings.VAPID_PRIVATE_KEY)
-        subs = PushSubscription.objects.filter(user=request.user)
-        sub_count = subs.count()
+        if not settings.VAPID_PRIVATE_KEY:
+            return Response({'ok': False, 'error': 'VAPID_PRIVATE_KEY not set on server'})
 
-        if not vapid_set:
-            return Response({'ok': False, 'error': 'VAPID_PRIVATE_KEY not set on server', 'subscriptions': sub_count})
+        subs = list(PushSubscription.objects.filter(user=request.user))
+        if not subs:
+            return Response({'ok': False, 'error': 'No push subscriptions saved for your account'})
 
-        if sub_count == 0:
-            return Response({'ok': False, 'error': 'No push subscriptions found for your account', 'subscriptions': 0})
-
-        from core.push import send_push_notification
         try:
-            send_push_notification(
-                request.user,
-                'Test notification',
-                'If you see this, push is working!',
-                '/messages',
-            )
-            return Response({'ok': True, 'subscriptions': sub_count, 'vapid_set': vapid_set})
-        except Exception as e:
-            return Response({'ok': False, 'error': str(e), 'subscriptions': sub_count})
+            from pywebpush import webpush, WebPushException
+        except ImportError:
+            return Response({'ok': False, 'error': 'pywebpush not installed on server'})
+
+        results = []
+        payload = json.dumps({'title': 'Test notification', 'body': 'Push is working!', 'url': '/messages'})
+
+        for sub in subs:
+            try:
+                webpush(
+                    subscription_info={'endpoint': sub.endpoint, 'keys': {'p256dh': sub.p256dh, 'auth': sub.auth}},
+                    data=payload,
+                    vapid_private_key=settings.VAPID_PRIVATE_KEY,
+                    vapid_claims={'sub': f'mailto:{settings.VAPID_ADMIN_EMAIL}'},
+                    ttl=60,
+                    headers={'urgency': 'high'},
+                    timeout=10,
+                )
+                results.append({'endpoint': sub.endpoint[:60], 'ok': True})
+            except WebPushException as e:
+                status = e.response.status_code if e.response is not None else None
+                body = ''
+                try:
+                    body = e.response.text if e.response is not None else ''
+                except Exception:
+                    pass
+                results.append({'endpoint': sub.endpoint[:60], 'ok': False, 'status': status, 'error': body or str(e)})
+            except Exception as e:
+                results.append({'endpoint': sub.endpoint[:60], 'ok': False, 'error': str(e)})
+
+        all_ok = all(r['ok'] for r in results)
+        return Response({'ok': all_ok, 'results': results})
 
 
 class PublicProfileView(generics.RetrieveAPIView):
