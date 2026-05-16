@@ -199,7 +199,16 @@ class ThrottledLoginView(APIView):
                 status=status.HTTP_429_TOO_MANY_REQUESTS
             )
 
-        email = request.data.get('email', '').strip()
+        # Use request._request.body (Django's caching property) not request.data.
+        # DRF's request.data calls stream.read() which exhausts the WSGI stream
+        # without caching, breaking the inner LoginView call below.
+        # .body caches in _body so subsequent read() calls return from cache.
+        try:
+            import json as _json
+            _raw = _json.loads(request._request.body or b'{}')
+            email = str(_raw.get('email', '')).strip()
+        except Exception:
+            email = ''
         if email and not User.objects.filter(email__iexact=email).exists():
             try:
                 cache.incr(cache_key)
