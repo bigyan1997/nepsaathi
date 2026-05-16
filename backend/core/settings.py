@@ -135,6 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'users.adapter.CustomSocialAccountAdapter'
 
 # ─── REST Framework ──────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
