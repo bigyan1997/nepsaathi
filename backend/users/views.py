@@ -199,6 +199,17 @@ class ThrottledLoginView(APIView):
                 status=status.HTTP_429_TOO_MANY_REQUESTS
             )
 
+        email = request.data.get('email', '').strip()
+        if email and not User.objects.filter(email__iexact=email).exists():
+            try:
+                cache.incr(cache_key)
+            except ValueError:
+                cache.set(cache_key, 1, timeout=300)
+            return Response(
+                {'detail': 'No account found with this email address.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         response = LoginView.as_view()(request._request, *args, **kwargs)
 
         if response.status_code != 200:
@@ -207,6 +218,16 @@ class ThrottledLoginView(APIView):
                 cache.incr(cache_key)
             except ValueError:
                 cache.set(cache_key, 1, timeout=300)
+            # Replace the generic allauth credential error with a clearer message.
+            # Pass through other errors (e.g. unverified email) unchanged.
+            resp_data = getattr(response, 'data', {})
+            errors = resp_data.get('non_field_errors', [])
+            if errors and errors[0] == 'Unable to log in with provided credentials.':
+                return Response(
+                    {'non_field_errors': ['Incorrect password.']},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            return response
         else:
             cache.delete(cache_key)
 

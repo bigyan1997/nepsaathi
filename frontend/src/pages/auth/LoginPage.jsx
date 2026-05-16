@@ -105,7 +105,7 @@ export default function LoginPage() {
             }}
           >
             {error}
-            {error.includes("Invalid email or password") && (
+            {(error.includes("Invalid email or password") || error.includes("Incorrect password")) && (
               <div style={{ marginTop: "8px", fontSize: "12px" }}>
                 Forgot your password? Email us at{" "}
                 <a href="mailto:support@nepsaathi.com" style={{ color: "#A32D2D", fontWeight: 600 }}>
