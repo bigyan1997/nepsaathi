@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { deleteAccount } from "../api/auth";
+import { deleteAccount, changePassword } from "../api/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfile, updateProfile } from "../api/auth";
 import { getMyListings, getSavedListings } from "../api/listings";
@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pwForm, setPwForm] = useState({ old_password: "", new_password1: "", new_password2: "" });
 
   const [form, setForm] = useState({
     first_name: "",
@@ -94,6 +95,39 @@ export default function ProfilePage() {
       }
     },
   });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: changePassword,
+    onSuccess: () => {
+      setPwForm({ old_password: "", new_password1: "", new_password2: "" });
+      addToast("Password changed successfully!", "success");
+    },
+    onError: (err) => {
+      const errors = err.response?.data;
+      if (errors) {
+        const first = Object.values(errors)[0];
+        addToast(Array.isArray(first) ? first[0] : first, "error");
+      } else {
+        addToast("Something went wrong. Please try again.", "error");
+      }
+    },
+  });
+
+  const handleChangePassword = () => {
+    if (!pwForm.old_password || !pwForm.new_password1 || !pwForm.new_password2) {
+      addToast("All password fields are required.", "error");
+      return;
+    }
+    if (pwForm.new_password1 !== pwForm.new_password2) {
+      addToast("New passwords do not match.", "error");
+      return;
+    }
+    if (pwForm.new_password1.length < 8) {
+      addToast("New password must be at least 8 characters.", "error");
+      return;
+    }
+    changePasswordMutation.mutate(pwForm);
+  };
 
   const deleteAccountMutation = useMutation({
     mutationFn: deleteAccount,
@@ -640,6 +674,78 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* ── Security / Change password ── */}
+        {!profile?.google_avatar && (
+          <div
+            style={{
+              background: "#fff",
+              border: "0.5px solid #e5e5e5",
+              borderRadius: "16px",
+              overflow: "hidden",
+              marginBottom: "14px",
+            }}
+          >
+            <div style={{ background: "#26215C", padding: "14px 20px" }}>
+              <h2 style={{ fontSize: "14px", fontWeight: 700, color: "#fff", margin: 0 }}>
+                Change password
+              </h2>
+            </div>
+            <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label style={labelStyle}>Current password</label>
+                <input
+                  type="password"
+                  style={inputStyle}
+                  value={pwForm.old_password}
+                  onChange={(e) => setPwForm({ ...pwForm, old_password: e.target.value })}
+                  placeholder="Enter current password"
+                  autoComplete="current-password"
+                />
+              </div>
+              <div className="prof-grid-2">
+                <div>
+                  <label style={labelStyle}>New password</label>
+                  <input
+                    type="password"
+                    style={inputStyle}
+                    value={pwForm.new_password1}
+                    onChange={(e) => setPwForm({ ...pwForm, new_password1: e.target.value })}
+                    placeholder="Min. 8 characters"
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Confirm new password</label>
+                  <input
+                    type="password"
+                    style={inputStyle}
+                    value={pwForm.new_password2}
+                    onChange={(e) => setPwForm({ ...pwForm, new_password2: e.target.value })}
+                    placeholder="Repeat new password"
+                    autoComplete="new-password"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={handleChangePassword}
+                disabled={changePasswordMutation.isPending}
+                style={{
+                  background: changePasswordMutation.isPending ? "#ccc" : "#534AB7",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "9px",
+                  padding: "12px",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  cursor: changePasswordMutation.isPending ? "not-allowed" : "pointer",
+                }}
+              >
+                {changePasswordMutation.isPending ? "Saving..." : "Update password"}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── Danger zone ── */}
         <div

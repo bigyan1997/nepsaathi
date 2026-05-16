@@ -56,6 +56,16 @@ export const sendContactForm = async (data) => {
   return response.data;
 };
 
+// Change password (email/password users only)
+export const changePassword = async ({ old_password, new_password1, new_password2 }) => {
+  const response = await api.post("/api/auth/password/change/", {
+    old_password,
+    new_password1,
+    new_password2,
+  });
+  return response.data;
+};
+
 // Google OAuth login
 export const googleLogin = async (accessToken) => {
   const response = await api.post("/api/users/auth/google/", {
