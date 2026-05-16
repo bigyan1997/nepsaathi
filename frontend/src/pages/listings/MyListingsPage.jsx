@@ -477,7 +477,9 @@ export default function MyListingsPage() {
   const markStatusMutation = useMutation({
     mutationFn: ({ id, status }) => markListingStatus(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+      ["my-listings", "jobs", "rooms", "events", "notices", "home-jobs", "home-rooms", "home-events", "home-notices", "home-featured", "listings"].forEach(
+        (k) => queryClient.invalidateQueries({ queryKey: [k] })
+      );
       addToast("Listing status updated!", "success");
     },
     onError: () => addToast("Failed to update status.", "error"),
@@ -580,7 +582,9 @@ export default function MyListingsPage() {
       `Mark ${selectedIds.size} listing${selectedIds.size > 1 ? "s" : ""} as filled?`,
       async () => {
         await Promise.all([...selectedIds].map((id) => markListingStatus(id, "filled")));
-        queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+        ["my-listings", "jobs", "rooms", "events", "notices", "home-jobs", "home-rooms", "home-events", "home-notices", "home-featured", "listings"].forEach(
+          (k) => queryClient.invalidateQueries({ queryKey: [k] })
+        );
         clearSelection();
         addToast("Listings marked as filled.", "success");
       },
