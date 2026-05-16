@@ -9,6 +9,7 @@ import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
 import GetInTouchSection from "../../components/ui/GetInTouchSection";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -736,6 +737,7 @@ export default function RoomDetailPage() {
                   }}
                 >
                   {room.posted_by}
+                  {room.poster_is_verified && <VerifiedBadge size={15} style={{ marginLeft: 4 }} />}
                   {isWanted && (
                     <span
                       style={{
@@ -909,8 +911,9 @@ export default function RoomDetailPage() {
                   {initial}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {room.posted_by}
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden" }}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{room.posted_by}</span>
+                    {room.poster_is_verified && <VerifiedBadge size={14} />}
                   </div>
                   {room.user_joined && (
                     <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
@@ -962,6 +965,7 @@ export default function RoomDetailPage() {
           listingTitle={room.listing_title}
           listingType="room"
           postedBy={room.posted_by}
+          isVerified={room.poster_is_verified}
           joinedDate={room.user_joined}
           themeColor="#E87722"
         />

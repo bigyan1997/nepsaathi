@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { startConversation } from "../../api/messages";
 import useAuthStore from "../../store/authStore";
 import { useToast } from "./Toast";
+import VerifiedBadge from "./VerifiedBadge";
 
 const DEFAULT_MESSAGE = "Hi, I'm interested in this listing. Is it available?";
 
@@ -13,6 +14,7 @@ export default function GetInTouchSection({
   listingTitle,
   listingType,
   postedBy,
+  isVerified = false,
   joinedDate,
   themeColor = "#534AB7",
 }) {
@@ -110,8 +112,9 @@ export default function GetInTouchSection({
             {initial}
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontWeight: 700, fontSize: "15px", color: "#26215C" }}>
+            <div style={{ fontWeight: 700, fontSize: "15px", color: "#26215C", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
               {postedBy || "Poster"}
+              {isVerified && <VerifiedBadge size={15} />}
             </div>
             {joinedLabel && (
               <div style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>

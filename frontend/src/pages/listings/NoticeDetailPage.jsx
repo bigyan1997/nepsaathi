@@ -9,6 +9,7 @@ import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
 import GetInTouchSection from "../../components/ui/GetInTouchSection";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -598,9 +599,13 @@ export default function NoticeDetailPage() {
                     fontSize: "14px",
                     fontWeight: 600,
                     color: "#26215C",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
                   {notice.posted_by}
+                  {notice.poster_is_verified && <VerifiedBadge size={14} />}
                 </div>
                 <div
                   style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}
@@ -741,8 +746,9 @@ export default function NoticeDetailPage() {
                   {initial}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {notice.posted_by}
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden" }}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{notice.posted_by}</span>
+                    {notice.poster_is_verified && <VerifiedBadge size={14} />}
                   </div>
                   {notice.user_joined && (
                     <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
@@ -794,6 +800,7 @@ export default function NoticeDetailPage() {
           listingTitle={notice.listing_title}
           listingType="notice"
           postedBy={notice.posted_by}
+          isVerified={notice.poster_is_verified}
           joinedDate={notice.user_joined}
           themeColor={footerBg}
         />

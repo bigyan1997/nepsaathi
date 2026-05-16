@@ -15,6 +15,7 @@ class RoomSerializer(serializers.ModelSerializer):
     listing_id = serializers.IntegerField(source='listing.id', read_only=True)
     listing_slug = serializers.SlugField(source='listing.slug', read_only=True)
     posted_by = serializers.CharField(source='listing.user.full_name', read_only=True)
+    poster_is_verified = serializers.BooleanField(source='listing.user.is_verified', read_only=True)
     user_id = serializers.IntegerField(source='listing.user.id', read_only=True)
     user_joined = serializers.DateTimeField(source='listing.user.date_joined', read_only=True)
     created_at = serializers.DateTimeField(source='listing.created_at', read_only=True)
@@ -61,6 +62,7 @@ class RoomSerializer(serializers.ModelSerializer):
             'listing_postcode',
             'listing_status',
             'posted_by',
+            'poster_is_verified',
             'user_id',
             'user_joined',
             'contact_phone',

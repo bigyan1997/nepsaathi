@@ -10,6 +10,7 @@ import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
 import GetInTouchSection from "../../components/ui/GetInTouchSection";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView } from "../../api/listings";
 import { useEffect, useState } from "react";
@@ -1071,8 +1072,9 @@ export default function EventDetailPage() {
                   {event.posted_by?.[0]?.toUpperCase() || "?"}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {event.posted_by}
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden" }}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{event.posted_by}</span>
+                    {event.poster_is_verified && <VerifiedBadge size={14} />}
                   </div>
                   {event.user_joined && (
                     <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
@@ -1125,6 +1127,7 @@ export default function EventDetailPage() {
           listingTitle={event.listing_title}
           listingType="event"
           postedBy={event.posted_by}
+          isVerified={event.poster_is_verified}
           joinedDate={event.user_joined}
           themeColor="#534AB7"
         />

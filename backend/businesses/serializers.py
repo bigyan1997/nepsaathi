@@ -62,6 +62,7 @@ class BusinessSerializer(serializers.ModelSerializer):
     """
     owner_name = serializers.CharField(
         source='owner.full_name', read_only=True)
+    owner_is_verified = serializers.BooleanField(source='owner.is_verified', read_only=True)
     owner_email = serializers.EmailField(
         source='owner.email', read_only=True)
     is_owner = serializers.SerializerMethodField()
@@ -75,6 +76,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             'id',
             'slug',
             'owner_name',
+            'owner_is_verified',
             'owner_email',
             'is_owner',
             'business_name',

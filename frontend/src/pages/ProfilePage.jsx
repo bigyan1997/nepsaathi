@@ -7,6 +7,7 @@ import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
 import { useToast } from "../components/ui/Toast";
 import { useNavigate } from "react-router-dom";
+import VerifiedBadge from "../components/ui/VerifiedBadge";
 
 const inputStyle = {
   width: "100%",
@@ -216,9 +217,14 @@ export default function ProfilePage() {
                 fontWeight: 700,
                 color: "#fff",
                 marginBottom: "4px",
+                display: "flex",
+                alignItems: "center",
+                gap: "7px",
+                flexWrap: "wrap",
               }}
             >
               {form.first_name} {form.last_name}
+              {profile?.is_verified && <VerifiedBadge size={20} />}
             </div>
             <div
               style={{

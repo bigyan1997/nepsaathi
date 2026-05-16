@@ -9,6 +9,7 @@ import SaveButton from "../../components/ui/SaveButton";
 import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
 import GetInTouchSection from "../../components/ui/GetInTouchSection";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -700,6 +701,7 @@ export default function JobDetailPage() {
                   }}
                 >
                   {job.posted_by}
+                  {job.poster_is_verified && <VerifiedBadge size={15} style={{ marginLeft: 4 }} />}
                   {isWanted && (
                     <span
                       style={{
@@ -869,8 +871,9 @@ export default function JobDetailPage() {
                   {initial}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {job.posted_by}
+                  <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden" }}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.posted_by}</span>
+                    {job.poster_is_verified && <VerifiedBadge size={14} />}
                   </div>
                   {job.user_joined && (
                     <div style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>
@@ -923,6 +926,7 @@ export default function JobDetailPage() {
           listingTitle={job.listing_title}
           listingType="job"
           postedBy={job.posted_by}
+          isVerified={job.poster_is_verified}
           joinedDate={job.user_joined}
           themeColor="#534AB7"
         />
