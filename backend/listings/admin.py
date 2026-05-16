@@ -143,7 +143,10 @@ class ListingReportAdmin(admin.ModelAdmin):
     readonly_fields = ('user', 'listing', 'reason', 'details', 'created_at', 'listing_info')
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('listing', 'listing__user', 'user')
+        qs = super().get_queryset(request).select_related('listing', 'listing__user', 'user')
+        if not request.GET.get('is_reviewed__exact'):
+            qs = qs.filter(is_reviewed=False)
+        return qs
 
     fieldsets = (
         ('Report Details', {
