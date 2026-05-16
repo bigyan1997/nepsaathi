@@ -2,6 +2,7 @@ import html as html_module
 import resend
 import threading
 from datetime import timedelta
+from urllib.parse import quote
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -118,7 +119,7 @@ def _info_box(text: str, bg: str = "#EEEDFE", border: str = "#AFA9EC", color: st
   </tr>
 </table>"""
 
-def _listing_card(title: str, url: str, meta: str = "", emoji: str = "&#128204;", bg: str = "#EEEDFE") -> str:
+def _listing_card(title: str, url: str, meta: str = "", emoji: str = "&#128204;", bg: str = "#EEEDFE", link_label: str = "View") -> str:
     return f"""
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:20px 0;">
   <tr>
@@ -137,7 +138,7 @@ def _listing_card(title: str, url: str, meta: str = "", emoji: str = "&#128204;"
             <div style="font-size:12px;color:#888888 !important;font-family:Arial,sans-serif;">{meta}</div>
           </td>
           <td width="50" style="vertical-align:middle;text-align:right;padding-left:8px;">
-            <a href="{url}" style="font-size:13px;color:#534AB7 !important;font-weight:700;text-decoration:none;font-family:Arial,sans-serif;white-space:nowrap;">View &rarr;</a>
+            <a href="{url}" style="font-size:13px;color:#534AB7 !important;font-weight:700;text-decoration:none;font-family:Arial,sans-serif;white-space:nowrap;">{link_label} &rarr;</a>
           </td>
         </tr>
       </table>
@@ -570,10 +571,11 @@ def send_contact_email(name, email, subject, message):
 
 {_listing_card(
     safe_name,
-    f"mailto:{email}",
+    f"mailto:{email}?subject=Re: {quote(subject)}",
     f"Subject: {safe_subject}",
     emoji="&#128140;",
-    bg="#EEEDFE"
+    bg="#EEEDFE",
+    link_label="Reply"
 )}
 
 {_DIVIDER}
