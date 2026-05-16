@@ -3,6 +3,44 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getConversations } from "../api/messages";
 import useAuthStore from "../store/authStore";
+import api from "../utils/axios";
+
+function PushDebugButton() {
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleTest = async () => {
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await api.post("/api/users/push/test/");
+      setResult({ ok: true, data: res.data });
+    } catch (err) {
+      setResult({ ok: false, data: err.response?.data || { error: err.message } });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "right" }}>
+      <button
+        onClick={handleTest}
+        disabled={loading}
+        style={{ fontSize: 11, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}
+      >
+        {loading ? "Sending…" : "Test push"}
+      </button>
+      {result && (
+        <div style={{ fontSize: 11, marginTop: 4, color: result.ok ? "#166534" : "#A32D2D" }}>
+          {result.ok
+            ? `✓ Sent (${result.data.subscriptions} subscription${result.data.subscriptions !== 1 ? "s" : ""})`
+            : `✗ ${result.data.error}`}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function NotificationBanner() {
   const [permission, setPermission] = useState(
@@ -88,9 +126,12 @@ export default function InboxPage() {
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, color: "#26215C", margin: "0 0 24px" }}>
-        Messages
-      </h1>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "#26215C", margin: 0 }}>
+          Messages
+        </h1>
+        <PushDebugButton />
+      </div>
 
       <NotificationBanner />
 

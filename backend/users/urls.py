@@ -21,6 +21,7 @@ urlpatterns = [
 
     # Push notifications
     path('push/subscribe/', views.PushSubscribeView.as_view(), name='push-subscribe'),
+    path('push/test/', views.PushTestView.as_view(), name='push-test'),
 
     # Public user profile
     path('<int:id>/public/', views.PublicProfileView.as_view(), name='public-profile'),

@@ -309,6 +309,39 @@ class PushSubscribeView(APIView):
         return Response({'detail': 'Unsubscribed.'}, status=status.HTTP_200_OK)
 
 
+class PushTestView(APIView):
+    """
+    POST /api/users/push/test/ — send a test push to the current user and return diagnostic info.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        from django.conf import settings
+        from users.models import PushSubscription
+
+        vapid_set = bool(settings.VAPID_PRIVATE_KEY)
+        subs = PushSubscription.objects.filter(user=request.user)
+        sub_count = subs.count()
+
+        if not vapid_set:
+            return Response({'ok': False, 'error': 'VAPID_PRIVATE_KEY not set on server', 'subscriptions': sub_count})
+
+        if sub_count == 0:
+            return Response({'ok': False, 'error': 'No push subscriptions found for your account', 'subscriptions': 0})
+
+        from core.push import send_push_notification
+        try:
+            send_push_notification(
+                request.user,
+                'Test notification',
+                'If you see this, push is working!',
+                '/messages',
+            )
+            return Response({'ok': True, 'subscriptions': sub_count, 'vapid_set': vapid_set})
+        except Exception as e:
+            return Response({'ok': False, 'error': str(e), 'subscriptions': sub_count})
+
+
 class PublicProfileView(generics.RetrieveAPIView):
     """
     GET /api/users/<id>/public/
