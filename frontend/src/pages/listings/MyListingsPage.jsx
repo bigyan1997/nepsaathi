@@ -699,6 +699,11 @@ export default function MyListingsPage() {
                 🔍 Under Review
               </span>
             )}
+            {listing.is_reported && !listing.is_under_review && (
+              <span title="A user has reported this listing. Our team will review it." style={{ background: "#FEECEC", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #F09595" }}>
+                ⚑ Reported
+              </span>
+            )}
             {expiring && (
               <span style={{ background: "#FFF1E0", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap" }}>
                 ⚠️ Expires soon
@@ -748,11 +753,11 @@ export default function MyListingsPage() {
           items={[
             { label: "👁️ View listing", onClick: () => { setOpenMenu(null); navigate(getDetailPath(listing)); } },
             { label: "✏️ Edit listing", onClick: () => { setOpenMenu(null); navigate(`/edit-listing/${listing.slug}`); } },
-            (listing.status === "active" || listing.status === "expired") && !listing.is_under_review && !listing.renewal_blocked && {
+            (listing.status === "active" || listing.status === "expired") && !listing.is_under_review && !listing.is_reported && !listing.renewal_blocked && {
               label: "🔄 Renew 30 days", highlight: true,
               onClick: () => { setOpenMenu(null); renewMutation.mutate(listing.id); },
             },
-            listing.status === "active" && !listing.is_featured && {
+            listing.status === "active" && !listing.is_featured && !listing.is_under_review && !listing.is_reported && {
               label: "⭐ Feature listing — $9.99",
               onClick: () => { setOpenMenu(null); featureMutation.mutate(listing.id); },
             },
