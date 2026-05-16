@@ -4,6 +4,53 @@ import { useNavigate } from "react-router-dom";
 import { getConversations } from "../api/messages";
 import useAuthStore from "../store/authStore";
 
+function NotificationBanner() {
+  const [permission, setPermission] = useState(
+    "Notification" in window ? Notification.permission : "granted"
+  );
+
+  if (permission === "granted") return null;
+
+  const handleEnable = async () => {
+    if (permission === "default") {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+    } else {
+      // denied — open browser settings guidance
+      alert("To enable notifications, click the lock icon in your browser address bar → Notifications → Allow.");
+    }
+  };
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+      background: "#F8F7FF", border: "0.5px solid #C8C4EE", borderRadius: 10,
+      padding: "10px 14px", marginBottom: 20,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 18 }}>🔔</span>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#26215C" }}>Enable message notifications</div>
+          <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>
+            {permission === "denied"
+              ? "Notifications are blocked — update your browser settings to allow them."
+              : "Get notified when you receive a new message, even with the tab closed."}
+          </div>
+        </div>
+      </div>
+      <button
+        onClick={handleEnable}
+        style={{
+          flexShrink: 0, background: "#534AB7", color: "#fff", border: "none",
+          borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
+        }}
+      >
+        {permission === "denied" ? "How to enable" : "Enable"}
+      </button>
+    </div>
+  );
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
@@ -44,6 +91,8 @@ export default function InboxPage() {
       <h1 style={{ fontSize: 22, fontWeight: 700, color: "#26215C", margin: "0 0 24px" }}>
         Messages
       </h1>
+
+      <NotificationBanner />
 
       {isLoading ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
