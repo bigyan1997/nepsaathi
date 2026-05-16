@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { subscribePush } from "../api/push";
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BAYeurSjKLbQBUlckoFxN3EtIes7Ht24pD-x46Izvm5n4vie5mAX1AQNwJd82iTY6AUl0cwTAW9R-Hgbubum8hI";
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BI7UJZIjFXGEI0y5WNG7l1a0gqq9YsNcGNo7I-9lB8rYO5KiXUcYUBmuXydrcmStaJVl3nNVGTw4byVqNZT1890";
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -20,13 +20,18 @@ export async function registerPushSubscription() {
     let subscription = await registration.pushManager.getSubscription();
     console.log("[push] existing subscription:", subscription ? subscription.endpoint : "none");
 
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-      });
-      console.log("[push] new subscription created:", subscription.endpoint);
+    // Always force a fresh subscription so the correct VAPID key is used.
+    // After the first successful rotation this is a no-op (unsubscribe returns false).
+    if (subscription) {
+      await subscription.unsubscribe();
+      subscription = null;
     }
+
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    });
+    console.log("[push] new subscription created:", subscription.endpoint);
 
     await subscribePush(subscription);
     console.log("[push] subscription saved to server OK");
