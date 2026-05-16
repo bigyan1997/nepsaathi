@@ -1,4 +1,4 @@
-const CACHE_NAME = "nepsaathi-v2";
+const CACHE_NAME = "nepsaathi-v3";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -46,7 +46,7 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(title, {
       body,
       icon: "/icon-192.png",
-      badge: "/icon-192.png",
+      badge: "/badge.svg",
       data: { url },
     }),
   );

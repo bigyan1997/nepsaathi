@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { subscribePush } from "../api/push";
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || "BI7UJZIjFXGEI0y5WNG7l1a0gqq9YsNcGNo7I-9lB8rYO5KiXUcYUBmuXydrcmStaJVl3nNVGTw4byVqNZT1890";
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

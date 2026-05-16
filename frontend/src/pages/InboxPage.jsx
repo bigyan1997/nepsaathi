@@ -35,7 +35,7 @@ function PushDebugButton() {
       {result && (
         <div style={{ fontSize: 11, marginTop: 4, color: result.ok ? "#166534" : "#A32D2D" }}>
           {result.ok
-            ? `✓ Sent (${result.data.subscriptions} subscription${result.data.subscriptions !== 1 ? "s" : ""})`
+            ? `✓ Sent (${result.data.results?.length ?? 0} subscription${result.data.results?.length !== 1 ? "s" : ""})`
             : `✗ ${result.data.error}`}
         </div>
       )}
