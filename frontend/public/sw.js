@@ -1,17 +1,41 @@
-const CACHE_NAME = "nepsaathi-v1";
-const STATIC_ASSETS = ["/", "/index.html"];
+const CACHE_NAME = "nepsaathi-v2";
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
+    caches.open(CACHE_NAME).then((cache) => cache.add("/index.html")),
   );
 });
 
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
 self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Never intercept API calls, cross-origin requests, or non-GET requests
+  if (request.method !== "GET") return;
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
+
+  // For SPA navigation requests, serve index.html from cache
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(() => caches.match("/index.html")),
+    );
+    return;
+  }
+
+  // For other same-origin assets, try network first then cache fallback
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    }),
+    fetch(request).catch(() => caches.match(request)),
   );
 });
 
