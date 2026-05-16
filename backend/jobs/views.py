@@ -18,7 +18,6 @@ class JobListView(generics.ListAPIView):
     filterset_fields = ('job_type', 'salary_type', 'is_urgent', 'listing__state')
     search_fields = (
         'listing__title',
-        'listing__description',
         'listing__location',
         'listing__state',
         'company_name',

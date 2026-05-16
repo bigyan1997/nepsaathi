@@ -139,7 +139,7 @@ class ListingListView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ('listing_type', 'state', 'status', 'is_featured', 'user')
-    search_fields = ('title', 'description', 'location')
+    search_fields = ('title', 'location')
     ordering_fields = ('created_at', 'updated_at')
     ordering = ('-created_at',)
 

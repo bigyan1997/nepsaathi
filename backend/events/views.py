@@ -29,7 +29,6 @@ class EventListView(generics.ListAPIView):
     filterset_fields = ('category', 'is_free', 'is_online')
     search_fields = (
         'listing__title',
-        'listing__description',
         'listing__location',
         'listing__state',
         'venue',
