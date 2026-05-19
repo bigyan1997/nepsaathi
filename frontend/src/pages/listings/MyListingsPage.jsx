@@ -176,13 +176,20 @@ function ActionMenu({ items, open, onToggle }) {
   const btnRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, right: 0 });
 
-  // Recalculate position every time the menu opens
   useEffect(() => {
     if (open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
       setPos({ top: r.bottom + 6, right: window.innerWidth - r.right });
     }
   }, [open]);
+
+  // Close on scroll so menu doesn't drift away from its button
+  useEffect(() => {
+    if (!open) return;
+    const close = () => onToggle();
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [open, onToggle]);
 
   return (
     <div style={{ flexShrink: 0 }}>
