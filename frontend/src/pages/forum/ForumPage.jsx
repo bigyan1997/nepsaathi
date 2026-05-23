@@ -89,9 +89,9 @@ function PostCard({ post }) {
           <span>·</span>
           <span>{timeAgo(post.created_at)}</span>
           <span style={{ marginLeft: "auto", display: "flex", gap: "12px" }}>
-            <span>▲ {post.upvote_count}</span>
-            <span>💬 {post.reply_count}</span>
-            <span>👁 {post.view_count}</span>
+            <span title="Upvotes">▲ {post.upvote_count}</span>
+            <span title="Replies">💬 {post.reply_count}</span>
+            <span title="Views">👁 {post.view_count}</span>
           </span>
         </div>
       </div>

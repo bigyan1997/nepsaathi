@@ -59,7 +59,8 @@ function ReplyCard({ reply, currentUser, onDelete, onVote }) {
           <div style={{ display: "flex", gap: "12px", marginTop: "10px", alignItems: "center" }}>
             <button
               onClick={() => onVote(reply.id)}
-              style={{ background: "none", border: "none", cursor: currentUser ? "pointer" : "default", fontSize: "12px", color: reply.has_upvoted ? "#534AB7" : "#888", fontWeight: reply.has_upvoted ? 700 : 400, padding: 0, display: "flex", alignItems: "center", gap: "4px" }}
+              title={reply.has_upvoted ? "Remove upvote" : "Upvote this reply"}
+            style={{ background: "none", border: "none", cursor: currentUser ? "pointer" : "default", fontSize: "12px", color: reply.has_upvoted ? "#534AB7" : "#888", fontWeight: reply.has_upvoted ? 700 : 400, padding: 0, display: "flex", alignItems: "center", gap: "4px" }}
             >
               ▲ {reply.upvote_count}
             </button>
@@ -196,6 +197,7 @@ export default function ForumPostPage() {
         <div style={{ display: "flex", gap: "16px", alignItems: "center", borderTop: "0.5px solid #f0f0f0", paddingTop: "14px" }}>
           <button
             onClick={() => isAuthenticated ? voteMutation.mutate() : navigate("/login")}
+            title={post.has_upvoted ? "Remove upvote" : "Upvote this post"}
             style={{
               background: post.has_upvoted ? "#EEEDFE" : "#f5f5f5",
               border: "none",
