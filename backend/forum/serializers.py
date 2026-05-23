@@ -23,7 +23,8 @@ class ForumReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = ForumReply
         fields = ('id', 'post', 'author', 'body', 'upvote_count', 'has_upvoted', 'created_at', 'updated_at')
-        read_only_fields = ('id', 'author', 'upvote_count', 'has_upvoted', 'created_at', 'updated_at')
+        # post is set via perform_create — must be read_only or DRF demands it in the request body
+        read_only_fields = ('id', 'post', 'author', 'upvote_count', 'has_upvoted', 'created_at', 'updated_at')
 
 
 class ForumPostListSerializer(serializers.ModelSerializer):
@@ -42,8 +43,13 @@ class ForumPostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForumPost
         fields = (
-            'id', 'slug', 'category', 'category_display', 'title',
+            'id', 'slug', 'category', 'category_display', 'title', 'body',
             'author', 'upvote_count', 'reply_count', 'has_upvoted',
+            'is_pinned', 'is_closed', 'view_count', 'created_at',
+        )
+        read_only_fields = (
+            'id', 'slug', 'category_display', 'author',
+            'upvote_count', 'reply_count', 'has_upvoted',
             'is_pinned', 'is_closed', 'view_count', 'created_at',
         )
 
@@ -52,4 +58,5 @@ class ForumPostDetailSerializer(ForumPostListSerializer):
     replies = ForumReplySerializer(many=True, read_only=True)
 
     class Meta(ForumPostListSerializer.Meta):
-        fields = ForumPostListSerializer.Meta.fields + ('body', 'replies', 'updated_at')
+        fields = ForumPostListSerializer.Meta.fields + ('replies', 'updated_at')
+        read_only_fields = ForumPostListSerializer.Meta.read_only_fields + ('replies', 'updated_at')
