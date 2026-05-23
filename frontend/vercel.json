@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/sitemap-forum.xml",
+      "destination": "https://nepsaathi-production.up.railway.app/api/sitemap-forum.xml"
+    },
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }
