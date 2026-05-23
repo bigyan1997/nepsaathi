@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getForumPosts } from "../../api/forum";
@@ -108,6 +108,16 @@ function PostSkeleton() {
   );
 }
 
+const ANIM_STYLE = `
+  @keyframes forumFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .forum-post-enter {
+    animation: forumFadeIn 0.22s ease both;
+  }
+`;
+
 export default function ForumPage() {
   usePageTitle("Community Forum");
   const navigate = useNavigate();
@@ -115,6 +125,7 @@ export default function ForumPage() {
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const listKey = `${category}-${search}`;
 
   const { data, isLoading } = useQuery({
     queryKey: ["forum-posts", category, search],
@@ -125,6 +136,7 @@ export default function ForumPage() {
 
   return (
     <div style={{ maxWidth: "760px", margin: "0 auto", padding: "24px 16px" }}>
+      <style>{ANIM_STYLE}</style>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
         <div>
@@ -203,18 +215,26 @@ export default function ForumPage() {
       </div>
 
       {/* Posts list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div key={listKey} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {isLoading
-          ? Array.from({ length: 6 }).map((_, i) => <PostSkeleton key={i} />)
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="forum-post-enter" style={{ animationDelay: `${i * 0.05}s` }}>
+                <PostSkeleton />
+              </div>
+            ))
           : posts.length === 0
             ? (
-              <div style={{ textAlign: "center", padding: "48px 0", color: "#888" }}>
+              <div className="forum-post-enter" style={{ textAlign: "center", padding: "48px 0", color: "#888" }}>
                 <div style={{ fontSize: "36px", marginBottom: "12px" }}>💬</div>
                 <div style={{ fontWeight: 600, marginBottom: "6px" }}>No posts yet</div>
                 <div style={{ fontSize: "13px" }}>Be the first to start the conversation</div>
               </div>
             )
-            : posts.map((post) => <PostCard key={post.id} post={post} />)
+            : posts.map((post, i) => (
+                <div key={post.id} className="forum-post-enter" style={{ animationDelay: `${i * 0.04}s` }}>
+                  <PostCard post={post} />
+                </div>
+              ))
         }
       </div>
     </div>
