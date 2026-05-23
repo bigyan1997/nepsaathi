@@ -5,6 +5,8 @@ import { getForumPost, voteForumPost, createForumReply, deleteForumPost, deleteF
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
+import SEO from "../../components/ui/SEO";
+import JsonLd from "../../components/ui/JsonLd";
 
 const CAT_COLORS = {
   visa: { bg: "#E6F1FB", color: "#0C447C" },
@@ -134,9 +136,35 @@ export default function ForumPostPage() {
 
   const cat = CAT_COLORS[post.category] || CAT_COLORS.general;
   const isOwner = user?.id === post.author?.id;
+  const metaDesc = post.body?.slice(0, 160).replace(/\n/g, " ") + (post.body?.length > 160 ? "…" : "");
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "DiscussionForumPosting",
+    "headline": post.title,
+    "text": post.body,
+    "url": `https://www.nepsaathi.com/forum/${post.slug}`,
+    "datePublished": post.created_at,
+    "dateModified": post.updated_at,
+    "author": {
+      "@type": "Person",
+      "name": post.author?.full_name || "Anonymous",
+    },
+    "interactionStatistic": [
+      { "@type": "InteractionCounter", "interactionType": "https://schema.org/ReplyAction", "userInteractionCount": post.replies?.length ?? 0 },
+      { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "userInteractionCount": post.upvote_count ?? 0 },
+    ],
+  };
 
   return (
     <div style={{ maxWidth: "760px", margin: "0 auto", padding: "24px 16px" }}>
+      <SEO
+        title={post.title}
+        description={metaDesc}
+        url={`/forum/${post.slug}`}
+        type="article"
+      />
+      <JsonLd data={jsonLd} />
       {/* Back */}
       <Link to="/forum" style={{ fontSize: "13px", color: "#534AB7", textDecoration: "none", display: "inline-block", marginBottom: "16px" }}>
         ← Back to Forum

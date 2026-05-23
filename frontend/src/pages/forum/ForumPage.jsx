@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getForumPosts } from "../../api/forum";
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
+import SEO from "../../components/ui/SEO";
 
 const CATEGORIES = [
   { value: "", label: "All", emoji: "🗣️" },
@@ -136,6 +137,12 @@ export default function ForumPage() {
 
   return (
     <div style={{ maxWidth: "760px", margin: "0 auto", padding: "24px 16px" }}>
+      <SEO
+        title="Community Forum"
+        description="Ask questions, share advice and connect with the Nepalese Australian community. Topics include visa, accommodation, jobs, events and more."
+        url="/forum"
+        type="website"
+      />
       <style>{ANIM_STYLE}</style>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>

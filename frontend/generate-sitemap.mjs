@@ -14,6 +14,7 @@ const STATIC_PAGES = [
   { path: '/events',      changefreq: 'daily',   priority: '0.8' },
   { path: '/notices',     changefreq: 'daily',   priority: '0.8' },
   { path: '/businesses',  changefreq: 'weekly',  priority: '0.8' },
+  { path: '/forum',       changefreq: 'hourly',  priority: '0.9' },
   { path: '/search',      changefreq: 'always',  priority: '0.7' },
   { path: '/privacy',     changefreq: 'monthly', priority: '0.4' },
   { path: '/terms',       changefreq: 'monthly', priority: '0.4' },
@@ -34,6 +35,7 @@ function urlEntry({ loc, lastmod, changefreq, priority }) {
 async function generate() {
   let listings = [];
   let businesses = [];
+  let forumPosts = [];
 
   try {
     const res = await fetch(`${API_URL}/api/listings/sitemap/`);
@@ -49,10 +51,29 @@ async function generate() {
     console.warn(`Sitemap API unreachable (${err.message}) — generating static pages only`);
   }
 
+  try {
+    // Paginate through all forum posts (page_size=200 per page)
+    let page = 1;
+    while (true) {
+      const res = await fetch(`${API_URL}/api/forum/?page_size=200&page=${page}`);
+      if (!res.ok) break;
+      const data = await res.json();
+      const results = data.results ?? data;
+      if (!Array.isArray(results) || results.length === 0) break;
+      forumPosts.push(...results.map(p => ({ slug: p.slug, updated_at: p.updated_at || p.created_at })));
+      if (!data.next) break;
+      page++;
+    }
+    console.log(`Sitemap: fetched ${forumPosts.length} forum posts`);
+  } catch (err) {
+    console.warn(`Forum sitemap fetch failed (${err.message})`);
+  }
+
   const entries = [
     ...STATIC_PAGES.map(p => urlEntry({ loc: `${BASE_URL}${p.path}`, ...p })),
     ...listings.map(l => urlEntry({ loc: `${BASE_URL}${l.path}`, lastmod: l.lastmod, changefreq: 'weekly', priority: '0.6' })),
     ...businesses.map(b => urlEntry({ loc: `${BASE_URL}${b.path}`, lastmod: b.lastmod, changefreq: 'weekly', priority: '0.6' })),
+    ...forumPosts.map(p => urlEntry({ loc: `${BASE_URL}/forum/${p.slug}`, lastmod: p.updated_at?.slice(0, 10), changefreq: 'weekly', priority: '0.7' })),
   ];
 
   const xml = [

@@ -18,12 +18,18 @@ from django.contrib import admin
 admin.site.site_header = "NepSaathi Admin"
 admin.site.site_title = "NepSaathi Admin Portal"
 admin.site.index_title = "NepSaathi Administration"
+from django.contrib.sitemaps.views import sitemap
 from django.http import HttpResponseRedirect
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from decouple import config
 from users import views as users_views
+from forum.sitemaps import ForumPostSitemap
+
+sitemaps = {
+    "forum": ForumPostSitemap,
+}
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
@@ -92,6 +98,9 @@ urlpatterns = [
 
     # Community forum
     path('api/forum/', include('forum.urls')),
+
+    # Dynamic sitemap for forum posts (always fresh — submitted to GSC separately)
+    path('api/sitemap-forum.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap-forum'),
 
     # Internal admin panel — superuser only
     path('api/panel/', include('panel.urls')),
