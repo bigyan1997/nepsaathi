@@ -82,7 +82,7 @@ export default function ForumPostPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const qc = useQueryClient();
   const [replyBody, setReplyBody] = useState("");
 
@@ -104,12 +104,12 @@ export default function ForumPostPage() {
       setReplyBody("");
       qc.invalidateQueries({ queryKey: ["forum-post", slug] });
     },
-    onError: (e) => showToast(e?.response?.data?.detail || "Failed to post reply.", "error"),
+    onError: (e) => addToast(e?.response?.data?.detail || "Failed to post reply.", "error"),
   });
 
   const deletePostMutation = useMutation({
     mutationFn: () => deleteForumPost(slug),
-    onSuccess: () => { showToast("Post deleted."); navigate("/forum"); },
+    onSuccess: () => { addToast("Post deleted."); navigate("/forum"); },
   });
 
   const deleteReplyMutation = useMutation({

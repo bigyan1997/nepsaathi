@@ -28,14 +28,18 @@ self.addEventListener("fetch", (event) => {
   // For SPA navigation requests, serve index.html from cache
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match("/index.html")),
+      fetch(request).catch(() =>
+        caches.match("/index.html").then((r) => r || new Response("Offline", { status: 503 }))
+      ),
     );
     return;
   }
 
   // For other same-origin assets, try network first then cache fallback
   event.respondWith(
-    fetch(request).catch(() => caches.match(request)),
+    fetch(request).catch(() =>
+      caches.match(request).then((r) => r || new Response("Not found", { status: 404 }))
+    ),
   );
 });
 

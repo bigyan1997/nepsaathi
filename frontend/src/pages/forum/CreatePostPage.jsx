@@ -17,19 +17,19 @@ const CATEGORIES = [
 export default function CreatePostPage() {
   usePageTitle("New Forum Post");
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const [form, setForm] = useState({ title: "", category: "general", body: "" });
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
   const mutation = useMutation({
     mutationFn: () => createForumPost(form),
     onSuccess: (data) => {
-      showToast("Post created!", "success");
+      addToast("Post created!", "success");
       navigate(`/forum/${data.slug}`);
     },
     onError: (e) => {
       const msg = e?.response?.data?.detail || Object.values(e?.response?.data || {})?.[0]?.[0] || "Failed to create post.";
-      showToast(msg, "error");
+      addToast(msg, "error");
     },
   });
 
