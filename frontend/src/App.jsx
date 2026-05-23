@@ -49,6 +49,9 @@ import SavedSearchesPage     from "./pages/SavedSearchesPage";
 import PaymentSuccessPage    from "./pages/payment/PaymentSuccessPage";
 import PaymentCancelPage     from "./pages/payment/PaymentCancelPage";
 import AdminPanelPage        from "./pages/AdminPanelPage";
+import ForumPage             from "./pages/forum/ForumPage";
+import ForumPostPage         from "./pages/forum/ForumPostPage";
+import CreatePostPage        from "./pages/forum/CreatePostPage";
 import LoginPage             from "./pages/auth/LoginPage";
 import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
@@ -139,6 +142,10 @@ function App() {
                         {/* Businesses */}
                         <Route path="/businesses" element={<BusinessesPage />} />
                         <Route path="/businesses/:slug" element={<BusinessDetailPage />} />
+                        {/* Forum */}
+                        <Route path="/forum" element={<ForumPage />} />
+                        <Route path="/forum/new" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
+                        <Route path="/forum/:slug" element={<ForumPostPage />} />
                         {/* Other public */}
                         <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
                         <Route path="/users/:id" element={<UserProfilePage />} />

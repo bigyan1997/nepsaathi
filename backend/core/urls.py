@@ -90,6 +90,9 @@ urlpatterns = [
     # Feedback / exit-intent survey
     path('api/feedback/', include('feedback.urls')),
 
+    # Community forum
+    path('api/forum/', include('forum.urls')),
+
     # Internal admin panel — superuser only
     path('api/panel/', include('panel.urls')),
 ]

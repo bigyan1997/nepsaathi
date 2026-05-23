@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { to: "/events",     label: "Events",     activeColor: "#1D9E75", activeBg: "#E1F5EE" },
   { to: "/notices",    label: "Notices",    activeColor: "#0C447C", activeBg: "#E6F1FB" },
   { to: "/businesses", label: "Businesses", activeColor: "#633806", activeBg: "#FAEEDA" },
+  { to: "/forum",      label: "Forum",      activeColor: "#26215C", activeBg: "#EEEDFE" },
 ];
 
 export default function Navbar() {
