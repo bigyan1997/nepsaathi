@@ -92,6 +92,7 @@ class Listing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     expires_at = models.DateTimeField(null=True, blank=True)
+    expiry_warning_sent = models.BooleanField(default=False)
 
     slug = models.SlugField(max_length=255, unique=True, blank=True, db_index=True)
 

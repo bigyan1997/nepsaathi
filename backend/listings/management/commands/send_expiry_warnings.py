@@ -2,28 +2,23 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
 from listings.models import Listing
-import zoneinfo
+
 
 class Command(BaseCommand):
-    help = 'Send expiry warning emails to listings expiring in 3 days'
+    help = 'Send expiry warning emails to listings expiring within 4 days (catches up if cron missed a day)'
 
     def handle(self, *args, **kwargs):
-        sydney_tz = zoneinfo.ZoneInfo('Australia/Sydney')
-        
-        # Get current time in Sydney timezone
-        now_sydney = timezone.now().astimezone(sydney_tz)
-        warning_date = now_sydney + timedelta(days=3)
-        
-        # Set day boundaries in Sydney time
-        start = warning_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        end = warning_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+        now = timezone.now()
+        window_end = now + timedelta(days=4)
 
         listings = Listing.objects.filter(
             status='active',
-            expires_at__range=(start, end)
-        )
+            expiry_warning_sent=False,
+            expires_at__gt=now,
+            expires_at__lte=window_end,
+        ).select_related('user')
 
-        self.stdout.write(f'Found {listings.count()} listings expiring in 3 days...')
+        self.stdout.write(f'Found {listings.count()} listings expiring within 4 days...')
 
         for listing in listings:
             try:
@@ -39,9 +34,11 @@ class Command(BaseCommand):
                 send_push_notification(
                     listing.user,
                     'Listing expiring soon',
-                    f'"{listing.title}" expires in 3 days. Renew now to keep it active.',
+                    f'"{listing.title}" expires in {(listing.expires_at - now).days + 1} days. Renew now to keep it active.',
                     f'/{type_path}/{listing.slug}',
                 )
+                listing.expiry_warning_sent = True
+                listing.save(update_fields=['expiry_warning_sent'])
                 self.stdout.write(f'  ✓ Sent warning for: {listing.title}')
             except Exception as e:
                 self.stdout.write(f'  ✗ Failed for {listing.title}: {e}')
