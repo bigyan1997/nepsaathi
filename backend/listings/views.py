@@ -1,5 +1,8 @@
 import re
 import hashlib
+import logging
+
+logger = logging.getLogger(__name__)
 from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -223,7 +226,7 @@ class ListingCreateView(generics.CreateAPIView):
             from core.emails import send_saved_search_alert_email
             _trigger_saved_search_alerts(listing, send_saved_search_alert_email)
         except Exception as e:
-            print(f'Saved search alert trigger failed: {e}', flush=True)
+            logger.error('Saved search alert trigger failed: %s', e)
 
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -558,7 +561,7 @@ class ReportListingView(APIView):
                 from core.emails import send_report_emails
                 send_report_emails(report)
             except Exception as e:
-                print(f'Report email failed: {e}', flush=True)
+                logger.error('Report email failed: %s', e)
             return Response(
                 {'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'},
                 status=status.HTTP_201_CREATED
@@ -849,7 +852,7 @@ class RenewListingView(APIView):
             from core.emails import send_listing_renewed_email
             send_listing_renewed_email(listing)
         except Exception as e:
-            print(f'Listing renewed email failed: {e}', flush=True)
+            logger.error('Listing renewed email failed: %s', e)
 
         return Response({
             'detail': 'Listing renewed successfully!',
@@ -868,8 +871,13 @@ def _trigger_saved_search_alerts(listing, send_fn):
             is_active=True,
         ).exclude(user=listing.user).select_related('user')
 
+        one_hour_ago = tz.now() - timedelta(hours=1)
         for saved in searches:
             try:
+                # Skip if already notified within the last hour (prevents duplicate alerts)
+                if saved.last_notified and saved.last_notified > one_hour_ago:
+                    continue
+
                 filters = saved.filters or {}
                 keyword = filters.get('search', '').lower()
                 if keyword:
@@ -885,7 +893,7 @@ def _trigger_saved_search_alerts(listing, send_fn):
                 saved.last_notified = tz.now()
                 saved.save(update_fields=['last_notified'])
             except Exception as e:
-                print(f'[SEARCH ALERT] Search #{saved.id} failed: {e}', flush=True)
+                logger.error('[SEARCH ALERT] Search #%s failed: %s', saved.id, e)
 
     threading.Thread(target=_run, daemon=True).start()
 

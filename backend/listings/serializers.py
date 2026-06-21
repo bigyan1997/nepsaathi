@@ -168,6 +168,9 @@ class ListingCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'slug')
         extra_kwargs = {
             'listing_type': {'required': True},
+            'title': {'required': True},
+            'description': {'required': True},
+            'location': {'required': True},
         }
 
 

@@ -2,6 +2,8 @@
 set -e
 echo "Running expire_listings..."
 python manage.py expire_listings
+echo "Running expire_featured_businesses..."
+python manage.py expire_featured_businesses
 echo "Running send_expiry_warnings..."
 python manage.py send_expiry_warnings
 echo "Running send_event_reminders..."

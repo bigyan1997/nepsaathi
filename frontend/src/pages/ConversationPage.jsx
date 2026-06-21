@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConversation, sendMessage, deleteConversation } from "../api/messages";
 import useAuthStore from "../store/authStore";
+import { useToast } from "../components/ui/Toast";
 
 const WS_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/^http/, "ws");
 
@@ -29,6 +30,7 @@ export default function ConversationPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { addToast } = useToast();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -127,6 +129,10 @@ export default function ConversationPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
       navigate("/messages");
+    },
+    onError: () => {
+      setConfirmDelete(false);
+      addToast("Failed to delete conversation. Please try again.", "error");
     },
   });
 

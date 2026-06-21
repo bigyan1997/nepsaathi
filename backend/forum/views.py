@@ -88,8 +88,11 @@ class ForumPostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 raise PermissionDenied('You do not own this post.')
 
     def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.is_closed:
+            raise PermissionDenied('This post is closed and cannot be edited.')
         allowed = {k: v for k, v in request.data.items() if k in ('body',)}
-        serializer = self.get_serializer(self.get_object(), data=allowed, partial=True)
+        serializer = self.get_serializer(instance, data=allowed, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
