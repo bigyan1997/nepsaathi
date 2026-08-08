@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, UserReview, PointEvent, PushSubscription
 
 
 @admin.register(User)
@@ -22,7 +22,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('first_name', 'last_name', 'avatar', 'phone', 'location', 'bio')
         }),
         ('NepSaathi status', {
-            'fields': ('is_verified',)
+            'fields': ('is_verified', 'points', 'referral_code', 'referred_by')
         }),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
@@ -63,3 +63,29 @@ class UserAdmin(BaseUserAdmin):
                 send_user_banned_email(obj)
         except Exception as e:
             print(f'User admin email failed: {e}', flush=True)
+
+
+@admin.register(UserReview)
+class UserReviewAdmin(admin.ModelAdmin):
+    list_display = ('reviewer', 'reviewee', 'rating', 'created_at')
+    list_filter = ('rating',)
+    search_fields = ('reviewer__email', 'reviewee__email', 'comment')
+    readonly_fields = ('reviewer', 'reviewee', 'rating', 'comment', 'created_at')
+    ordering = ('-created_at',)
+
+
+@admin.register(PointEvent)
+class PointEventAdmin(admin.ModelAdmin):
+    list_display = ('user', 'event_type', 'delta', 'description', 'created_at')
+    list_filter = ('event_type',)
+    search_fields = ('user__email', 'description')
+    readonly_fields = ('user', 'event_type', 'delta', 'description', 'created_at')
+    ordering = ('-created_at',)
+
+
+@admin.register(PushSubscription)
+class PushSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'endpoint', 'created_at')
+    search_fields = ('user__email', 'endpoint')
+    readonly_fields = ('user', 'endpoint', 'p256dh', 'auth', 'created_at')
+    ordering = ('-created_at',)

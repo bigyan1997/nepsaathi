@@ -56,7 +56,7 @@ class BusinessAdmin(admin.ModelAdmin):
             'fields': ('address', 'suburb', 'state', 'postcode')
         }),
         ('Contact', {
-            'fields': ('phone', 'whatsapp', 'email', 'website')
+            'fields': ('phone', 'whatsapp', 'email', 'website', 'booking_link')
         }),
         ('Business Details', {
             'fields': ('abn', 'established_year', 'operating_hours')

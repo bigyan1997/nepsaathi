@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event
+from .models import Event, EventRSVP
 
 
 @admin.register(Event)
@@ -39,3 +39,11 @@ class EventAdmin(admin.ModelAdmin):
             'fields': ('is_free', 'ticket_price', 'max_attendees')
         }),
     )
+
+
+@admin.register(EventRSVP)
+class EventRSVPAdmin(admin.ModelAdmin):
+    list_display = ('user', 'event', 'created_at')
+    search_fields = ('user__email', 'event__listing__title')
+    readonly_fields = ('user', 'event', 'created_at')
+    ordering = ('-created_at',)

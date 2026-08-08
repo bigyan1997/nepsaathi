@@ -75,24 +75,25 @@ Railway (Django ASGI)
 
 ## Backend Apps & Models
 
-### 14 Django apps (13 local + admin)
+### 16 Django apps (15 local + admin)
 
 | App | Purpose |
 |---|---|
-| `users` | Custom email-based User, profiles, push subscriptions, contact form |
+| `users` | Custom email-based User, profiles, push subscriptions, contact form, points & referrals, user reviews |
 | `listings` | Base `Listing` model — parent for jobs/rooms/events/notices |
 | `jobs` | Job-specific details (company, salary, job_type) |
 | `rooms` | Room rental (price/week, furnishing, amenities) |
 | `events` | Event details (date, venue, RSVP with overbooking protection) |
 | `announcements` | Notices/classifieds (price, condition, category) |
-| `businesses` | Standalone business profiles with reviews and images |
+| `businesses` | Standalone business profiles with reviews, images, and booking link |
 | `exchange` | Live AUD/GBP/USD/CAD → NPR rates (cached 1 hr, no DB) |
 | `messaging` | 1-to-1 conversations tied to listings, WebSocket via Channels |
 | `payments` | Stripe Checkout for featured listings, PDF invoices |
 | `feedback` | Exit-intent survey → Google Sheets sync |
 | `panel` | Superuser-only stats aggregation API |
-| `forum` | Community board — posts, replies, upvotes, categories |
+| `forum` | Community board — posts, replies, upvotes, categories, polls |
 | `remittance` | AUD → NPR rate comparator (Wise, Remitly, WorldRemit, Western Union) |
+| `community` | Reverse Request Board (ReverseRequest) + Skills & Services Marketplace (ServiceListing) |
 
 ---
 
@@ -107,7 +108,9 @@ Railway (Django ASGI)
 - **SavedSearch** — user(FK), label, listing_type, filters(JSON), is_active, last_notified. Max 10 per user.
 
 #### `users`
-- **User** — custom AbstractUser, `USERNAME_FIELD='email'`. Fields: email(unique), avatar(URLField), google_avatar, phone, location, bio(500 chars), is_verified, is_banned, ban_reason
+- **User** — custom AbstractUser, `USERNAME_FIELD='email'`. Fields: email(unique), avatar(URLField), google_avatar, phone, location, bio(500 chars), is_verified, is_banned, ban_reason, points(PositiveIntegerField, default 0), referral_code(CharField max_length=12, unique, auto-generated via secrets.token_urlsafe on save), referred_by(FK→self, nullable). Method: `award_points(delta, event_type, description)` — atomic increment via `models.F()`.
+- **PointEvent** — user(FK), event_type(signup/post_ad/referral/profile_complete), delta(IntegerField), description, created_at. DB table: `point_events`.
+- **UserReview** — reviewer(FK→User), reviewee(FK→User), rating(1–5), comment(500 chars), created_at. unique_together=(reviewer, reviewee). Owner cannot review themselves.
 - **PushSubscription** — user(FK), endpoint(unique), p256dh, auth
 
 #### `rooms`
@@ -124,7 +127,7 @@ Railway (Django ASGI)
 - **Announcement** — listing(OneToOne), category(news/sale/service/general/lost_found/education), price, condition(new/like_new/good/fair/poor/na), is_free, is_urgent
 
 #### `businesses`
-- **Business** — standalone (NOT linked to Listing). owner(FK), business_name, category(14 types), description, is_nepalese_owned, address, suburb, state, postcode, phone, whatsapp, email, website, abn(private), established_year, operating_hours, is_verified(admin only), is_active, is_featured, slug
+- **Business** — standalone (NOT linked to Listing). owner(FK), business_name, category(14 types), description, is_nepalese_owned, address, suburb, state, postcode, phone, whatsapp, email, website, abn(private), established_year, operating_hours, is_verified(admin only), is_active, is_featured, slug, booking_link(URLField, blank=True — direct booking URL shown as a button on the detail page)
 - **BusinessImage** — business(FK), image(Cloudinary). Max 5.
 - **BusinessReport** — user(FK), business(FK), reason, details, is_reviewed
 - **BusinessReview** — business(FK), reviewer(FK), rating(1–5), comment(500 chars). One per user. Owner cannot review own.
@@ -142,9 +145,15 @@ Railway (Django ASGI)
 #### `forum`
 - **ForumPost** — author(FK), category(visa/accommodation/jobs/events/business/general), title, body(5000), slug(unique), is_pinned, is_closed, upvotes(M2M User), view_count
 - **ForumReply** — post(FK), author(FK), body(2000), upvotes(M2M User)
+- **PollOption** — post(FK), text(200 chars). Poll creation: pass `poll_options: ["option1", "option2", ...]` in the post create payload.
+- **PollVote** — poll_option(FK), user(FK). unique_together=(poll_option__post, user) enforced in view — one vote per user per post. Changing vote replaces the previous one.
 
 #### `remittance`
 - **RemittanceRate** — provider(wise/remitly/worldremit/wu, unique), rate(NPR per 1 AUD), fee_aud(flat transfer fee), send_url(deep link to provider), fetched_at(auto_now)
+
+#### `community`
+- **ReverseRequest** — user(FK), title(200), body(2000), category(job/room/services/other), state(AU state, blank=True), budget(100, blank=True), is_active(BooleanField, soft-delete), created_at. Serializer exposes `poster_name` and `poster_id`.
+- **ServiceListing** — user(FK), title(200), category(tutoring/translation/it/photography/cooking/accounting/transport/cleaning/other), description(2000), rate(100, blank=True), rate_type(hourly/fixed/negotiable), location(100, blank=True), state(50, blank=True), is_active(soft-delete), created_at. Serializer exposes `provider_name` and `provider_id`.
 
 ---
 
@@ -153,7 +162,7 @@ Railway (Django ASGI)
 ### Auth & Users
 ```
 POST   /api/auth/login/                     # email+password (5/min rate limit)
-POST   /api/auth/registration/              # register (3/min)
+POST   /api/auth/registration/              # register (3/min); accepts ?ref_code= for referral
 POST   /api/auth/logout/                    # blacklist refresh token
 POST   /api/auth/token/refresh/             # refresh access token
 POST   /api/auth/password/reset/            # reset email (3/hr)
@@ -167,6 +176,10 @@ POST   /api/users/contact/                  # contact form (5/hr, public)
 POST   /api/users/push/subscribe/           # register push subscription (auth)
 DELETE /api/users/push/subscribe/           # unregister push (auth)
 GET    /api/users/<id>/public/              # public profile (public)
+GET    /api/users/points/                   # points balance + recent PointEvent history (auth)
+GET    /api/users/<id>/reviews/             # list reviews for a user (public)
+POST   /api/users/<id>/reviews/             # submit a review for a user (auth, not self)
+DELETE /api/users/reviews/<pk>/             # delete own review (auth)
 ```
 
 ### Listings
@@ -238,14 +251,24 @@ POST   /api/payments/webhook/               # Stripe webhook (no auth, signature
 
 ### Forum
 ```
-GET|POST         /api/forum/               # list posts (public) / create (auth)
+GET|POST         /api/forum/               # list posts (public) / create (auth); poll_options[] in body creates a poll
 GET|PATCH|DELETE /api/forum/<slug>/
 POST             /api/forum/<slug>/vote/   # toggle upvote (auth)
 GET|POST         /api/forum/<slug>/replies/
 DELETE           /api/forum/replies/<id>/
 POST             /api/forum/replies/<id>/vote/
+POST             /api/forum/poll/<option_id>/vote/ # cast/change poll vote (auth)
 GET              /api/sitemap-forum.xml    # live forum sitemap
 ```
+
+### Community
+```
+GET|POST   /api/community/requests/        # reverse request board (GET public, POST auth)
+DELETE     /api/community/requests/<pk>/   # soft-delete own request (auth, owner)
+GET|POST   /api/community/services/        # skills & services marketplace (GET public, POST auth)
+DELETE     /api/community/services/<pk>/   # soft-delete own service listing (auth, owner)
+```
+Filtering: `?category=<value>&state=<AU_state>` on both list endpoints.
 
 ### Other
 ```
@@ -276,9 +299,12 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 | `/businesses/:slug` | BusinessDetailPage |
 | `/forum` | ForumPage |
 | `/forum/:slug` | ForumPostPage |
+| `/looking-for` | LookingForPage — reverse request board; filterable by category + AU state |
+| `/services` | ServicesPage — skills & services marketplace; category + state filters |
+| `/points` | PointsPage — points balance, referral link (copy), earn guide, event history |
 | `/search` | SearchPage |
 | `/send-money` | RemittancePage |
-| `/users/:id` | UserProfilePage |
+| `/users/:id` | UserProfilePage — public profile + listings by that user + star reviews |
 | `/privacy` | PrivacyPage |
 | `/terms` | TermsPage |
 | `/contact` | ContactPage |
@@ -286,9 +312,9 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 ### Protected (auth required)
 | Route | Page |
 |---|---|
-| `/forum/new` | CreatePostPage |
+| `/forum/new` | CreatePostPage — supports optional poll creation |
 | `/post-ad` | PostAdPage |
-| `/register-business` | RegisterBusinessPage |
+| `/register-business` | RegisterBusinessPage — includes booking_link field |
 | `/my-listings` | MyListingsPage |
 | `/profile` | ProfilePage |
 | `/messages` | InboxPage |
@@ -310,6 +336,7 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 
 ### State management
 - **authStore** (Zustand + localStorage persist key `nepsaathi-auth`) — user, accessToken, refreshToken, isAuthenticated. Logout clears all localStorage keys and hard-redirects to `/login`.
+- **languageStore** (Zustand + localStorage persist key `nepsaathi-lang`) — `lang: 'en' | 'np'`, `setLang()`, `toggleLang()`. Drives the bilingual UI.
 - **React Query** — all server data. `staleTime: 5 min, retry: 1`. Detail pages use `gcTime: 0` to prevent stale data on remount.
 
 ### Axios instance (`src/utils/axios.js`)
@@ -326,18 +353,30 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 | `usePWAInstall` | Captures `beforeinstallprompt` |
 
 ### API modules (`src/api/`)
-`auth.js`, `listings.js`, `jobs.js`, `rooms.js`, `events.js`, `announcements.js`, `businesses.js`, `messages.js`, `payments.js`, `exchange.js`, `push.js`, `panel.js`, `forum.js`, `remittance.js`
+`auth.js`, `listings.js`, `jobs.js`, `rooms.js`, `events.js`, `announcements.js`, `businesses.js`, `messages.js`, `payments.js`, `exchange.js`, `push.js`, `panel.js`, `forum.js`, `remittance.js`, `community.js`
 
 All use the shared axios instance (auto-token + auto-refresh).
 
+Notable additions:
+- `auth.js` — includes `getMyPoints()` and `register()` now accepts an optional `ref_code` param
+- `forum.js` — includes `castPollVote(optionId)` for poll voting
+- `community.js` — `getRequests`, `createRequest`, `deleteRequest`, `getServices`, `createService`, `deleteService`
+
 ### Key components
-- **Navbar** — sticky, shows auth-conditional links, unread message badge with toast on new message
-- **Footer** — 4-column grid (Brand, Browse, Account, Contact)
+- **Navbar** — sticky, shows auth-conditional links, unread message badge with toast on new message. Includes `LangToggle` (🇳🇵/🇬🇧 flag pill) for Nepali/English switching in both desktop nav and mobile menu bottom.
+- **Footer** — 4-column grid (Brand, Browse, Account, Contact). All labels translated via `useT()`.
 - **Toast** — `useToast()` exposes `addToast(content, type, duration)` — NOT `showToast`
 - **ProgressBar** — route-change loading indicator
 - **FeedbackModal** — exit-intent form (satisfaction 1–5 + reason) → Google Sheets
 - **ExchangeRates** — AUD/GBP/USD/CAD → NPR widget
 - **SilentJWTAuthentication** — lets public endpoints serve anonymous users gracefully
+
+### Bilingual UI (i18n)
+- **`src/store/languageStore.js`** — Zustand store persisted to localStorage. `lang: 'en' | 'np'`, `toggleLang()`.
+- **`src/i18n/translations.js`** — flat dictionary with `en` and `np` keys. 80+ keys covering `nav.*`, `footer.*`, `home.*`, `common.*`. Nepali strings use Devanagari script.
+- **`src/hooks/useT.js`** — `useT()` returns a `t(key)` function that reads from `languageStore`. Falls back to `translations.en[key]` then the raw key string — UI never breaks if a key is missing in the Nepali dictionary.
+- **`LangToggle`** component (inside Navbar) — pill button showing 🇳🇵/🇬🇧 flag. Calls `toggleLang()`. Appears in desktop nav and at the bottom of the mobile hamburger menu.
+- **Referral URL pattern** — `/register?ref=<referral_code>`. `RegisterPage` reads `?ref=` via `useSearchParams`, shows a referral banner, and passes `ref_code` in the registration POST body.
 
 ---
 
@@ -563,6 +602,23 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - Cron updated to run `fetch_remittance_rates` (replaced visa reminder command)
 - `/send-money` frontend page: live rate table sorted by best NPR received, quick-amount chips, provider badges, skeleton loaders
 - Navbar, footer, sitemap updated
+
+### Phase 2 additions (2026-08-08)
+- **User reviews** — `UserReview` model in `users` app; 1–5 star rating + comment; one review per pair; displayed on `UserProfilePage` with `StarPicker`/`StarDisplay` components; endpoints: list, create, delete own.
+- **Forum polls** — `PollOption` + `PollVote` models in `forum` app; poll creation via `poll_options[]` array in post create payload; per-user vote with change support; percentage bars displayed on `ForumPostPage`.
+- **Business booking link** — `booking_link` URLField on `Business`; shown as a button on `BusinessDetailPage`; input field added to `RegisterBusinessPage`.
+
+### Phase 3 — Community features (2026-08-08)
+- **`community` Django app** — `ReverseRequest` + `ServiceListing` models; soft-delete pattern (`is_active=False`); public GET, authenticated POST; category + state filtering.
+- **Reverse Request Board** (`/looking-for`) — users post what they're looking for (work, room, service, other); category/state filters; inline form; own posts removable.
+- **Skills & Services Marketplace** (`/services`) — users offer services (tutoring, translation, IT, photography, cooking, accounting, transport, cleaning); rate + rate_type display; category/state filters.
+- **Points & Referral system** — `points` (PositiveIntegerField) + `referral_code` (unique, auto-generated) + `referred_by` FK on User. `PointEvent` history table. Points awarded: 10 on signup, 5 per listing posted (in `ListingCreateView.perform_create`), 25 per successful referral. Referral URL: `/register?ref=<code>`. Migration used a backfill step to assign unique codes to all existing users before applying the unique constraint.
+- **PointsPage** (`/points`) — balance card, referral link with clipboard copy, earn guide, event history list.
+
+### Phase 4 — Bilingual UI (2026-08-08)
+- **Nepali/English toggle** — `languageStore` (Zustand, persisted to localStorage), flat `translations.js` dictionary (80+ keys, Devanagari for Nepali), `useT()` hook with EN fallback.
+- **`LangToggle` component** — 🇳🇵/🇬🇧 pill button in desktop Navbar and at the bottom of the mobile menu.
+- **Translated** — Navbar nav links + dropdown items + auth buttons, Footer column headers + links, HomePage hero headline + subtitle + search placeholder + section titles, LookingForPage + ServicesPage sign-in CTA.
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.

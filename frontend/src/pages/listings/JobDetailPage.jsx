@@ -724,7 +724,14 @@ export default function JobDetailPage() {
                     flexWrap: "wrap",
                   }}
                 >
-                  {job.posted_by}
+                  <Link
+                    to={`/users/${job.user_id}`}
+                    style={{ color: "inherit", textDecoration: "none" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                    onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                  >
+                    {job.posted_by}
+                  </Link>
                   {job.poster_is_verified && <VerifiedBadge size={15} style={{ marginLeft: 4 }} />}
                   {isWanted && (
                     <span
@@ -896,7 +903,14 @@ export default function JobDetailPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden" }}>
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.posted_by}</span>
+                    <Link
+                      to={`/users/${job.user_id}`}
+                      style={{ color: "inherit", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                    >
+                      {job.posted_by}
+                    </Link>
                     {job.poster_is_verified && <VerifiedBadge size={14} />}
                   </div>
                   {job.user_joined && (

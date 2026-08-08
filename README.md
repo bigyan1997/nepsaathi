@@ -2,7 +2,7 @@
 
 > Your trusted Nepali friend, wherever you are. Connecting the Nepalese diaspora across Australia.
 
-NepSaathi is a full-stack community marketplace and networking platform for Nepalese Australians. It provides job listings, room rentals, events, a business directory, community notices, 1-to-1 messaging, featured listing payments, and a Progressive Web App (PWA) experience.
+NepSaathi is a full-stack community marketplace and networking platform for Nepalese Australians. It provides job listings, room rentals, events, a business directory, community notices, 1-to-1 messaging, featured listing payments, a community forum with polls, a reverse request board, a skills & services marketplace, a points & referral system, an AUD→NPR remittance comparator, and a bilingual Nepali/English interface. Progressive Web App (PWA) with push notifications.
 
 ---
 
@@ -64,7 +64,7 @@ NepSaathi is a full-stack community marketplace and networking platform for Nepa
 nepsaathi/
 ├── backend/               # Django project root
 │   ├── core/              # Settings, URLs, WSGI, authentication, emails
-│   ├── users/             # Custom user model, profiles, push subscriptions
+│   ├── users/             # Custom user model, profiles, push subscriptions, points & referrals, user reviews
 │   ├── listings/          # Base listing model (jobs/rooms/events/notices)
 │   ├── jobs/              # Job-specific detail model
 │   ├── rooms/             # Room rental detail model
@@ -75,18 +75,23 @@ nepsaathi/
 │   ├── messaging/         # 1-to-1 conversations
 │   ├── payments/          # Stripe featured listing payments + PDF invoices
 │   ├── feedback/          # Exit-intent survey → Google Sheets
+│   ├── forum/             # Community board — posts, replies, upvotes, polls
+│   ├── remittance/        # AUD→NPR rate comparator (cron-fetched)
+│   ├── community/         # Reverse request board + skills & services marketplace
 │   ├── requirements.txt
 │   ├── manage.py
 │   ├── start.sh           # Collectstatic + migrate + gunicorn
+│   ├── cron.sh            # Management commands run by Railway cron service
 │   ├── Procfile
 │   └── railway.json
 └── frontend/              # React + Vite app
     ├── src/
-    │   ├── api/           # API client functions (12 modules)
-    │   ├── store/         # Zustand stores (authStore)
-    │   ├── hooks/         # Custom React hooks (6)
-    │   ├── components/    # ~50 reusable components
-    │   ├── pages/         # 32 page-level components
+    │   ├── api/           # API client functions (15 modules)
+    │   ├── store/         # Zustand stores (authStore, languageStore)
+    │   ├── hooks/         # Custom React hooks (7, including useT)
+    │   ├── i18n/          # translations.js — 80+ key bilingual dictionary (en + np)
+    │   ├── components/    # ~55 reusable components (LangToggle, StarPicker, etc.)
+    │   ├── pages/         # 40+ page-level components
     │   └── utils/         # axios.js (interceptors)
     ├── public/            # manifest.json, sw.js, icons, sitemap.xml (generated at build)
     ├── generate-sitemap.mjs  # Build-time sitemap generator (fetches slugs from API)
@@ -103,18 +108,21 @@ nepsaathi/
 
 | App | Purpose |
 |-----|---------|
-| `users` | Custom email-based user model, profiles, avatar, push subscriptions, contact form |
+| `users` | Custom email-based user model, profiles, avatar, push subscriptions, contact form, points & referral system, user reviews |
 | `listings` | Base `Listing` model — polymorphic parent for jobs/rooms/events/notices; images, saves, reports, views, search |
 | `jobs` | Job-specific details (company, salary, job_type, is_urgent) |
 | `rooms` | Room rental details (price/week, furnishing, bond, amenities) |
 | `events` | Event details (date, venue, RSVP, ticketing) |
 | `announcements` | Notices/classifieds (category, price, condition) |
-| `businesses` | Standalone business profiles — not linked to Listing; own images, reviews, reports lifecycle |
+| `businesses` | Standalone business profiles — not linked to Listing; own images, reviews, reports lifecycle, booking link |
 | `exchange` | Live AUD/GBP/USD/CAD → NPR exchange rates (1-hour cache, external API) |
 | `messaging` | 1-to-1 conversations tied to listings |
 | `payments` | Stripe Checkout for featured listings ($9.99 AUD / 7 days) + GST invoice PDF |
 | `feedback` | Exit-intent satisfaction survey + Google Sheets sync |
 | `panel` | Superuser-only admin dashboard stats (`/api/panel/stats/`) |
+| `forum` | Community discussion board — posts, replies, upvotes, categories, polls |
+| `remittance` | AUD→NPR rate comparator — Wise, Remitly, WorldRemit, Western Union; cron-fetched, public API |
+| `community` | Reverse Request Board (ReverseRequest) + Skills & Services Marketplace (ServiceListing) |
 | `core` | Settings, root URLs, `SilentJWTAuthentication`, dual email routing |
 
 ### Database Models
@@ -134,7 +142,34 @@ Custom `AbstractUser` with `email` as the unique identifier (no username field).
 | `bio` | TextField | |
 | `is_verified` | BooleanField | Admin-set verified badge |
 | `is_banned` | BooleanField | With `ban_reason` |
+| `points` | PositiveIntegerField | Default 0; incremented atomically via `award_points()` |
+| `referral_code` | CharField (12) | Unique, auto-generated via `secrets.token_urlsafe` on first save |
+| `referred_by` | FK → User | Nullable; set at registration from `?ref=<code>` |
 | `created_at`, `updated_at` | DateTimeField | |
+
+`award_points(delta, event_type, description)` — uses `models.F('points') + delta` + `save(update_fields=['points'])` for atomic increment; creates a `PointEvent` record.
+
+`PointEvent` — tracks each point transaction:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `user` | FK → User | |
+| `event_type` | CharField | `signup`, `post_ad`, `referral`, `profile_complete` |
+| `delta` | IntegerField | Points awarded |
+| `description` | CharField | Human-readable label |
+| `created_at` | DateTimeField | |
+
+`UserReview` — star ratings between users:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `reviewer` | FK → User | Who wrote the review |
+| `reviewee` | FK → User | Who was reviewed |
+| `rating` | IntegerField | 1–5 stars |
+| `comment` | TextField | Max 500 chars |
+| `created_at` | DateTimeField | |
+
+unique_together: `(reviewer, reviewee)`. Users cannot review themselves.
 
 `PushSubscription` — one user can have multiple:
 
@@ -261,6 +296,7 @@ Standalone — **not** linked to `Listing`. Own lifecycle.
 | `established_year` | IntegerField | |
 | `operating_hours` | TextField | |
 | `is_verified`, `is_active` | BooleanField | |
+| `booking_link` | URLField | Optional. Shown as a "Book Now" button on the detail page. |
 | `slug` | SlugField | |
 
 Related: `BusinessImage`, `BusinessReport`, `BusinessReview` (1–5 stars, with comment).
@@ -307,6 +343,56 @@ Related: `BusinessImage`, `BusinessReport`, `BusinessReview` (1–5 stars, with 
 | `created_at` | DateTimeField | |
 
 Submissions are synced to a Google Sheet via `feedback/sheets.py` (background thread, `gspread` library).
+
+---
+
+#### Forum (`forum/models.py`)
+
+`ForumPost`:
+- `author` FK, `category` (visa/accommodation/jobs/events/business/general), `title`, `body` (5000), `slug` (unique), `is_pinned`, `is_closed`, `upvotes` M2M User, `view_count`
+
+`ForumReply`:
+- `post` FK, `author` FK, `body` (2000), `upvotes` M2M User
+
+`PollOption`:
+- `post` FK, `text` (200). Created by passing `poll_options: [...]` in the post create payload.
+
+`PollVote`:
+- `poll_option` FK, `user` FK. One vote per user per post (enforced in view). Changing vote replaces the previous one.
+
+---
+
+#### Community (`community/models.py`)
+
+`ReverseRequest`:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `user` | FK → User | Poster |
+| `title` | CharField (200) | |
+| `body` | TextField (2000) | |
+| `category` | choice | job, room, services, other |
+| `state` | CharField (50) | Optional AU state |
+| `budget` | CharField (100) | Optional |
+| `is_active` | BooleanField | Soft-delete flag |
+| `created_at` | DateTimeField | |
+
+`ServiceListing`:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `user` | FK → User | Provider |
+| `title` | CharField (200) | |
+| `category` | choice | tutoring, translation, it, photography, cooking, accounting, transport, cleaning, other |
+| `description` | TextField (2000) | |
+| `rate` | CharField (100) | Optional (e.g. `$40/hr`) |
+| `rate_type` | choice | hourly, fixed, negotiable |
+| `location` | CharField (100) | Optional suburb/city |
+| `state` | CharField (50) | Optional AU state |
+| `is_active` | BooleanField | Soft-delete flag |
+| `created_at` | DateTimeField | |
+
+Both serializers expose `poster_name`/`poster_id` (ReverseRequest) and `provider_name`/`provider_id` (ServiceListing) via `SerializerMethodField`.
 
 ---
 
@@ -406,6 +492,44 @@ Rate limit: message send 5/min.
 | GET | `/api/payments/status/<listing_id>/` | Yes | Payment status |
 | GET | `/api/payments/invoice/<listing_id>/` | Yes | Download PDF invoice |
 | POST | `/api/payments/webhook/` | Stripe sig | Stripe webhook handler |
+
+#### Forum
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET/POST | `/api/forum/` | No/Yes | List posts / create post (with optional `poll_options[]`) |
+| GET/PATCH/DELETE | `/api/forum/<slug>/` | No/Owner | Post detail / edit / delete |
+| POST | `/api/forum/<slug>/vote/` | Yes | Toggle post upvote |
+| GET/POST | `/api/forum/<slug>/replies/` | No/Yes | List replies / add reply |
+| DELETE | `/api/forum/replies/<id>/` | Yes | Delete own reply |
+| POST | `/api/forum/replies/<id>/vote/` | Yes | Toggle reply upvote |
+| POST | `/api/forum/poll/<option_id>/vote/` | Yes | Cast or change poll vote |
+| GET | `/api/sitemap-forum.xml` | No | Live forum sitemap |
+
+#### Community
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET/POST | `/api/community/requests/` | No/Yes | List / create reverse requests |
+| DELETE | `/api/community/requests/<pk>/` | Yes (owner) | Soft-delete own request |
+| GET/POST | `/api/community/services/` | No/Yes | List / create service listings |
+| DELETE | `/api/community/services/<pk>/` | Yes (owner) | Soft-delete own service |
+
+Filtering: `?category=<value>&state=<AU_state>` on both list endpoints.
+
+#### User Reviews & Points
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET/POST | `/api/users/<id>/reviews/` | No/Yes | List reviews / submit review for user |
+| DELETE | `/api/users/reviews/<pk>/` | Yes | Delete own review |
+| GET | `/api/users/points/` | Yes | Points balance + recent event history |
+
+#### Remittance
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/remittance/rates/` | No | Live AUD→NPR rates per provider |
 
 #### Other
 
@@ -598,8 +722,14 @@ Static files served by WhiteNoise. Database is PostgreSQL on Railway (via `DATAB
 | `/events` | `EventsPage` | Event listings |
 | `/events/:slug` | `EventDetailPage` | Event detail + RSVP |
 | `/businesses` | `BusinessesPage` | Business directory |
-| `/businesses/:slug` | `BusinessDetailPage` | Business profile + reviews |
-| `/users/:id` | `UserProfilePage` | Public profile — listings by that user |
+| `/businesses/:slug` | `BusinessDetailPage` | Business profile + reviews + booking button |
+| `/users/:id` | `UserProfilePage` | Public profile — listings by that user + star reviews |
+| `/forum` | `ForumPage` | Community discussion board |
+| `/forum/:slug` | `ForumPostPage` | Post detail + replies + poll display |
+| `/looking-for` | `LookingForPage` | Reverse request board — post & browse what people are looking for |
+| `/services` | `ServicesPage` | Skills & services marketplace |
+| `/points` | `PointsPage` | Points balance, referral link, earn guide, event history |
+| `/send-money` | `RemittancePage` | AUD→NPR rate comparator across providers |
 | `/search` | `SearchPage` | Global search across all types |
 | `/privacy` | `PrivacyPage` | Privacy Policy (sticky TOC) |
 | `/terms` | `TermsPage` | Terms of Use (sticky TOC) |
@@ -620,7 +750,7 @@ Static files served by WhiteNoise. Database is PostgreSQL on Railway (via `DATAB
 | Route | Component |
 |-------|-----------|
 | `/post-ad` | `PostAdPage` |
-| `/register-business` | `RegisterBusinessPage` |
+| `/register-business` | `RegisterBusinessPage` | Includes booking_link field |
 | `/my-listings` | `MyListingsPage` |
 | `/edit-listing/:slug` | `EditListingPage` |
 | `/profile` | `ProfilePage` | Edit profile, change password, delete account |
@@ -660,6 +790,19 @@ nepsaathi_refresh_token
 nepsaathi-auth
 ```
 
+**languageStore (Zustand + localStorage, key `nepsaathi-lang`)**
+
+```js
+// State
+{ lang: 'en' | 'np' }
+
+// Actions
+setLang(lang)    // Set explicit language
+toggleLang()     // Switch between 'en' and 'np'
+```
+
+Used by `useT()` hook to look up the current language's translation dictionary. Falls back to English then the raw key string. Persists language preference across page refreshes.
+
 **React Query** — server state for all listings, businesses, messages, etc.
 - `staleTime: 5 minutes`
 - `retry: 1`
@@ -677,7 +820,7 @@ API modules in `src/api/`:
 
 | Module | Functions |
 |--------|-----------|
-| `auth.js` | register, login, logout, getProfile, updateProfile, deleteAccount, changePassword, googleLogin, sendContactForm, getPublicProfile |
+| `auth.js` | register (accepts optional `ref_code`), login, logout, getProfile, updateProfile, deleteAccount, changePassword, googleLogin, sendContactForm, getPublicProfile, getUserReviews, submitUserReview, deleteUserReview, getMyPoints |
 | `listings.js` | getListings, getListing, createListing, updateListing, deleteListing, getMyListings, uploadImages, getStats, saveListing, unsaveListing, checkSaved, getSavedListings, markListingStatus, trackView, getSimilarListings, reportListing, renewListing, getSavedSearches, createSavedSearch, deleteSavedSearch |
 | `jobs.js` | getJobs, getJob, getJobByListing, createJob, updateJob, deleteJob |
 | `rooms.js` | getRooms, getRoom, getRoomByListing, createRoom, updateRoom, deleteRoom |
@@ -686,6 +829,9 @@ API modules in `src/api/`:
 | `businesses.js` | getBusinesses, getBusiness, createBusiness, updateBusiness, deleteBusiness, getMyBusinesses, getReviews, addReview, deleteReview, uploadImages, deleteImage, reportBusiness |
 | `messages.js` | getConversations, startConversation, getConversation, sendMessage, getUnreadCount |
 | `payments.js` | createCheckoutSession, getPaymentStatus, downloadInvoice (blob → URL.createObjectURL → anchor click) |
+| `forum.js` | getPosts, getPost, createPost (with `poll_options[]`), updatePost, deletePost, votePost, getReplies, createReply, deleteReply, voteReply, castPollVote |
+| `remittance.js` | getRates |
+| `community.js` | getRequests, createRequest, deleteRequest, getServices, createService, deleteService |
 | `push.js` | subscribePush, unsubscribePush |
 | `exchange.js` | getExchangeRates |
 
@@ -701,6 +847,7 @@ API modules in `src/api/`:
 | `usePageTitle` | Sets `document.title` on mount. |
 | `usePageMeta` | Full SEO: sets `<title>`, `description`, `og:*`, `twitter:*`, canonical URL. |
 | `useIsMobile` | Returns `true` if `window.innerWidth < 768`. Listens to `resize`. |
+| `useT` | Returns `t(key)` function from current language via `languageStore`. Falls back to English then raw key. Used for bilingual UI. |
 
 **Feedback trigger paths** (`App.jsx`):
 ```js
@@ -847,6 +994,18 @@ The exit-intent modal has a 7-day browser cooldown. To reset it during testing:
 
 ```js
 localStorage.removeItem('feedback_last_shown')
+```
+
+### Referral links (dev)
+
+Share `/register?ref=<referral_code>`. The `referral_code` for any user is returned by `GET /api/users/points/`. Visiting that URL while logged out shows a referral banner on the registration form. On successful registration, 10 pts are awarded to the new user and 25 pts to the referrer.
+
+### Language toggle (dev)
+
+The language preference is stored in `localStorage` key `nepsaathi-lang`. To reset to English:
+
+```js
+localStorage.removeItem('nepsaathi-lang')
 ```
 
 ---

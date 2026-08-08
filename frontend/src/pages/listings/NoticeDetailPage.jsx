@@ -626,7 +626,14 @@ export default function NoticeDetailPage() {
                     gap: "5px",
                   }}
                 >
-                  {notice.posted_by}
+                  <Link
+                    to={`/users/${notice.user_id}`}
+                    style={{ color: "inherit", textDecoration: "none" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                    onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                  >
+                    {notice.posted_by}
+                  </Link>
                   {notice.poster_is_verified && <VerifiedBadge size={14} />}
                 </div>
                 <div
@@ -769,7 +776,14 @@ export default function NoticeDetailPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C", display: "flex", alignItems: "center", gap: "4px", overflow: "hidden" }}>
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{notice.posted_by}</span>
+                    <Link
+                      to={`/users/${notice.user_id}`}
+                      style={{ color: "inherit", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                    >
+                      {notice.posted_by}
+                    </Link>
                     {notice.poster_is_verified && <VerifiedBadge size={14} />}
                   </div>
                   {notice.user_joined && (

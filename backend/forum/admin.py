@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ForumPost, ForumReply
+from .models import ForumPost, ForumReply, PollOption, PollVote
 
 
 class ForumReplyInline(admin.TabularInline):
@@ -45,3 +45,33 @@ class ForumReplyAdmin(admin.ModelAdmin):
     list_display = ('author', 'post', 'created_at')
     search_fields = ('body', 'author__email', 'post__title')
     readonly_fields = ('created_at', 'updated_at')
+
+
+class PollVoteInline(admin.TabularInline):
+    model = PollVote
+    extra = 0
+    readonly_fields = ('user',)
+    can_delete = True
+
+
+@admin.register(PollOption)
+class PollOptionAdmin(admin.ModelAdmin):
+    list_display = ('post', 'text', 'vote_count')
+    search_fields = ('post__title', 'text')
+    readonly_fields = ('post',)
+    inlines = (PollVoteInline,)
+
+    def vote_count(self, obj):
+        return obj.votes.count()
+    vote_count.short_description = 'Votes'
+
+
+@admin.register(PollVote)
+class PollVoteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'poll_option', 'poll_option_post')
+    search_fields = ('user__email', 'poll_option__text', 'poll_option__post__title')
+    readonly_fields = ('user', 'poll_option')
+
+    def poll_option_post(self, obj):
+        return obj.poll_option.post
+    poll_option_post.short_description = 'Post'

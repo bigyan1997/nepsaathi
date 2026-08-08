@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
-from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView
+from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView, SavedSearch
 
 
 class ListingImageInline(admin.TabularInline):
@@ -282,3 +282,12 @@ class ListingViewAdmin(admin.ModelAdmin):
     search_fields = ('listing__title', 'user__email', 'ip_address')
     readonly_fields = ('listing', 'user', 'ip_address', 'viewed_at')
     ordering = ('-viewed_at',)
+
+
+@admin.register(SavedSearch)
+class SavedSearchAdmin(admin.ModelAdmin):
+    list_display = ('user', 'label', 'listing_type', 'is_active', 'last_notified', 'created_at')
+    list_filter = ('listing_type', 'is_active')
+    search_fields = ('user__email', 'label')
+    readonly_fields = ('user', 'created_at', 'last_notified')
+    ordering = ('-created_at',)
