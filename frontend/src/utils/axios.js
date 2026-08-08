@@ -38,7 +38,6 @@ const processQueue = (error, token = null) => {
 
 const clearAuth = () => {
   sessionStorage.removeItem("nepsaathi_access_token");
-  localStorage.removeItem("nepsaathi_refresh_token");
   localStorage.removeItem("nepsaathi-auth");
   useAuthStore.getState().logout();
 };
@@ -51,13 +50,8 @@ api.interceptors.response.use(
 
     // Try to refresh token on 401
     if (status === 401 && !originalRequest._retry) {
-      const refreshToken = localStorage.getItem("nepsaathi_refresh_token");
-
-      // No refresh token — only clear auth if was logged in
-      if (!refreshToken) {
-        if (useAuthStore.getState().isAuthenticated) {
-          clearAuth();
-        }
+      // No session — only clear auth state if we thought we were logged in
+      if (!useAuthStore.getState().isAuthenticated) {
         return Promise.reject(error);
       }
 
@@ -77,9 +71,10 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        // Send empty body — backend reads the httpOnly refresh cookie automatically
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/auth/token/refresh/`,
-          { refresh: refreshToken },
+          {},
           { withCredentials: true },
         );
         const newToken = response.data.access;

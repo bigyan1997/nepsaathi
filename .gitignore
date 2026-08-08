@@ -14,6 +14,9 @@ backend/.env
 # Environment
 .env
 .env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 
 # Node
 node_modules/

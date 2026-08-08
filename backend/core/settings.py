@@ -253,6 +253,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ─── Email ───────────────────────────────────────────────────────────────────
 DEFAULT_FROM_EMAIL = 'NepSaathi <noreply@nepsaathi.com>'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[NepSaathi] '
+ACCOUNT_PREVENT_ENUMERATION = True
 
 EMAIL_BACKEND = (
     'django.core.mail.backends.console.EmailBackend' if DEBUG

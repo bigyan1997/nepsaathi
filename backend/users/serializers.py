@@ -23,15 +23,6 @@ class RegisterSerializer(BaseRegisterSerializer):
     last_name = serializers.CharField(required=True, max_length=50)
     username = None
 
-    def validate_email(self, value):
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        if User.objects.filter(email__iexact=value).exists():
-            raise serializers.ValidationError(
-                "A user with this email already exists."
-            )
-        return value
-
     def get_cleaned_data(self):
         return {
             'email': self.validated_data.get('email', ''),

@@ -4,7 +4,6 @@ import threading
 from rest_framework import permissions, status
 from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from django.db.models import Q
 from .models import Conversation, Message
@@ -226,99 +225,3 @@ class UnreadCountView(APIView):
         ).exclude(sender=request.user).count()
         set_cached_unread(request.user.pk, count)
         return Response({'unread_count': count})
-
-
-class SuggestRepliesView(APIView):
-    """POST /api/messages/suggest-replies/ — returns 3 short reply suggestions using Llama 3 via Groq."""
-    permission_classes = (permissions.IsAuthenticated,)
-    throttle_classes = (ScopedRateThrottle,)
-    throttle_scope = 'suggest_replies'
-
-    def _build_listing_context(self, conversation):
-        """Fetch the full listing and return a context string for the AI prompt."""
-        if not conversation.listing_id:
-            return conversation.listing_title or ''
-        try:
-            from listings.models import Listing
-            listing = Listing.objects.select_related(
-                'job_detail', 'room_detail'
-            ).get(pk=conversation.listing_id)
-        except Exception:
-            return conversation.listing_title or ''
-
-        parts = [
-            f"Type: {listing.listing_type}",
-            f"Title: {listing.title}",
-            f"Location: {listing.location}, {listing.state}, Australia",
-            f"Description: {listing.description[:400]}",
-        ]
-        # Add type-specific details
-        try:
-            jd = listing.job_detail
-            parts.append(f"Job type: {jd.job_type}")
-            parts.append(f"Salary: {jd.salary_display}")
-            if jd.company_name:
-                parts.append(f"Company: {jd.company_name}")
-        except Exception:
-            pass
-        try:
-            rd = listing.room_detail
-            parts.append(f"Room type: {rd.get_room_type_display()}")
-            parts.append(f"Rent: {rd.price_display}")
-        except Exception:
-            pass
-        return '\n'.join(parts)
-
-    def post(self, request):
-        import groq as groq_sdk
-        import json, re
-        from decouple import config as env_config
-
-        last_message = (request.data.get('last_message') or '').strip()
-        conversation_id = request.data.get('conversation_id')
-
-        if not last_message:
-            return Response({'error': 'No message provided.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        api_key = env_config('GROQ_API_KEY', default='')
-        if not api_key:
-            return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
-        # Build listing context from DB if we have a conversation ID
-        listing_context = ''
-        if conversation_id:
-            try:
-                conv = Conversation.objects.get(pk=conversation_id, participants=request.user)
-                listing_context = self._build_listing_context(conv)
-            except Conversation.DoesNotExist:
-                pass
-
-        context_block = f"Listing being discussed:\n{listing_context}\n\n" if listing_context else ''
-
-        prompt = f"""You are helping someone reply to a message on NepSaathi, a classifieds platform for Nepalese Australians.
-
-{context_block}Message received:
-"{last_message}"
-
-Write exactly 3 short, natural reply options. Each should be 1-2 sentences, friendly and direct. Make them relevant to the listing details above. Cover different intents (e.g. interested, asking a specific question about the listing, declining politely).
-
-Return ONLY a JSON array of 3 strings, no explanation. Example format:
-["Reply one.", "Reply two.", "Reply three."]"""
-
-        try:
-            client = groq_sdk.Groq(api_key=api_key)
-            chat = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
-                max_tokens=200,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            raw = chat.choices[0].message.content.strip()
-            match = re.search(r'\[.*?\]', raw, re.DOTALL)
-            if not match:
-                return Response({'error': 'Could not parse suggestions.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            suggestions = json.loads(match.group())
-            suggestions = [s.strip() for s in suggestions if isinstance(s, str) and s.strip()][:3]
-            return Response({'suggestions': suggestions})
-        except Exception as e:
-            logger.error("Groq API error in suggest-replies: %s", e)
-            return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

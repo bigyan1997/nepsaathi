@@ -9,11 +9,15 @@ from dj_rest_auth.registration.views import SocialLoginView
 from decouple import config
 from .serializers import UserSerializer, PublicProfileSerializer
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
+# Pre-computed hash used for constant-time dummy check on non-existent email logins
+# (prevents timing-based email enumeration — bcrypt is slow, absence should cost the same)
+_DUMMY_HASH = make_password('nepsaathi-dummy-constant-time')
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
@@ -213,6 +217,9 @@ class ThrottledLoginView(APIView):
         except Exception:
             email = ''
         if email and not User.objects.filter(email__iexact=email).exists():
+            # Constant-time response: run a real bcrypt check so timing matches
+            # the existing-email path and callers can't enumerate registered emails.
+            check_password('wrong', _DUMMY_HASH)
             try:
                 cache.incr(cache_key)
             except ValueError:

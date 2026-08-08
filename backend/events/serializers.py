@@ -79,6 +79,15 @@ class EventSerializer(serializers.ModelSerializer):
             for img in obj.listing.images.all()
         ]
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            data.pop('contact_email', None)
+            data.pop('contact_phone', None)
+            data.pop('contact_whatsapp', None)
+        return data
+
     def validate_event_date(self, value):
         from django.utils import timezone
         if value < timezone.now():

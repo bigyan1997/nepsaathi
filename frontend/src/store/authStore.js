@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 // Access token: sessionStorage — tab-scoped, cleared on browser close, never persisted
-// Refresh token: localStorage — needed so the user stays logged in across page reloads
+// Refresh token: httpOnly cookie set by the backend — never readable by JS (XSS-safe)
 // Neither token is stored in Zustand state; only the user object is persisted
 const useAuthStore = create(
   persist(
@@ -10,15 +10,13 @@ const useAuthStore = create(
       user: null,
       isAuthenticated: false,
 
-      setAuth: (user, accessToken, refreshToken) => {
+      setAuth: (user, accessToken) => {
         if (accessToken) sessionStorage.setItem("nepsaathi_access_token", accessToken);
-        if (refreshToken) localStorage.setItem("nepsaathi_refresh_token", refreshToken);
         set({ user, isAuthenticated: true });
       },
 
       logout: () => {
         sessionStorage.removeItem("nepsaathi_access_token");
-        localStorage.removeItem("nepsaathi_refresh_token");
         localStorage.removeItem("nepsaathi-auth");
         set({ user: null, isAuthenticated: false });
         window.location.href = "/login";
