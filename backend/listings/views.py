@@ -938,12 +938,12 @@ class ListingBenchmarkView(APIView):
 
 
 class AIImproveDescriptionView(APIView):
-    """POST /api/listings/ai-improve/ — rewrites a rough listing description using Claude."""
+    """POST /api/listings/ai-improve/ — rewrites a rough listing description using Llama 3 via Groq."""
     permission_classes = (permissions.IsAuthenticated,)
     throttle_scope = 'ai_improve'
 
     def post(self, request):
-        import anthropic
+        import groq as groq_sdk
         from decouple import config as env_config
 
         title = (request.data.get('title') or '').strip()
@@ -955,7 +955,7 @@ class AIImproveDescriptionView(APIView):
         if not description or len(description) < 10:
             return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        api_key = env_config('ANTHROPIC_API_KEY', default='')
+        api_key = env_config('GROQ_API_KEY', default='')
         if not api_key:
             return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
@@ -979,16 +979,16 @@ User's draft description:
 Rewrite the description to be clear, professional, and appealing to an Australian audience. Fix grammar and spelling. Keep all the factual details the user provided. Do not invent new information. Keep it concise (under 300 words). Return only the improved description text — no preamble, no explanation."""
 
         try:
-            client = anthropic.Anthropic(api_key=api_key)
-            message = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+            client = groq_sdk.Groq(api_key=api_key)
+            chat = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
                 max_tokens=512,
                 messages=[{"role": "user", "content": prompt}],
             )
-            improved = message.content[0].text.strip()
+            improved = chat.choices[0].message.content.strip()
             return Response({'improved': improved})
-        except anthropic.APIError as e:
-            logger.error("Anthropic API error in ai-improve: %s", e)
+        except groq_sdk.APIError as e:
+            logger.error("Groq API error in ai-improve: %s", e)
             return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
