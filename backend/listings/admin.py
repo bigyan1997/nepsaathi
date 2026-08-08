@@ -60,7 +60,7 @@ class ListingAdmin(admin.ModelAdmin):
             'fields': ('contact_email', 'contact_phone', 'contact_whatsapp')
         }),
         ('Status', {
-            'fields': ('status', 'is_featured', 'is_under_review', 'renewal_blocked', 'expires_at')
+            'fields': ('status', 'is_featured', 'is_under_review', 'renewal_blocked', 'expires_at', 'expiry_warning_sent')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
