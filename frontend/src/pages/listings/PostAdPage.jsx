@@ -7,6 +7,7 @@ import { createNotice } from "../../api/notices";
 import { createEvent } from "../../api/events";
 import ImageUpload from "../../components/ui/ImageUpload";
 import usePageTitle from "../../hooks/usePageTitle";
+import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../components/ui/Toast";
 
@@ -909,11 +910,17 @@ export default function PostAdPage() {
               <Grid2>
                 <div>
                   <label style={labelStyle}>Suburb / City *</label>
-                  <input
-                    style={inputStyle}
-                    placeholder="e.g. Parramatta"
+                  <AddressAutocomplete
                     value={baseForm.location}
-                    onChange={setBase("location")}
+                    onChange={(val) => setBaseForm(p => ({ ...p, location: val }))}
+                    onSelect={({ suburb, state, postcode }) => setBaseForm(p => ({
+                      ...p,
+                      location: suburb,
+                      ...(state && { state }),
+                      ...(postcode && { postcode }),
+                    }))}
+                    placeholder="e.g. Parramatta"
+                    inputStyle={inputStyle}
                   />
                 </div>
                 <div>

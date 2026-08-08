@@ -5,6 +5,7 @@ import { createBusiness, uploadBusinessImages } from "../../api/businesses";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
 import { STATES } from "../../utils/constants";
+import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 
 const CATEGORIES = [
   { value: "restaurant", label: "🍛 Restaurant & Cafe" },
@@ -428,11 +429,17 @@ export default function RegisterBusinessPage() {
             <div className="rb-grid2">
               <div>
                 <label style={labelStyle}>Suburb *</label>
-                <input
-                  style={inputStyle}
-                  placeholder="e.g. Parramatta"
+                <AddressAutocomplete
                   value={form.suburb}
-                  onChange={set("suburb")}
+                  onChange={(val) => setForm(p => ({ ...p, suburb: val }))}
+                  onSelect={({ suburb, state, postcode }) => setForm(p => ({
+                    ...p,
+                    suburb,
+                    ...(state && { state }),
+                    ...(postcode && { postcode }),
+                  }))}
+                  placeholder="e.g. Parramatta"
+                  inputStyle={inputStyle}
                 />
               </div>
               <div>

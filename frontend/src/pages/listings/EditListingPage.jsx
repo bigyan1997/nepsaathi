@@ -11,6 +11,7 @@ import {
 } from "../../api/notices";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
+import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 
 const inputStyle = {
   width: "100%",
@@ -302,12 +303,16 @@ export default function EditListingPage() {
         >
           <div>
             <label style={labelStyle}>Suburb / City *</label>
-            <input
-              style={inputStyle}
+            <AddressAutocomplete
               value={baseForm.location}
-              onChange={(e) =>
-                setBaseForm({ ...baseForm, location: e.target.value })
-              }
+              onChange={(val) => setBaseForm(p => ({ ...p, location: val }))}
+              onSelect={({ suburb, state, postcode }) => setBaseForm(p => ({
+                ...p,
+                location: suburb,
+                ...(state && { state }),
+                ...(postcode && { postcode }),
+              }))}
+              inputStyle={inputStyle}
             />
           </div>
           <div>
