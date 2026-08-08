@@ -12,6 +12,7 @@ import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
+import MarketBenchmark from "../../components/ui/MarketBenchmark";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
@@ -592,6 +593,7 @@ export default function JobDetailPage() {
                   );
                 })()}
               </div>
+              <MarketBenchmark type="job" jobType={job.job_type} state={job.state} />
             </div>
 
             {/* Job details — purple tinted */}

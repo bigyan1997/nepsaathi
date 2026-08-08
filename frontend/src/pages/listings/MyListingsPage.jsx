@@ -9,6 +9,7 @@ import {
   unsaveListing,
   markListingStatus,
   renewListing,
+  getMyAnalytics,
 } from "../../api/listings";
 import { createCheckoutSession, downloadInvoice } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
@@ -432,6 +433,10 @@ export default function MyListingsPage() {
   const { data: savedData, isLoading: savedLoading } = useQuery({
     queryKey: ["saved-listings"],
     queryFn: getSavedListings,
+  });
+  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+    queryKey: ["my-analytics"],
+    queryFn: getMyAnalytics,
   });
 
   /* ── mutations ── */
@@ -963,6 +968,7 @@ export default function MyListingsPage() {
             { key: "listings", label: "Listings", count: allListings.length },
             { key: "businesses", label: "Businesses", count: allBusinesses.length },
             { key: "saved", label: "Saved", count: allSaved.length },
+            { key: "analytics", label: "Analytics", count: null },
           ].map(({ key, label, count }) => (
             <button
               key={key}
@@ -986,17 +992,19 @@ export default function MyListingsPage() {
               }}
             >
               {label}
-              <span style={{
-                marginLeft: "5px",
-                background: activeTab === key ? "rgba(255,255,255,0.25)" : "#f0f0f0",
-                color: activeTab === key ? "#fff" : "#666",
-                borderRadius: "10px",
-                padding: "1px 6px",
-                fontSize: "11px",
-                fontWeight: 600,
-              }}>
-                {count}
-              </span>
+              {count !== null && (
+                <span style={{
+                  marginLeft: "5px",
+                  background: activeTab === key ? "rgba(255,255,255,0.25)" : "#f0f0f0",
+                  color: activeTab === key ? "#fff" : "#666",
+                  borderRadius: "10px",
+                  padding: "1px 6px",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                }}>
+                  {count}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -1494,6 +1502,100 @@ export default function MyListingsPage() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
+          </div>
+        )}
+
+        {/* ══ ANALYTICS TAB ══ */}
+        {activeTab === "analytics" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {analyticsLoading && [1, 2, 3].map((i) => <SkeletonCard key={i} />)}
+
+            {!analyticsLoading && (!analyticsData || analyticsData.length === 0) && (
+              <div style={{ textAlign: "center", padding: "48px", background: "#fff", borderRadius: "16px", border: "0.5px solid #e5e5e5" }}>
+                <div style={{ fontSize: "36px", marginBottom: "14px" }}>📊</div>
+                <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", marginBottom: "6px" }}>No listings yet</h3>
+                <p style={{ fontSize: "14px", color: "#888" }}>Post a listing to start seeing views, saves, and messages.</p>
+              </div>
+            )}
+
+            {analyticsData && analyticsData.length > 0 && (
+              <>
+                {/* Summary totals */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "10px", marginBottom: "4px" }}>
+                  {[
+                    { label: "Total Views", value: analyticsData.reduce((s, l) => s + l.views, 0), icon: "👁️", color: "#6C3FD6" },
+                    { label: "Total Saves", value: analyticsData.reduce((s, l) => s + l.saves, 0), icon: "🤍", color: "#e11d48" },
+                    { label: "Total Messages", value: analyticsData.reduce((s, l) => s + l.messages, 0), icon: "💬", color: "#0284c7" },
+                    { label: "Active Listings", value: analyticsData.filter(l => l.status === "active").length, icon: "✅", color: "#16a34a" },
+                  ].map(({ label, value, icon, color }) => (
+                    <div key={label} style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "14px 16px", textAlign: "center" }}>
+                      <div style={{ fontSize: "22px", marginBottom: "4px" }}>{icon}</div>
+                      <div style={{ fontSize: "22px", fontWeight: 800, color }}>{value}</div>
+                      <div style={{ fontSize: "11px", color: "#888", marginTop: "2px", fontWeight: 500 }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Per-listing rows */}
+                {analyticsData.map((l) => {
+                  const typeColor = TYPE_COLORS[l.listing_type] || TYPE_COLORS.job;
+                  const typeEmoji = TYPE_EMOJIS[l.listing_type] || "📌";
+                  const totalEngagement = l.views + l.saves * 3 + l.messages * 5;
+                  const tip =
+                    l.views === 0 ? "No views yet — try adding more photos or a clearer title." :
+                    l.messages === 0 && l.views > 10 ? "People are looking but not messaging — check your contact details." :
+                    l.saves > 0 && l.messages === 0 ? "Saved by people but no messages — consider adding a WhatsApp number." :
+                    null;
+
+                  return (
+                    <div key={l.id} style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "16px", borderLeft: `3px solid ${typeColor.dot || "#534AB7"}` }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "12px" }}>
+                        <span style={{ fontSize: "18px", flexShrink: 0 }}>{typeEmoji}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: "14px", fontWeight: 700, color: "#1e1e2e", marginBottom: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{l.title}</div>
+                          <div style={{ fontSize: "12px", color: "#888" }}>{l.location} · {l.status}</div>
+                        </div>
+                        <span style={{ fontSize: "11px", fontWeight: 700, padding: "2px 8px", borderRadius: "6px", background: l.status === "active" ? "#f0fdf4" : "#f5f5f5", color: l.status === "active" ? "#16a34a" : "#888", flexShrink: 0 }}>
+                          {l.status}
+                        </span>
+                      </div>
+
+                      {/* Stats row */}
+                      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                        {[
+                          { icon: "👁️", label: "Views", value: l.views, color: "#6C3FD6" },
+                          { icon: "🤍", label: "Saves", value: l.saves, color: "#e11d48" },
+                          { icon: "💬", label: "Messages", value: l.messages, color: "#0284c7" },
+                        ].map(({ icon, label, value, color }) => (
+                          <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span style={{ fontSize: "14px" }}>{icon}</span>
+                            <span style={{ fontSize: "18px", fontWeight: 700, color }}>{value}</span>
+                            <span style={{ fontSize: "11px", color: "#aaa", fontWeight: 500 }}>{label}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Engagement bar */}
+                      {l.views > 0 && (
+                        <div style={{ marginTop: "10px" }}>
+                          <div style={{ height: "4px", background: "#f0f0f0", borderRadius: "4px", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: `${Math.min(100, totalEngagement / 2)}%`, background: "linear-gradient(90deg, #6C3FD6, #4F46E5)", borderRadius: "4px", transition: "width 0.5s" }} />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tip */}
+                      {tip && (
+                        <div style={{ marginTop: "10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", color: "#9a3412", display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                          <span style={{ flexShrink: 0 }}>💡</span>
+                          <span>{tip}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </div>
         )}
       </div>

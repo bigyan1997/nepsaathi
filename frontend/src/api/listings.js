@@ -130,6 +130,18 @@ export const getFeaturedListings = async () => {
   return response.data;
 };
 
+// Market benchmark (salary / rent)
+export const getBenchmark = async (params) => {
+  const response = await api.get("/api/listings/benchmark/", { params });
+  return response.data;
+};
+
+// Lister analytics
+export const getMyAnalytics = async () => {
+  const response = await api.get("/api/listings/my-analytics/");
+  return response.data;
+};
+
 // Saved searches
 export const getSavedSearches = async () => {
   const response = await api.get("/api/listings/saved-searches/");

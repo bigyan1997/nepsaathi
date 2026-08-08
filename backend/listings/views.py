@@ -859,6 +859,113 @@ class RenewListingView(APIView):
         })
 
 
+class ListingBenchmarkView(APIView):
+    """
+    GET /api/listings/benchmark/
+    Returns avg/min/max salary for jobs or rent for rooms to show market context inside a listing.
+    ?type=job&job_type=casual&state=NSW
+    ?type=room&location=Parramatta&state=NSW
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        from django.db.models import Avg, Min, Max, Count as DCount
+        listing_type = request.query_params.get('type', '')
+        state = request.query_params.get('state', '')
+
+        if listing_type == 'job':
+            from jobs.models import Job
+            job_type = request.query_params.get('job_type', '')
+            qs = Job.objects.filter(
+                listing__status='active',
+                listing__state=state,
+            ).exclude(salary__isnull=True).exclude(salary_type='negotiable')
+            if job_type:
+                qs = qs.filter(job_type=job_type)
+            agg = qs.aggregate(avg=Avg('salary'), mn=Min('salary'), mx=Max('salary'), cnt=DCount('id'))
+            if not agg['cnt']:
+                return Response({'available': False})
+            salary_types = list(qs.values_list('salary_type', flat=True))
+            most_common_type = max(set(salary_types), key=salary_types.count) if salary_types else 'hourly'
+            suffix = {'hourly': '/hr', 'weekly': '/wk', 'monthly': '/mo', 'yearly': '/yr'}.get(most_common_type, '/hr')
+            return Response({
+                'available': True,
+                'count': agg['cnt'],
+                'avg': round(float(agg['avg'] or 0), 2),
+                'min': round(float(agg['mn'] or 0), 2),
+                'max': round(float(agg['mx'] or 0), 2),
+                'suffix': suffix,
+                'label': f"{job_type.replace('_', ' ').title()} jobs in {state}" if job_type else f"Jobs in {state}",
+            })
+
+        if listing_type == 'room':
+            from rooms.models import Room
+            location = request.query_params.get('location', '')
+            qs = Room.objects.filter(listing__status='active', listing__state=state)
+            if location:
+                qs = qs.filter(listing__location__icontains=location)
+            agg = qs.aggregate(avg=Avg('price'), mn=Min('price'), mx=Max('price'), cnt=DCount('id'))
+            if not agg['cnt']:
+                # Fall back to state-wide average if suburb has no data
+                agg = Room.objects.filter(listing__status='active', listing__state=state).aggregate(
+                    avg=Avg('price'), mn=Min('price'), mx=Max('price'), cnt=DCount('id')
+                )
+                if not agg['cnt']:
+                    return Response({'available': False})
+                location = ''
+            return Response({
+                'available': True,
+                'count': agg['cnt'],
+                'avg': round(float(agg['avg'] or 0), 2),
+                'min': round(float(agg['mn'] or 0), 2),
+                'max': round(float(agg['mx'] or 0), 2),
+                'label': f"Rooms in {location}" if location else f"Rooms in {state}",
+            })
+
+        return Response({'available': False})
+
+
+class MyListingAnalyticsView(APIView):
+    """GET /api/listings/my-analytics/ — per-listing stats for the logged-in user."""
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        from django.db.models import Count as DCount
+        from messaging.models import Conversation
+
+        listings = Listing.objects.filter(user=request.user).exclude(status='deleted').order_by('-created_at')
+        listing_ids = list(listings.values_list('id', flat=True))
+
+        view_counts = {r['listing_id']: r['c'] for r in
+                       ListingView.objects.filter(listing_id__in=listing_ids)
+                                          .values('listing_id').annotate(c=DCount('id'))}
+
+        save_counts = {r['listing_id']: r['c'] for r in
+                       SavedListing.objects.filter(listing_id__in=listing_ids)
+                                           .values('listing_id').annotate(c=DCount('id'))}
+
+        msg_counts = {r['listing_id']: r['c'] for r in
+                      Conversation.objects.filter(listing_id__in=listing_ids)
+                                          .values('listing_id').annotate(c=DCount('id'))}
+
+        results = []
+        for l in listings:
+            results.append({
+                'id': l.id,
+                'slug': l.slug,
+                'title': l.title,
+                'listing_type': l.listing_type,
+                'status': l.status,
+                'location': l.location,
+                'created_at': l.created_at,
+                'views': view_counts.get(l.id, 0),
+                'saves': save_counts.get(l.id, 0),
+                'messages': msg_counts.get(l.id, 0),
+            })
+
+        return Response(results)
+
+
 def _trigger_saved_search_alerts(listing, send_fn):
     """Check saved searches matching a newly created listing and fire email alerts."""
     import threading
