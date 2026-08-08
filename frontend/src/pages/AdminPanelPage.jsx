@@ -348,7 +348,7 @@ export default function AdminPanelPage() {
           </div>
 
           {/* ── Time series charts ─────────────────────────────────────────── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14, marginBottom: 14 }}>
             <Card title="New Users — Last 30 Days">
               {usersTimeSeries.every((d) => d.count === 0) ? (
                 <EmptyState msg="No new users in the last 30 days" />
@@ -383,7 +383,7 @@ export default function AdminPanelPage() {
           </div>
 
           {/* ── Breakdown charts ───────────────────────────────────────────── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14, marginBottom: 14 }}>
             <Card title="Active Listings by Type">
               {listingsByTypeArr.length === 0 ? <EmptyState /> : (
                 <ResponsiveContainer width="100%" height={220}>
@@ -422,7 +422,7 @@ export default function AdminPanelPage() {
           </div>
 
           {/* ── Revenue + Feedback ─────────────────────────────────────────── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14, marginBottom: 14 }}>
             <Card title="Revenue by Month (AUD)">
               {!data?.revenue_by_month?.length ? (
                 <EmptyState msg="No completed payments yet" />
@@ -486,7 +486,7 @@ export default function AdminPanelPage() {
           </div>
 
           {/* ── Status + Business category ─────────────────────────────────── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14, marginBottom: 14 }}>
             <Card title="All Listings by Status">
               {listingsByStatusArr.length === 0 ? <EmptyState /> : (
                 <ResponsiveContainer width="100%" height={180}>
@@ -599,7 +599,7 @@ export default function AdminPanelPage() {
           </Card>
 
           {/* ── Recent Payments + Top Listings ─────────────────────────────── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14, marginBottom: 14 }}>
 
             <Card title="Recent Payments">
               {recentPayments.length === 0 ? (
@@ -753,7 +753,7 @@ function LoadingSkeleton() {
           <div key={i} style={{ ...pulse, height: 90 }} />
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14 }}>
         {[...Array(4)].map((_, i) => (
           <div key={i} style={{ ...pulse, height: 240 }} />
         ))}

@@ -185,7 +185,7 @@ export default function ConversationPage() {
   const other = conversation?.other_user;
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", height: "calc(100vh - 100px)" }}>
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", height: "calc(100dvh - 100px)" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <button

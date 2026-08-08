@@ -1021,7 +1021,7 @@ export default function MyListingsPage() {
               @keyframes slideDown { from { transform: translateX(-50%) translateY(-20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
             `}</style>
             {selectedIds.size > 0 && (
-              <div style={{ position: "fixed", top: "80px", left: "50%", transform: "translateX(-50%)", background: "#fff", borderRadius: "16px", padding: "10px 16px", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 4px 24px rgba(0,0,0,0.14)", border: "0.5px solid #e5e5e5", zIndex: 1000, animation: "slideDown 0.2s ease", whiteSpace: "nowrap" }}>
+              <div style={{ position: "fixed", top: "80px", left: "50%", transform: "translateX(-50%)", background: "#fff", borderRadius: "16px", padding: "10px 16px", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 4px 24px rgba(0,0,0,0.14)", border: "0.5px solid #e5e5e5", zIndex: 1000, animation: "slideDown 0.2s ease", whiteSpace: "nowrap", maxWidth: "calc(100vw - 32px)", overflowX: "auto" }}>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>{selectedIds.size} selected</span>
                 <div style={{ width: "1px", height: "20px", background: "#e5e5e5" }} />
                 <button onClick={bulkMarkFilled} style={{ background: "#F0EFF9", color: "#534AB7", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>✓ Mark filled</button>

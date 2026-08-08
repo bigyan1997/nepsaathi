@@ -83,15 +83,15 @@ export default function RemittancePage() {
         background: "#fff",
         border: "1.5px solid #534AB7",
         borderRadius: 16,
-        padding: "24px 28px",
+        padding: "20px 22px",
         marginBottom: 24,
         display: "flex",
         alignItems: "center",
         gap: 16,
         flexWrap: "wrap",
       }}>
-        <div style={{ flex: "1 1 200px" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
+        <div style={{ flex: "1 1 160px" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
             I want to send
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -108,22 +108,24 @@ export default function RemittancePage() {
                 border: "none",
                 outline: "none",
                 background: "transparent",
-                width: 140,
+                width: "100%",
+                minWidth: 80,
+                maxWidth: 160,
               }}
             />
           </div>
         </div>
-        <div style={{ borderLeft: "1px solid #f0f0f0", paddingLeft: 24, flex: "1 1 180px" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
+        <div style={{ flex: "1 1 140px", paddingLeft: 16, borderLeft: "1px solid #f0f0f0" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
             To
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: "#26215C" }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#26215C" }}>
             🇳🇵 Nepal (NPR)
           </div>
         </div>
         {midMarket && (
-          <div style={{ borderLeft: "1px solid #f0f0f0", paddingLeft: 24, flex: "0 0 auto" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
+          <div style={{ flex: "1 1 140px", paddingLeft: 16, borderLeft: "1px solid #f0f0f0" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
               Best rate today
             </div>
             <div style={{ fontSize: 20, fontWeight: 800, color: "#16a34a" }}>
@@ -212,13 +214,13 @@ export default function RemittancePage() {
               )}
 
               {/* Provider */}
-              <div style={{ flex: "0 0 130px" }}>
+              <div style={{ flex: "0 0 auto", minWidth: 100 }}>
                 <ProviderBadge provider={r.provider} />
               </div>
 
               {/* Rate */}
-              <div style={{ flex: "1 1 120px" }}>
-                <div style={{ fontSize: 11, color: "#aaa", marginBottom: 2 }}>Exchange rate</div>
+              <div style={{ flex: "1 1 100px" }}>
+                <div style={{ fontSize: 12, color: "#aaa", marginBottom: 2 }}>Exchange rate</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#26215C" }}>
                   {r.rate.toFixed(2)} <span style={{ fontSize: 12, fontWeight: 400, color: "#888" }}>NPR/AUD</span>
                 </div>
@@ -226,15 +228,15 @@ export default function RemittancePage() {
 
               {/* Fee */}
               <div style={{ flex: "1 1 80px" }}>
-                <div style={{ fontSize: 11, color: "#aaa", marginBottom: 2 }}>Transfer fee</div>
+                <div style={{ fontSize: 12, color: "#aaa", marginBottom: 2 }}>Transfer fee</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: r.fee === 0 ? "#16a34a" : "#26215C" }}>
                   {r.fee === 0 ? "Free" : `$${r.fee.toFixed(2)}`}
                 </div>
               </div>
 
               {/* Received */}
-              <div style={{ flex: "1 1 130px" }}>
-                <div style={{ fontSize: 11, color: "#aaa", marginBottom: 2 }}>Recipient gets</div>
+              <div style={{ flex: "1 1 120px" }}>
+                <div style={{ fontSize: 12, color: "#aaa", marginBottom: 2 }}>Recipient gets</div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: idx === 0 ? "#16a34a" : "#534AB7" }}>
                   {r.received.toLocaleString()} <span style={{ fontSize: 13, fontWeight: 500, color: "#888" }}>NPR</span>
                 </div>

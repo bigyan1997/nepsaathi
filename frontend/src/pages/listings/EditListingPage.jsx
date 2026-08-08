@@ -224,7 +224,7 @@ export default function EditListingPage() {
     );
 
   return (
-    <div style={{ maxWidth: "620px", margin: "0 auto", padding: "28px" }}>
+    <div style={{ maxWidth: "620px", margin: "0 auto", padding: "28px 16px" }} className="edit-listing-root">
       <div style={{ marginBottom: "28px" }}>
         <h1
           style={{
@@ -246,7 +246,7 @@ export default function EditListingPage() {
           background: "#fff",
           border: "0.5px solid #e5e5e5",
           borderRadius: "14px",
-          padding: "28px",
+          padding: "20px",
           display: "flex",
           flexDirection: "column",
           gap: "16px",
@@ -296,7 +296,7 @@ export default function EditListingPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
             gap: "12px",
           }}
         >
@@ -394,7 +394,7 @@ export default function EditListingPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "12px",
               }}
             >
@@ -486,7 +486,7 @@ export default function EditListingPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "12px",
               }}
             >
@@ -526,7 +526,7 @@ export default function EditListingPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
                 gap: "12px",
               }}
             >
@@ -618,7 +618,7 @@ export default function EditListingPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "12px",
               }}
             >
@@ -668,7 +668,7 @@ export default function EditListingPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "12px",
               }}
             >
@@ -745,7 +745,7 @@ export default function EditListingPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "12px",
               }}
             >
