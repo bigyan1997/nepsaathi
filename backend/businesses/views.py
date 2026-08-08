@@ -277,9 +277,14 @@ class BusinessImageUploadView(APIView):
         has_existing = business.images.exists()
         uploaded = []
         for i, image in enumerate(images):
-            if not image.content_type.startswith('image/'):
-                continue
             if image.size > 5 * 1024 * 1024:
+                continue
+            try:
+                from PIL import Image as PilImage
+                image.seek(0)
+                PilImage.open(image).verify()
+                image.seek(0)
+            except Exception:
                 continue
             biz_image = BusinessImage.objects.create(
                 business=business,

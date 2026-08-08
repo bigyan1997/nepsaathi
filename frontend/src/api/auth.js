@@ -28,7 +28,7 @@ export const logout = async (refreshToken) => {
     return response.data;
   } finally {
     // ALWAYS remove tokens, even if the API call fails (e.g., token already invalid)
-    localStorage.removeItem("nepsaathi_access_token");
+    sessionStorage.removeItem("nepsaathi_access_token");
     localStorage.removeItem("nepsaathi_refresh_token");
   }
 };
@@ -77,7 +77,7 @@ export const googleLogin = async (accessToken) => {
   // Fetch full profile to get google_avatar and all fields
   if (data.access) {
     try {
-      localStorage.setItem("nepsaathi_access_token", data.access);
+      sessionStorage.setItem("nepsaathi_access_token", data.access);
       if (data.refresh) {
         localStorage.setItem("nepsaathi_refresh_token", data.refresh);
       }

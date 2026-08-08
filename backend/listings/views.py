@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Listing, ListingImage, ListingReport, SavedListing, ListingView, SavedSearch
 from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer, SavedSearchSerializer
-from .throttles import ListingCreateThrottle
+from .throttles import ListingCreateThrottle, ListingViewThrottle
 from django.utils import timezone
 from django.db.models import Q
 from datetime import timedelta
@@ -218,7 +218,7 @@ class ListingCreateView(generics.CreateAPIView):
 
         # Cross-user duplicate check — run in background so it doesn't block the response
         import threading
-        threading.Thread(target=_flag_if_duplicate, args=(listing, user), daemon=True).start()
+        threading.Thread(target=_flag_if_duplicate, args=(listing, user), daemon=False).start()
 
         # Fire saved search alerts in background
         try:
@@ -351,12 +351,17 @@ class ListingImageUploadView(APIView):
         has_existing_images = listing.images.exists()
         uploaded = []
         for i, image in enumerate(images):
-            # Validate file is an image
-            if not image.content_type.startswith('image/'):
-                continue
-
             # Validate file size — max 5MB
             if image.size > 5 * 1024 * 1024:
+                continue
+
+            # Validate actual file bytes (not client-declared MIME) using Pillow
+            try:
+                from PIL import Image as PilImage
+                image.seek(0)
+                PilImage.open(image).verify()
+                image.seek(0)
+            except Exception:
                 continue
 
             img_hash = _image_md5(image)
@@ -604,6 +609,7 @@ class TrackListingViewView(APIView):
     Track a unique view for a listing.
     """
     permission_classes = (permissions.AllowAny,)
+    throttle_classes = (ListingViewThrottle,)
 
     def post(self, request, pk):
         try:
@@ -614,7 +620,7 @@ class TrackListingViewView(APIView):
         # Get IP address
         ip = request.META.get('HTTP_X_FORWARDED_FOR', '')
         if ip:
-            ip = ip.split(',')[0].strip()
+            ip = ip.split(',')[-1].strip()   # rightmost = Railway-appended real IP; cannot be spoofed
         else:
             ip = request.META.get('REMOTE_ADDR', '')
         if not ip:
@@ -1007,7 +1013,7 @@ def _trigger_saved_search_alerts(listing, send_fn):
             except Exception as e:
                 logger.error('[SEARCH ALERT] Search #%s failed: %s', saved.id, e)
 
-    threading.Thread(target=_run, daemon=True).start()
+    threading.Thread(target=_run, daemon=False).start()
 
 
 class SavedSearchListView(APIView):

@@ -95,6 +95,8 @@ class ForumPostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+        if request.user.is_banned:
+            raise PermissionDenied('Your account has been suspended.')
         if instance.is_closed:
             raise PermissionDenied('This post is closed and cannot be edited.')
         allowed = {k: v for k, v in request.data.items() if k in ('body',)}

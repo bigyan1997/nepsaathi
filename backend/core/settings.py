@@ -167,6 +167,7 @@ REST_FRAMEWORK = {
         'saved_search_create': '20/day' if not DEBUG else '1000/day',
         'contact': '5/hour' if not DEBUG else '1000/day',
         'payment_status': '30/minute' if not DEBUG else '1000/day',
+        'listing_view': '60/minute' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -190,7 +191,9 @@ REST_AUTH = {
     'JWT_AUTH_COOKIE': 'nepsaathi-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'nepsaathi-refresh',
     'JWT_AUTH_RETURN_EXPIRATION': True,
-    'JWT_AUTH_HTTPONLY': False,  # Tokens returned in JSON body; axios reads them from localStorage, not cookies
+    'JWT_AUTH_HTTPONLY': True,   # Refresh cookie is httpOnly; access token still returned in body for in-memory use
+    'JWT_AUTH_SAMESITE': 'Lax',
+    'JWT_AUTH_SECURE': not DEBUG,
     'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',

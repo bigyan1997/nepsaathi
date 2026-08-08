@@ -1,4 +1,8 @@
 import html as html_module
+
+def _h(s):
+    """HTML-escape any user-supplied value before inserting into email templates."""
+    return html_module.escape(str(s) if s is not None else '')
 import resend
 import threading
 from datetime import timedelta
@@ -6,7 +10,7 @@ from urllib.parse import quote
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
-ADMIN_URL    = config('ADMIN_PANEL_URL', default='http://localhost:8000/ADMIN_PATH_REDACTED')
+ADMIN_URL    = config('ADMIN_URL', default='http://localhost:8000/ADMIN_PATH_REDACTED')
 
 # ─────────────────────────────────────────────────────────────
 # SHARED BASE COMPONENTS
@@ -120,6 +124,7 @@ def _info_box(text: str, bg: str = "#EEEDFE", border: str = "#AFA9EC", color: st
 </table>"""
 
 def _listing_card(title: str, url: str, meta: str = "", emoji: str = "&#128204;", bg: str = "#EEEDFE", link_label: str = "View") -> str:
+    title = _h(title)
     return f"""
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:20px 0;">
   <tr>
@@ -210,7 +215,7 @@ def _fire(params: dict):
 
 def send_welcome_email(user):
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         body = f"""
 <h1 {_H1}>Welcome to NepSaathi! &#127881;</h1>
 <p {_P}>
@@ -279,7 +284,7 @@ def send_welcome_email(user):
 
 def send_email_verification_email(user, email, confirm_url):
     try:
-        first_name = getattr(user, 'first_name', None) or 'there'
+        first_name = _h(getattr(user, 'first_name', None) or 'there')
         safe_url = html_module.escape(confirm_url)
         body = f"""
 <h1 {_H1}>Verify your email address &#9993;</h1>
@@ -315,7 +320,7 @@ def send_email_verification_email(user, email, confirm_url):
 
 def send_password_reset_email(user, reset_url):
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         safe_url = html_module.escape(reset_url)
         body = f"""
 <h1 {_H1}>Reset your password &#128274;</h1>
@@ -390,7 +395,7 @@ def send_report_emails(report):
         })
 
         # — Owner notification —
-        first_name = listing.user.first_name or 'there'
+        first_name = _h(listing.user.first_name or 'there')
         owner_body = f"""
 <h1 {_H1}>Your listing has been reported</h1>
 <p {_P}>
@@ -430,7 +435,7 @@ def send_listing_cleared_email(report):
     listing = report.listing
     listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     try:
-        first_name = listing.user.first_name or 'there'
+        first_name = _h(listing.user.first_name or 'there')
         body = f"""
 <h1 {_H1}>Your listing has been cleared &#9989;</h1>
 <p {_P}>
@@ -470,7 +475,7 @@ def send_listing_cleared_email(report):
 def send_listing_removed_email(report, reason):
     listing = report.listing
     try:
-        first_name = listing.user.first_name or 'there'
+        first_name = _h(listing.user.first_name or 'there')
         safe_reason = html_module.escape(str(reason))
         body = f"""
 <h1 {_H1}>Your listing has been removed</h1>
@@ -516,7 +521,7 @@ def send_expiry_warning_email(listing):
     listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
-        first_name = listing.user.first_name or 'there'
+        first_name = _h(listing.user.first_name or 'there')
         expires_at = listing.expires_at.strftime('%d %B %Y')
         body = f"""
 <h1 {_H1}>Your listing is expiring soon &#9201;</h1>
@@ -561,6 +566,7 @@ def send_expiry_warning_email(listing):
 
 def send_contact_email(name, email, subject, message):
     safe_name    = html_module.escape(name)
+    safe_email   = html_module.escape(email)
     safe_subject = html_module.escape(subject)
     safe_message = html_module.escape(message)
 
@@ -571,7 +577,7 @@ def send_contact_email(name, email, subject, message):
 
 {_listing_card(
     safe_name,
-    f"mailto:{email}?subject=Re: {quote(subject)}",
+    f"mailto:{safe_email}?subject=Re: {quote(subject)}",
     f"Subject: {safe_subject}",
     emoji="&#128140;",
     bg="#EEEDFE",
@@ -583,46 +589,17 @@ def send_contact_email(name, email, subject, message):
 <p style="font-size:14px;color:#555555;line-height:1.8;white-space:pre-wrap;font-family:Arial,sans-serif;">{safe_message}</p>
 {_DIVIDER}
 <p {_SMALL}>
-  Reply directly to <a href="mailto:{email}" style="color:#534AB7;text-decoration:none;">{email}</a> to respond.
+  Reply directly to <a href="mailto:{safe_email}" style="color:#534AB7;text-decoration:none;">{safe_email}</a> to respond.
 </p>"""
 
         _fire({
             'from':     'NepSaathi Contact <noreply@nepsaathi.com>',
             'to':       ['hello@nepsaathi.com'],
-            'reply_to': f'{safe_name} <{email}>',
+            'reply_to': f'{safe_name} <{safe_email}>',
             'subject':  f'[Contact] {safe_subject} — from {safe_name}',
             'html':     _wrap(admin_body),
         })
 
-        # — User confirmation —
-        user_body = f"""
-<h1 {_H1}>We got your message! &#9989;</h1>
-<p {_P}>
-  Hi <strong>{safe_name}</strong>, thanks for reaching out to NepSaathi.
-  We'll get back to you within 24 hours at <strong>{email}</strong>.
-</p>
-
-{_info_box(
-    f"<strong>Subject:</strong> {safe_subject}<br><br>"
-    f"{safe_message}",
-    bg="#F5F4F0", border="#e8e8e8", color="#555555"
-)}
-
-{_info_box(
-    "&#128172; If your enquiry is urgent, you can also reach us directly at "
-    "<a href='mailto:hello@nepsaathi.com' style='color:#534AB7;font-weight:600;'>hello@nepsaathi.com</a>",
-    bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
-)}
-
-{_DIVIDER}
-<p {_SMALL}>Thank you for being part of the NepSaathi community.</p>"""
-
-        _fire({
-            'from':    'NepSaathi <noreply@nepsaathi.com>',
-            'to':      [email],
-            'subject': 'We received your message — NepSaathi',
-            'html':    _wrap(user_body),
-        })
     except Exception as e:
         print(f'Contact email failed: {e}', flush=True)
 
@@ -669,7 +646,7 @@ def send_business_report_emails(report):
         })
 
         # — Owner notification —
-        first_name = business.owner.first_name or 'there'
+        first_name = _h(business.owner.first_name or 'there')
         owner_body = f"""
 <h1 {_H1}>Your business has been reported</h1>
 <p {_P}>
@@ -709,7 +686,7 @@ def send_business_cleared_email(report):
     business = report.business
     business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
     try:
-        first_name = business.owner.first_name or 'there'
+        first_name = _h(business.owner.first_name or 'there')
         body = f"""
 <h1 {_H1}>Your business has been cleared &#9989;</h1>
 <p {_P}>
@@ -755,7 +732,7 @@ def send_business_cleared_email(report):
 def send_business_verified_email(business):
     business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
     try:
-        first_name = business.owner.first_name or 'there'
+        first_name = _h(business.owner.first_name or 'there')
         body = f"""
 <h1 {_H1}>Your business is now verified &#9989;</h1>
 <p {_P}>
@@ -801,7 +778,7 @@ def send_business_verified_email(business):
 
 def send_business_removed_email(business, reason=''):
     try:
-        first_name = business.owner.first_name or 'there'
+        first_name = _h(business.owner.first_name or 'there')
         safe_reason = html_module.escape(str(reason)) if reason else 'Violation of community guidelines'
         body = f"""
 <h1 {_H1}>Your business has been removed</h1>
@@ -845,7 +822,7 @@ def send_business_removed_email(business, reason=''):
 
 def send_user_verified_email(user):
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         body = f"""
 <h1 {_H1}>Your account is now verified &#9989;</h1>
 <p {_P}>
@@ -882,7 +859,7 @@ def send_user_verified_email(user):
 
 def send_user_banned_email(user):
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         safe_reason = html_module.escape(user.ban_reason) if user.ban_reason else 'Violation of community guidelines'
         body = f"""
 <h1 {_H1}>Your account has been suspended</h1>
@@ -927,7 +904,7 @@ def send_listing_renewed_email(listing):
     listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
-        first_name = listing.user.first_name or 'there'
+        first_name = _h(listing.user.first_name or 'there')
         expires_at = listing.expires_at.strftime('%d %B %Y')
         body = f"""
 <h1 {_H1}>Your listing has been renewed &#128260;</h1>
@@ -982,7 +959,7 @@ def send_saved_search_alert_email(user, listing, saved_search_id):
     }
     label, emoji, bg = type_labels.get(listing_type, ('Listing', '&#128204;', '#EEEDFE'))
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         body = f"""
 <h1 {_H1}>New {label} matching your saved search &#128276;</h1>
 <p {_P}>
@@ -1019,7 +996,7 @@ def send_business_saved_search_alert_email(user, business, saved_search_id):
     business_url = f"{FRONTEND_URL}/businesses/{business.slug}"
     manage_url = f"{FRONTEND_URL}/saved-searches"
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         body = f"""
 <h1 {_H1}>New business matching your saved search &#128276;</h1>
 <p {_P}>
@@ -1057,7 +1034,7 @@ def send_payment_invoice_email(payment):
     listing = payment.listing
     listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
     try:
-        first_name = payment.user.first_name or 'there'
+        first_name = _h(payment.user.first_name or 'there')
         invoice_number = f"INV-{payment.id:05d}"
         amount_aud = payment.amount_paid / 100
         date_paid = payment.completed_at.strftime('%d %B %Y')
@@ -1223,7 +1200,7 @@ def send_spam_detected_email(listing, reason, matched_listing=None):
 def send_listing_expired_email(listing):
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
-        first_name = listing.user.first_name or 'there'
+        first_name = _h(listing.user.first_name or 'there')
         body = f"""
 <h1 {_H1}>Your listing has expired &#9201;</h1>
 <p {_P}>
@@ -1270,7 +1247,7 @@ def send_listing_expired_email(listing):
 def send_event_reminder_email(user, event):
     event_url = f"{FRONTEND_URL}/events/{event.listing.slug}"
     try:
-        first_name = user.first_name or 'there'
+        first_name = _h(user.first_name or 'there')
         event_date_str = event.event_date.strftime('%A, %d %B %Y at %I:%M %p')
         venue_str = event.venue if event.venue else ('Online' if event.is_online else 'TBA')
         body = f"""

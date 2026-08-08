@@ -1,59 +1,39 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Zustand store for NepSaathi authentication state
-// persist middleware saves the state to localStorage
-// so the user stays logged in after page refresh
+// Access token: sessionStorage — tab-scoped, cleared on browser close, never persisted
+// Refresh token: localStorage — needed so the user stays logged in across page reloads
+// Neither token is stored in Zustand state; only the user object is persisted
 const useAuthStore = create(
   persist(
     (set) => ({
-      // State
       user: null,
-      accessToken: null,
-      refreshToken: null,
       isAuthenticated: false,
 
-      // Actions
       setAuth: (user, accessToken, refreshToken) => {
-        // Save tokens to localStorage for axios interceptor
-        localStorage.setItem("nepsaathi_access_token", accessToken);
-        localStorage.setItem("nepsaathi_refresh_token", refreshToken);
-        set({
-          user,
-          accessToken,
-          refreshToken,
-          isAuthenticated: true,
-        });
+        if (accessToken) sessionStorage.setItem("nepsaathi_access_token", accessToken);
+        if (refreshToken) localStorage.setItem("nepsaathi_refresh_token", refreshToken);
+        set({ user, isAuthenticated: true });
       },
 
       logout: () => {
-        // Clear all token storage locations
-        localStorage.removeItem("nepsaathi_access_token");
+        sessionStorage.removeItem("nepsaathi_access_token");
         localStorage.removeItem("nepsaathi_refresh_token");
-        localStorage.removeItem("nepsaathi-auth"); // Zustand persist key — must clear this too or stale auth state survives a page reload
-        set({
-          user: null,
-          accessToken: null,
-          refreshToken: null,
-          isAuthenticated: false,
-        });
-        // Force a hard navigation to login to ensure memory is wiped
+        localStorage.removeItem("nepsaathi-auth");
+        set({ user: null, isAuthenticated: false });
         window.location.href = "/login";
       },
 
       updateUser: (user) => set({ user }),
+
       setAccessToken: (accessToken) => {
-        localStorage.setItem("nepsaathi_access_token", accessToken);
-        set({ accessToken });
+        sessionStorage.setItem("nepsaathi_access_token", accessToken);
       },
     }),
     {
       name: "nepsaathi-auth",
-      // Only persist these fields to localStorage
       partialize: (state) => ({
         user: state.user,
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
     },

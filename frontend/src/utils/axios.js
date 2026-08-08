@@ -3,15 +3,16 @@ import useAuthStore from "../store/authStore";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request interceptor — attach access token
+// Request interceptor — attach access token from sessionStorage
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("nepsaathi_access_token");
+    const token = sessionStorage.getItem("nepsaathi_access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -36,11 +37,12 @@ const processQueue = (error, token = null) => {
 };
 
 const clearAuth = () => {
-  localStorage.removeItem("nepsaathi_access_token");
+  sessionStorage.removeItem("nepsaathi_access_token");
   localStorage.removeItem("nepsaathi_refresh_token");
   localStorage.removeItem("nepsaathi-auth");
   useAuthStore.getState().logout();
 };
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -51,15 +53,15 @@ api.interceptors.response.use(
     if (status === 401 && !originalRequest._retry) {
       const refreshToken = localStorage.getItem("nepsaathi_refresh_token");
 
-      // No refresh token — only redirect if was logged in
+      // No refresh token — only clear auth if was logged in
       if (!refreshToken) {
-        if (localStorage.getItem("nepsaathi_access_token")) {
+        if (useAuthStore.getState().isAuthenticated) {
           clearAuth();
         }
         return Promise.reject(error);
       }
 
-      // Queue concurrent 401s instead of firing multiple refresh calls — whichever resolves first replays them all
+      // Queue concurrent 401s instead of firing multiple refresh calls
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -78,11 +80,11 @@ api.interceptors.response.use(
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/auth/token/refresh/`,
           { refresh: refreshToken },
+          { withCredentials: true },
         );
         const newToken = response.data.access;
-        localStorage.setItem("nepsaathi_access_token", newToken);
+        sessionStorage.setItem("nepsaathi_access_token", newToken);
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-        // Update Zustand store with new token
         try {
           useAuthStore.getState().setAccessToken(newToken);
         } catch (e) {

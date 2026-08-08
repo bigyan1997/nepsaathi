@@ -9,6 +9,8 @@ from dj_rest_auth.registration.views import SocialLoginView
 from decouple import config
 from .serializers import UserSerializer, PublicProfileSerializer
 from django.contrib.auth import get_user_model
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
@@ -140,7 +142,6 @@ class ContactView(APIView):
         subject = request.data.get('subject', 'NepSaathi Enquiry').strip()
         message = request.data.get('message', '').strip()
 
-        import re
         if not name or not email or not message:
             return Response(
                 {'detail': 'Name, email and message are required.'},
@@ -152,7 +153,9 @@ class ContactView(APIView):
             return Response({'detail': 'Subject cannot exceed 200 characters.'}, status=status.HTTP_400_BAD_REQUEST)
         if len(message) > 5000:
             return Response({'detail': 'Message cannot exceed 5000 characters.'}, status=status.HTTP_400_BAD_REQUEST)
-        if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
+        try:
+            validate_email(email)
+        except DjangoValidationError:
             return Response(
                 {'detail': 'Please enter a valid email address.'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -215,8 +218,8 @@ class ThrottledLoginView(APIView):
             except ValueError:
                 cache.set(cache_key, 1, timeout=300)
             return Response(
-                {'detail': 'No account found with this email address.'},
-                status=status.HTTP_404_NOT_FOUND,
+                {'non_field_errors': ['Invalid credentials.']},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         response = LoginView.as_view()(request._request, *args, **kwargs)
@@ -233,7 +236,7 @@ class ThrottledLoginView(APIView):
             errors = resp_data.get('non_field_errors', [])
             if errors and errors[0] == 'Unable to log in with provided credentials.':
                 return Response(
-                    {'non_field_errors': ['Incorrect password.']},
+                    {'non_field_errors': ['Invalid credentials.']},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return response

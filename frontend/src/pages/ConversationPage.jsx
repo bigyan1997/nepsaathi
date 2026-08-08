@@ -49,7 +49,7 @@ export default function ConversationPage() {
     let delay = 2000; // backoff: 2s → 4s → 8s … capped at 30s
 
     const connect = () => {
-      const token = localStorage.getItem("nepsaathi_access_token");
+      const token = sessionStorage.getItem("nepsaathi_access_token");
       if (!token || dead) return;
       ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?token=${token}`);
       wsRef.current = ws;
