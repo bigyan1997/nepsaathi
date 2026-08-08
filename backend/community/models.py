@@ -17,6 +17,7 @@ class ReverseRequest(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other')
     state    = models.CharField(max_length=50, blank=True)
     budget   = models.CharField(max_length=100, blank=True)
+    contact  = models.CharField(max_length=100, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

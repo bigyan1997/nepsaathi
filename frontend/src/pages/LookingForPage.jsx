@@ -6,6 +6,7 @@ import { useToast } from "../components/ui/Toast";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
 import useT from "../hooks/useT";
+import MessageButton from "../components/ui/MessageButton";
 
 const CATEGORIES = [
   { value: "", label: "All" },
@@ -48,7 +49,7 @@ export default function LookingForPage() {
   const [filterCat, setFilterCat] = useState("");
   const [filterState, setFilterState] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", body: "", category: "other", state: "", budget: "" });
+  const [form, setForm] = useState({ title: "", body: "", category: "other", state: "", budget: "", contact: "" });
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
   const { data, isLoading } = useQuery({
@@ -61,7 +62,7 @@ export default function LookingForPage() {
     mutationFn: createRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["requests"] });
-      setForm({ title: "", body: "", category: "other", state: "", budget: "" });
+      setForm({ title: "", body: "", category: "other", state: "", budget: "", contact: "" });
       setShowForm(false);
       addToast("Request posted!", "success");
     },
@@ -130,6 +131,7 @@ export default function LookingForPage() {
             <input type="text" value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="What are you looking for? (e.g. 'Looking for a Nepali accountant in Sydney')" maxLength={200} style={inputStyle} />
             <textarea value={form.body} onChange={(e) => set("body", e.target.value)} placeholder="Add more details — when, budget, specific requirements..." rows={4} maxLength={2000} style={{ ...inputStyle, resize: "vertical" }} />
             <input type="text" value={form.budget} onChange={(e) => set("budget", e.target.value)} placeholder="Budget (optional, e.g. $50/hr, $200 negotiable)" maxLength={100} style={inputStyle} />
+            <input type="text" value={form.contact} onChange={(e) => set("contact", e.target.value)} placeholder="Contact info (optional — WhatsApp number, email, or phone)" maxLength={100} style={inputStyle} />
             <button
               onClick={() => createMut.mutate(form)}
               disabled={!canPost || createMut.isPending}
@@ -189,10 +191,23 @@ export default function LookingForPage() {
               <div style={{ fontSize: "15px", fontWeight: 700, color: "#26215C", marginBottom: "4px" }}>{req.title}</div>
               <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, marginBottom: "8px" }}>{req.body}</div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "6px" }}>
-                {req.budget && <span style={{ fontSize: "12px", color: "#1D9E75", fontWeight: 600 }}>💰 {req.budget}</span>}
-                <Link to={`/users/${req.poster_id}`} style={{ fontSize: "12px", color: "#534AB7", textDecoration: "none", fontWeight: 500 }}>
-                  by {req.poster_name} →
-                </Link>
+                <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                  {req.budget && <span style={{ fontSize: "12px", color: "#1D9E75", fontWeight: 600 }}>💰 {req.budget}</span>}
+                  {req.contact && <span style={{ fontSize: "12px", color: "#555" }}>📞 {req.contact}</span>}
+                </div>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <Link to={`/users/${req.poster_id}`} style={{ fontSize: "12px", color: "#534AB7", textDecoration: "none", fontWeight: 500 }}>
+                    by {req.poster_name} →
+                  </Link>
+                  {!isOwn && (
+                    <MessageButton
+                      recipientId={req.poster_id}
+                      listingTitle={req.title}
+                      listingType="looking-for"
+                      compact
+                    />
+                  )}
+                </div>
               </div>
             </div>
           );

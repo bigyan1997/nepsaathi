@@ -9,7 +9,7 @@ class ReverseRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model  = ReverseRequest
         fields = ['id', 'poster_name', 'poster_id', 'title', 'body',
-                  'category', 'state', 'budget', 'is_active', 'created_at']
+                  'category', 'state', 'budget', 'contact', 'is_active', 'created_at']
         read_only_fields = ['id', 'poster_name', 'poster_id', 'is_active', 'created_at']
 
     def get_poster_name(self, obj):
