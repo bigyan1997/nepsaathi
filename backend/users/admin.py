@@ -67,10 +67,10 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(UserReview)
 class UserReviewAdmin(admin.ModelAdmin):
-    list_display = ('reviewer', 'reviewee', 'rating', 'created_at')
+    list_display = ('reviewer', 'reviewed_user', 'rating', 'created_at')
     list_filter = ('rating',)
-    search_fields = ('reviewer__email', 'reviewee__email', 'comment')
-    readonly_fields = ('reviewer', 'reviewee', 'rating', 'comment', 'created_at')
+    search_fields = ('reviewer__email', 'reviewed_user__email', 'comment')
+    readonly_fields = ('reviewer', 'reviewed_user', 'rating', 'comment', 'created_at')
     ordering = ('-created_at',)
 
 

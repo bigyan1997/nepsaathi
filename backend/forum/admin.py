@@ -50,7 +50,7 @@ class ForumReplyAdmin(admin.ModelAdmin):
 class PollVoteInline(admin.TabularInline):
     model = PollVote
     extra = 0
-    readonly_fields = ('user',)
+    readonly_fields = ('voter',)
     can_delete = True
 
 
@@ -68,10 +68,10 @@ class PollOptionAdmin(admin.ModelAdmin):
 
 @admin.register(PollVote)
 class PollVoteAdmin(admin.ModelAdmin):
-    list_display = ('user', 'poll_option', 'poll_option_post')
-    search_fields = ('user__email', 'poll_option__text', 'poll_option__post__title')
-    readonly_fields = ('user', 'poll_option')
+    list_display = ('voter', 'option', 'option_post')
+    search_fields = ('voter__email', 'option__text', 'option__post__title')
+    readonly_fields = ('voter', 'option')
 
-    def poll_option_post(self, obj):
-        return obj.poll_option.post
-    poll_option_post.short_description = 'Post'
+    def option_post(self, obj):
+        return obj.option.post
+    option_post.short_description = 'Post'
