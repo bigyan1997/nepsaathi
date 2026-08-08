@@ -35,6 +35,10 @@ const CATEGORY_EMOJIS = {
   general: "📢",
 };
 
+function isNew(dateStr) {
+  return dateStr && Date.now() - new Date(dateStr).getTime() < 24 * 60 * 60 * 1000;
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const days = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
@@ -390,6 +394,11 @@ function NoticeMobileCard({ notice }) {
               ⭐ Featured
             </span>
           )}
+          {isNew(notice.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
+            </span>
+          )}
           {notice.is_urgent && (
             <span
               style={{
@@ -546,6 +555,11 @@ function NoticeCard({ notice }) {
               }}
             >
               ⭐ FEATURED
+            </span>
+          )}
+          {isNew(notice.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
             </span>
           )}
           {notice.is_urgent && (

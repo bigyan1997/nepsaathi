@@ -16,6 +16,11 @@ export function timeAgo(dateStr) {
   return months === 1 ? "1 month ago" : `${months} months ago`;
 }
 
+export function isNew(dateStr) {
+  if (!dateStr) return false;
+  return Date.now() - new Date(dateStr).getTime() < 24 * 60 * 60 * 1000;
+}
+
 export const CARD_ACCENT = {
   job:      { footer: "#534AB7", time: "#534AB7", bg: "#EEEDFE" },
   room:     { footer: "#E87722", time: "#E87722", bg: "#FFF1E0" },

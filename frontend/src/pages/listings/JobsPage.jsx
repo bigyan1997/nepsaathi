@@ -33,6 +33,10 @@ const SORT_OPTIONS = [
   { value: "-salary", label: "Salary ↓" },
 ];
 
+function isNew(dateStr) {
+  return dateStr && Date.now() - new Date(dateStr).getTime() < 24 * 60 * 60 * 1000;
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const days = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
@@ -354,6 +358,11 @@ function JobMobileCard({ job }) {
               ⭐ Featured
             </span>
           )}
+          {isNew(job.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
+            </span>
+          )}
           {isWanted && (
             <span
               style={{
@@ -554,6 +563,11 @@ function JobCard({ job }) {
               }}
             >
               ⭐ FEATURED
+            </span>
+          )}
+          {isNew(job.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
             </span>
           )}
           {isWanted && (

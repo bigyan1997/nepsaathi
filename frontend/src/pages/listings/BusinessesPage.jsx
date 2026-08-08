@@ -59,6 +59,10 @@ const CATEGORY_COLORS = {
   other: { bg: "#F1EFE8", color: "#444441" },
 };
 
+function isNew(dateStr) {
+  return dateStr && Date.now() - new Date(dateStr).getTime() < 24 * 60 * 60 * 1000;
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -418,6 +422,11 @@ function BusinessMobileCard({ biz }) {
               🇳🇵 Nepalese
             </span>
           )}
+          {isNew(biz.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
+            </span>
+          )}
         </div>
 
         <div
@@ -607,6 +616,13 @@ function BusinessCard({ business }) {
               }}
             >
               ⭐ FEATURED
+            </span>
+          </div>
+        )}
+        {isNew(business.created_at) && (
+          <div style={{ position: "absolute", top: business.is_featured ? "38px" : "10px", left: "10px" }}>
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 7px", borderRadius: "6px" }}>
+              NEW
             </span>
           </div>
         )}

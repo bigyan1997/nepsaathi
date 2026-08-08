@@ -65,6 +65,10 @@ const formatTime = (d) =>
     minute: "2-digit",
   });
 
+function isNew(dateStr) {
+  return dateStr && Date.now() - new Date(dateStr).getTime() < 24 * 60 * 60 * 1000;
+}
+
 function timeAgo(dateStr) {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -475,6 +479,11 @@ function EventMobileCard({ event }) {
               ⭐ Featured
             </span>
           )}
+          {isNew(event.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
+            </span>
+          )}
           {event.is_free && (
             <span
               style={{
@@ -677,6 +686,11 @@ function EventCard({ event }) {
               }}
             >
               ⭐
+            </span>
+          )}
+          {isNew(event.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
+              NEW
             </span>
           )}
         </div>

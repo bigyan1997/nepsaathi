@@ -17,7 +17,7 @@ import ListingSection from "../components/home/ListingSection";
 import CategoryCards from "../components/home/CategoryCards";
 import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
-import { timeAgo, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
+import { timeAgo, isNew, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
 import useT from "../hooks/useT";
 
 const STATES = [
@@ -38,6 +38,11 @@ const SEARCH_TYPES = HOME_SEARCH_TYPES;
 const FEATURED_BADGE = (
   <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>
     ⭐ FEATURED
+  </span>
+);
+const NEW_BADGE = (
+  <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>
+    NEW
   </span>
 );
 
@@ -304,7 +309,7 @@ export default function HomePage() {
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>💼</div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                    {job.listing_title}{job.is_featured && FEATURED_BADGE}
+                    {job.listing_title}{job.is_featured && FEATURED_BADGE}{isNew(job.created_at) && NEW_BADGE}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888" }}>{job.company_name} · {job.listing_location}, {job.listing_state}</div>
                   {job.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(job.created_at)}</div>}
@@ -336,7 +341,7 @@ export default function HomePage() {
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#FFF1E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>🏠</div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                    {room.listing_title}{room.is_featured && FEATURED_BADGE}
+                    {room.listing_title}{room.is_featured && FEATURED_BADGE}{isNew(room.created_at) && NEW_BADGE}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888", display: "flex", gap: "6px", flexWrap: "wrap" }}>
                     <span>📍 {room.listing_location}, {room.listing_state}</span>
@@ -374,7 +379,7 @@ export default function HomePage() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                  {event.listing_title}{event.is_featured && FEATURED_BADGE}
+                  {event.listing_title}{event.is_featured && FEATURED_BADGE}{isNew(event.created_at) && NEW_BADGE}
                 </div>
                 <div style={{ fontSize: "12px", color: "#888" }}>{event.venue || `${event.listing_location}, ${event.listing_state}`}</div>
                 {event.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(event.created_at)}</div>}
@@ -405,7 +410,7 @@ export default function HomePage() {
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>📢</div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                    {notice.listing_title}{notice.is_featured && FEATURED_BADGE}
+                    {notice.listing_title}{notice.is_featured && FEATURED_BADGE}{isNew(notice.created_at) && NEW_BADGE}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888" }}>📍 {notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
                   {notice.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(notice.created_at)}</div>}
