@@ -137,6 +137,11 @@ export default function LookingForPage() {
             >
               {createMut.isPending ? "Posting..." : "Post Request"}
             </button>
+            {!canPost && (
+              <p style={{ fontSize: "12px", color: "#888", margin: 0, textAlign: "center" }}>
+                Add a title (5+ chars) and description (10+ chars) to enable posting.
+              </p>
+            )}
           </div>
         </div>
       )}

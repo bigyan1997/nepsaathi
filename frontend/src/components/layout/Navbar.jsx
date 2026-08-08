@@ -15,8 +15,13 @@ const NAV_LINK_DEFS = [
   { to: "/events",     key: "nav.events",     activeColor: "#1D9E75", activeBg: "#E1F5EE" },
   { to: "/notices",    key: "nav.notices",    activeColor: "#0C447C", activeBg: "#E6F1FB" },
   { to: "/businesses", key: "nav.businesses", activeColor: "#633806", activeBg: "#FAEEDA" },
-  { to: "/forum",      key: "nav.forum",      activeColor: "#26215C", activeBg: "#EEEDFE" },
   { to: "/send-money", key: "nav.sendMoney",  activeColor: "#16a34a", activeBg: "#dcfce7" },
+];
+
+const COMMUNITY_LINKS = [
+  { to: "/forum",       label: "Forum",        emoji: "💬" },
+  { to: "/looking-for", label: "Looking For",  emoji: "🔍" },
+  { to: "/services",    label: "Services",     emoji: "🔧" },
 ];
 
 function LangToggle({ compact }) {
@@ -49,7 +54,9 @@ export default function Navbar() {
   const t = useT();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [communityOpen, setCommunityOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const communityRef = useRef(null);
   const prevUnreadRef = useRef(null);
   const { addToast } = useToast();
 
@@ -91,6 +98,9 @@ export default function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
+      if (communityRef.current && !communityRef.current.contains(e.target)) {
+        setCommunityOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -99,6 +109,7 @@ export default function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
     setDropdownOpen(false);
+    setCommunityOpen(false);
   }, [location.pathname]);
 
   const handleLogout = async () => {
@@ -114,6 +125,7 @@ export default function Navbar() {
   };
 
   const isActive = (path) => location.pathname.startsWith(path);
+  const isCommunityActive = isActive("/forum") || isActive("/looking-for") || isActive("/services");
 
   return (
     <>
@@ -163,6 +175,49 @@ export default function Navbar() {
               {t(key)}
             </Link>
           ))}
+
+          {/* Community dropdown */}
+          <div style={{ position: "relative" }} ref={communityRef}>
+            <button
+              onClick={() => setCommunityOpen((v) => !v)}
+              style={{
+                fontSize: "13px",
+                color: isCommunityActive ? "#26215C" : "#555",
+                fontWeight: isCommunityActive ? 600 : 400,
+                padding: "6px 12px",
+                borderRadius: "7px",
+                background: isCommunityActive ? "#EEEDFE" : communityOpen ? "#F5F4F0" : "transparent",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => { if (!isCommunityActive) e.currentTarget.style.background = "#F5F4F0"; }}
+              onMouseLeave={(e) => { if (!isCommunityActive && !communityOpen) e.currentTarget.style.background = "transparent"; }}
+            >
+              Community
+              <span style={{ fontSize: "9px", color: "#888" }}>▼</span>
+            </button>
+
+            {communityOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "6px", minWidth: "180px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
+                {COMMUNITY_LINKS.map(({ to, label, emoji }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 12px", borderRadius: "8px", fontSize: "13px", color: isActive(to) ? "#26215C" : "#333", fontWeight: isActive(to) ? 600 : 400, textDecoration: "none", background: isActive(to) ? "#EEEDFE" : "transparent", transition: "background 0.1s" }}
+                    onMouseEnter={(e) => { if (!isActive(to)) e.currentTarget.style.background = "#F5F4F0"; }}
+                    onMouseLeave={(e) => { if (!isActive(to)) e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <span style={{ fontSize: "14px" }}>{emoji}</span>
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Desktop right side */}
@@ -300,6 +355,19 @@ export default function Navbar() {
               style={{ fontSize: "14px", color: isActive(to) ? activeColor : "#333", textDecoration: "none", fontWeight: isActive(to) ? 600 : 400, padding: "10px 12px", borderRadius: "8px", background: isActive(to) ? activeBg : "transparent" }}
             >
               {t(key)}
+            </Link>
+          ))}
+
+          <div style={{ borderTop: "0.5px solid #f0f0f0", margin: "6px 0 2px" }} />
+          <div style={{ fontSize: "11px", fontWeight: 600, color: "#aaa", padding: "4px 12px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Community</div>
+          {COMMUNITY_LINKS.map(({ to, label, emoji }) => (
+            <Link
+              key={to}
+              to={to}
+              style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: isActive(to) ? "#26215C" : "#333", textDecoration: "none", fontWeight: isActive(to) ? 600 : 400, padding: "10px 12px", borderRadius: "8px", background: isActive(to) ? "#EEEDFE" : "transparent" }}
+            >
+              <span style={{ fontSize: "16px" }}>{emoji}</span>
+              {label}
             </Link>
           ))}
 
