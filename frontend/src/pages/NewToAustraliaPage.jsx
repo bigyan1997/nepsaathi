@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const sections = [
@@ -129,6 +129,7 @@ const sections = [
 export default function NewToAustraliaPage() {
   const [open, setOpen] = useState(null);
   const [activeSection, setActiveSection] = useState(sections[0].id);
+  const navRef = useRef(null);
 
   const toggle = (id) => setOpen((prev) => (prev === id ? null : id));
 
@@ -147,6 +148,13 @@ export default function NewToAustraliaPage() {
     });
     return () => observers.forEach((o) => o.disconnect());
   }, []);
+
+  // Keep the active tab visible inside the scrollable nav bar (important on mobile)
+  useEffect(() => {
+    if (!navRef.current) return;
+    const btn = navRef.current.querySelector(`[data-id="${activeSection}"]`);
+    if (btn) btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [activeSection]);
 
   const scrollToSection = (id) => {
     setOpen(id); // expand accordion
@@ -212,24 +220,41 @@ export default function NewToAustraliaPage() {
       </div>
 
       {/* Quick nav — sticky below main navbar */}
-      <div style={{ background: "#fff", borderBottom: "1px solid #e8eaf0", overflowX: "auto", position: "sticky", top: "56px", zIndex: 90 }}>
-        <div style={{ display: "flex", gap: "0", maxWidth: "900px", margin: "0 auto", padding: "0 16px" }}>
+      <div style={{ background: "#fff", borderBottom: "1px solid #e8eaf0", position: "sticky", top: "56px", zIndex: 90 }}>
+        <style>{`.australia-nav::-webkit-scrollbar{display:none}`}</style>
+        <div
+          ref={navRef}
+          className="australia-nav"
+          style={{
+            display: "flex",
+            gap: "0",
+            maxWidth: "900px",
+            margin: "0 auto",
+            padding: "0 8px",
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
               <button
                 key={s.id}
+                data-id={s.id}
                 onClick={() => scrollToSection(s.id)}
                 style={{
                   background: "none",
                   border: "none",
                   borderBottom: `2px solid ${isActive ? "#6C3FD6" : "transparent"}`,
-                  padding: "14px 14px",
+                  padding: "13px 12px",
                   fontSize: "12px",
                   fontWeight: 600,
                   color: isActive ? "#6C3FD6" : "#64748b",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
+                  flexShrink: 0,
                   transition: "color 0.15s, border-color 0.15s",
                 }}
                 onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.color = "#4F46E5"; e.currentTarget.style.borderBottomColor = "#4F46E5"; } }}
