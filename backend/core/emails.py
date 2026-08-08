@@ -199,9 +199,9 @@ def _send_smtp(params: dict):
 def _fire(params: dict):
     """Resend in production (RESEND_API_KEY set), Django SMTP locally."""
     if config('RESEND_API_KEY', default=''):
-        threading.Thread(target=_send_resend, args=(params,), daemon=True).start()
+        threading.Thread(target=_send_resend, args=(params,), daemon=False).start()
     else:
-        threading.Thread(target=_send_smtp, args=(params,), daemon=True).start()
+        threading.Thread(target=_send_smtp, args=(params,), daemon=False).start()
 
 
 # ─────────────────────────────────────────────────────────────

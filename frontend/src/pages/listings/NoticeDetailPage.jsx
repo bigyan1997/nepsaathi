@@ -52,6 +52,11 @@ const CATEGORY_EMOJIS = {
   general: "📢",
 };
 
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  return Math.ceil((new Date(dateStr) - Date.now()) / 86400000);
+}
+
 const IconBack = () => (
   <svg
     width="14"
@@ -467,6 +472,23 @@ export default function NoticeDetailPage() {
                     No description provided.
                   </p>
                 )}
+
+                {/* Expiry pill */}
+                {notice.expires_at && (() => {
+                  const d = daysUntil(notice.expires_at);
+                  const label = d <= 0 ? "Expired" : d === 1 ? "Expires tomorrow" : `Expires in ${d} days`;
+                  const color = d <= 0 ? "#ef4444" : d <= 3 ? "#f97316" : d <= 7 ? "#d97706" : "#9ca3af";
+                  const bg    = d <= 0 ? "#fef2f2" : d <= 3 ? "#fff7ed" : d <= 7 ? "#fffbeb" : "#f9fafb";
+                  return (
+                    <>
+                      <div style={{ borderTop: "0.5px solid #f0f0f0", margin: "16px 0 12px" }} />
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "12px", fontWeight: 600, color, background: bg, border: `1px solid ${color}40`, borderRadius: "20px", padding: "4px 10px" }}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {label}
+                      </span>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
