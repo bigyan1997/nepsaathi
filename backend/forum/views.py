@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from decouple import config
-from .models import ForumPost, ForumReply
+from .models import ForumPost, ForumReply, PollOption, PollVote
 from .serializers import ForumPostListSerializer, ForumPostDetailSerializer, ForumReplySerializer
 
 FRONTEND_URL = config('FRONTEND_URL', default='https://www.nepsaathi.com')
@@ -57,6 +57,12 @@ class ForumPostListView(generics.ListCreateAPIView):
         if user.is_banned:
             raise ValidationError('Your account has been suspended.')
         post = serializer.save(author=user)
+        # If poll options were provided, create them
+        poll_options = self.request.data.get('poll_options', [])
+        if isinstance(poll_options, list):
+            valid = [o.strip() for o in poll_options if isinstance(o, str) and o.strip()]
+            for i, text in enumerate(valid[:4]):
+                PollOption.objects.create(post=post, text=text, order=i)
         ping_indexnow_async(post.slug)
 
 
@@ -179,3 +185,39 @@ class ForumReplyDeleteView(generics.DestroyAPIView):
         super().check_object_permissions(request, obj)
         if obj.author != request.user and not request.user.is_staff:
             raise PermissionDenied('You do not own this reply.')
+
+
+class ForumPollVoteView(APIView):
+    """
+    POST /api/forum/<slug>/poll-vote/  — cast or change vote on a poll option
+    Body: { "option_id": <int> }
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, slug):
+        try:
+            post = ForumPost.objects.get(slug=slug)
+        except ForumPost.DoesNotExist:
+            return Response({'detail': 'Post not found.'}, status=404)
+
+        option_id = request.data.get('option_id')
+        try:
+            option = PollOption.objects.get(pk=option_id, post=post)
+        except PollOption.DoesNotExist:
+            return Response({'detail': 'Invalid option.'}, status=400)
+
+        # Remove any existing vote for this user on this post's options
+        PollVote.objects.filter(option__post=post, voter=request.user).delete()
+        PollVote.objects.create(option=option, voter=request.user)
+
+        # Return updated vote counts for all options
+        options = post.poll_options.prefetch_related('votes').all()
+        total = sum(o.votes.count() for o in options)
+        return Response({
+            'voted_option_id': option.id,
+            'total_votes': total,
+            'options': [
+                {'id': o.id, 'text': o.text, 'votes': o.votes.count()}
+                for o in options
+            ],
+        })

@@ -58,6 +58,28 @@ class ForumPost(models.Model):
         return self.replies.count()
 
 
+class PollOption(models.Model):
+    post = models.ForeignKey(ForumPost, on_delete=models.CASCADE, related_name='poll_options')
+    text = models.CharField(max_length=200)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        db_table = 'forum_poll_options'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.post.title} — {self.text}'
+
+
+class PollVote(models.Model):
+    option = models.ForeignKey(PollOption, on_delete=models.CASCADE, related_name='votes')
+    voter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='poll_votes')
+    voted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'forum_poll_votes'
+
+
 class ForumReply(models.Model):
     post = models.ForeignKey(ForumPost, on_delete=models.CASCADE, related_name='replies')
     author = models.ForeignKey(

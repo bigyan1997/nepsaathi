@@ -94,3 +94,17 @@ export const getPublicProfile = async (userId) => {
   const response = await api.get(`/api/users/${userId}/public/`);
   return response.data;
 };
+
+export const getUserReviews = async (userId) => {
+  const response = await api.get(`/api/users/${userId}/reviews/`);
+  return response.data;
+};
+
+export const submitUserReview = async (userId, data) => {
+  const response = await api.post(`/api/users/${userId}/reviews/`, data);
+  return response.data;
+};
+
+export const deleteUserReview = async (userId, reviewId) => {
+  await api.delete(`/api/users/${userId}/reviews/${reviewId}/`);
+};

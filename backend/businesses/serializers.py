@@ -91,6 +91,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             'whatsapp',
             'email',
             'website',
+            'booking_link',
             'abn',
             'established_year',
             'operating_hours',

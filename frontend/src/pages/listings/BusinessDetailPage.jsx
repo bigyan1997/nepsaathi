@@ -1176,6 +1176,27 @@ export default function BusinessDetailPage() {
                         🌐 Visit website
                       </a>
                     )}
+                    {business.booking_link && (
+                      <a
+                        href={business.booking_link}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          background: "#f0fdf4",
+                          color: "#15803d",
+                          border: "1.5px solid #bbf7d0",
+                          padding: "10px",
+                          borderRadius: "9px",
+                          textDecoration: "none",
+                          fontSize: "13px",
+                          fontWeight: 700,
+                        }}
+                      >
+                        📅 Book / Make Appointment
+                      </a>
+                    )}
                   </div>
                 ) : (
                   <div

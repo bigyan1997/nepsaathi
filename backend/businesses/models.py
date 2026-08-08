@@ -82,6 +82,10 @@ class Business(models.Model):
     whatsapp = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)
     website = models.URLField(blank=True)
+    booking_link = models.URLField(
+        blank=True,
+        help_text='Link for bookings or appointments (Calendly, phone booking page, etc.)'
+    )
 
     # Business info
     abn = models.CharField(

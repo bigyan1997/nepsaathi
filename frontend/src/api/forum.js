@@ -42,3 +42,8 @@ export const voteForumReply = async (id) => {
   const response = await api.post(`/api/forum/replies/${id}/vote/`);
   return response.data;
 };
+
+export const castPollVote = async (slug, optionId) => {
+  const response = await api.post(`/api/forum/${slug}/poll-vote/`, { option_id: optionId });
+  return response.data;
+};

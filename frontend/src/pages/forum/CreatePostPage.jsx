@@ -20,9 +20,14 @@ export default function CreatePostPage() {
   const { addToast } = useToast();
   const [form, setForm] = useState({ title: "", category: "general", body: "" });
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const [isPoll, setIsPoll] = useState(false);
+  const [pollOptions, setPollOptions] = useState(["", ""]);
 
   const mutation = useMutation({
-    mutationFn: () => createForumPost(form),
+    mutationFn: () => createForumPost({
+      ...form,
+      ...(isPoll ? { poll_options: pollOptions.filter((o) => o.trim()) } : {}),
+    }),
     onSuccess: (data) => {
       addToast("Post created!", "success");
       navigate(`/forum/${data.slug}`);
@@ -45,7 +50,8 @@ export default function CreatePostPage() {
     background: "#fff",
   };
 
-  const canSubmit = form.title.trim().length >= 5 && form.body.trim().length >= 10;
+  const canSubmit = form.title.trim().length >= 5 && form.body.trim().length >= 10
+    && (!isPoll || pollOptions.filter((o) => o.trim()).length >= 2);
 
   return (
     <div style={{ maxWidth: "680px", margin: "0 auto", padding: "24px 16px" }}>
@@ -94,6 +100,44 @@ export default function CreatePostPage() {
               style={{ ...inputStyle, resize: "vertical" }}
             />
             <div style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginTop: "4px" }}>{form.body.length}/5000</div>
+          </div>
+
+          {/* Poll toggle */}
+          <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: "14px" }}>
+            <button
+              type="button"
+              onClick={() => setIsPoll((v) => !v)}
+              style={{ display: "flex", alignItems: "center", gap: "8px", background: isPoll ? "#EEEDFE" : "#f8f8f8", border: `1.5px solid ${isPoll ? "#AFA9EC" : "#e5e5e5"}`, borderRadius: "10px", padding: "9px 16px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: isPoll ? "#534AB7" : "#666" }}
+            >
+              <span style={{ fontSize: "16px" }}>📊</span>
+              {isPoll ? "Remove poll" : "Add a poll"}
+            </button>
+
+            {isPoll && (
+              <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <label style={{ fontSize: "13px", fontWeight: 600, color: "#444" }}>Poll options (2–4)</label>
+                {pollOptions.map((opt, i) => (
+                  <div key={i} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <input
+                      type="text"
+                      value={opt}
+                      placeholder={`Option ${i + 1}`}
+                      maxLength={200}
+                      onChange={(e) => setPollOptions((prev) => prev.map((o, j) => j === i ? e.target.value : o))}
+                      style={{ ...inputStyle, flex: 1 }}
+                    />
+                    {pollOptions.length > 2 && (
+                      <button type="button" onClick={() => setPollOptions((prev) => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "16px", padding: "4px" }}>✕</button>
+                    )}
+                  </div>
+                ))}
+                {pollOptions.length < 4 && (
+                  <button type="button" onClick={() => setPollOptions((prev) => [...prev, ""])} style={{ alignSelf: "flex-start", background: "none", border: "1.5px dashed #ddd", borderRadius: "8px", padding: "7px 14px", fontSize: "13px", color: "#888", cursor: "pointer" }}>
+                    + Add option
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <button

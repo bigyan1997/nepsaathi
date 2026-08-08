@@ -372,3 +372,87 @@ class PublicProfileView(generics.RetrieveAPIView):
     serializer_class = PublicProfileSerializer
     queryset = User.objects.filter(is_active=True, is_banned=False)
     lookup_field = 'id'
+
+
+class UserReviewListCreateView(APIView):
+    """
+    GET  /api/users/<id>/reviews/ — list reviews for a user
+    POST /api/users/<id>/reviews/ — leave a review (must have had a conversation with them)
+    """
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get(self, request, id):
+        from .models import UserReview
+        reviews = UserReview.objects.filter(reviewed_user_id=id).select_related('reviewer')
+        data = [
+            {
+                'id': r.id,
+                'reviewer_id': r.reviewer_id,
+                'reviewer_name': r.reviewer.full_name or r.reviewer.email.split('@')[0],
+                'rating': r.rating,
+                'comment': r.comment,
+                'created_at': r.created_at,
+                'is_own': request.user.is_authenticated and r.reviewer_id == request.user.id,
+            }
+            for r in reviews
+        ]
+        avg = round(sum(r['rating'] for r in data) / len(data), 1) if data else 0
+        return Response({'reviews': data, 'avg_rating': avg, 'count': len(data)})
+
+    def post(self, request, id):
+        from .models import UserReview
+        from messaging.models import Conversation
+
+        if request.user.id == id:
+            return Response({'detail': 'You cannot review yourself.'}, status=400)
+
+        try:
+            reviewed_user = User.objects.get(pk=id, is_active=True)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=404)
+
+        # Must have had at least one conversation with this person
+        has_conversation = Conversation.objects.filter(participants=request.user).filter(participants=reviewed_user).exists()
+        if not has_conversation:
+            return Response({'detail': 'You can only review someone you have messaged.'}, status=403)
+
+        if UserReview.objects.filter(reviewer=request.user, reviewed_user=reviewed_user).exists():
+            return Response({'detail': 'You have already reviewed this person.'}, status=400)
+
+        rating = request.data.get('rating')
+        comment = request.data.get('comment', '').strip()
+
+        if not rating or not isinstance(rating, int) or not (1 <= rating <= 5):
+            return Response({'detail': 'Rating must be between 1 and 5.'}, status=400)
+
+        review = UserReview.objects.create(
+            reviewer=request.user,
+            reviewed_user=reviewed_user,
+            rating=rating,
+            comment=comment[:1000],
+        )
+        return Response({
+            'id': review.id,
+            'reviewer_name': request.user.full_name or request.user.email.split('@')[0],
+            'rating': review.rating,
+            'comment': review.comment,
+            'created_at': review.created_at,
+            'is_own': True,
+        }, status=201)
+
+
+class UserReviewDeleteView(APIView):
+    """DELETE /api/users/<id>/reviews/<review_id>/ — delete own review"""
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def delete(self, request, id, review_id):
+        from .models import UserReview
+        try:
+            review = UserReview.objects.get(pk=review_id, reviewer=request.user, reviewed_user_id=id)
+        except UserReview.DoesNotExist:
+            return Response({'detail': 'Review not found.'}, status=404)
+        review.delete()
+        return Response(status=204)

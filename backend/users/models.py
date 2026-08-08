@@ -51,6 +51,26 @@ class User(AbstractUser):
         return f'{self.first_name} {self.last_name}'.strip()
 
 
+class UserReview(models.Model):
+    reviewer = models.ForeignKey(
+        'users.User', on_delete=models.CASCADE, related_name='reviews_given'
+    )
+    reviewed_user = models.ForeignKey(
+        'users.User', on_delete=models.CASCADE, related_name='reviews_received'
+    )
+    rating = models.PositiveSmallIntegerField()  # 1–5
+    comment = models.TextField(blank=True, max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_reviews'
+        unique_together = ('reviewer', 'reviewed_user')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.reviewer} → {self.reviewed_user} ({self.rating}★)'
+
+
 class PushSubscription(models.Model):
     user = models.ForeignKey(
         'users.User',

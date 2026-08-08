@@ -1,5 +1,23 @@
 from rest_framework import serializers
-from .models import ForumPost, ForumReply
+from .models import ForumPost, ForumReply, PollOption, PollVote
+
+
+class PollOptionSerializer(serializers.ModelSerializer):
+    votes = serializers.SerializerMethodField()
+    user_voted = serializers.SerializerMethodField()
+
+    def get_votes(self, obj):
+        return obj.votes.count()
+
+    def get_user_voted(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.votes.filter(voter=request.user).exists()
+        return False
+
+    class Meta:
+        model = PollOption
+        fields = ('id', 'text', 'order', 'votes', 'user_voted')
 
 
 class ForumAuthorSerializer(serializers.Serializer):
@@ -33,6 +51,9 @@ class ForumPostListSerializer(serializers.ModelSerializer):
     reply_count = serializers.ReadOnlyField()
     has_upvoted = serializers.SerializerMethodField()
     category_display = serializers.CharField(source='get_category_display', read_only=True)
+    poll_options = PollOptionSerializer(many=True, read_only=True)
+    is_poll = serializers.SerializerMethodField()
+    total_votes = serializers.SerializerMethodField()
 
     def get_has_upvoted(self, obj):
         request = self.context.get('request')
@@ -40,17 +61,25 @@ class ForumPostListSerializer(serializers.ModelSerializer):
             return obj.upvotes.filter(pk=request.user.pk).exists()
         return False
 
+    def get_is_poll(self, obj):
+        return obj.poll_options.exists()
+
+    def get_total_votes(self, obj):
+        return PollVote.objects.filter(option__post=obj).count()
+
     class Meta:
         model = ForumPost
         fields = (
             'id', 'slug', 'category', 'category_display', 'title', 'body',
             'author', 'upvote_count', 'reply_count', 'has_upvoted',
             'is_pinned', 'is_closed', 'view_count', 'created_at',
+            'is_poll', 'poll_options', 'total_votes',
         )
         read_only_fields = (
             'id', 'slug', 'category_display', 'author',
             'upvote_count', 'reply_count', 'has_upvoted',
             'is_pinned', 'is_closed', 'view_count', 'created_at',
+            'is_poll', 'poll_options', 'total_votes',
         )
 
 

@@ -162,6 +162,7 @@ export default function RegisterBusinessPage() {
     whatsapp: "",
     email: "",
     website: "",
+    booking_link: "",
     abn: "",
     established_year: "",
     operating_hours: "",
@@ -519,6 +520,16 @@ export default function RegisterBusinessPage() {
                   placeholder="e.g. https://mybusiness.com"
                   value={form.website}
                   onChange={set("website")}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Booking / Appointment Link <span style={{ fontWeight: 400, color: "#aaa" }}>(optional)</span></label>
+                <input
+                  type="url"
+                  style={inputStyle}
+                  placeholder="e.g. https://calendly.com/yourbusiness"
+                  value={form.booking_link}
+                  onChange={set("booking_link")}
                 />
               </div>
             </div>

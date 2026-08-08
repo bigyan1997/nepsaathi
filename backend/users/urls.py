@@ -25,4 +25,8 @@ urlpatterns = [
 
     # Public user profile
     path('<int:id>/public/', views.PublicProfileView.as_view(), name='public-profile'),
+
+    # User reviews
+    path('<int:id>/reviews/', views.UserReviewListCreateView.as_view(), name='user-reviews'),
+    path('<int:id>/reviews/<int:review_id>/', views.UserReviewDeleteView.as_view(), name='user-review-delete'),
 ]

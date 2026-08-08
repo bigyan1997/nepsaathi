@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getForumPost, voteForumPost, createForumReply, deleteForumPost, deleteForumReply, voteForumReply } from "../../api/forum";
+import { getForumPost, voteForumPost, createForumReply, deleteForumPost, deleteForumReply, voteForumReply, castPollVote } from "../../api/forum";
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
@@ -123,6 +123,12 @@ export default function ForumPostPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["forum-post", slug] }),
   });
 
+  const pollVoteMutation = useMutation({
+    mutationFn: (optionId) => castPollVote(slug, optionId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["forum-post", slug] }),
+    onError: (e) => addToast(e?.response?.data?.detail || "Failed to vote.", "error"),
+  });
+
   if (isLoading) {
     return (
       <div style={{ maxWidth: "760px", margin: "0 auto", padding: "24px 16px" }}>
@@ -193,6 +199,45 @@ export default function ForumPostPage() {
         </div>
 
         <p style={{ fontSize: "15px", color: "#333", lineHeight: 1.65, margin: "0 0 18px", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{post.body}</p>
+
+        {/* Poll */}
+        {post.is_poll && post.poll_options?.length > 0 && (() => {
+          const userVotedId = post.poll_options.find((o) => o.user_voted)?.id;
+          const totalVotes = post.total_votes || 0;
+          const hasVoted = !!userVotedId;
+          return (
+            <div style={{ background: "#f8f7ff", border: "1.5px solid #ddd8fb", borderRadius: "12px", padding: "16px", marginBottom: "18px" }}>
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#534AB7", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" }}>
+                📊 Community Poll · {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {post.poll_options.map((opt) => {
+                  const pct = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
+                  const isSelected = opt.id === userVotedId;
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => isAuthenticated ? pollVoteMutation.mutate(opt.id) : navigate("/login")}
+                      disabled={pollVoteMutation.isPending}
+                      style={{ position: "relative", background: "none", border: `1.5px solid ${isSelected ? "#534AB7" : "#ddd"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", textAlign: "left", overflow: "hidden" }}
+                    >
+                      {hasVoted && (
+                        <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: isSelected ? "rgba(83,74,183,0.12)" : "rgba(0,0,0,0.04)", borderRadius: "6px", transition: "width 0.4s" }} />
+                      )}
+                      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: "13px", fontWeight: isSelected ? 700 : 400, color: isSelected ? "#26215C" : "#333" }}>
+                          {isSelected && "✓ "}{opt.text}
+                        </span>
+                        {hasVoted && <span style={{ fontSize: "12px", fontWeight: 600, color: isSelected ? "#534AB7" : "#888" }}>{pct}%</span>}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {!isAuthenticated && <p style={{ fontSize: "12px", color: "#888", margin: "10px 0 0" }}>Sign in to vote</p>}
+            </div>
+          );
+        })()}
 
         <div style={{ display: "flex", gap: "16px", alignItems: "center", borderTop: "0.5px solid #f0f0f0", paddingTop: "14px" }}>
           <button
