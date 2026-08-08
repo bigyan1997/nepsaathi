@@ -136,6 +136,12 @@ export const getBenchmark = async (params) => {
   return response.data;
 };
 
+// AI description improvement
+export const aiImproveDescription = async ({ title, description, listing_type, location, state }) => {
+  const response = await api.post("/api/listings/ai-improve/", { title, description, listing_type, location, state });
+  return response.data;
+};
+
 // Lister analytics
 export const getMyAnalytics = async () => {
   const response = await api.get("/api/listings/my-analytics/");

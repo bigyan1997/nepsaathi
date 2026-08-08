@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createListing, deleteListing } from "../../api/listings";
+import { createListing, deleteListing, aiImproveDescription } from "../../api/listings";
 import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
 import { createNotice } from "../../api/notices";
@@ -395,6 +395,26 @@ export default function PostAdPage() {
     is_online: false,
     event_url: "",
   });
+
+  const [aiState, setAiState] = useState({ loading: false, preview: null, error: null });
+
+  async function handleAiImprove() {
+    if (!baseForm.description.trim() || aiState.loading) return;
+    setAiState({ loading: true, preview: null, error: null });
+    try {
+      const res = await aiImproveDescription({
+        title: baseForm.title,
+        description: baseForm.description,
+        listing_type: listingType,
+        location: baseForm.location,
+        state: baseForm.state,
+      });
+      setAiState({ loading: false, preview: res.improved, error: null });
+    } catch (e) {
+      const msg = e?.response?.data?.error || "Could not improve description. Try again.";
+      setAiState({ loading: false, preview: null, error: msg });
+    }
+  }
 
   const setBase = (f) => (e) =>
     setBaseForm((p) => ({ ...p, [f]: e.target.value }));
@@ -889,7 +909,32 @@ export default function PostAdPage() {
                 />
               </div>
               <div>
-                <label style={labelStyle}>Description *</label>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                  <label style={{ ...labelStyle, marginBottom: 0 }}>Description *</label>
+                  <button
+                    type="button"
+                    onClick={handleAiImprove}
+                    disabled={!baseForm.description.trim() || aiState.loading}
+                    title="Rewrite your description using AI"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      background: "linear-gradient(135deg, #7c3aed, #4f46e5)",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "4px 10px",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: !baseForm.description.trim() || aiState.loading ? "not-allowed" : "pointer",
+                      opacity: !baseForm.description.trim() || aiState.loading ? 0.6 : 1,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {aiState.loading ? "Improving..." : "✨ Improve with AI"}
+                  </button>
+                </div>
                 <textarea
                   style={{
                     ...inputStyle,
@@ -904,8 +949,49 @@ export default function PostAdPage() {
                         ? "Tell landlords about yourself and what you're looking for..."
                         : "Describe your listing in detail..."
                   }
-                  onChange={setBase("description")}
+                  onChange={(e) => {
+                    setBase("description")(e);
+                    if (aiState.preview || aiState.error) setAiState({ loading: false, preview: null, error: null });
+                  }}
                 />
+                {aiState.error && (
+                  <p style={{ fontSize: 11, color: "#A32D2D", margin: "4px 0 0" }}>{aiState.error}</p>
+                )}
+                {aiState.preview && (
+                  <div style={{
+                    marginTop: 8,
+                    border: "1px solid #c4b5fd",
+                    borderRadius: 8,
+                    background: "#faf5ff",
+                    padding: "10px 12px",
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
+                      ✨ AI suggestion
+                    </div>
+                    <p style={{ fontSize: 13, color: "#3b1f6e", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>
+                      {aiState.preview}
+                    </p>
+                    <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBaseForm(p => ({ ...p, description: aiState.preview }));
+                          setAiState({ loading: false, preview: null, error: null });
+                        }}
+                        style={{ background: "#7c3aed", color: "#fff", border: "none", borderRadius: 6, padding: "5px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Use this
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAiState({ loading: false, preview: null, error: null })}
+                        style={{ background: "#f3f4f6", color: "#555", border: "none", borderRadius: 6, padding: "5px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                      >
+                        Discard
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
               <Grid2>
                 <div>

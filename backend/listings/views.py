@@ -937,6 +937,61 @@ class ListingBenchmarkView(APIView):
         return Response({'available': False})
 
 
+class AIImproveDescriptionView(APIView):
+    """POST /api/listings/ai-improve/ — rewrites a rough listing description using Claude."""
+    permission_classes = (permissions.IsAuthenticated,)
+    throttle_scope = 'ai_improve'
+
+    def post(self, request):
+        import anthropic
+        from decouple import config as env_config
+
+        title = (request.data.get('title') or '').strip()
+        description = (request.data.get('description') or '').strip()
+        listing_type = (request.data.get('listing_type') or 'listing').strip()
+        location = (request.data.get('location') or '').strip()
+        state = (request.data.get('state') or '').strip()
+
+        if not description or len(description) < 10:
+            return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        api_key = env_config('ANTHROPIC_API_KEY', default='')
+        if not api_key:
+            return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        context_parts = []
+        if listing_type:
+            context_parts.append(f"Type: {listing_type}")
+        if title:
+            context_parts.append(f"Title: {title}")
+        if location or state:
+            context_parts.append(f"Location: {', '.join(filter(None, [location, state, 'Australia']))}")
+        context_block = '\n'.join(context_parts)
+
+        prompt = f"""You are helping improve a listing posted on NepSaathi, a community platform for Nepalese Australians.
+
+Listing details:
+{context_block}
+
+User's draft description:
+{description}
+
+Rewrite the description to be clear, professional, and appealing to an Australian audience. Fix grammar and spelling. Keep all the factual details the user provided. Do not invent new information. Keep it concise (under 300 words). Return only the improved description text — no preamble, no explanation."""
+
+        try:
+            client = anthropic.Anthropic(api_key=api_key)
+            message = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=512,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            improved = message.content[0].text.strip()
+            return Response({'improved': improved})
+        except anthropic.APIError as e:
+            logger.error("Anthropic API error in ai-improve: %s", e)
+            return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
 class MyListingAnalyticsView(APIView):
     """GET /api/listings/my-analytics/ — per-listing stats for the logged-in user."""
     permission_classes = (permissions.IsAuthenticated,)
