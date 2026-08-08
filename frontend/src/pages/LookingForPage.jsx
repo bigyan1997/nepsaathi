@@ -5,6 +5,7 @@ import { getRequests, createRequest, deleteRequest } from "../api/community";
 import { useToast } from "../components/ui/Toast";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
+import useT from "../hooks/useT";
 
 const CATEGORIES = [
   { value: "", label: "All" },
@@ -40,6 +41,7 @@ const inputStyle = {
 export default function LookingForPage() {
   usePageTitle("Looking For — NepSaathi");
   const { isAuthenticated } = useAuthStore();
+  const t = useT();
   const { addToast } = useToast();
   const queryClient = useQueryClient();
 
@@ -107,7 +109,7 @@ export default function LookingForPage() {
           </button>
         ) : (
           <Link to="/login" style={{ background: "#26215C", color: "#fff", borderRadius: "10px", padding: "10px 18px", fontSize: "13px", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
-            Sign in to Post
+            {t("common.signIn")}
           </Link>
         )}
       </div>

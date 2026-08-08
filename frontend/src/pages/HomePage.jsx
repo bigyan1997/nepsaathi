@@ -17,6 +17,7 @@ import CategoryCards from "../components/home/CategoryCards";
 import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
 import { timeAgo, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
+import useT from "../hooks/useT";
 
 const STATES = [
   { value: "", label: "All states" },
@@ -43,6 +44,7 @@ export default function HomePage() {
   usePageTitle(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const t = useT();
   const [search, setSearch] = useState("");
   const [searchType, setSearchType] = useState("all");
   const [state, setState] = useState("");
@@ -165,14 +167,16 @@ export default function HomePage() {
               <NepSaathiLogo size={36} animated />
             </div>
             <div style={{ display: "inline-block", background: "#EEEDFE", borderRadius: "20px", padding: "5px 14px", fontSize: "11px", color: "#534AB7", fontWeight: 600, marginBottom: "20px", letterSpacing: "0.04em" }}>
-              नेपसाथी · your Nepali friend, wherever you are
+              {t("home.tagline")}
             </div>
             <h1 className="hero-title" style={{ fontSize: "44px", fontWeight: 800, color: "#26215C", maxWidth: "580px", margin: "0 auto 16px", lineHeight: 1.12, letterSpacing: "-0.8px" }}>
-              Find <span style={{ color: "#E87722" }}>work</span> and a place to{" "}
-              <span style={{ color: "#E87722" }}>call home</span>
+              {t("home.hero.headline1")}{" "}
+              <span style={{ color: "#E87722" }}>{t("home.hero.headline2")}</span>{" "}
+              {t("home.hero.headline3")}{" "}
+              <span style={{ color: "#E87722" }}>{t("home.hero.headline4")}</span>
             </h1>
             <p style={{ fontSize: "16px", color: "#7A6148", maxWidth: "440px", margin: "0 auto 36px", lineHeight: 1.65 }}>
-              The Nepalese community hub for jobs, rooms, events and businesses across Australia.
+              {t("home.hero.subtitle")}
             </p>
 
             {/* Search bar */}
@@ -203,7 +207,7 @@ export default function HomePage() {
                 <div style={{ flex: 1, position: "relative" }} ref={searchRef}>
                   <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                     onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                    placeholder={searchType === "all" ? "Search jobs, rooms, events..." : searchType === "jobs" ? "Search jobs..." : searchType === "rooms" ? "Search rooms..." : searchType === "events" ? "Search events..." : searchType === "notices" ? "Search notices..." : "Search businesses..."}
+                    placeholder={t(`home.search.placeholder.${searchType === "all" ? "all" : searchType}`)}
                     style={{ width: "100%", border: "none", outline: "none", fontSize: "14px", padding: "14px 12px", color: "#333", background: "transparent", boxSizing: "border-box" }} />
                   {showSuggestions && suggestions.length > 0 && (
                     <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "#fff", borderRadius: "12px", border: "0.5px solid #e8e8e8", boxShadow: "0 8px 28px rgba(0,0,0,0.10)", zIndex: 999, overflow: "hidden" }}>
@@ -228,7 +232,7 @@ export default function HomePage() {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                   </svg>
-                  <span className="search-btn-text">Search</span>
+                  <span className="search-btn-text">{t("home.search.btn")}</span>
                 </button>
               </div>
 
@@ -260,7 +264,7 @@ export default function HomePage() {
 
         {/* ── LATEST JOBS ── */}
         <ListingSection
-          title="Latest jobs"
+          title={t("home.sections.jobs")}
           viewAllTo="/jobs"
           viewAllColor="#534AB7"
           isLoading={jobsLoading}
@@ -292,7 +296,7 @@ export default function HomePage() {
 
         {/* ── LATEST ROOMS ── */}
         <ListingSection
-          title="Rooms available"
+          title={t("home.sections.rooms")}
           viewAllTo="/rooms"
           viewAllColor="#E87722"
           isLoading={roomsLoading}
@@ -328,7 +332,7 @@ export default function HomePage() {
 
         {/* ── UPCOMING EVENTS ── */}
         <ListingSection
-          title="Upcoming events"
+          title={t("home.sections.events")}
           viewAllTo="/events"
           viewAllColor="#1D9E75"
           isLoading={eventsLoading}
@@ -361,7 +365,7 @@ export default function HomePage() {
 
         {/* ── LATEST NOTICES ── */}
         <ListingSection
-          title="Latest notices"
+          title={t("home.sections.notices")}
           viewAllTo="/notices"
           viewAllColor="#0C447C"
           isLoading={noticesLoading}
