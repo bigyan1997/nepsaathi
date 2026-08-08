@@ -9,6 +9,7 @@ from django.db.models import Q
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from .throttles import MessageSendThrottle
+from .cache import bump_unread, invalidate_unread, get_cached_unread, set_cached_unread
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +82,7 @@ class ConversationListView(APIView):
             except Exception:
                 pass
             self._notify(recipient, request.user, initial_message, existing.pk)
+            bump_unread(recipient.pk)
             serializer = ConversationSerializer(existing, context={'request': request})
             return Response({**serializer.data, 'existing': True})
 
@@ -98,6 +100,7 @@ class ConversationListView(APIView):
         )
 
         self._notify(recipient, request.user, initial_message, convo.pk)
+        bump_unread(recipient.pk)
         serializer = ConversationSerializer(convo, context={'request': request})
         return Response({**serializer.data, 'existing': False}, status=201)
 
@@ -134,7 +137,9 @@ class ConversationDetailView(APIView):
         convo = self._get_conversation(pk, request.user)
         messages = convo.messages.select_related('sender').order_by('created_at')
         # Mark messages from other user as read
-        messages.exclude(sender=request.user).filter(is_read=False).update(is_read=True)
+        marked = messages.exclude(sender=request.user).filter(is_read=False).update(is_read=True)
+        if marked:
+            invalidate_unread(request.user.pk)
         serializer = MessageSerializer(messages, many=True)
         convo_data = ConversationSerializer(convo, context={'request': request}).data
         return Response({'conversation': convo_data, 'messages': serializer.data})
@@ -195,6 +200,7 @@ class MessageSendView(APIView):
         # Push notification to the other participant
         recipient = convo.participants.exclude(pk=request.user.pk).first()
         if recipient:
+            bump_unread(recipient.pk)
             from core.push import send_push_notification
             sender_name = request.user.full_name or request.user.email
             threading.Thread(
@@ -210,8 +216,12 @@ class UnreadCountView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+        cached = get_cached_unread(request.user.pk)
+        if cached is not None:
+            return Response({'unread_count': cached})
         count = Message.objects.filter(
             conversation__participants=request.user,
             is_read=False,
         ).exclude(sender=request.user).count()
+        set_cached_unread(request.user.pk, count)
         return Response({'unread_count': count})
