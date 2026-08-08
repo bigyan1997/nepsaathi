@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
 import { register } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
@@ -9,6 +9,8 @@ import NepSaathiLogo from "../../components/ui/NepSaathiLogo";
 export default function RegisterPage() {
   usePageTitle("Create Account");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref") || "";
   const { setAuth } = useAuthStore();
   const [form, setForm] = useState({
     firstName: "",
@@ -56,7 +58,7 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const data = await register(form);
+      const data = await register({ ...form, refCode });
       if (data.access) {
         setAuth(data.user, data.access, data.refresh);
         navigate("/");
@@ -210,6 +212,13 @@ export default function RegisterPage() {
             Join the NepSaathi community — it's free
           </p>
         </div>
+
+        {/* Referral banner */}
+        {refCode && (
+          <div style={{ background: "#E1F5EE", border: "0.5px solid #6EE7B7", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#085041", marginBottom: "14px", textAlign: "center" }}>
+            🤝 You were invited! Sign up to help your friend earn points.
+          </div>
+        )}
 
         {/* Error */}
         {error && (

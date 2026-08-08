@@ -227,6 +227,12 @@ class ListingCreateView(generics.CreateAPIView):
         except Exception as e:
             logger.error('Saved search alert trigger failed: %s', e)
 
+        # Award points for posting a listing (silently — never block the response)
+        try:
+            user.award_points(5, 'post_ad', f'Posted listing: {listing.title[:60]}')
+        except Exception:
+            pass
+
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
     """

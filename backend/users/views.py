@@ -247,13 +247,39 @@ class ThrottledRegisterView(APIView):
     """
     POST /api/auth/registration/
     Register new user — rate limited to 3/minute.
+    Accepts optional `ref_code` in body to credit the referrer.
     """
     throttle_classes = [RegisterRateThrottle]
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+        import json as _json
         from dj_rest_auth.registration.views import RegisterView
-        return RegisterView.as_view()(request._request, *args, **kwargs)
+
+        try:
+            raw = _json.loads(request._request.body or b'{}')
+            email = str(raw.get('email', '')).strip().lower()
+            ref_code = str(raw.get('ref_code', '')).strip()
+        except Exception:
+            email = ''
+            ref_code = ''
+
+        response = RegisterView.as_view()(request._request, *args, **kwargs)
+
+        if response.status_code == 201 and email:
+            try:
+                new_user = User.objects.get(email__iexact=email)
+                new_user.award_points(10, 'signup', 'Welcome bonus for joining NepSaathi!')
+                if ref_code:
+                    referrer = User.objects.filter(referral_code=ref_code).exclude(pk=new_user.pk).first()
+                    if referrer:
+                        new_user.referred_by = referrer
+                        new_user.save(update_fields=['referred_by'])
+                        referrer.award_points(25, 'referral', f'Referral bonus — {new_user.full_name or email} joined!')
+            except Exception:
+                pass
+
+        return response
 
 class ThrottledPasswordResetView(APIView):
     """
@@ -372,6 +398,29 @@ class PublicProfileView(generics.RetrieveAPIView):
     serializer_class = PublicProfileSerializer
     queryset = User.objects.filter(is_active=True, is_banned=False)
     lookup_field = 'id'
+
+
+class MyPointsView(APIView):
+    """GET /api/users/points/ — current user's points balance and recent history"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        from .models import PointEvent
+        user = request.user
+        events = PointEvent.objects.filter(user=user)[:20]
+        return Response({
+            'points': user.points,
+            'referral_code': user.referral_code,
+            'events': [
+                {
+                    'event_type': e.event_type,
+                    'delta': e.delta,
+                    'description': e.description,
+                    'created_at': e.created_at,
+                }
+                for e in events
+            ],
+        })
 
 
 class UserReviewListCreateView(APIView):

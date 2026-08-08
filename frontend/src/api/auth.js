@@ -8,6 +8,7 @@ export const register = async (data) => {
     last_name: data.lastName,
     password1: data.password,
     password2: data.confirmPassword,
+    ...(data.refCode ? { ref_code: data.refCode } : {}),
   });
   return response.data;
 };
@@ -107,4 +108,9 @@ export const submitUserReview = async (userId, data) => {
 
 export const deleteUserReview = async (userId, reviewId) => {
   await api.delete(`/api/users/${userId}/reviews/${reviewId}/`);
+};
+
+export const getMyPoints = async () => {
+  const response = await api.get("/api/users/points/");
+  return response.data;
 };

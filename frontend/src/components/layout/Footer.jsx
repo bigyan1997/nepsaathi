@@ -167,6 +167,8 @@ export default function Footer() {
               { to: "/notices", label: "Notices" },
               { to: "/businesses", label: "Businesses" },
               { to: "/forum", label: "Forum" },
+              { to: "/looking-for", label: "Looking For Board" },
+              { to: "/services", label: "Skills & Services" },
               { to: "/send-money", label: "Send Money to Nepal" },
               { to: "/new-to-australia", label: "New to Australia?" },
             ].map(({ to, label }) => (
@@ -209,6 +211,7 @@ export default function Footer() {
               { to: "/register", label: "Join free" },
               { to: "/login", label: "Sign in" },
               { to: "/post-ad", label: "Post a free ad" },
+              { to: "/points", label: "Points & Referrals" },
               { to: "/register-business", label: "Register business" },
               { to: "/my-listings", label: "My listings" },
               { to: "/profile", label: "Profile settings" },

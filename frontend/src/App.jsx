@@ -54,6 +54,9 @@ import ForumPostPage         from "./pages/forum/ForumPostPage";
 import CreatePostPage        from "./pages/forum/CreatePostPage";
 import RemittancePage        from "./pages/RemittancePage";
 import NewToAustraliaPage   from "./pages/NewToAustraliaPage";
+import LookingForPage        from "./pages/LookingForPage";
+import ServicesPage          from "./pages/ServicesPage";
+import PointsPage            from "./pages/PointsPage";
 import LoginPage             from "./pages/auth/LoginPage";
 import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
@@ -151,6 +154,9 @@ function App() {
                         {/* Send Money */}
                         <Route path="/send-money" element={<RemittancePage />} />
                         <Route path="/new-to-australia" element={<NewToAustraliaPage />} />
+                        <Route path="/looking-for" element={<LookingForPage />} />
+                        <Route path="/services" element={<ServicesPage />} />
+                        <Route path="/points" element={<PointsPage />} />
                         {/* Other public */}
                         <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
                         <Route path="/users/:id" element={<UserProfilePage />} />

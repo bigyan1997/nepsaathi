@@ -1,3 +1,4 @@
+import secrets
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -32,6 +33,15 @@ class User(AbstractUser):
     )
     is_banned = models.BooleanField(default=False)
     ban_reason = models.TextField(blank=True)
+
+    # Points & referral
+    points = models.PositiveIntegerField(default=0)
+    referral_code = models.CharField(max_length=12, unique=True, blank=True)
+    referred_by = models.ForeignKey(
+        'self', null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='referrals'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -45,6 +55,19 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = secrets.token_urlsafe(8)[:12]
+        super().save(*args, **kwargs)
+
+    def award_points(self, delta, event_type, description):
+        self.points = models.F('points') + delta
+        self.save(update_fields=['points'])
+        PointEvent.objects.create(
+            user=self, event_type=event_type, delta=delta, description=description
+        )
+        self.refresh_from_db(fields=['points'])
 
     @property
     def full_name(self):
@@ -69,6 +92,26 @@ class UserReview(models.Model):
 
     def __str__(self):
         return f'{self.reviewer} → {self.reviewed_user} ({self.rating}★)'
+
+
+class PointEvent(models.Model):
+    SIGNUP      = 'signup'
+    POST_AD     = 'post_ad'
+    REFERRAL    = 'referral'
+    PROFILE     = 'profile_complete'
+
+    user        = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='point_events')
+    event_type  = models.CharField(max_length=50)
+    delta       = models.IntegerField()
+    description = models.CharField(max_length=200)
+    created_at  = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'point_events'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user.email} +{self.delta} ({self.event_type})'
 
 
 class PushSubscription(models.Model):
