@@ -9,6 +9,11 @@ from decouple import config
 from .models import ForumPost, ForumReply, PollOption, PollVote
 from .serializers import ForumPostListSerializer, ForumPostDetailSerializer, ForumReplySerializer
 
+import logging
+from rest_framework.throttling import ScopedRateThrottle
+
+logger = logging.getLogger(__name__)
+
 FRONTEND_URL = config('FRONTEND_URL', default='https://www.nepsaathi.com')
 INDEXNOW_KEY = config('INDEXNOW_KEY', default='')
 
@@ -223,3 +228,47 @@ class ForumPollVoteView(APIView):
                 for o in options
             ],
         })
+
+
+class AIImproveForumPostView(APIView):
+    """POST /api/forum/ai-improve/ — rewrites a forum post body using Llama 3 via Groq."""
+    permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = 'ai_improve'
+
+    def post(self, request):
+        import groq as groq_sdk
+
+        title = (request.data.get('title') or '').strip()
+        category = (request.data.get('category') or 'general').strip()
+        body = (request.data.get('body') or '').strip()
+
+        if not body or len(body) < 10:
+            return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        api_key = config('GROQ_API_KEY', default='')
+        if not api_key:
+            return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        prompt = f"""You are helping a Nepalese Australian write a clear forum post on NepSaathi, a community platform.
+
+Category: {category}
+Title: {title}
+
+User's draft:
+{body}
+
+Rewrite the post body to be clear, friendly, and easy to read. Fix grammar and spelling. Keep all the facts and questions the user wrote. Do not add new information or change the meaning. Keep it natural and conversational. Return only the improved post body — no preamble, no explanation."""
+
+        try:
+            client = groq_sdk.Groq(api_key=api_key)
+            chat = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                max_tokens=600,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            improved = chat.choices[0].message.content.strip()
+            return Response({'improved': improved})
+        except groq_sdk.APIError as e:
+            logger.error("Groq API error in forum ai-improve: %s", e)
+            return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

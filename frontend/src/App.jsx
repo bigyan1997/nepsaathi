@@ -53,6 +53,7 @@ import ForumPage             from "./pages/forum/ForumPage";
 import ForumPostPage         from "./pages/forum/ForumPostPage";
 import CreatePostPage        from "./pages/forum/CreatePostPage";
 import RemittancePage        from "./pages/RemittancePage";
+import NewListingsPage       from "./pages/NewListingsPage";
 import NewToAustraliaPage   from "./pages/NewToAustraliaPage";
 import LookingForPage        from "./pages/LookingForPage";
 import ServicesPage          from "./pages/ServicesPage";
@@ -151,6 +152,8 @@ function App() {
                         <Route path="/forum" element={<ForumPage />} />
                         <Route path="/forum/new" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
                         <Route path="/forum/:slug" element={<ForumPostPage />} />
+                        {/* New listings */}
+                        <Route path="/new-listings" element={<NewListingsPage />} />
                         {/* Send Money */}
                         <Route path="/send-money" element={<RemittancePage />} />
                         <Route path="/new-to-australia" element={<NewToAustraliaPage />} />

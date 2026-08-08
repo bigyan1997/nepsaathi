@@ -4,6 +4,7 @@ from . import views
 app_name = 'forum'
 
 urlpatterns = [
+    path('ai-improve/', views.AIImproveForumPostView.as_view(), name='ai-improve'),
     path('', views.ForumPostListView.as_view(), name='post-list'),
     path('replies/<int:pk>/', views.ForumReplyDeleteView.as_view(), name='reply-delete'),
     path('replies/<int:pk>/vote/', views.ForumReplyVoteView.as_view(), name='reply-vote'),

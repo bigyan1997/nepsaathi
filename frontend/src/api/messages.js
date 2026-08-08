@@ -28,3 +28,8 @@ export const getUnreadCount = async () => {
 export const deleteConversation = async (id) => {
   await api.delete(`/api/messages/${id}/`);
 };
+
+export const suggestReplies = async ({ last_message, conversation_id }) => {
+  const response = await api.post("/api/messages/suggest-replies/", { last_message, conversation_id });
+  return response.data;
+};

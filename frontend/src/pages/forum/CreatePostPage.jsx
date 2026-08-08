@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { createForumPost } from "../../api/forum";
+import { createForumPost, aiImproveForumPost } from "../../api/forum";
 import { useToast } from "../../components/ui/Toast";
 import usePageTitle from "../../hooks/usePageTitle";
 
@@ -22,6 +22,7 @@ export default function CreatePostPage() {
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
   const [isPoll, setIsPoll] = useState(false);
   const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [aiState, setAiState] = useState({ loading: false, preview: null, error: null });
 
   const mutation = useMutation({
     mutationFn: () => createForumPost({
@@ -48,6 +49,18 @@ export default function CreatePostPage() {
     boxSizing: "border-box",
     fontFamily: "inherit",
     background: "#fff",
+  };
+
+  const handleAiImprove = async () => {
+    if (!form.body.trim() || aiState.loading) return;
+    setAiState({ loading: true, preview: null, error: null });
+    try {
+      const data = await aiImproveForumPost({ title: form.title, category: form.category, body: form.body });
+      setAiState({ loading: false, preview: data.improved || null, error: data.error || null });
+    } catch (e) {
+      const msg = e?.response?.data?.error || "AI service temporarily unavailable.";
+      setAiState({ loading: false, preview: null, error: msg });
+    }
   };
 
   const canSubmit = form.title.trim().length >= 5 && form.body.trim().length >= 10
@@ -90,16 +103,60 @@ export default function CreatePostPage() {
           </div>
 
           <div>
-            <label style={{ fontSize: "13px", fontWeight: 600, color: "#444", display: "block", marginBottom: "6px" }}>Body</label>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+              <label style={{ fontSize: "13px", fontWeight: 600, color: "#444" }}>Body</label>
+              <button
+                type="button"
+                onClick={handleAiImprove}
+                disabled={!form.body.trim() || aiState.loading}
+                style={{
+                  display: "flex", alignItems: "center", gap: "5px",
+                  background: form.body.trim() && !aiState.loading ? "linear-gradient(135deg, #7C3AED, #4F46E5)" : "#e5e5e5",
+                  color: form.body.trim() && !aiState.loading ? "#fff" : "#aaa",
+                  border: "none", borderRadius: "8px", padding: "5px 12px",
+                  fontSize: "12px", fontWeight: 600, cursor: form.body.trim() && !aiState.loading ? "pointer" : "not-allowed",
+                }}
+              >
+                {aiState.loading ? "Improving…" : "✨ Improve with AI"}
+              </button>
+            </div>
             <textarea
               value={form.body}
-              onChange={(e) => set("body", e.target.value)}
+              onChange={(e) => { set("body", e.target.value); setAiState({ loading: false, preview: null, error: null }); }}
               placeholder="Share as much detail as you can — the community will help!"
               rows={8}
               maxLength={5000}
               style={{ ...inputStyle, resize: "vertical" }}
             />
             <div style={{ fontSize: "11px", color: "#bbb", textAlign: "right", marginTop: "4px" }}>{form.body.length}/5000</div>
+
+            {aiState.error && (
+              <div style={{ marginTop: "8px", padding: "10px 14px", background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "10px", fontSize: "13px", color: "#991B1B" }}>
+                {aiState.error}
+              </div>
+            )}
+            {aiState.preview && (
+              <div style={{ marginTop: "10px", background: "#F5F3FF", border: "1.5px solid #C4B5FD", borderRadius: "12px", padding: "14px 16px" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "#7C3AED", marginBottom: "8px", letterSpacing: "0.04em" }}>✨ AI SUGGESTION</div>
+                <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{aiState.preview}</div>
+                <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
+                  <button
+                    type="button"
+                    onClick={() => { set("body", aiState.preview); setAiState({ loading: false, preview: null, error: null }); }}
+                    style={{ background: "#7C3AED", color: "#fff", border: "none", borderRadius: "8px", padding: "7px 16px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                  >
+                    Use this
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAiState({ loading: false, preview: null, error: null })}
+                    style={{ background: "#fff", color: "#666", border: "1px solid #ddd", borderRadius: "8px", padding: "7px 16px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                  >
+                    Discard
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Poll toggle */}

@@ -47,3 +47,8 @@ export const castPollVote = async (slug, optionId) => {
   const response = await api.post(`/api/forum/${slug}/poll-vote/`, { option_id: optionId });
   return response.data;
 };
+
+export const aiImproveForumPost = async ({ title, category, body }) => {
+  const response = await api.post("/api/forum/ai-improve/", { title, category, body });
+  return response.data;
+};

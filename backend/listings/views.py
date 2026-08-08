@@ -146,7 +146,7 @@ class ListingListView(generics.ListAPIView):
     ordering = ('-created_at',)
 
     def get_queryset(self):
-        return Listing.objects.filter(
+        qs = Listing.objects.filter(
             status='active',
             is_under_review=False,
         ).select_related('user').prefetch_related(
@@ -154,6 +154,9 @@ class ListingListView(generics.ListAPIView):
         ).annotate(
             view_count_annotated=Count('views')
         )
+        if self.request.query_params.get('new') == 'true':
+            qs = qs.filter(created_at__gte=timezone.now() - timedelta(hours=24))
+        return qs
 
 
 class ListingCreateView(generics.CreateAPIView):

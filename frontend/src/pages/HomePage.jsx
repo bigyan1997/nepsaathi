@@ -9,10 +9,11 @@ import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
 import usePageMeta from "../hooks/usePageMeta";
 import JsonLd from "../components/ui/JsonLd";
-import { getSearchSuggestions, getStats, getFeaturedListings } from "../api/listings";
+import { getSearchSuggestions, getStats, getFeaturedListings, getNewListings } from "../api/listings";
 import DesktopCard from "../components/home/DesktopCard";
 import NepSaathiLogo from "../components/ui/NepSaathiLogo";
 import FeaturedCarousel from "../components/home/FeaturedCarousel";
+import NewListingsCarousel from "../components/home/NewListingsCarousel";
 import ListingSection from "../components/home/ListingSection";
 import CategoryCards from "../components/home/CategoryCards";
 import StatsBar from "../components/home/StatsBar";
@@ -63,6 +64,7 @@ export default function HomePage() {
   const dropdownRef = useRef(null);
 
   const { data: featuredData }                     = useQuery({ queryKey: ["home-featured"], queryFn: getFeaturedListings, staleTime: 1000 * 60 * 5 });
+  const { data: newListingsData }                  = useQuery({ queryKey: ["home-new"], queryFn: () => getNewListings({ page_size: 6 }), staleTime: 1000 * 60 * 2 });
   const { data: jobsData,    isLoading: jobsLoading    } = useQuery({ queryKey: ["home-jobs"],     queryFn: () => getJobs({ page_size: 6 }),                    staleTime: 1000 * 60 * 5 });
   const { data: roomsData,   isLoading: roomsLoading   } = useQuery({ queryKey: ["home-rooms"],    queryFn: () => getRooms({ page_size: 6 }),                    staleTime: 1000 * 60 * 5 });
   const { data: eventsData,  isLoading: eventsLoading  } = useQuery({ queryKey: ["home-events"],   queryFn: () => getEvents({ upcoming: "true", page_size: 6 }), staleTime: 1000 * 60 * 5 });
@@ -293,6 +295,11 @@ export default function HomePage() {
         {/* ── FEATURED POSTS ── */}
         {featuredData?.results?.length > 0 && (
           <FeaturedCarousel listings={featuredData.results.slice(0, 6)} />
+        )}
+
+        {/* ── NEW TODAY ── */}
+        {newListingsData?.results?.length > 0 && (
+          <NewListingsCarousel listings={newListingsData.results.slice(0, 6)} />
         )}
 
         {/* ── LATEST JOBS ── */}
