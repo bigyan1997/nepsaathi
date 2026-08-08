@@ -49,7 +49,6 @@ def _flag_if_duplicate(listing, poster):
         Listing.objects
         .filter(created_at__gte=thirty_days_ago, status__in=['active', 'filled'])
         .exclude(user=poster)
-        .select_related('user')
     )
 
     # ── 1. Phone match + title similarity ───────────────────────
