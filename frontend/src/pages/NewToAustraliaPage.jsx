@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const sections = [
@@ -128,8 +128,36 @@ const sections = [
 
 export default function NewToAustraliaPage() {
   const [open, setOpen] = useState(null);
+  const [activeSection, setActiveSection] = useState(sections[0].id);
 
   const toggle = (id) => setOpen((prev) => (prev === id ? null : id));
+
+  // Track which section is visible as the user scrolls
+  useEffect(() => {
+    const observers = [];
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(s.id); },
+        { threshold: 0.2, rootMargin: "-100px 0px -55% 0px" }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  const scrollToSection = (id) => {
+    setOpen(id); // expand accordion
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const offset = 56 + 46; // main navbar + quick nav height
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }, 20); // small delay so accordion opens before measuring position
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
@@ -183,33 +211,34 @@ export default function NewToAustraliaPage() {
         </div>
       </div>
 
-      {/* Quick nav */}
-      <div style={{ background: "#fff", borderBottom: "1px solid #e8eaf0", overflowX: "auto" }}>
+      {/* Quick nav — sticky below main navbar */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #e8eaf0", overflowX: "auto", position: "sticky", top: "56px", zIndex: 90 }}>
         <div style={{ display: "flex", gap: "0", maxWidth: "900px", margin: "0 auto", padding: "0 16px" }}>
-          {sections.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => {
-                document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              style={{
-                background: "none",
-                border: "none",
-                borderBottom: "2px solid transparent",
-                padding: "14px 14px",
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#64748b",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                transition: "color 0.15s, border-color 0.15s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "#4F46E5"; e.currentTarget.style.borderBottomColor = "#4F46E5"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.borderBottomColor = "transparent"; }}
-            >
-              {s.icon} {s.title.split(" ")[0]}
-            </button>
-          ))}
+          {sections.map((s) => {
+            const isActive = activeSection === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => scrollToSection(s.id)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  borderBottom: `2px solid ${isActive ? "#6C3FD6" : "transparent"}`,
+                  padding: "14px 14px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  color: isActive ? "#6C3FD6" : "#64748b",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  transition: "color 0.15s, border-color 0.15s",
+                }}
+                onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.color = "#4F46E5"; e.currentTarget.style.borderBottomColor = "#4F46E5"; } }}
+                onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.borderBottomColor = "transparent"; } }}
+              >
+                {s.icon} {s.title.split(" ")[0]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
