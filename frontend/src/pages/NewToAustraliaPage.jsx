@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import usePageMeta from "../hooks/usePageMeta";
 
 const sections = [
   {
@@ -127,6 +128,7 @@ const sections = [
 ];
 
 export default function NewToAustraliaPage() {
+  usePageMeta("New to Australia Guide", "Complete guide for Nepalese migrants moving to Australia — visas, Medicare, tax, banking, driving licence and more on NepSaathi.");
   const [open, setOpen] = useState(null);
   const [activeSection, setActiveSection] = useState(sections[0].id);
   const navRef = useRef(null);

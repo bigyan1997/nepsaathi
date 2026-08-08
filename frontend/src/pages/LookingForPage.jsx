@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRequests, createRequest, deleteRequest } from "../api/community";
 import { useToast } from "../components/ui/Toast";
 import useAuthStore from "../store/authStore";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 import useT from "../hooks/useT";
 import MessageButton from "../components/ui/MessageButton";
 
@@ -40,7 +40,7 @@ const inputStyle = {
 };
 
 export default function LookingForPage() {
-  usePageTitle("Looking For — NepSaathi");
+  usePageMeta("Looking For Board", "Post what you are looking for and get help from the Nepalese community in Australia. Find jobs, rooms, items and services on NepSaathi.");
   const { isAuthenticated } = useAuthStore();
   const t = useT();
   const { addToast } = useToast();

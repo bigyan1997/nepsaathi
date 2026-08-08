@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getRates } from "../api/remittance";
+import usePageMeta from "../hooks/usePageMeta";
 
 const PROVIDER_META = {
   wise:       { color: "#163300", bg: "#9FE870", label: "Wise" },
@@ -37,6 +38,7 @@ function ProviderBadge({ provider }) {
 }
 
 export default function RemittancePage() {
+  usePageMeta("Send Money to Nepal", "Compare live exchange rates and fees to send money from Australia to Nepal. Find the best remittance rates on NepSaathi.");
   const [amount, setAmount] = useState(500);
 
   const { data: rates = [], isLoading, isError } = useQuery({

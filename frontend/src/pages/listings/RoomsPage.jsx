@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
@@ -833,7 +833,7 @@ function RoomCard({ room }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function RoomsPage() {
-  usePageTitle("Rooms for Rent");
+  usePageMeta("Nepali Rooms for Rent in Australia", "Find rooms and shared accommodation posted by the Nepalese community in Australia. Browse all room listings on NepSaathi.");
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);

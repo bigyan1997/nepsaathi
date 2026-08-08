@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 
 const SECTIONS = [
   {
@@ -69,7 +69,7 @@ const SECTIONS = [
 ];
 
 export default function TermsPage() {
-  usePageTitle("Terms of Use");
+  usePageMeta("Terms of Use", "Read NepSaathi's terms of use — the rules and guidelines for using our community platform.");
   const [activeId, setActiveId] = useState(SECTIONS[0].id);
 
   useEffect(() => {

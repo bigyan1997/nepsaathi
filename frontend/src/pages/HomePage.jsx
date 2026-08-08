@@ -7,7 +7,8 @@ import { getEvents } from "../api/events";
 import { getNotices } from "../api/notices";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
+import JsonLd from "../components/ui/JsonLd";
 import { getSearchSuggestions, getStats, getFeaturedListings } from "../api/listings";
 import DesktopCard from "../components/home/DesktopCard";
 import NepSaathiLogo from "../components/ui/NepSaathiLogo";
@@ -41,7 +42,7 @@ const FEATURED_BADGE = (
 );
 
 export default function HomePage() {
-  usePageTitle(null);
+  usePageMeta(null, null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const t = useT();
@@ -106,6 +107,33 @@ export default function HomePage() {
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://www.nepsaathi.com/#website",
+            "url": "https://www.nepsaathi.com/",
+            "name": "NepSaathi",
+            "description": "Community platform for Nepalese Australians — jobs, rooms, events and businesses.",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": { "@type": "EntryPoint", "urlTemplate": "https://www.nepsaathi.com/search?q={search_term_string}" },
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://www.nepsaathi.com/#organization",
+            "name": "NepSaathi",
+            "url": "https://www.nepsaathi.com/",
+            "logo": { "@type": "ImageObject", "url": "https://www.nepsaathi.com/icon-512.png" },
+            "description": "Community platform for Nepalese Australians — jobs, rooms, events and businesses.",
+            "areaServed": "AU",
+            "inLanguage": "en-AU"
+          }
+        ]
+      }} />
       <style>{`
         @keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }

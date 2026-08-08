@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getFeaturedListings } from "../api/listings";
 import { SkeletonRoomCard } from "../components/ui/Skeleton";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 
 /* ── constants ── */
 const TYPE_CONFIG = {
@@ -345,7 +345,7 @@ function Pagination({ page, total, pageSize, onChange }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function FeaturedPage() {
-  usePageTitle("Featured Listings");
+  usePageMeta("Featured Listings", "Top featured jobs, rooms and events for the Nepalese community in Australia — handpicked listings on NepSaathi.");
   const [filterType, setFilterType] = useState("");
   const [filterState, setFilterState] = useState("");
   const [page, setPage] = useState(1);

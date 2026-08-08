@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getNotices } from "../../api/notices";
 import { SkeletonNoticeCard } from "../../components/ui/Skeleton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
@@ -708,7 +708,7 @@ function NoticeCard({ notice }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function NoticesPage() {
-  usePageTitle("Notices");
+  usePageMeta("Nepali Community Notices", "Browse notices from the Nepalese community in Australia — announcements, lost and found, visa help and more on NepSaathi.");
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showMoreFilters, setShowMoreFilters] = useState(false);

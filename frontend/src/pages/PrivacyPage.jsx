@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 
 const SECTIONS = [
   {
@@ -57,7 +57,7 @@ const SECTIONS = [
 ];
 
 export default function PrivacyPage() {
-  usePageTitle("Privacy Policy");
+  usePageMeta("Privacy Policy", "Read NepSaathi's privacy policy — how we collect, use and protect your personal information.");
   const [activeId, setActiveId] = useState(SECTIONS[0].id);
 
   useEffect(() => {

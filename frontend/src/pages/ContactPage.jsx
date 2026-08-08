@@ -1,5 +1,5 @@
 import { useState } from "react";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 import { useToast } from "../components/ui/Toast";
 import { sendContactForm } from "../api/auth";
 
@@ -23,7 +23,7 @@ const FAQ = [
 ];
 
 export default function ContactPage() {
-  usePageTitle("Contact Us");
+  usePageMeta("Contact Us", "Get in touch with the NepSaathi team. We are here to help the Nepalese Australian community.");
   const { addToast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [loading, setLoading] = useState(false);

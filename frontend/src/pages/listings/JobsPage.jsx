@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
 import { SkeletonJobCard } from "../../components/ui/Skeleton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
@@ -689,7 +689,7 @@ function JobCard({ job }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function JobsPage() {
-  usePageTitle("Jobs in Australia");
+  usePageMeta("Nepali Jobs in Australia", "Browse full-time, part-time and casual jobs posted by the Nepalese community in Australia. Find your next opportunity on NepSaathi.");
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);

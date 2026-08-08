@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonBusinessCard } from "../../components/ui/Skeleton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
@@ -770,7 +770,7 @@ function BusinessCard({ business }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function BusinessesPage() {
-  usePageTitle("Nepalese Businesses");
+  usePageMeta("Nepalese Businesses in Australia", "Find Nepali-owned and Nepali-friendly businesses across Australia — restaurants, services, shops and more on NepSaathi.");
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showMoreFilters, setShowMoreFilters] = useState(false);

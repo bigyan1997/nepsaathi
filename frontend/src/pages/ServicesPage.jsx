@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getServices, createService, deleteService } from "../api/community";
 import { useToast } from "../components/ui/Toast";
 import useAuthStore from "../store/authStore";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 import useT from "../hooks/useT";
 
 const CATEGORIES = [
@@ -55,7 +55,7 @@ const inputStyle = {
 };
 
 export default function ServicesPage() {
-  usePageTitle("Skills & Services — NepSaathi");
+  usePageMeta("Skills & Services", "Find or offer community services — cleaning, tutoring, translating, photography and more for Nepalese Australians on NepSaathi.");
   const { isAuthenticated } = useAuthStore();
   const { addToast } = useToast();
   const queryClient = useQueryClient();

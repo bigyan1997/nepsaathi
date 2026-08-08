@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { globalSearch } from "../api/listings";
 import { SkeletonCard } from "../components/ui/Skeleton";
-import usePageTitle from "../hooks/usePageTitle";
+import usePageMeta from "../hooks/usePageMeta";
 
 const TYPE_CONFIG = {
   jobs: {
@@ -53,7 +53,12 @@ export default function SearchPage() {
   const query = params.get("q") || params.get("search") || "";
   const state = params.get("state") || "";
 
-  usePageTitle(query ? `Search: ${query}` : "Search");
+  usePageMeta(
+    query ? `Search: ${query}` : "Search NepSaathi",
+    query
+      ? `Search results for "${query}" on NepSaathi — find Nepali jobs, rooms, events and businesses in Australia.`
+      : "Search for jobs, rooms, events and businesses on NepSaathi — Australia's Nepalese community platform."
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["global-search", query, state],

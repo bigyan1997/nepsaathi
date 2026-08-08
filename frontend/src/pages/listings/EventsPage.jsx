@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../../api/events";
 import { SkeletonEventCard } from "../../components/ui/Skeleton";
-import usePageTitle from "../../hooks/usePageTitle";
+import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
@@ -832,7 +832,7 @@ function EventCard({ event }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function EventsPage() {
-  usePageTitle("Community Events");
+  usePageMeta("Nepali Events in Australia", "Discover upcoming Nepali cultural events, festivals and community gatherings across Australia. Find events near you on NepSaathi.");
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
