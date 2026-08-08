@@ -31,7 +31,7 @@ export default function Navbar() {
     queryKey: ["unread-count"],
     queryFn: getUnreadCount,
     enabled: isAuthenticated,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
     refetchOnWindowFocus: true,
     staleTime: 0,
   });
