@@ -696,12 +696,15 @@
             <tr><td><strong>Events</strong></td><td>Anyone (RSVP: logged in)</td><td>Community events with RSVP, attendee limit, free/paid tickets</td></tr>
             <tr><td><strong>Notices</strong></td><td>Anyone (post: logged in)</td><td>Classifieds — items for sale, services, lost & found, news</td></tr>
             <tr><td><strong>Businesses</strong></td><td>Anyone (register: logged in)</td><td>Nepali business directory with reviews, images, verified badge</td></tr>
-            <tr><td><strong>Forum</strong></td><td>Anyone (post/reply: logged in)</td><td>Community discussion across 6 topic categories with upvotes</td></tr>
+            <tr><td><strong>Forum</strong></td><td>Anyone (post/reply: logged in)</td><td>Community discussion across 6 topic categories with upvotes, polls, AI body improve</td></tr>
             <tr><td><strong>Messaging</strong></td><td>Logged in only</td><td>1-to-1 conversations tied to listings, real-time via WebSocket</td></tr>
             <tr><td><strong>Send Money</strong></td><td>Anyone</td><td>Live AUD→NPR rate comparison across 4 providers</td></tr>
             <tr><td><strong>Exchange Rates</strong></td><td>Anyone</td><td>Live AUD/GBP/USD/CAD → NPR widget, cached hourly</td></tr>
             <tr><td><strong>Search alerts</strong></td><td>Logged in only</td><td>Save search filters, get email when a matching listing is posted</td></tr>
             <tr><td><strong>Featured listings</strong></td><td>Logged in (listing owners)</td><td>Pay via Stripe to feature a listing for 7 days</td></tr>
+            <tr><td><strong>New listings</strong></td><td>Anyone</td><td>Homepage carousel + /new-listings page showing posts from the last 24 hours</td></tr>
+            <tr><td><strong>AI Improve</strong></td><td>Logged in only</td><td>✨ button on Post Ad and forum create — rewrites description/body via Groq Llama 3 (5/day)</td></tr>
+            <tr><td><strong>Address autocomplete</strong></td><td>Anyone posting</td><td>Suburb suggestions via Nominatim (OpenStreetMap, free) on all posting forms</td></tr>
             <tr><td><strong>Push notifications</strong></td><td>Logged in (opt-in)</td><td>Browser push for new messages, expiry warnings, RSVP confirmations</td></tr>
           </tbody>
         </table>
@@ -747,7 +750,7 @@
           <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
           <div class="flow-content">
             <div class="flow-step-title">Fill the base form at /post-ad</div>
-            <div class="flow-step-desc">Title, description, location, state, contact details (email, phone, WhatsApp). A base Listing record is created and returns an ID.</div>
+            <div class="flow-step-desc">Title, description, location (with Nominatim suburb autocomplete), state, contact details. The <strong>✨ Improve with AI</strong> button rewrites the description via Groq Llama 3 (5 uses/day). A base Listing record is created and returns an ID.</div>
           </div>
         </div>
         <div class="flow-step">
@@ -840,7 +843,8 @@
         <span class="pill">Business</span>
         <span class="pill">General</span>
       </div>
-      <p>Anyone can read posts. Logged-in users can create posts, reply, and upvote both posts and replies. Posts can be pinned by admins and closed to prevent further replies.</p>
+      <p>Anyone can read posts. Logged-in users can create posts, reply, and upvote both posts and replies. Posts can optionally include a <strong>poll</strong> (2–4 options, one vote per user). Posts can be pinned by admins and closed to prevent further replies.</p>
+      <p>The <strong>✨ Improve with AI</strong> button on the create form rewrites the post body for clarity and grammar via Groq Llama 3 — shared 5/day limit with the listing AI improve.</p>
       <div class="callout green">
         Every new forum post triggers an <strong>IndexNow ping to Bing</strong> so it gets indexed by search engines within minutes — good for SEO without any manual effort.
       </div>
@@ -1196,6 +1200,33 @@
         <div class="card-title">Token refresh without race conditions</div>
         <div class="card-body">The frontend axios interceptor queues all concurrent 401 responses, refreshes the token once, then replays every queued request. Multiple tabs can't trigger multiple simultaneous refreshes.</div>
       </div>
+    </section>
+
+    <!-- ── AI Features ── -->
+    <section class="section" id="ai">
+      <div class="section-header">
+        <div class="section-icon">✨</div>
+        <h2 class="section-title">AI Features (Groq + Llama 3)</h2>
+      </div>
+      <p>NepSaathi uses the <strong>Groq API</strong> with <code>llama-3.1-8b-instant</code> (free tier: 14,400 req/day) for AI writing assistance. The API key lives only on the backend — never exposed to the frontend.</p>
+
+      <div class="tbl-wrap" style="margin-top:14px;">
+        <table>
+          <thead><tr><th>Feature</th><th>Where</th><th>Endpoint</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Listing description improve</strong></td><td>Post Ad form</td><td><code>POST /api/listings/ai-improve/</code></td><td>Rewrites rough description into clear, professional listing copy. Knows listing type, location, salary/price.</td></tr>
+            <tr><td><strong>Forum post improve</strong></td><td>Forum create form</td><td><code>POST /api/forum/ai-improve/</code></td><td>Rewrites forum post body for clarity and grammar. Knows category and title.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout" style="margin-top:14px;">
+        Both endpoints share the same <strong>throttle scope <code>ai_improve</code></strong> — 5 uses per user per day across both features combined. DRF's <code>ScopedRateThrottle</code> enforces this with a single counter per user.
+      </div>
+
+      <h3 style="margin-top:18px;">New listings (last 24 hours)</h3>
+      <p>The homepage shows a <strong>"New today" carousel</strong> (green-themed, same pattern as the Featured carousel) that only appears when listings were posted in the last 24 hours. Clicking "View all new listings" goes to <span class="url-chip">/new-listings</span> — a full page with type/state filters and pagination.</p>
+      <p style="margin-top:8px;">Backend: <code>GET /api/listings/?new=true</code> filters by <code>created_at__gte=now()-24h</code>. All listing cards site-wide also show a green <strong>NEW</strong> badge on posts under 24 hours old.</p>
     </section>
 
     <!-- ── Deploy ── -->

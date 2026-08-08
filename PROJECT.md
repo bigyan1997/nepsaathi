@@ -205,6 +205,9 @@ POST   /api/listings/<id>/view/            # track unique view (public)
 GET    /api/listings/<id>/similar/         # up to 3 similar listings (public)
 POST   /api/listings/<id>/renew/           # extend 30 days (owner, <7 days to expiry)
 GET    /api/listings/sitemap/              # all slugs for sitemap (public)
+POST   /api/listings/ai-improve/          # rewrite listing description via Groq Llama 3 (auth, 5/day shared)
+GET    /api/listings/benchmark/           # salary/rent market benchmark (public)
+GET    /api/listings/my-analytics/        # per-listing stats for logged-in user (auth)
 ```
 
 ### Type-specific (step 2 of create)
@@ -258,6 +261,7 @@ GET|POST         /api/forum/<slug>/replies/
 DELETE           /api/forum/replies/<id>/
 POST             /api/forum/replies/<id>/vote/
 POST             /api/forum/poll/<option_id>/vote/ # cast/change poll vote (auth)
+POST             /api/forum/ai-improve/    # rewrite forum post body via Groq Llama 3 (auth, 5/day shared with listing improve)
 GET              /api/sitemap-forum.xml    # live forum sitemap
 ```
 
@@ -285,8 +289,9 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 ### Public
 | Route | Page |
 |---|---|
-| `/` | HomePage |
+| `/` | HomePage — hero search, exchange rates, new-today carousel, featured carousel, category sections |
 | `/featured` | FeaturedPage |
+| `/new-listings` | NewListingsPage — listings from last 24 hours; type + state filters; pagination |
 | `/jobs` | JobsPage |
 | `/jobs/:slug` | JobDetailPage |
 | `/rooms` | RoomsPage |
@@ -312,8 +317,8 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 ### Protected (auth required)
 | Route | Page |
 |---|---|
-| `/forum/new` | CreatePostPage — supports optional poll creation |
-| `/post-ad` | PostAdPage |
+| `/forum/new` | CreatePostPage — supports optional poll creation + ✨ AI body improve |
+| `/post-ad` | PostAdPage — address autocomplete (Nominatim), ✨ AI description improve |
 | `/register-business` | RegisterBusinessPage — includes booking_link field |
 | `/my-listings` | MyListingsPage |
 | `/profile` | ProfilePage |
@@ -359,7 +364,8 @@ All use the shared axios instance (auto-token + auto-refresh).
 
 Notable additions:
 - `auth.js` — includes `getMyPoints()` and `register()` now accepts an optional `ref_code` param
-- `forum.js` — includes `castPollVote(optionId)` for poll voting
+- `listings.js` — `getNewListings()` (last 24h filter), `aiImproveDescription()` (Groq endpoint)
+- `forum.js` — `castPollVote(optionId)`, `aiImproveForumPost()` (Groq endpoint)
 - `community.js` — `getRequests`, `createRequest`, `deleteRequest`, `getServices`, `createService`, `deleteService`
 
 ### Key components
@@ -542,7 +548,7 @@ python manage.py fetch_remittance_rates   # seed initial rates
 ## Security Notes
 
 - **SilentJWTAuthentication** — `DEFAULT_AUTHENTICATION_CLASSES`. Returns `None` on bad token instead of 401. Required for public endpoints to serve anonymous users who have stale tokens in localStorage.
-- **Rate limits**: login 5/min, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr
+- **Rate limits**: login 5/min, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr, AI improve 5/day (shared across listing + forum improve)
 - **X-Forwarded-For**: rightmost entry used for IP throttling (Railway appends real IP on right — cannot be spoofed by client)
 - **Stripe webhook**: signature-verified with `STRIPE_WEBHOOK_SECRET`, uses `select_for_update()` to prevent duplicate processing
 - **Admin URL**: obscured — `/ADMIN_PATH_REDACTED/` (not `/admin/`)
@@ -619,6 +625,17 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Nepali/English toggle** — `languageStore` (Zustand, persisted to localStorage), flat `translations.js` dictionary (80+ keys, Devanagari for Nepali), `useT()` hook with EN fallback.
 - **`LangToggle` component** — 🇳🇵/🇬🇧 pill button in desktop Navbar and at the bottom of the mobile menu.
 - **Translated** — Navbar nav links + dropdown items + auth buttons, Footer column headers + links, HomePage hero headline + subtitle + search placeholder + section titles, LookingForPage + ServicesPage sign-in CTA.
+
+### Phase 5 — AI features, SEO, New listings (2026-08-08)
+- **SEO overhaul** — `usePageMeta` hook sets title + description + OG tags + canonical on all 17+ public pages. JSON-LD `WebSite` + `Organization` + `SearchAction` structured data on homepage. Sitemap expanded to 17 URLs including `/new-listings`, `/send-money`, `/looking-for`, `/services`, `/forum`.
+- **Address autocomplete** — `AddressAutocomplete.jsx` component using Nominatim (OpenStreetMap, free, no key). Debounced 400ms, keyboard nav, AU-only results. Wired into PostAdPage, EditListingPage, RegisterBusinessPage.
+- **NEW badge** — green badge on listing cards posted in last 24h across all category pages and homepage sections.
+- **New listings carousel** — homepage section mirroring the Featured carousel design (green theme); only renders when listings exist in the last 24h. Links to `/new-listings`.
+- **`/new-listings` page** — dedicated page with type/state filters and pagination; shows all listings posted in the last 24 hours. Backend: `?new=true` filter on `ListingListView` using `created_at__gte=now()-24h`.
+- **AI description improve** (`POST /api/listings/ai-improve/`) — "✨ Improve with AI" button on PostAdPage; sends title + description + type + location to Groq Llama 3.1 8B Instant; shows purple preview box with "Use this / Discard".
+- **AI forum improve** (`POST /api/forum/ai-improve/`) — same button + preview pattern on CreatePostPage; prompt tuned for friendly community posts.
+- **Shared AI rate limit** — both AI endpoints share `throttle_scope = 'ai_improve'`: 5 uses/day per user across all AI features.
+- **Groq integration** — `groq>=1.6.0` in requirements; `GROQ_API_KEY` env var (Railway only, never frontend); model: `llama-3.1-8b-instant` (14,400 req/day free tier).
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
