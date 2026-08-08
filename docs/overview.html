@@ -1,0 +1,1221 @@
+<title>NepSaathi — Full Project Overview</title>
+<style>
+  :root {
+    --brand-deep: #26215C;
+    --brand-mid: #534AB7;
+    --brand-light: #EEEDFE;
+    --brand-orange: #E87722;
+    --brand-orange-bg: #FFF1E0;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #A32D2D;
+    --red-bg: #FCEBEB;
+
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --surface-2: #F0EFF9;
+    --border: #E4E2F5;
+    --text: #1A1630;
+    --text-2: #4A4468;
+    --text-3: #8A86A8;
+    --pill-bg: #EEEDFE;
+
+    --sidebar-w: 220px;
+    --content-max: 760px;
+    --gap: 28px;
+    --radius: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E0C1E;
+      --surface: #17132E;
+      --surface-2: #1F1A3A;
+      --border: #2E2850;
+      --text: #EAE8F8;
+      --text-2: #ADA8D0;
+      --text-3: #6A6490;
+      --pill-bg: #1F1A3A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E0C1E;
+    --surface: #17132E;
+    --surface-2: #1F1A3A;
+    --border: #2E2850;
+    --text: #EAE8F8;
+    --text-2: #ADA8D0;
+    --text-3: #6A6490;
+    --pill-bg: #1F1A3A;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  /* ── Layout ── */
+  .shell {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    gap: 48px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    flex: 0 0 var(--sidebar-w);
+    position: sticky;
+    top: 32px;
+  }
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--brand-deep), var(--brand-mid));
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--brand-deep);
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .logo-text span { color: var(--brand-orange); }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin: 20px 0 8px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: background 0.12s, color 0.12s;
+    cursor: pointer;
+    margin-bottom: 2px;
+  }
+  .nav-link:hover { background: var(--pill-bg); color: var(--brand-mid); }
+  .nav-link .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* ── Content ── */
+  .content { flex: 1; min-width: 0; }
+
+  /* ── Doc header ── */
+  .doc-header {
+    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand-mid) 100%);
+    border-radius: 18px;
+    padding: 40px 40px 36px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    right: 60px; bottom: -80px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .doc-eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: #C9C4F5;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .doc-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    margin-bottom: 10px;
+    position: relative;
+    line-height: 1.15;
+  }
+  .doc-header p {
+    color: #C9C4F5;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 520px;
+    position: relative;
+  }
+  .doc-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .doc-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .doc-meta-item .label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .doc-meta-item .val {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 48px; scroll-margin-top: 24px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .section-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 24px 0 10px;
+    letter-spacing: -0.01em;
+  }
+  p { color: var(--text-2); margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .card-body {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .card-body p { margin-bottom: 0; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* ── Listing type cards ── */
+  .type-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    border-left: 3px solid transparent;
+  }
+  .type-card.jobs   { border-left-color: var(--brand-mid); }
+  .type-card.rooms  { border-left-color: #85510A; }
+  .type-card.events { border-left-color: #1D9E75; }
+  .type-card.notices { border-left-color: #0C447C; }
+  .type-card.businesses { border-left-color: var(--brand-orange); }
+
+  .type-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .type-card.jobs .type-label    { color: var(--brand-mid); }
+  .type-card.rooms .type-label   { color: #85510A; }
+  .type-card.events .type-label  { color: #1D9E75; }
+  .type-card.notices .type-label { color: #0C447C; }
+  .type-card.businesses .type-label { color: var(--brand-orange); }
+
+  /* ── Flow ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .flow-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .flow-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--brand-mid);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .flow-line {
+    width: 1.5px;
+    flex: 1;
+    min-height: 16px;
+    background: var(--border);
+    margin: 4px 0;
+  }
+  .flow-content {
+    padding-bottom: 20px;
+    flex: 1;
+  }
+  .flow-step:last-child .flow-content { padding-bottom: 0; }
+  .flow-step-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .flow-step-desc {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ── Pill tags ── */
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--pill-bg);
+    color: var(--brand-mid);
+    letter-spacing: 0.02em;
+  }
+  .pill.orange { background: var(--brand-orange-bg); color: var(--brand-orange); }
+  .pill.green  { background: var(--green-bg); color: var(--green); }
+  .pill.red    { background: var(--red-bg); color: var(--red); }
+
+  /* ── Info row ── */
+  .info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-key {
+    font-weight: 600;
+    color: var(--text);
+    flex: 0 0 160px;
+    flex-shrink: 0;
+  }
+  .info-val { color: var(--text-2); }
+
+  /* ── Email list ── */
+  .email-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .email-item:last-child { border-bottom: none; }
+  .email-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .email-trigger {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1px;
+  }
+  .email-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  /* ── Arch block ── */
+  .arch-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .arch-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .arch-block .ab-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    margin-bottom: 4px;
+  }
+  .arch-block .ab-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ── URL chip ── */
+  .url-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--brand-mid);
+    margin: 2px 4px 2px 0;
+  }
+
+  /* ── Callout ── */
+  .callout {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--brand-mid);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text-2);
+    margin: 16px 0;
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--text); }
+
+  .callout.orange {
+    border-left-color: var(--brand-orange);
+  }
+  .callout.green {
+    border-left-color: var(--green);
+  }
+
+  /* ── Table ── */
+  .tbl-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1.5px solid var(--border);
+  }
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-2);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td strong { color: var(--text); font-weight: 600; }
+
+  /* ── Mobile ── */
+  @media (max-width: 700px) {
+    .shell { flex-direction: column; padding: 24px 16px 60px; gap: 32px; }
+    .sidebar { position: static; width: 100%; }
+    .doc-header { padding: 28px 24px; }
+    .doc-header h1 { font-size: 24px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .arch-row { grid-template-columns: 1fr 1fr; }
+    .info-key { flex: 0 0 120px; }
+  }
+</style>
+
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">N</div>
+      <div class="logo-text">Nep<span>Saathi</span></div>
+    </div>
+
+    <div class="nav-label">Overview</div>
+    <a class="nav-link" href="#what"><span class="dot"></span> What is it</a>
+    <a class="nav-link" href="#access"><span class="dot"></span> How to access</a>
+    <a class="nav-link" href="#features"><span class="dot"></span> Features</a>
+
+    <div class="nav-label">User Side</div>
+    <a class="nav-link" href="#listings"><span class="dot"></span> Listings</a>
+    <a class="nav-link" href="#businesses"><span class="dot"></span> Businesses</a>
+    <a class="nav-link" href="#forum"><span class="dot"></span> Forum</a>
+    <a class="nav-link" href="#messaging"><span class="dot"></span> Messaging</a>
+    <a class="nav-link" href="#sendmoney"><span class="dot"></span> Send Money</a>
+    <a class="nav-link" href="#payments"><span class="dot"></span> Featured / Payments</a>
+
+    <div class="nav-label">Behind the scenes</div>
+    <a class="nav-link" href="#emails"><span class="dot"></span> Emails</a>
+    <a class="nav-link" href="#cron"><span class="dot"></span> Cron jobs</a>
+    <a class="nav-link" href="#notifications"><span class="dot"></span> Push & WebSocket</a>
+
+    <div class="nav-label">Admin</div>
+    <a class="nav-link" href="#admin"><span class="dot"></span> Moderation</a>
+    <a class="nav-link" href="#security"><span class="dot"></span> Security</a>
+
+    <div class="nav-label">Tech</div>
+    <a class="nav-link" href="#tech"><span class="dot"></span> Architecture</a>
+    <a class="nav-link" href="#deploy"><span class="dot"></span> Deployment</a>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main class="content">
+
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-eyebrow">Project Overview</div>
+      <h1>NepSaathi</h1>
+      <p>A full-stack community platform for Nepalese Australians — marketplace, forum, messaging, remittance tools, and more — all in one place.</p>
+      <div class="doc-meta">
+        <div class="doc-meta-item">
+          <span class="label">Live site</span>
+          <span class="val">nepsaathi.com</span>
+        </div>
+        <div class="doc-meta-item">
+          <span class="label">Backend</span>
+          <span class="val">Django · Railway</span>
+        </div>
+        <div class="doc-meta-item">
+          <span class="label">Frontend</span>
+          <span class="val">React · Vercel</span>
+        </div>
+        <div class="doc-meta-item">
+          <span class="label">Database</span>
+          <span class="val">PostgreSQL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── What is it ── -->
+    <section class="section" id="what">
+      <div class="section-header">
+        <div class="section-icon">🏡</div>
+        <h2 class="section-title">What is NepSaathi</h2>
+      </div>
+      <p>NepSaathi ("Nep" = Nepali, "Saathi" = friend) is a community marketplace and resource hub built specifically for Nepalese people living in Australia. Think of it as Gumtree meets a community forum, tailored entirely for the Nepali diaspora.</p>
+      <p>The platform solves a real gap: Nepalese Australians previously had to rely on scattered Facebook groups, WhatsApp chains, and generic classifieds sites to find jobs, accommodation, connect with local businesses, and share information. NepSaathi brings all of that into one trusted, community-first space.</p>
+
+      <h3>Who it's for</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">New arrivals</div>
+          <div class="card-body">People who just moved to Australia looking for accommodation, jobs, and community connections.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Established community</div>
+          <div class="card-body">Nepalese Australians posting jobs, renting rooms, advertising events, and running businesses.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Business owners</div>
+          <div class="card-body">Nepali restaurant owners, travel agents, migration agents, and other service providers.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Anyone sending money</div>
+          <div class="card-body">Nepalese Australians who regularly transfer money back home to Nepal.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How to access ── -->
+    <section class="section" id="access">
+      <div class="section-header">
+        <div class="section-icon">🔑</div>
+        <h2 class="section-title">How to Access</h2>
+      </div>
+
+      <h3>The site</h3>
+      <p>Everything is at <strong>nepsaathi.com</strong>. No app to install — it works in any browser, and there is a PWA (Progressive Web App) install prompt so users can add it to their home screen.</p>
+
+      <h3>Without an account</h3>
+      <p>Anyone can browse the site without logging in:</p>
+      <div class="callout">
+        You can view all listings (jobs, rooms, events, notices), browse businesses and reviews, read all forum posts and replies, use the Send Money rate comparator, and see live exchange rates — <strong>no account needed</strong>.
+      </div>
+      <p>The only things hidden from guests are: the listing owner's phone/WhatsApp number and email (shown as "Sign in to view contact details").</p>
+
+      <h3>Creating an account</h3>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="flow-num">1</div>
+            <div class="flow-line"></div>
+          </div>
+          <div class="flow-content">
+            <div class="flow-step-title">Go to /register</div>
+            <div class="flow-step-desc">Enter your first name, last name, email, and password. Or click "Continue with Google" for one-click signup via Google OAuth.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="flow-num">2</div>
+            <div class="flow-line"></div>
+          </div>
+          <div class="flow-content">
+            <div class="flow-step-title">Verify your email</div>
+            <div class="flow-step-desc">A verification link is sent immediately. Google OAuth accounts are auto-verified — no email step needed.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="flow-num">3</div>
+          </div>
+          <div class="flow-content">
+            <div class="flow-step-title">Fully unlocked</div>
+            <div class="flow-step-desc">Post listings, message other users, RSVP to events, write business reviews, create forum posts, and save search alerts.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Auth tokens</h3>
+      <p>Login issues JWT tokens — a short-lived <strong>access token</strong> (60 min) and a long-lived <strong>refresh token</strong> (7 days). The frontend auto-refreshes silently when the access token expires. Logging out blacklists the refresh token so it can't be reused.</p>
+    </section>
+
+    <!-- ── Features ── -->
+    <section class="section" id="features">
+      <div class="section-header">
+        <div class="section-icon">✨</div>
+        <h2 class="section-title">Features at a Glance</h2>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Who can use it</th>
+              <th>What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Jobs</strong></td><td>Anyone (post: logged in)</td><td>Full-time, part-time, casual, contract job listings with salary info</td></tr>
+            <tr><td><strong>Rooms</strong></td><td>Anyone (post: logged in)</td><td>Room rentals with price/week, bond, furnishing, Nepali household filter</td></tr>
+            <tr><td><strong>Events</strong></td><td>Anyone (RSVP: logged in)</td><td>Community events with RSVP, attendee limit, free/paid tickets</td></tr>
+            <tr><td><strong>Notices</strong></td><td>Anyone (post: logged in)</td><td>Classifieds — items for sale, services, lost & found, news</td></tr>
+            <tr><td><strong>Businesses</strong></td><td>Anyone (register: logged in)</td><td>Nepali business directory with reviews, images, verified badge</td></tr>
+            <tr><td><strong>Forum</strong></td><td>Anyone (post/reply: logged in)</td><td>Community discussion across 6 topic categories with upvotes</td></tr>
+            <tr><td><strong>Messaging</strong></td><td>Logged in only</td><td>1-to-1 conversations tied to listings, real-time via WebSocket</td></tr>
+            <tr><td><strong>Send Money</strong></td><td>Anyone</td><td>Live AUD→NPR rate comparison across 4 providers</td></tr>
+            <tr><td><strong>Exchange Rates</strong></td><td>Anyone</td><td>Live AUD/GBP/USD/CAD → NPR widget, cached hourly</td></tr>
+            <tr><td><strong>Search alerts</strong></td><td>Logged in only</td><td>Save search filters, get email when a matching listing is posted</td></tr>
+            <tr><td><strong>Featured listings</strong></td><td>Logged in (listing owners)</td><td>Pay via Stripe to feature a listing for 7 days</td></tr>
+            <tr><td><strong>Push notifications</strong></td><td>Logged in (opt-in)</td><td>Browser push for new messages, expiry warnings, RSVP confirmations</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Listings ── -->
+    <section class="section" id="listings">
+      <div class="section-header">
+        <div class="section-icon">📋</div>
+        <h2 class="section-title">Listings — Jobs, Rooms, Events, Notices</h2>
+      </div>
+
+      <div class="card-grid" style="margin-bottom: 16px;">
+        <div class="type-card jobs">
+          <div class="type-label">Jobs</div>
+          <div class="card-title">Job listings</div>
+          <div class="card-body">Company name, job type, salary, experience. Filterable by type, state, urgency. Route: <span class="url-chip">/jobs</span></div>
+        </div>
+        <div class="type-card rooms">
+          <div class="type-label">Rooms</div>
+          <div class="card-title">Accommodation</div>
+          <div class="card-body">Price/week, bond, furnishing, Nepali household flag. Route: <span class="url-chip">/rooms</span></div>
+        </div>
+        <div class="type-card events">
+          <div class="type-label">Events</div>
+          <div class="card-title">Community events</div>
+          <div class="card-body">Date, venue, RSVP with overbooking protection, free/paid. Route: <span class="url-chip">/events</span></div>
+        </div>
+        <div class="type-card notices">
+          <div class="type-label">Notices</div>
+          <div class="card-title">Classifieds</div>
+          <div class="card-body">For sale, services, lost & found, news. Route: <span class="url-chip">/notices</span></div>
+        </div>
+      </div>
+
+      <h3>How posting a listing works (2-step)</h3>
+      <div class="callout">
+        Every listing is a <strong>2-step create</strong>: first a base Listing record is created (title, description, location, contact), then the type-specific details (e.g. Job: salary, company) are attached to it. This keeps the data model clean and lets all listings share common fields.
+      </div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Fill the base form at /post-ad</div>
+            <div class="flow-step-desc">Title, description, location, state, contact details (email, phone, WhatsApp). A base Listing record is created and returns an ID.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Type-specific details are attached</div>
+            <div class="flow-step-desc">Using the listing ID, the form posts job/room/event/notice-specific fields. The listing is now complete and goes live.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Spam check runs in background</div>
+            <div class="flow-step-desc">A background thread checks for duplicate phone numbers + similar titles, or near-identical descriptions. If flagged, the listing is set to "under review" and admin is notified by email.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">4</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Saved search alerts fire</div>
+            <div class="flow-step-desc">Any user who has a saved search matching this listing's type and filters gets an email alert immediately.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Listing lifecycle</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Meaning</th><th>How it gets there</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill green">active</span></td><td>Visible to everyone</td><td>Default on create</td></tr>
+            <tr><td><span class="pill">expired</span></td><td>Hidden — 30 days passed</td><td>Cron runs nightly</td></tr>
+            <tr><td><span class="pill orange">filled</span></td><td>Owner marked as done</td><td>Owner clicks "Mark as filled"</td></tr>
+            <tr><td><span class="pill red">deleted</span></td><td>Soft deleted — never hard-deleted</td><td>Owner or admin deletes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:10px;">Owners can <strong>renew</strong> a listing within 7 days of expiry — free, extends by 30 days. Up to <strong>20 active listings</strong> per user at a time. Up to <strong>5 images</strong> per listing (stored on Cloudinary, deduplicated by MD5 hash).</p>
+    </section>
+
+    <!-- ── Businesses ── -->
+    <section class="section" id="businesses">
+      <div class="section-header">
+        <div class="section-icon">🏪</div>
+        <h2 class="section-title">Business Directory</h2>
+      </div>
+      <p>Businesses are completely separate from listings — they have their own lifecycle, images, and reviews. They don't expire. A business profile is a permanent presence on the platform.</p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Register a business at /register-business</div>
+            <div class="flow-step-desc">Business name, category (14 options: restaurant, grocery, legal, migration, etc.), suburb, state, contact details, operating hours. Up to 5 images.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Community can leave reviews</div>
+            <div class="flow-step-desc">Anyone logged in can leave a star rating (1–5) and comment. One review per user. Business owners cannot review their own business.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Admin can verify</div>
+            <div class="flow-step-desc">Verified businesses get a badge. Verification is admin-only and done manually to ensure trust.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout orange">
+        Max <strong>5 businesses per user</strong>. Duplicate name + state is blocked at registration. ABN is stored privately and never shown publicly.
+      </div>
+    </section>
+
+    <!-- ── Forum ── -->
+    <section class="section" id="forum">
+      <div class="section-header">
+        <div class="section-icon">💬</div>
+        <h2 class="section-title">Community Forum</h2>
+      </div>
+      <p>The forum is a community discussion board at <span class="url-chip">/forum</span>. Posts are organized into 6 topic categories:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <span class="pill">Visa & Immigration</span>
+        <span class="pill">Accommodation</span>
+        <span class="pill">Jobs & Work</span>
+        <span class="pill">Events</span>
+        <span class="pill">Business</span>
+        <span class="pill">General</span>
+      </div>
+      <p>Anyone can read posts. Logged-in users can create posts, reply, and upvote both posts and replies. Posts can be pinned by admins and closed to prevent further replies.</p>
+      <div class="callout green">
+        Every new forum post triggers an <strong>IndexNow ping to Bing</strong> so it gets indexed by search engines within minutes — good for SEO without any manual effort.
+      </div>
+    </section>
+
+    <!-- ── Messaging ── -->
+    <section class="section" id="messaging">
+      <div class="section-header">
+        <div class="section-icon">📨</div>
+        <h2 class="section-title">Messaging</h2>
+      </div>
+      <p>1-to-1 conversations between users, typically started from a listing page. At <span class="url-chip">/messages</span>.</p>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">User clicks "Message" on a listing</div>
+            <div class="flow-step-desc">The "Get in Touch" section on every listing and business detail page has a Message button. Clicking it opens a pre-filled message dialog.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Conversation is created (or resumed)</div>
+            <div class="flow-step-desc">If a conversation already exists between these two users about this listing, it resumes. Otherwise a new conversation is created and the message is sent.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Real-time via WebSocket</div>
+            <div class="flow-step-desc">Once in a conversation, new messages appear instantly without refreshing — powered by Django Channels over ASGI. The connection pings every 10 seconds to stay alive on Railway's proxy.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">4</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Notifications fire</div>
+            <div class="flow-step-desc">The recipient gets a browser push notification (if subscribed) and sees an unread badge on the navbar. If they're already on the site but not on the messages page, a toast notification appears.</div>
+          </div>
+        </div>
+      </div>
+      <p>Conversations are soft-deleted (hidden, not removed) — each user can hide a conversation from their inbox independently without the other party losing their history.</p>
+    </section>
+
+    <!-- ── Send Money ── -->
+    <section class="section" id="sendmoney">
+      <div class="section-header">
+        <div class="section-icon">💸</div>
+        <h2 class="section-title">Send Money Comparator</h2>
+      </div>
+      <p>At <span class="url-chip">/send-money</span> — no login required. Compares live AUD → NPR rates across Wise, Remitly, WorldRemit, and Western Union.</p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Cron fetches mid-market rate every run</div>
+            <div class="flow-step-desc">The <code>fetch_remittance_rates</code> command pulls the live AUD→NPR mid-market rate from open.er-api.com (free, no API key needed).</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Provider rates are derived</div>
+            <div class="flow-step-desc">Each provider's typical margin is applied to the mid-market rate: Wise ~0.55%, Remitly ~1.2%, WorldRemit ~1.8%, Western Union ~3.5%. Stored in the database.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">User enters an amount and compares</div>
+            <div class="flow-step-desc">The page shows a table sorted by "most NPR received". User types an AUD amount, the table updates instantly client-side. Each row has a "Send now →" link to the provider's site.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Featured / Payments ── -->
+    <section class="section" id="payments">
+      <div class="section-header">
+        <div class="section-icon">⭐</div>
+        <h2 class="section-title">Featured Listings & Payments</h2>
+      </div>
+      <p>Listing owners can pay a small fee to have their listing shown as "Featured" — pinned to the top of the relevant page and shown in the Featured carousel on the homepage. Only job/room/event/notice listings can be featured (not businesses).</p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Owner clicks "Feature this listing" from My Listings</div>
+            <div class="flow-step-desc">A Stripe Checkout session is created. The owner is redirected to Stripe's hosted payment page.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Payment completes on Stripe</div>
+            <div class="flow-step-desc">Stripe fires a webhook to the backend. The webhook verifies the signature, marks payment as completed, and sets <code>is_featured = True</code> on the listing.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Invoice emailed with PDF attachment</div>
+            <div class="flow-step-desc">A GST-compliant PDF invoice is generated and emailed to the owner. It's also downloadable any time from My Listings.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Emails ── -->
+    <section class="section" id="emails">
+      <div class="section-header">
+        <div class="section-icon">📧</div>
+        <h2 class="section-title">Emails — What Gets Sent & When</h2>
+      </div>
+      <p>All emails fire in background daemon threads — they never delay the API response. In production (Railway) emails go via <strong>Resend API</strong>. In local dev they go via <strong>Zoho SMTP</strong>.</p>
+
+      <div class="email-item">
+        <div class="email-icon">👋</div>
+        <div>
+          <div class="email-trigger">Welcome email</div>
+          <div class="email-desc">Sent when a user registers with email/password (not Google OAuth — those are auto-verified).</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">⏰</div>
+        <div>
+          <div class="email-trigger">Listing expiry warning</div>
+          <div class="email-desc">Sent when a listing is within 4 days of its 30-day expiry. Includes a one-click renew link. Sent only once per listing (flagged with <code>expiry_warning_sent=True</code>).</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">🚨</div>
+        <div>
+          <div class="email-trigger">Listing reported</div>
+          <div class="email-desc">Sent to admins when a user reports a listing, and to the listing owner if their listing is removed for violations.</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">🎟️</div>
+        <div>
+          <div class="email-trigger">Event reminder</div>
+          <div class="email-desc">Sent to all RSVPed attendees 24 hours before an event starts.</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">🔔</div>
+        <div>
+          <div class="email-trigger">Saved search alert</div>
+          <div class="email-desc">Sent when a new listing matches a user's saved search filters. Fires immediately on listing creation in a background thread.</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">💳</div>
+        <div>
+          <div class="email-trigger">Payment invoice</div>
+          <div class="email-desc">Sent after a successful Stripe payment for a featured listing. Includes a PDF invoice attachment.</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">🔄</div>
+        <div>
+          <div class="email-trigger">Listing renewal confirmation</div>
+          <div class="email-desc">Sent when an owner renews a listing. Confirms new expiry date.</div>
+        </div>
+      </div>
+      <div class="email-item">
+        <div class="email-icon">🚫</div>
+        <div>
+          <div class="email-trigger">Account banned</div>
+          <div class="email-desc">Sent when an admin bans a user, explaining the reason.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Cron ── -->
+    <section class="section" id="cron">
+      <div class="section-header">
+        <div class="section-icon">⏱️</div>
+        <h2 class="section-title">Cron Jobs — What Runs Automatically</h2>
+      </div>
+      <p>A separate Railway service runs <code>cron.sh</code> on a schedule. Each command is independent — if one fails, the others still run.</p>
+
+      <div class="card">
+        <div class="card-title">expire_listings</div>
+        <div class="card-body">Finds all active listings past their 30-day expiry and sets their status to <code>expired</code>. They disappear from the site but are not deleted.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">expire_featured_businesses</div>
+        <div class="card-body">Clears the <code>is_featured</code> flag on businesses whose featured period has ended.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">send_expiry_warnings</div>
+        <div class="card-body">Finds listings expiring within 4 days that haven't had a warning sent yet. Sends email + push notification to the owner. The 4-day window means it catches up if the cron missed a day.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">send_event_reminders</div>
+        <div class="card-body">Finds events happening within the next 24 hours. Sends a reminder email to every user who RSVPed.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">fetch_remittance_rates</div>
+        <div class="card-body">Fetches the live AUD→NPR mid-market rate and updates all 4 provider rows in the database. The /send-money page always shows the most recently fetched rates.</div>
+      </div>
+    </section>
+
+    <!-- ── Push & WebSocket ── -->
+    <section class="section" id="notifications">
+      <div class="section-header">
+        <div class="section-icon">🔔</div>
+        <h2 class="section-title">Push Notifications & Real-time</h2>
+      </div>
+
+      <h3>Browser push notifications</h3>
+      <p>When a logged-in user first visits, the browser asks for notification permission. If granted, a VAPID-based push subscription is registered with the server. Push is sent for:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <span class="pill">New message received</span>
+        <span class="pill">Listing expiring soon</span>
+        <span class="pill">Event reminder</span>
+      </div>
+
+      <h3>WebSocket (real-time chat)</h3>
+      <p>Each conversation has a live WebSocket channel. When one user sends a message:</p>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">REST API saves the message to the database</div>
+            <div class="flow-step-desc">POST /api/messages/&lt;id&gt;/send/ — the message is persisted first.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Django Channels broadcasts over WebSocket</div>
+            <div class="flow-step-desc">The message is pushed to the other participant's open connection instantly — no polling.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Push notification fires if other user is not in the conversation</div>
+            <div class="flow-step-desc">If the recipient's browser isn't in that conversation tab, they get a push notification.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Navbar unread badge</h3>
+      <p>The message icon in the navbar polls for an unread count every 30 seconds. If the count increases while the user is on any other page, a toast notification pops up with a link to the inbox.</p>
+    </section>
+
+    <!-- ── Admin ── -->
+    <section class="section" id="admin">
+      <div class="section-header">
+        <div class="section-icon">🛡️</div>
+        <h2 class="section-title">Admin & Moderation</h2>
+      </div>
+
+      <h3>Accessing admin</h3>
+      <p>The Django admin panel is at a non-standard URL (obscured for security). Only staff + superuser accounts can access it. From the frontend, superusers also have access to <span class="url-chip">/panel</span> — a dashboard showing site-wide stats, revenue, reports, and recent activity.</p>
+
+      <h3>Listing reports</h3>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">User reports a listing</div>
+            <div class="flow-step-desc">Reason: spam / fake / inappropriate / scam / wrong category / other. The listing gets an <code>is_under_review</code> flag and admin is emailed.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Admin reviews in the Django admin</div>
+            <div class="flow-step-desc">Can take a "Clear listing" action (approve it — removes the under-review flag) or a "Remove listing" action (deletes it and emails the owner).</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left"><div class="flow-num">3</div></div>
+          <div class="flow-content">
+            <div class="flow-step-title">Auto-ban after 3 removals</div>
+            <div class="flow-step-desc">If an owner's listings are removed for violations 3 times, they are automatically banned. A ban notification email is sent.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Featured listing approvals</h3>
+      <p>Featured listings are managed through the Payments admin. Stripe's webhook handles activation automatically — no manual step needed.</p>
+
+      <h3>Business verification</h3>
+      <p>Admin manually sets <code>is_verified=True</code> on businesses after checking legitimacy. Verified businesses show a badge on their profile.</p>
+
+      <h3>Forum moderation</h3>
+      <p>Admins can pin posts, close threads (no more replies), delete any post or reply. The admin panel has inline replies shown under each post for quick review.</p>
+    </section>
+
+    <!-- ── Security ── -->
+    <section class="section" id="security">
+      <div class="section-header">
+        <div class="section-icon">🔒</div>
+        <h2 class="section-title">Security</h2>
+      </div>
+
+      <div class="info-row"><span class="info-key">Auth</span><span class="info-val">JWT with rotation + blacklist. Google OAuth with PKCE. Refresh tokens expire in 7 days.</span></div>
+      <div class="info-row"><span class="info-key">Rate limiting</span><span class="info-val">Login 5/min · Register 3/min · Password reset 3/hr · Messages 5/min · Listing create 10/hr · Contact form 5/hr</span></div>
+      <div class="info-row"><span class="info-key">Public endpoints</span><span class="info-val">SilentJWTAuthentication — expired tokens return null instead of 401, so anonymous browsing always works cleanly.</span></div>
+      <div class="info-row"><span class="info-key">Stripe</span><span class="info-val">Webhook signature verified. <code>select_for_update()</code> prevents duplicate payment processing.</span></div>
+      <div class="info-row"><span class="info-key">RSVP overbooking</span><span class="info-val"><code>select_for_update()</code> on RSVP creation — concurrent RSVPs can't exceed max_attendees.</span></div>
+      <div class="info-row"><span class="info-key">IP throttling</span><span class="info-val">Uses rightmost X-Forwarded-For header (Railway appends real IP) — can't be spoofed by the client.</span></div>
+      <div class="info-row"><span class="info-key">Admin URL</span><span class="info-val">Obscured — not the default /admin/ path. Returns 404 for anyone who guesses it wrong.</span></div>
+      <div class="info-row"><span class="info-key">Soft deletes</span><span class="info-val">Nothing is hard-deleted. Listings set status='deleted', businesses set is_active=False. Data is always recoverable.</span></div>
+      <div class="info-row"><span class="info-key">Contact details</span><span class="info-val">Phone/WhatsApp/email on listings hidden from unauthenticated users — only visible after login.</span></div>
+    </section>
+
+    <!-- ── Tech ── -->
+    <section class="section" id="tech">
+      <div class="section-header">
+        <div class="section-icon">⚙️</div>
+        <h2 class="section-title">Tech Architecture</h2>
+      </div>
+
+      <div class="arch-row">
+        <div class="arch-block"><div class="ab-label">Backend</div><div class="ab-val">Django 6 + DRF</div></div>
+        <div class="arch-block"><div class="ab-label">Frontend</div><div class="ab-val">React 19 + Vite</div></div>
+        <div class="arch-block"><div class="ab-label">Database</div><div class="ab-val">PostgreSQL</div></div>
+        <div class="arch-block"><div class="ab-label">Real-time</div><div class="ab-val">Django Channels</div></div>
+        <div class="arch-block"><div class="ab-label">Images</div><div class="ab-val">Cloudinary</div></div>
+        <div class="arch-block"><div class="ab-label">Payments</div><div class="ab-val">Stripe</div></div>
+        <div class="arch-block"><div class="ab-label">Email (prod)</div><div class="ab-val">Resend API</div></div>
+        <div class="arch-block"><div class="ab-label">Email (dev)</div><div class="ab-val">Zoho SMTP</div></div>
+        <div class="arch-block"><div class="ab-label">State</div><div class="ab-val">Zustand + React Query</div></div>
+      </div>
+
+      <div class="callout" style="margin-top:16px;">
+        The backend runs as an <strong>ASGI application</strong> (uvicorn workers inside gunicorn) — this is required for Django Channels WebSocket support. Both the REST API and WebSocket connections go through the same process.
+      </div>
+
+      <h3>Key design decisions</h3>
+      <div class="card">
+        <div class="card-title">Listings are polymorphic</div>
+        <div class="card-body">A base <code>Listing</code> model holds all shared fields. Job/Room/Event/Notice each have a OneToOne relationship to it, holding only their specific fields. This keeps search, filtering, and reporting unified.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Businesses are completely separate</div>
+        <div class="card-body">The <code>Business</code> model is independent — not linked to <code>Listing</code>. This gives businesses their own lifecycle (no expiry), their own images, and their own review system.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">All emails are non-blocking</div>
+        <div class="card-body">Every email function fires in a daemon thread so the API response is never delayed by email sending. If the email fails, it's logged but the user's action succeeds.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Token refresh without race conditions</div>
+        <div class="card-body">The frontend axios interceptor queues all concurrent 401 responses, refreshes the token once, then replays every queued request. Multiple tabs can't trigger multiple simultaneous refreshes.</div>
+      </div>
+    </section>
+
+    <!-- ── Deploy ── -->
+    <section class="section" id="deploy">
+      <div class="section-header">
+        <div class="section-icon">🚀</div>
+        <h2 class="section-title">Deployment</h2>
+      </div>
+
+      <div class="info-row"><span class="info-key">Frontend</span><span class="info-val">Vercel — auto-deploys on push to main. SPA rewrite sends all routes to index.html.</span></div>
+      <div class="info-row"><span class="info-key">Backend API</span><span class="info-val">Railway — gunicorn with 4 UvicornWorkers. Runs migrations on every deploy via start.sh.</span></div>
+      <div class="info-row"><span class="info-key">Cron service</span><span class="info-val">Separate Railway service runs cron.sh. Note: Railway doesn't always detect cron.sh changes — may need a manual redeploy.</span></div>
+      <div class="info-row"><span class="info-key">Forum sitemap</span><span class="info-val">Django serves a live forum sitemap at /api/sitemap-forum.xml, proxied via Vercel to nepsaathi.com/sitemap-forum.xml for Google Search Console.</span></div>
+      <div class="info-row"><span class="info-key">Media</span><span class="info-val">All images go to Cloudinary. Local dev uses a local /media/ folder.</span></div>
+      <div class="info-row"><span class="info-key">After any deploy</span><span class="info-val">Migrations run automatically. If new remittance/cron features were added, also run <code>fetch_remittance_rates</code> to seed fresh data.</span></div>
+
+      <div class="callout orange" style="margin-top:16px;">
+        The single point of failure is <strong>PostgreSQL</strong>. If the database goes down, everything goes down. Every other service (Cloudinary, Stripe, Resend, the exchange rate API) degrades gracefully — the affected feature fails but the rest of the site keeps working.
+      </div>
+    </section>
+
+  </main>
+</div>
