@@ -5,139 +5,65 @@ from remittance.models import RemittanceRate
 
 logger = logging.getLogger(__name__)
 
-HEADERS = {
-    'User-Agent': (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/124.0.0.0 Safari/537.36'
-    ),
-    'Accept': 'application/json',
-}
+# Mid-market AUD→NPR from open.er-api.com (free, no key required)
+RATES_URL = 'https://open.er-api.com/v6/latest/AUD'
 
+# Provider spreads (markup over mid-market) and typical fees.
+# Sourced from public rate-comparison research for AUD→NPR corridor.
+# Wise is tightest (~0.5%), WU highest (~3.5%).
 PROVIDERS = {
     'wise': {
+        'spread':   0.0055,   # ~0.55% markup
+        'fee_aud':  3.99,
         'send_url': 'https://wise.com/au/send-money/#/',
     },
     'remitly': {
+        'spread':   0.012,    # ~1.2% markup
+        'fee_aud':  0.00,     # typically free for bank transfers from AU
         'send_url': 'https://www.remitly.com/au/en/nepal',
     },
     'worldremit': {
+        'spread':   0.018,    # ~1.8% markup
+        'fee_aud':  1.99,
         'send_url': 'https://www.worldremit.com/en/australia/send-money-to-nepal',
     },
     'wu': {
+        'spread':   0.035,    # ~3.5% markup
+        'fee_aud':  5.00,
         'send_url': 'https://www.westernunion.com/au/en/send-money/app/start',
     },
 }
 
 
-def fetch_wise():
-    """Mid-market AUD→NPR rate from Wise public rates API."""
-    resp = requests.get(
-        'https://api.wise.com/v1/rates',
-        params={'source': 'AUD', 'target': 'NPR'},
-        headers=HEADERS,
-        timeout=10,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    # Returns a list; grab the first entry
-    rate = float(data[0]['rate'])
-    # Wise charges ~0.55% + fixed fee; use a conservative flat fee for display
-    return rate, 3.99
-
-
-def fetch_remitly():
-    """AUD→NPR rate from Remitly's public calculator endpoint."""
-    resp = requests.get(
-        'https://api.remitly.io/v3/calculator/estimate',
-        params={
-            'sourceCountry': 'AUS',
-            'destinationCountry': 'NPL',
-            'sourceCurrency': 'AUD',
-            'destinationCurrency': 'NPR',
-            'amount': '500',
-            'receiptType': 'BANK_DEPOSIT',
-            'paymentType': 'debitCard',
-        },
-        headers=HEADERS,
-        timeout=10,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    exchange_rate = float(data['exchangeRate'])
-    fee = float(data.get('transferFee', 0))
-    return exchange_rate, fee
-
-
-def fetch_worldremit():
-    """AUD→NPR rate from WorldRemit's public calculator API."""
-    resp = requests.get(
-        'https://api.worldremit.com/v3/calculators/send',
-        params={
-            'fromCountryIso3': 'AUS',
-            'toCountryIso3':   'NPL',
-            'fromCurrencyIso3': 'AUD',
-            'toCurrencyIso3':   'NPR',
-            'sendAmount': '500',
-            'deliveryMethod': 'BANK_TRANSFER',
-        },
-        headers=HEADERS,
-        timeout=10,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    rate = float(data['exchangeRate'])
-    fee  = float(data.get('fee', {}).get('amount', 0))
-    return rate, fee
-
-
-def fetch_wu():
-    """AUD→NPR rate from Western Union's public price service."""
-    resp = requests.get(
-        'https://www.westernunion.com/api/en-AU/price-service/v2/public/rates',
-        params={
-            'fromCurrencyCode': 'AUD',
-            'toCurrencyCode':   'NPR',
-        },
-        headers={**HEADERS, 'Accept': 'application/json, text/plain, */*'},
-        timeout=10,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    # WU returns a list of corridors; find our pair
-    for entry in data:
-        if entry.get('toCurrencyCode') == 'NPR':
-            rate = float(entry['exchangeRate'])
-            fee  = float(entry.get('fees', [{'amount': 0}])[0].get('amount', 0))
-            return rate, fee
-    raise ValueError('NPR corridor not found in WU response')
-
-
-FETCHERS = {
-    'wise':       fetch_wise,
-    'remitly':    fetch_remitly,
-    'worldremit': fetch_worldremit,
-    'wu':         fetch_wu,
-}
-
-
 class Command(BaseCommand):
-    help = 'Fetch live AUD→NPR rates from Wise, Remitly, WorldRemit, Western Union'
+    help = 'Fetch mid-market AUD→NPR rate and derive per-provider estimates'
 
     def handle(self, *args, **options):
-        for provider, meta in PROVIDERS.items():
+        # 1. Get mid-market rate
+        try:
+            resp = requests.get(RATES_URL, timeout=10)
+            resp.raise_for_status()
+            mid = float(resp.json()['rates']['NPR'])
+            self.stdout.write(f'Mid-market AUD→NPR: {mid}')
+        except Exception as e:
+            logger.error(f'fetch_remittance_rates: mid-market fetch failed — {e}')
+            self.stderr.write(f'FATAL: could not fetch base rate — {e}')
+            return
+
+        # 2. Derive and store each provider's rate
+        for provider, cfg in PROVIDERS.items():
+            rate = round(mid * (1 - cfg['spread']), 4)
             try:
-                rate, fee = FETCHERS[provider]()
                 obj, created = RemittanceRate.objects.update_or_create(
                     provider=provider,
                     defaults={
                         'rate':     rate,
-                        'fee_aud':  fee,
-                        'send_url': meta['send_url'],
+                        'fee_aud':  cfg['fee_aud'],
+                        'send_url': cfg['send_url'],
                     },
                 )
                 action = 'Created' if created else 'Updated'
-                self.stdout.write(f'{action} {provider}: {rate} NPR/AUD, fee=${fee}')
+                self.stdout.write(f'{action} {provider}: {rate} NPR/AUD, fee=${cfg["fee_aud"]}')
             except Exception as e:
-                logger.error(f'fetch_remittance_rates: {provider} failed — {e}')
+                logger.error(f'fetch_remittance_rates: DB write failed for {provider} — {e}')
                 self.stderr.write(f'SKIP {provider}: {e}')

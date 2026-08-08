@@ -272,7 +272,7 @@ export default function RemittancePage() {
           </span>
         )}
         <span style={{ fontSize: 12, color: "#aaa" }}>
-          Actual rates may vary. Fees shown for bank transfers.
+          Rates are estimates based on typical provider margins. Always confirm on the provider's site before sending.
         </span>
       </div>
 
