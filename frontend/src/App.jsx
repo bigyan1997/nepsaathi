@@ -52,6 +52,7 @@ import AdminPanelPage        from "./pages/AdminPanelPage";
 import ForumPage             from "./pages/forum/ForumPage";
 import ForumPostPage         from "./pages/forum/ForumPostPage";
 import CreatePostPage        from "./pages/forum/CreatePostPage";
+import RemittancePage        from "./pages/RemittancePage";
 import LoginPage             from "./pages/auth/LoginPage";
 import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
@@ -146,6 +147,8 @@ function App() {
                         <Route path="/forum" element={<ForumPage />} />
                         <Route path="/forum/new" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
                         <Route path="/forum/:slug" element={<ForumPostPage />} />
+                        {/* Send Money */}
+                        <Route path="/send-money" element={<RemittancePage />} />
                         {/* Other public */}
                         <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
                         <Route path="/users/:id" element={<UserProfilePage />} />

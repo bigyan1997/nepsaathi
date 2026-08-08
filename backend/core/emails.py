@@ -1265,6 +1265,8 @@ def send_listing_expired_email(listing):
 # 14. EVENT RSVP REMINDER
 # ─────────────────────────────────────────────────────────────
 
+
+
 def send_event_reminder_email(user, event):
     event_url = f"{FRONTEND_URL}/events/{event.listing.slug}"
     try:

@@ -104,6 +104,9 @@ urlpatterns = [
 
     # Internal admin panel — superuser only
     path('api/panel/', include('panel.urls')),
+
+    # Remittance rate comparator
+    path('api/remittance/', include('remittance.urls')),
 ]
 
 # Only serve media files locally — Cloudinary handles production

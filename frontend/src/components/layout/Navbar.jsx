@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { to: "/notices",    label: "Notices",    activeColor: "#0C447C", activeBg: "#E6F1FB" },
   { to: "/businesses", label: "Businesses", activeColor: "#633806", activeBg: "#FAEEDA" },
   { to: "/forum",      label: "Forum",      activeColor: "#26215C", activeBg: "#EEEDFE" },
+  { to: "/send-money", label: "Send Money", activeColor: "#16a34a", activeBg: "#dcfce7" },
 ];
 
 export default function Navbar() {

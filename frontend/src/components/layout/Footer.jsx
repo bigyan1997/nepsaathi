@@ -166,6 +166,8 @@ export default function Footer() {
               { to: "/events", label: "Events" },
               { to: "/notices", label: "Notices" },
               { to: "/businesses", label: "Businesses" },
+              { to: "/forum", label: "Forum" },
+              { to: "/send-money", label: "Send Money to Nepal" },
             ].map(({ to, label }) => (
               <Link
                 key={to}
