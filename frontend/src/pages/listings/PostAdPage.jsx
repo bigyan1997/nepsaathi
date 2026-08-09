@@ -541,6 +541,9 @@ export default function PostAdPage() {
       const data = err.response?.data;
       if (data?.cooldown) {
         startCooldown(data.cooldown);
+      } else if (err.response?.status === 429) {
+        const match = data?.detail?.match(/(\d+) seconds?/);
+        startCooldown(match ? parseInt(match[1], 10) : 300);
       } else if (data) {
         const first = Object.values(data)[0];
         setError(
@@ -701,12 +704,20 @@ export default function PostAdPage() {
 
         {/* ── Error banner ── */}
         {cooldown > 0 ? (
-          <div style={{ background: "#FFF8ED", border: "0.5px solid #F6C06B", borderRadius: "12px", padding: "12px 16px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ fontSize: "28px", lineHeight: 1 }}>⏳</div>
-            <div>
-              <div style={{ fontSize: "13px", fontWeight: 700, color: "#92400E" }}>You can post again in</div>
-              <div style={{ fontSize: "28px", fontWeight: 800, color: "#E87722", fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", lineHeight: 1.2 }}>{formatCooldown(cooldown)}</div>
-              <div style={{ fontSize: "11px", color: "#92400E", marginTop: "2px" }}>There is a 5-minute wait between listings to prevent spam.</div>
+          <div style={{ background: "#FFF8ED", border: "0.5px solid #F6C06B", borderRadius: "12px", padding: "14px 18px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ fontSize: "32px", lineHeight: 1 }}>⏳</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "#92400E", marginBottom: "4px" }}>
+                {cooldown > 600 ? "Hourly posting limit reached" : "Please wait before posting again"}
+              </div>
+              <div style={{ fontSize: "36px", fontWeight: 800, color: "#E87722", fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", lineHeight: 1.1 }}>
+                {formatCooldown(cooldown)}
+              </div>
+              <div style={{ fontSize: "11px", color: "#B45309", marginTop: "4px" }}>
+                {cooldown > 600
+                  ? "You've reached the limit of 10 listings per hour. You can post again when the timer ends."
+                  : "There is a 5-minute wait between listings to prevent spam."}
+              </div>
             </div>
           </div>
         ) : error && (
