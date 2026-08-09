@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../../api/events";
 import { SkeletonEventCard } from "../../components/ui/Skeleton";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -582,6 +583,11 @@ function EventMobileCard({ event }) {
             📍 {event.venue}
           </div>
         )}
+        {event.poster_is_verified && (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "10px", color: "#1A8CD8", fontWeight: 600 }}>
+            <VerifiedBadge size={11} /> Verified organiser
+          </div>
+        )}
       </div>
     </Link>
   );
@@ -745,6 +751,11 @@ function EventCard({ event }) {
         {event.venue && (
           <div style={{ fontSize: "12px", color: "#777" }}>
             📍 {event.venue}
+          </div>
+        )}
+        {event.poster_is_verified && (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#1A8CD8", fontWeight: 600 }}>
+            <VerifiedBadge size={12} /> Verified organiser
           </div>
         )}
         <div

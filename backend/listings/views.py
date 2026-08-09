@@ -1002,10 +1002,11 @@ class AIImproveDescriptionView(APIView):
 Listing details:
 {context_block}
 
-User's draft description:
+<user_draft>
 {description}
+</user_draft>
 
-Rewrite the description to be clear, professional, and appealing to an Australian audience. Fix grammar and spelling. Keep all the factual details the user provided. Do not invent new information. Keep it concise (under 300 words). Return only the improved description text — no preamble, no explanation."""
+Rewrite the description inside <user_draft> to be clear, professional, and appealing to an Australian audience. Fix grammar and spelling. Keep all the factual details the user provided. Do not invent new information. Keep it concise (under 300 words). Return only the improved description text — no preamble, no explanation."""
 
         try:
             client = groq_sdk.Groq(api_key=api_key)

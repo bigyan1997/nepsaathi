@@ -1267,7 +1267,7 @@ def send_event_reminder_email(user, event):
 
 {_info_box(
     f"&#128205; Venue: {venue_str}<br>"
-    + (f"&#127760; Online: <a href='{event.event_url}' style='color:#534AB7;'>{event.event_url}</a><br>" if event.is_online and event.event_url else "")
+    + (f"&#127760; Online: <a href='{_h(event.event_url)}' style='color:#534AB7;'>{_h(event.event_url)}</a><br>" if event.is_online and event.event_url else "")
     + f"&#127903; Ticket: {event.ticket_display}",
     bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
 )}

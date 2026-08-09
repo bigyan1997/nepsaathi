@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
 import { SkeletonJobCard } from "../../components/ui/Skeleton";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -444,9 +445,13 @@ function JobMobileCard({ job }) {
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
             }}
           >
             {job.company_name}
+            {job.poster_is_verified && <VerifiedBadge size={12} />}
           </div>
         )}
         <div
@@ -649,8 +654,9 @@ function JobCard({ job }) {
           {job.listing_title}
         </div>
         {!isWanted && job.company_name && (
-          <div style={{ fontSize: "12px", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <div style={{ fontSize: "12px", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "4px" }}>
             {job.company_name}
+            {job.poster_is_verified && <VerifiedBadge size={12} />}
           </div>
         )}
         <div style={{ fontSize: "12px", color: "#777", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

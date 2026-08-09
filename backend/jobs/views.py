@@ -194,10 +194,11 @@ class AIImproveCoverLetterView(APIView):
 {context}
 Applicant's full name: {applicant_name}
 
-Applicant's draft:
+<applicant_draft>
 {cover_letter}
+</applicant_draft>
 
-Rewrite this cover letter to be professional, concise, and compelling. Fix grammar and spelling. Keep all the facts the applicant wrote. Do not invent new information or qualifications. Keep it under 300 words. Sign off with the applicant's real name ({applicant_name}). Return only the improved cover letter — no preamble, no explanation."""
+Rewrite the cover letter inside <applicant_draft> to be professional, concise, and compelling. Fix grammar and spelling. Keep all the facts the applicant wrote. Do not invent new information or qualifications. Keep it under 300 words. Sign off with the applicant's real name ({applicant_name}). Return only the improved cover letter — no preamble, no explanation."""
 
         try:
             client = groq_sdk.Groq(api_key=api_key)

@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getNotices } from "../../api/notices";
 import { SkeletonNoticeCard } from "../../components/ui/Skeleton";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -492,8 +493,9 @@ function NoticeMobileCard({ notice }) {
         >
           📍 {notice.listing_location}, {notice.listing_state}
         </div>
-        <div style={{ fontSize: "10px", color: "#aaa", marginTop: "2px" }}>
+        <div style={{ fontSize: "10px", color: "#aaa", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
           {notice.posted_by}
+          {notice.poster_is_verified && <VerifiedBadge size={11} />}
           {notice.created_at ? ` · ${timeAgo(notice.created_at)}` : ""}
         </div>
       </div>

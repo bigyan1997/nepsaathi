@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
+import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -531,6 +532,11 @@ function RoomMobileCard({ room }) {
         >
           📍 {room.listing_location}, {room.listing_state}
         </div>
+        {room.poster_is_verified && (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "10px", color: "#1A8CD8", fontWeight: 600 }}>
+            <VerifiedBadge size={11} /> Verified host
+          </div>
+        )}
         <div
           style={{
             display: "flex",
@@ -746,6 +752,11 @@ function RoomCard({ room }) {
         <div style={{ fontSize: "12px", color: "#777" }}>
           📍 {room.listing_location}, {room.listing_state}
         </div>
+        {room.poster_is_verified && (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#1A8CD8", fontWeight: 600 }}>
+            <VerifiedBadge size={12} /> Verified host
+          </div>
+        )}
         <div
           style={{
             display: "flex",

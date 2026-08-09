@@ -206,6 +206,24 @@ class ThrottledLoginView(APIView):
                 status=status.HTTP_429_TOO_MANY_REQUESTS
             )
 
+        # Per-email rate limit — catches distributed/proxy attacks targeting one account
+        try:
+            import json as _json_email
+            _email_raw = _json_email.loads(request._request.body or b'{}')
+            _email_val = str(_email_raw.get('email', '')).strip().lower()
+        except Exception:
+            _email_val = ''
+        if _email_val:
+            import hashlib
+            email_hash = hashlib.sha256(_email_val.encode()).hexdigest()[:16]
+            email_cache_key = f'login_attempts_email_{email_hash}'
+            email_attempts = cache.get(email_cache_key, 0)
+            if email_attempts >= 10:
+                return Response(
+                    {'detail': 'Too many login attempts. Please try again in 5 minutes.'},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                )
+
         # Use request._request.body (Django's caching property) not request.data.
         # DRF's request.data calls stream.read() which exhausts the WSGI stream
         # without caching, breaking the inner LoginView call below.
@@ -237,6 +255,11 @@ class ThrottledLoginView(APIView):
                 cache.incr(cache_key)
             except ValueError:
                 cache.set(cache_key, 1, timeout=300)
+            if _email_val:
+                try:
+                    cache.incr(email_cache_key)
+                except ValueError:
+                    cache.set(email_cache_key, 1, timeout=300)
             # Replace the generic allauth credential error with a clearer message.
             # Pass through other errors (e.g. unverified email) unchanged.
             resp_data = getattr(response, 'data', {})
@@ -249,6 +272,8 @@ class ThrottledLoginView(APIView):
             return response
         else:
             cache.delete(cache_key)
+            if _email_val:
+                cache.delete(email_cache_key)
 
         return response
 

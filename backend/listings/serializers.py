@@ -129,7 +129,12 @@ class ListingSerializer(serializers.ModelSerializer):
         return obj.views.count()
 
     def get_is_reported(self, obj):
-        return obj.reports.filter(is_reviewed=False).exists()
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        if request.user == obj.user or request.user.is_staff:
+            return obj.reports.filter(is_reviewed=False).exists()
+        return False
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
