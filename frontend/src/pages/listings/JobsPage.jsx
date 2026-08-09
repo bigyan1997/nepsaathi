@@ -6,6 +6,7 @@ import { SkeletonJobCard } from "../../components/ui/Skeleton";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
+import ListingsMap from "../../components/ui/ListingsMap";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -719,6 +720,7 @@ export default function JobsPage() {
   });
   const [page, setPage] = useState(1);
   const [allResults, setAllResults] = useState([]);
+  const [viewMode, setViewMode] = useState("grid");
   const prevKey = useRef(null);
 
   const updateFilters = (u) => {
@@ -844,16 +846,12 @@ export default function JobsPage() {
           </p>
         </div>
 
-        {/* Tabs */}
-        <div
-          className="jb-tabs"
-          style={{
-            overflowX: "auto",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            marginBottom: "14px",
-          }}
-        >
+        {/* Tabs + view toggle */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", gap: "10px" }}>
+          <div
+            className="jb-tabs"
+            style={{ overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none", flex: 1 }}
+          >
           <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
             {TABS.map(({ value, label, emoji }) => (
               <button
@@ -901,6 +899,27 @@ export default function JobsPage() {
                         : allResults.filter((j) => !j.is_wanted).length}
                   </span>
                 )}
+              </button>
+            ))}
+          </div>
+          </div>
+          {/* Grid / Map toggle */}
+          <div style={{ display: "flex", gap: "4px", flexShrink: 0, background: "#f0f0f0", borderRadius: "10px", padding: "3px" }}>
+            {["grid", "map"].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                style={{
+                  background: viewMode === mode ? "#fff" : "transparent",
+                  border: "none", borderRadius: "8px",
+                  padding: "6px 12px", fontSize: "13px", cursor: "pointer",
+                  fontWeight: viewMode === mode ? 700 : 400,
+                  color: viewMode === mode ? "#26215C" : "#888",
+                  boxShadow: viewMode === mode ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+                  transition: "all 0.15s",
+                }}
+              >
+                {mode === "grid" ? "⊞ Grid" : "🗺️ Map"}
               </button>
             ))}
           </div>
@@ -1252,35 +1271,41 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Mobile: 2-col card grid */}
-        <div
-          className="jb-mobile"
-          style={{
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "10px",
-            opacity: isFetching && page === 1 ? 0.5 : 1,
-            transition: "opacity 0.2s",
-          }}
-        >
-          {filteredResults.map((job) => (
-            <JobMobileCard key={job.id} job={job} />
-          ))}
-        </div>
+        {viewMode === "map" ? (
+          <ListingsMap listings={filteredResults} type="job" />
+        ) : (
+          <>
+            {/* Mobile: 2-col card grid */}
+            <div
+              className="jb-mobile"
+              style={{
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "10px",
+                opacity: isFetching && page === 1 ? 0.5 : 1,
+                transition: "opacity 0.2s",
+              }}
+            >
+              {filteredResults.map((job) => (
+                <JobMobileCard key={job.id} job={job} />
+              ))}
+            </div>
 
-        {/* Desktop: 3-col grid */}
-        <div
-          className="jb-desktop"
-          style={{
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "16px",
-            opacity: isFetching && page === 1 ? 0.5 : 1,
-            transition: "opacity 0.2s",
-          }}
-        >
-          {filteredResults.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
+            {/* Desktop: 3-col grid */}
+            <div
+              className="jb-desktop"
+              style={{
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "16px",
+                opacity: isFetching && page === 1 ? 0.5 : 1,
+                transition: "opacity 0.2s",
+              }}
+            >
+              {filteredResults.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
+            </div>
+          </>
+        )}
 
         {data?.next && (
           <div style={{ textAlign: "center", paddingTop: "24px" }}>

@@ -30,6 +30,8 @@ class RoomSerializer(serializers.ModelSerializer):
     is_wanted = serializers.BooleanField(source='listing.is_wanted', read_only=True)
     is_featured = serializers.BooleanField(source='listing.is_featured', read_only=True)
     view_count = serializers.SerializerMethodField()
+    latitude = serializers.FloatField(source='listing.latitude', read_only=True)
+    longitude = serializers.FloatField(source='listing.longitude', read_only=True)
 
     def get_view_count(self, obj):
         if hasattr(obj.listing, 'view_count_annotated'):
@@ -99,6 +101,8 @@ class RoomSerializer(serializers.ModelSerializer):
             'images',
             'is_wanted',
             'is_featured',
+            'latitude',
+            'longitude',
         )
         read_only_fields = (
             'id',

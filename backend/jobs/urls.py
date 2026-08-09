@@ -14,4 +14,6 @@ urlpatterns = [
 
     # View, edit or delete a single job detail
     path('<int:pk>/', views.JobDetailView.as_view(), name='job-detail'),
+    # Apply to a job (GET = check applied, POST = submit)
+    path('<int:pk>/apply/', views.JobApplyView.as_view(), name='job-apply'),
 ]

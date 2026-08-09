@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from listings.models import Listing
 
 
@@ -74,3 +75,22 @@ class Job(models.Model):
             'yearly': '/yr',
         }.get(self.salary_type, '')
         return f'${self.salary:,.2f}{suffix}'
+
+
+class JobApplication(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
+    applicant = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='job_applications',
+    )
+    cover_letter = models.TextField(max_length=2000)
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'job_applications'
+        unique_together = ('job', 'applicant')
+        ordering = ['-applied_at']
+
+    def __str__(self):
+        return f'{self.applicant} → {self.job.listing.title}'

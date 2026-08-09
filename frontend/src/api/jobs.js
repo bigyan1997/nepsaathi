@@ -35,3 +35,15 @@ export const deleteJob = async (id) => {
   const response = await api.delete(`/api/jobs/${id}/`);
   return response.data;
 };
+
+// Check if the current user has already applied to a job
+export const checkApplied = async (jobId) => {
+  const response = await api.get(`/api/jobs/${jobId}/apply/`);
+  return response.data;
+};
+
+// Submit a job application
+export const applyToJob = async (jobId, coverLetter) => {
+  const response = await api.post(`/api/jobs/${jobId}/apply/`, { cover_letter: coverLetter });
+  return response.data;
+};

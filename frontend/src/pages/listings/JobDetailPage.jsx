@@ -13,10 +13,12 @@ import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import MarketBenchmark from "../../components/ui/MarketBenchmark";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
 import JsonLd from "../../components/ui/JsonLd";
+import QuickApplyModal from "../../components/ui/QuickApplyModal";
+import { checkApplied } from "../../api/jobs";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -136,9 +138,18 @@ export default function JobDetailPage() {
     retry: false,
   });
 
+  const [showApply, setShowApply] = useState(false);
+  const [applied, setApplied] = useState(false);
+
   useEffect(() => {
     if (job?.listing_id) trackView(job.listing_id).catch(() => {});
   }, [job?.listing_id]);
+
+  useEffect(() => {
+    if (job?.id && isAuthenticated && !job?.is_wanted) {
+      checkApplied(job.id).then((d) => setApplied(d.applied)).catch(() => {});
+    }
+  }, [job?.id, isAuthenticated, job?.is_wanted]);
 
   if (isLoading) return <SkeletonDetailPage />;
   if (error)
@@ -164,6 +175,13 @@ export default function JobDetailPage() {
 
   return (
     <>
+      {showApply && (
+        <QuickApplyModal
+          job={job}
+          onClose={() => setShowApply(false)}
+          onApplied={() => setApplied(true)}
+        />
+      )}
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "JobPosting",
@@ -921,6 +939,20 @@ export default function JobDetailPage() {
                 </div>
               </div>
               <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                {isAuthenticated && !job.is_wanted && job.user_id !== job.my_user_id && (
+                  <button
+                    onClick={() => setShowApply(true)}
+                    disabled={applied}
+                    style={{
+                      display: "block", width: "100%", padding: "10px",
+                      borderRadius: "9px", border: "none", cursor: applied ? "default" : "pointer",
+                      background: applied ? "#e8f5e9" : "#534AB7", color: applied ? "#388e3c" : "#fff",
+                      fontSize: "13px", fontWeight: 700, textAlign: "center",
+                    }}
+                  >
+                    {applied ? "✓ Applied" : "⚡ Quick Apply"}
+                  </button>
+                )}
                 <MessageButton
                   recipientId={job.user_id}
                   listingId={job.listing_id}

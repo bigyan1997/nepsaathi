@@ -1285,4 +1285,53 @@ def send_event_reminder_email(user, event):
             'html':    _wrap(body),
         })
     except Exception as e:
+        import traceback
+        print(f'[EMAIL ERROR] send_event_reminder_email: {e}', flush=True)
+        print(traceback.format_exc(), flush=True)
+
+
+# ─────────────────────────────────────────────────────────────
+# JOB APPLICATION EMAIL
+# ─────────────────────────────────────────────────────────────
+
+def send_job_application_email(poster, applicant, job, cover_letter):
+    try:
+        listing_url = f"{FRONTEND_URL}/jobs/{job.listing.slug}"
+        poster_name = _h(poster.first_name or 'there')
+        applicant_name = _h(applicant.full_name or applicant.email)
+        job_title = _h(job.listing.title)
+        cover_letter_html = _h(cover_letter).replace('\n', '<br>')
+        body = f"""
+<h1 {_H1}>New application for your job &#128188;</h1>
+<p {_P}>Hi <strong>{poster_name}</strong>, someone has applied to your job listing on NepSaathi.</p>
+
+{_listing_card(job.listing.title, listing_url, f"{job.listing.location}, {job.listing.state}", emoji="&#128188;", link_label="View listing")}
+
+<p style="font-size:13px;font-weight:700;color:#26215C;margin:20px 0 8px;font-family:Arial,sans-serif;">APPLICANT</p>
+{_info_box(
+    f"<strong>{applicant_name}</strong><br>"
+    + (f"&#128222; {_h(applicant.phone)}<br>" if applicant.phone else "")
+    + f"&#9993; {_h(applicant.email)}",
+    bg="#F5F4F0", border="#e5e5e5", color="#26215C"
+)}
+
+<p style="font-size:13px;font-weight:700;color:#26215C;margin:20px 0 8px;font-family:Arial,sans-serif;">COVER LETTER</p>
+{_info_box(cover_letter_html)}
+
+{_btn("View listing &rarr;", listing_url, color="#534AB7")}
+
+{_DIVIDER}
+<p {_SMALL}>Reply directly to the applicant at {_h(applicant.email)}. This notification was sent because you posted a job on NepSaathi.</p>"""
+        _fire({
+            'from':     'NepSaathi <noreply@nepsaathi.com>',
+            'to':       [poster.email],
+            'reply_to': applicant.email,
+            'subject':  f'[NepSaathi] New application: {job.listing.title}',
+            'html':     _wrap(body),
+        })
+    except Exception as e:
+        import traceback
+        print(f'[EMAIL ERROR] send_job_application_email: {e}', flush=True)
+        print(traceback.format_exc(), flush=True)
+    except Exception as e:
         print(f'Event reminder email failed: {e}', flush=True)

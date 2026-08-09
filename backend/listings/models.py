@@ -94,6 +94,9 @@ class Listing(models.Model):
     expires_at = models.DateTimeField(null=True, blank=True)
     expiry_warning_sent = models.BooleanField(default=False)
 
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+
     slug = models.SlugField(max_length=255, unique=True, blank=True, db_index=True)
 
     class Meta:

@@ -37,6 +37,29 @@ def _word_overlap(words_a, words_b):
     return len(set_a & set_b) / max(len(set_a), len(set_b))
 
 
+def _geocode_listing(listing):
+    """Geocode listing suburb+state via Nominatim and save lat/lng (runs in background thread)."""
+    import urllib.request
+    import urllib.parse
+    import json
+    query = f"{listing.location}, {listing.state}, Australia"
+    url = (
+        "https://nominatim.openstreetmap.org/search?"
+        + urllib.parse.urlencode({'q': query, 'format': 'json', 'limit': 1, 'countrycodes': 'au'})
+    )
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'NepSaathi/1.0 (nepsaathi.com)'})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+        if data:
+            Listing.objects.filter(pk=listing.pk).update(
+                latitude=float(data[0]['lat']),
+                longitude=float(data[0]['lon']),
+            )
+    except Exception:
+        pass
+
+
 def _flag_if_duplicate(listing, poster):
     """
     Flag listing for admin review if it matches another user's recent listing by:
@@ -222,6 +245,9 @@ class ListingCreateView(generics.CreateAPIView):
         # Cross-user duplicate check — run in background so it doesn't block the response
         import threading
         threading.Thread(target=_flag_if_duplicate, args=(listing, user), daemon=False).start()
+
+        # Geocode suburb+state in background for map view
+        threading.Thread(target=_geocode_listing, args=(listing,), daemon=True).start()
 
         # Fire saved search alerts in background
         try:

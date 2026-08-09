@@ -29,6 +29,8 @@ class JobSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     is_wanted = serializers.BooleanField(source='listing.is_wanted', read_only=True)
     view_count = serializers.SerializerMethodField()
+    latitude = serializers.FloatField(source='listing.latitude', read_only=True)
+    longitude = serializers.FloatField(source='listing.longitude', read_only=True)
 
     def get_view_count(self, obj):
         if hasattr(obj.listing, 'view_count_annotated'):
@@ -91,6 +93,8 @@ class JobSerializer(serializers.ModelSerializer):
             'description',
             'images',
             'is_wanted',
+            'latitude',
+            'longitude',
         )
         read_only_fields = (
             'id',

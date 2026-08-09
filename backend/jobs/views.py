@@ -1,8 +1,10 @@
 from rest_framework import generics, permissions, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
-from .models import Job
+from .models import Job, JobApplication
 from .serializers import JobSerializer
 
 
@@ -113,3 +115,51 @@ class JobDetailByListingView(generics.RetrieveAPIView):
             ).get(listing__slug=listing_slug)
         except Job.DoesNotExist:
             raise NotFound('Job not found.')
+
+
+class JobApplyView(APIView):
+    """
+    GET  /api/jobs/<id>/apply/  — check if current user has already applied
+    POST /api/jobs/<id>/apply/  — submit an application (emails the job poster)
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def _get_job(self, pk):
+        try:
+            return Job.objects.select_related('listing', 'listing__user').get(pk=pk)
+        except Job.DoesNotExist:
+            raise NotFound('Job not found.')
+
+    def get(self, request, pk):
+        job = self._get_job(pk)
+        applied = JobApplication.objects.filter(job=job, applicant=request.user).exists()
+        return Response({'applied': applied})
+
+    def post(self, request, pk):
+        job = self._get_job(pk)
+
+        if job.listing.status != 'active':
+            raise ValidationError('This job listing is no longer active.')
+        if job.listing.user == request.user:
+            raise ValidationError('You cannot apply to your own listing.')
+        if job.listing.is_wanted:
+            raise ValidationError('This is a job-seeker post — contact them directly.')
+
+        cover_letter = request.data.get('cover_letter', '').strip()
+        if not cover_letter:
+            raise ValidationError({'cover_letter': 'A cover letter is required.'})
+        if len(cover_letter) > 2000:
+            raise ValidationError({'cover_letter': 'Cover letter cannot exceed 2000 characters.'})
+
+        _, created = JobApplication.objects.get_or_create(
+            job=job,
+            applicant=request.user,
+            defaults={'cover_letter': cover_letter},
+        )
+        if not created:
+            return Response({'detail': 'You have already applied to this job.'}, status=400)
+
+        from core.emails import send_job_application_email
+        send_job_application_email(poster=job.listing.user, applicant=request.user, job=job, cover_letter=cover_letter)
+
+        return Response({'detail': 'Application submitted.'}, status=201)
