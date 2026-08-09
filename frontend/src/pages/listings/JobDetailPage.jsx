@@ -112,7 +112,7 @@ const IconArrow = () => (
 export default function JobDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const isMobile = useIsMobile();
 
   const {
@@ -939,7 +939,7 @@ export default function JobDetailPage() {
                 </div>
               </div>
               <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                {isAuthenticated && !job.is_wanted && job.user_id !== job.my_user_id && (
+                {isAuthenticated && !job.is_wanted && job.user_id !== user?.id && (
                   <button
                     onClick={() => setShowApply(true)}
                     disabled={applied}

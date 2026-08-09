@@ -47,3 +47,13 @@ export const applyToJob = async (jobId, coverLetter) => {
   const response = await api.post(`/api/jobs/${jobId}/apply/`, { cover_letter: coverLetter });
   return response.data;
 };
+
+// AI improve a cover letter draft
+export const aiImproveCoverLetter = async ({ coverLetter, jobTitle, companyName }) => {
+  const response = await api.post("/api/jobs/ai-improve-cover-letter/", {
+    cover_letter: coverLetter,
+    job_title: jobTitle,
+    company_name: companyName,
+  });
+  return response.data;
+};

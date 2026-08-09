@@ -1333,5 +1333,3 @@ def send_job_application_email(poster, applicant, job, cover_letter):
         import traceback
         print(f'[EMAIL ERROR] send_job_application_email: {e}', flush=True)
         print(traceback.format_exc(), flush=True)
-    except Exception as e:
-        print(f'Event reminder email failed: {e}', flush=True)

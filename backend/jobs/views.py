@@ -1,7 +1,8 @@
-from rest_framework import generics, permissions, filters
+from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
 from .models import Job, JobApplication
@@ -163,3 +164,51 @@ class JobApplyView(APIView):
         send_job_application_email(poster=job.listing.user, applicant=request.user, job=job, cover_letter=cover_letter)
 
         return Response({'detail': 'Application submitted.'}, status=201)
+
+
+class AIImproveCoverLetterView(APIView):
+    """POST /api/jobs/ai-improve-cover-letter/ — rewrites a cover letter using Llama 3 via Groq."""
+    permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = 'ai_improve'
+
+    def post(self, request):
+        import groq as groq_sdk
+        from decouple import config
+
+        cover_letter = (request.data.get('cover_letter') or '').strip()
+        job_title = (request.data.get('job_title') or '').strip()
+        company = (request.data.get('company_name') or '').strip()
+
+        if not cover_letter or len(cover_letter) < 10:
+            return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        api_key = config('GROQ_API_KEY', default='')
+        if not api_key:
+            return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        applicant_name = request.user.get_full_name() or request.user.email.split("@")[0]
+        context = f"Job: {job_title}" + (f" at {company}" if company else "")
+        prompt = f"""You are helping a Nepalese Australian write a professional job application cover letter on NepSaathi.
+
+{context}
+Applicant's full name: {applicant_name}
+
+Applicant's draft:
+{cover_letter}
+
+Rewrite this cover letter to be professional, concise, and compelling. Fix grammar and spelling. Keep all the facts the applicant wrote. Do not invent new information or qualifications. Keep it under 300 words. Sign off with the applicant's real name ({applicant_name}). Return only the improved cover letter — no preamble, no explanation."""
+
+        try:
+            client = groq_sdk.Groq(api_key=api_key)
+            chat = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                max_tokens=500,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            improved = chat.choices[0].message.content.strip()
+            return Response({'improved': improved})
+        except groq_sdk.APIError as e:
+            import logging
+            logging.getLogger(__name__).error("Groq API error in cover letter ai-improve: %s", e)
+            return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

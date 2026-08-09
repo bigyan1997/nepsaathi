@@ -16,4 +16,6 @@ urlpatterns = [
     path('<int:pk>/', views.JobDetailView.as_view(), name='job-detail'),
     # Apply to a job (GET = check applied, POST = submit)
     path('<int:pk>/apply/', views.JobApplyView.as_view(), name='job-apply'),
+    # AI cover letter improvement (shared ai_improve throttle, 5/day)
+    path('ai-improve-cover-letter/', views.AIImproveCoverLetterView.as_view(), name='ai-improve-cover-letter'),
 ]
