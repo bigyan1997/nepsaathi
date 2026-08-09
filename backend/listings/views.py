@@ -218,13 +218,13 @@ class ListingCreateView(generics.CreateAPIView):
         
         # Check 5 minute cooldown
         five_mins_ago = timezone.now() - timedelta(minutes=5)
-        recent_post = Listing.objects.filter(
+        last_recent = Listing.objects.filter(
             user=user, created_at__gte=five_mins_ago
-        ).exists()
-        if recent_post:
-            raise ValidationError(
-                'Please wait 5 minutes before posting again.'
-            )
+        ).order_by('-created_at').first()
+        if last_recent:
+            elapsed = (timezone.now() - last_recent.created_at).total_seconds()
+            seconds_left = max(1, int(300 - elapsed))
+            raise ValidationError({'cooldown': seconds_left})
         # Check duplicate title in last 24 hours across all statuses
         yesterday = timezone.now() - timedelta(hours=24)
         title = self.request.data.get('title', '').strip().lower()

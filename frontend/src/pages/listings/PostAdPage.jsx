@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { createListing, deleteListing, aiImproveDescription } from "../../api/listings";
 import { createJob } from "../../api/jobs";
@@ -284,8 +284,10 @@ function NavButtons({
   onNext,
   nextLabel,
   loading,
+  disabled,
   nextColor = "#E87722",
 }) {
+  const isDisabled = loading || disabled;
   return (
     <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
       {onBack && (
@@ -308,17 +310,17 @@ function NavButtons({
       )}
       <button
         onClick={onNext}
-        disabled={loading}
+        disabled={isDisabled}
         style={{
           flex: 2,
-          background: loading ? "#ccc" : nextColor,
+          background: isDisabled ? "#ccc" : nextColor,
           color: "#fff",
           border: "none",
           borderRadius: "9px",
           padding: "12px",
           fontSize: "14px",
           fontWeight: 700,
-          cursor: loading ? "not-allowed" : "pointer",
+          cursor: isDisabled ? "not-allowed" : "pointer",
         }}
       >
         {loading ? "Posting..." : nextLabel}
@@ -337,6 +339,25 @@ export default function PostAdPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef(null);
+
+  function startCooldown(seconds) {
+    setCooldown(seconds);
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      setCooldown((c) => {
+        if (c <= 1) { clearInterval(cooldownRef.current); cooldownRef.current = null; return 0; }
+        return c - 1;
+      });
+    }, 1000);
+  }
+
+  function formatCooldown(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
   const [listingType, setListingType] = useState("");
   const [createdListingId, setCreatedListingId] = useState(null);
   const [createdListingSlug, setCreatedListingSlug] = useState(null);
@@ -517,9 +538,11 @@ export default function PostAdPage() {
         );
         return;
       }
-      const errors = err.response?.data;
-      if (errors) {
-        const first = Object.values(errors)[0];
+      const data = err.response?.data;
+      if (data?.cooldown) {
+        startCooldown(data.cooldown);
+      } else if (data) {
+        const first = Object.values(data)[0];
         setError(
           Array.isArray(first)
             ? first[0]
@@ -677,7 +700,16 @@ export default function PostAdPage() {
         </div>
 
         {/* ── Error banner ── */}
-        {error && (
+        {cooldown > 0 ? (
+          <div style={{ background: "#FFF8ED", border: "0.5px solid #F6C06B", borderRadius: "12px", padding: "12px 16px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ fontSize: "28px", lineHeight: 1 }}>⏳</div>
+            <div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "#92400E" }}>You can post again in</div>
+              <div style={{ fontSize: "28px", fontWeight: 800, color: "#E87722", fontVariantNumeric: "tabular-nums", letterSpacing: "0.02em", lineHeight: 1.2 }}>{formatCooldown(cooldown)}</div>
+              <div style={{ fontSize: "11px", color: "#92400E", marginTop: "2px" }}>There is a 5-minute wait between listings to prevent spam.</div>
+            </div>
+          </div>
+        ) : error && (
           <div
             style={{
               background: "#FCEBEB",
@@ -1243,6 +1275,7 @@ export default function PostAdPage() {
               }}
               onNext={handleSubmit}
               loading={loading}
+              disabled={cooldown > 0}
               nextLabel={
                 baseForm.is_wanted ? "Post job wanted →" : "Post job →"
               }
@@ -1495,6 +1528,7 @@ export default function PostAdPage() {
               }}
               onNext={handleSubmit}
               loading={loading}
+              disabled={cooldown > 0}
               nextLabel={
                 baseForm.is_wanted ? "Post room wanted →" : "Post room →"
               }
@@ -1575,6 +1609,7 @@ export default function PostAdPage() {
               }}
               onNext={handleSubmit}
               loading={loading}
+              disabled={cooldown > 0}
               nextLabel="Post notice →"
             />
           </>
@@ -1712,6 +1747,7 @@ export default function PostAdPage() {
                 handleSubmit();
               }}
               loading={loading}
+              disabled={cooldown > 0}
               nextLabel="Post event →"
             />
           </>
