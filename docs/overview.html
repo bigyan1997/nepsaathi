@@ -1,1252 +1,1087 @@
-<title>NepSaathi — Full Project Overview</title>
+<title>NepSaathi Docs</title>
 <style>
-  :root {
-    --brand-deep: #26215C;
-    --brand-mid: #534AB7;
-    --brand-light: #EEEDFE;
-    --brand-orange: #E87722;
-    --brand-orange-bg: #FFF1E0;
-    --green: #16a34a;
-    --green-bg: #dcfce7;
-    --red: #A32D2D;
-    --red-bg: #FCEBEB;
-
-    --bg: #F7F6F2;
-    --surface: #FFFFFF;
-    --surface-2: #F0EFF9;
-    --border: #E4E2F5;
-    --text: #1A1630;
-    --text-2: #4A4468;
-    --text-3: #8A86A8;
-    --pill-bg: #EEEDFE;
-
-    --sidebar-w: 220px;
-    --content-max: 760px;
-    --gap: 28px;
-    --radius: 12px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0E0C1E;
-      --surface: #17132E;
-      --surface-2: #1F1A3A;
-      --border: #2E2850;
-      --text: #EAE8F8;
-      --text-2: #ADA8D0;
-      --text-3: #6A6490;
-      --pill-bg: #1F1A3A;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #0E0C1E;
-    --surface: #17132E;
-    --surface-2: #1F1A3A;
-    --border: #2E2850;
-    --text: #EAE8F8;
-    --text-2: #ADA8D0;
-    --text-3: #6A6490;
+:root {
+  --brand-deep: #26215C;
+  --brand-mid: #534AB7;
+  --brand-light: #EEEDFE;
+  --brand-orange: #E87722;
+  --brand-orange-bg: #FFF1E0;
+  --green: #16a34a; --green-bg: #dcfce7;
+  --red: #A32D2D;   --red-bg: #FCEBEB;
+  --amber: #B45309; --amber-bg: #FEF3C7;
+  --bg: #F7F6F2; --surface: #FFFFFF; --surface-2: #F0EFF9;
+  --border: #E4E2F5; --text: #1A1630; --text-2: #4A4468; --text-3: #8A86A8;
+  --pill-bg: #EEEDFE;
+  --header-h: 54px; --sidebar-w: 224px; --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E0C1E; --surface: #17132E; --surface-2: #1F1A3A;
+    --border: #2E2850; --text: #EAE8F8; --text-2: #ADA8D0; --text-3: #6A6490;
     --pill-bg: #1F1A3A;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0E0C1E; --surface: #17132E; --surface-2: #1F1A3A;
+  --border: #2E2850; --text: #EAE8F8; --text-2: #ADA8D0; --text-3: #6A6490;
+  --pill-bg: #1F1A3A;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14.5px;line-height:1.7;color:var(--text);background:var(--bg);}
+a{color:var(--brand-mid);text-decoration:none;}
+a:hover{text-decoration:underline;}
+code{font-family:'SF Mono','Fira Code',Consolas,monospace;font-size:12.5px;background:var(--surface-2);color:var(--brand-mid);padding:1px 5px;border-radius:4px;border:1px solid var(--border);}
+pre{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:'SF Mono','Fira Code',Consolas,monospace;font-size:12.5px;line-height:1.7;margin:14px 0;}
+pre code{background:none;border:none;padding:0;color:var(--text-2);}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:8px 12px;background:var(--surface-2);color:var(--text);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--border);}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-2);vertical-align:top;font-size:13px;}
+tr:last-child td{border-bottom:none;}
+td strong{color:var(--text);font-weight:600;}
+ul,ol{padding-left:20px;}
+li{margin-bottom:4px;color:var(--text-2);font-size:13.5px;}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text);
-    background: var(--bg);
-  }
+/* ── Fixed header ── */
+.app-header{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--header-h);
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.header-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:0 22px;width:var(--sidebar-w);
+  border-right:1px solid var(--border);height:100%;flex-shrink:0;
+}
+.logo-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--brand-deep),var(--brand-mid));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:14px;
+}
+.logo-text{font-weight:800;font-size:14px;color:var(--text);letter-spacing:-.02em;}
+.logo-text span{color:var(--brand-orange);}
+.header-tabs{display:flex;align-items:center;gap:4px;padding:0 22px;}
+.tab-btn{
+  padding:6px 14px;border-radius:7px;border:1px solid transparent;
+  font-size:13px;font-weight:500;cursor:pointer;
+  background:transparent;color:var(--text-2);transition:all .15s;
+  font-family:inherit;
+}
+.tab-btn:hover{background:var(--surface-2);color:var(--text);}
+.tab-btn.active{background:var(--brand-light);border-color:var(--brand-mid);color:var(--brand-mid);font-weight:600;}
+.header-right{margin-left:auto;padding-right:22px;color:var(--text-3);font-size:12px;}
 
-  /* ── Layout ── */
-  .shell {
-    display: flex;
-    align-items: flex-start;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-    gap: 48px;
-  }
+/* ── Layout ── */
+.shell{display:flex;padding-top:var(--header-h);min-height:100vh;}
 
-  /* ── Sidebar ── */
-  .sidebar {
-    flex: 0 0 var(--sidebar-w);
-    position: sticky;
-    top: 32px;
-  }
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-  }
-  .logo-mark {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--brand-deep), var(--brand-mid));
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 800;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .logo-text {
-    font-weight: 800;
-    font-size: 15px;
-    color: var(--brand-deep);
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
-  .logo-text span { color: var(--brand-orange); }
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  position:fixed;top:var(--header-h);bottom:0;left:0;
+  overflow-y:auto;background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:18px 0 48px;
+}
+.sidebar nav{display:flex;flex-direction:column;}
+.nav-group{margin-top:18px;}
+.nav-group:first-child{margin-top:0;}
+.nav-label{padding:0 18px 5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);}
+.nav-link{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 18px;font-size:13px;color:var(--text-2);
+  border-left:2px solid transparent;transition:all .12s;cursor:pointer;
+  text-decoration:none;
+}
+.nav-link:hover{background:var(--surface-2);color:var(--brand-mid);text-decoration:none;}
+.nav-link.active{color:var(--brand-mid);border-left-color:var(--brand-mid);background:var(--brand-light);font-weight:600;}
+.nav-link .ni{opacity:.55;font-size:13px;width:16px;text-align:center;}
 
-  .nav-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin: 20px 0 8px;
-  }
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: 7px;
-    font-size: 13px;
-    color: var(--text-2);
-    text-decoration: none;
-    transition: background 0.12s, color 0.12s;
-    cursor: pointer;
-    margin-bottom: 2px;
-  }
-  .nav-link:hover { background: var(--pill-bg); color: var(--brand-mid); }
-  .nav-link .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--border);
-    flex-shrink: 0;
-  }
+/* ── Main ── */
+.main{flex:1;margin-left:var(--sidebar-w);padding:40px 52px 80px;max-width:920px;}
+.pane{display:none;}
+.pane.active{display:block;}
 
-  /* ── Content ── */
-  .content { flex: 1; min-width: 0; }
+/* ── Doc header (gradient card) ── */
+.doc-header{
+  background:linear-gradient(135deg,var(--brand-deep) 0%,var(--brand-mid) 100%);
+  border-radius:18px;padding:38px 40px 34px;margin-bottom:40px;
+  position:relative;overflow:hidden;
+}
+.doc-header::before{content:'';position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.05);}
+.doc-header::after{content:'';position:absolute;right:60px;bottom:-80px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.04);}
+.doc-eyebrow{display:inline-block;background:rgba(255,255,255,.15);color:#C9C4F5;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;border-radius:20px;margin-bottom:12px;position:relative;}
+.doc-header h1{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em;text-wrap:balance;margin-bottom:8px;position:relative;line-height:1.2;}
+.doc-header p{color:#C9C4F5;font-size:14px;line-height:1.6;max-width:520px;position:relative;}
+.doc-meta{display:flex;gap:24px;margin-top:20px;position:relative;flex-wrap:wrap;}
+.doc-meta-item{display:flex;flex-direction:column;gap:2px;}
+.doc-meta-item .label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+.doc-meta-item .val{font-size:13px;font-weight:600;color:rgba(255,255,255,.9);}
 
-  /* ── Doc header ── */
-  .doc-header {
-    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand-mid) 100%);
-    border-radius: 18px;
-    padding: 40px 40px 36px;
-    margin-bottom: 40px;
-    position: relative;
-    overflow: hidden;
-  }
-  .doc-header::before {
-    content: '';
-    position: absolute;
-    right: -60px; top: -60px;
-    width: 240px; height: 240px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-  }
-  .doc-header::after {
-    content: '';
-    position: absolute;
-    right: 60px; bottom: -80px;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.04);
-  }
-  .doc-eyebrow {
-    display: inline-block;
-    background: rgba(255,255,255,0.15);
-    color: #C9C4F5;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 14px;
-    position: relative;
-  }
-  .doc-header h1 {
-    font-size: 32px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
-    margin-bottom: 10px;
-    position: relative;
-    line-height: 1.15;
-  }
-  .doc-header p {
-    color: #C9C4F5;
-    font-size: 15px;
-    line-height: 1.6;
-    max-width: 520px;
-    position: relative;
-  }
-  .doc-meta {
-    display: flex;
-    gap: 24px;
-    margin-top: 24px;
-    position: relative;
-    flex-wrap: wrap;
-  }
-  .doc-meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .doc-meta-item .label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-  }
-  .doc-meta-item .val {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.9);
-  }
+/* ── Section ── */
+.section{margin-bottom:48px;scroll-margin-top:20px;}
+.section+.section{border-top:1px solid var(--border);padding-top:44px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:1.5px solid var(--border);}
+.section-icon{width:34px;height:34px;border-radius:9px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.section-title{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
+h3{font-size:14px;font-weight:700;color:var(--text);margin:22px 0 9px;letter-spacing:-.01em;}
+h3:first-child{margin-top:0;}
+p{color:var(--text-2);margin-bottom:10px;font-size:13.5px;}
+p:last-child{margin-bottom:0;}
 
-  /* ── Sections ── */
-  .section { margin-bottom: 48px; scroll-margin-top: 24px; }
+/* ── Steps / flow ── */
+.steps{display:flex;flex-direction:column;}
+.step{display:flex;gap:14px;position:relative;}
+.step::before{content:'';position:absolute;left:13px;top:30px;bottom:0;width:1.5px;background:var(--border);}
+.step:last-child::before{display:none;}
+.step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--brand-mid);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+.step-body{padding-bottom:22px;flex:1;}
+.step:last-child .step-body{padding-bottom:0;}
+.step-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.step-desc{font-size:13px;color:var(--text-2);line-height:1.6;}
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 14px;
-    border-bottom: 1.5px solid var(--border);
-  }
-  .section-icon {
-    width: 34px; height: 34px;
-    border-radius: 9px;
-    background: var(--surface-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .section-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-body{font-size:13px;color:var(--text-2);line-height:1.6;}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.card-mini{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:5px;}
+.card-mini .cm-icon{font-size:18px;}
+.card-mini .cm-title{font-weight:700;font-size:13px;color:var(--text);}
+.card-mini .cm-desc{font-size:12.5px;color:var(--text-2);line-height:1.5;}
 
-  h3 {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-    margin: 24px 0 10px;
-    letter-spacing: -0.01em;
-  }
-  p { color: var(--text-2); margin-bottom: 12px; }
-  p:last-child { margin-bottom: 0; }
+/* ── Type cards ── */
+.type-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:3px solid transparent;}
+.type-card.jobs{border-left-color:var(--brand-mid);}
+.type-card.rooms{border-left-color:#85510A;}
+.type-card.events{border-left-color:#1D9E75;}
+.type-card.notices{border-left-color:#0C447C;}
+.type-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.type-card.jobs .type-label{color:var(--brand-mid);}
+.type-card.rooms .type-label{color:#85510A;}
+.type-card.events .type-label{color:#1D9E75;}
+.type-card.notices .type-label{color:#0C447C;}
 
-  /* ── Cards ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    margin-bottom: 10px;
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .card-body {
-    font-size: 13px;
-    color: var(--text-2);
-    line-height: 1.6;
-  }
-  .card-body p { margin-bottom: 0; }
+/* ── Callout ── */
+.callout{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--brand-mid);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;color:var(--text-2);margin:14px 0;line-height:1.6;display:flex;gap:10px;}
+.callout strong{color:var(--text);}
+.callout-icon{flex-shrink:0;font-size:15px;}
+.callout.orange{border-left-color:var(--brand-orange);}
+.callout.green{border-left-color:var(--green);}
+.callout.red{border-left-color:var(--red);}
 
-  .card-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+/* ── Pill ── */
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:var(--pill-bg);color:var(--brand-mid);letter-spacing:.02em;vertical-align:middle;}
+.pill.orange{background:var(--brand-orange-bg);color:var(--brand-orange);}
+.pill.green{background:var(--green-bg);color:var(--green);}
+.pill.red{background:var(--red-bg);color:var(--red);}
 
-  /* ── Listing type cards ── */
-  .type-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    border-left: 3px solid transparent;
-  }
-  .type-card.jobs   { border-left-color: var(--brand-mid); }
-  .type-card.rooms  { border-left-color: #85510A; }
-  .type-card.events { border-left-color: #1D9E75; }
-  .type-card.notices { border-left-color: #0C447C; }
-  .type-card.businesses { border-left-color: var(--brand-orange); }
+/* ── Info row ── */
+.info-row{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-weight:600;color:var(--text);flex:0 0 168px;flex-shrink:0;}
+.info-val{color:var(--text-2);}
 
-  .type-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 4px;
-  }
-  .type-card.jobs .type-label    { color: var(--brand-mid); }
-  .type-card.rooms .type-label   { color: #85510A; }
-  .type-card.events .type-label  { color: #1D9E75; }
-  .type-card.notices .type-label { color: #0C447C; }
-  .type-card.businesses .type-label { color: var(--brand-orange); }
+/* ── Endpoint ── */
+.endpoint{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.endpoint:last-child{border-bottom:none;}
+.method{font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;width:50px;text-align:center;}
+.method-get{background:var(--green-bg);color:var(--green);}
+.method-post{background:var(--pill-bg);color:var(--brand-mid);}
+.method-patch{background:var(--amber-bg);color:var(--amber);}
+.method-delete{background:var(--red-bg);color:var(--red);}
+.ep-path{font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:var(--text);flex:1;}
+.ep-note{font-size:12px;color:var(--text-3);}
 
-  /* ── Flow ── */
-  .flow {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  .flow-step {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-  .flow-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  .flow-num {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--brand-mid);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .flow-line {
-    width: 1.5px;
-    flex: 1;
-    min-height: 16px;
-    background: var(--border);
-    margin: 4px 0;
-  }
-  .flow-content {
-    padding-bottom: 20px;
-    flex: 1;
-  }
-  .flow-step:last-child .flow-content { padding-bottom: 0; }
-  .flow-step-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-  .flow-step-desc {
-    font-size: 13px;
-    color: var(--text-2);
-    line-height: 1.55;
-    margin: 0;
-  }
+/* ── Table wrap ── */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin:14px 0;}
+.tbl-wrap table{margin:0;}
 
-  /* ── Pill tags ── */
-  .pill {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    background: var(--pill-bg);
-    color: var(--brand-mid);
-    letter-spacing: 0.02em;
-  }
-  .pill.orange { background: var(--brand-orange-bg); color: var(--brand-orange); }
-  .pill.green  { background: var(--green-bg); color: var(--green); }
-  .pill.red    { background: var(--red-bg); color: var(--red); }
+/* ── URL chip ── */
+.url-chip{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'SF Mono',Consolas,monospace;color:var(--brand-mid);margin:0 2px;}
 
-  /* ── Info row ── */
-  .info-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .info-row:last-child { border-bottom: none; }
-  .info-key {
-    font-weight: 600;
-    color: var(--text);
-    flex: 0 0 160px;
-    flex-shrink: 0;
-  }
-  .info-val { color: var(--text-2); }
+/* ── Arch blocks ── */
+.arch-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;}
+.arch-block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;}
+.arch-block .ab-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-bottom:3px;}
+.arch-block .ab-val{font-size:13px;font-weight:600;color:var(--text);}
 
-  /* ── Email list ── */
-  .email-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .email-item:last-child { border-bottom: none; }
-  .email-icon {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: var(--surface-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-  }
-  .email-trigger {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 1px;
-  }
-  .email-desc {
-    font-size: 12px;
-    color: var(--text-2);
-    line-height: 1.5;
-  }
+/* ── Screenshot placeholder ── */
+.screenshot{border:2px dashed var(--border);border-radius:var(--radius);padding:28px 20px;text-align:center;color:var(--text-3);background:var(--surface-2);margin:14px 0;font-size:12.5px;}
+.screenshot .sc-icon{font-size:20px;display:block;margin-bottom:7px;}
+.screenshot .sc-label{font-style:italic;}
 
-  /* ── Arch block ── */
-  .arch-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .arch-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    text-align: center;
-  }
-  .arch-block .ab-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-3);
-    margin-bottom: 4px;
-  }
-  .arch-block .ab-val {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-  }
+/* ── Email item ── */
+.email-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.email-item:last-child{border-bottom:none;}
+.email-icon{width:30px;height:30px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.email-trigger{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.email-desc{font-size:12.5px;color:var(--text-2);line-height:1.5;}
 
-  /* ── URL chip ── */
-  .url-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-family: 'SF Mono', 'Fira Code', monospace;
-    color: var(--brand-mid);
-    margin: 2px 4px 2px 0;
-  }
-
-  /* ── Callout ── */
-  .callout {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--brand-mid);
-    border-radius: 0 10px 10px 0;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: var(--text-2);
-    margin: 16px 0;
-    line-height: 1.6;
-  }
-  .callout strong { color: var(--text); }
-
-  .callout.orange {
-    border-left-color: var(--brand-orange);
-  }
-  .callout.green {
-    border-left-color: var(--green);
-  }
-
-  /* ── Table ── */
-  .tbl-wrap { overflow-x: auto; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  th {
-    text-align: left;
-    padding: 8px 12px;
-    background: var(--surface-2);
-    color: var(--text);
-    font-weight: 700;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-bottom: 1.5px solid var(--border);
-  }
-  td {
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-2);
-    vertical-align: top;
-  }
-  tr:last-child td { border-bottom: none; }
-  td strong { color: var(--text); font-weight: 600; }
-
-  /* ── Mobile ── */
-  @media (max-width: 700px) {
-    .shell { flex-direction: column; padding: 24px 16px 60px; gap: 32px; }
-    .sidebar { position: static; width: 100%; }
-    .doc-header { padding: 28px 24px; }
-    .doc-header h1 { font-size: 24px; }
-    .card-grid { grid-template-columns: 1fr; }
-    .arch-row { grid-template-columns: 1fr 1fr; }
-    .info-key { flex: 0 0 120px; }
-  }
+/* ── Mobile ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s;z-index:150;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:24px 18px 60px;}
+  .card-grid{grid-template-columns:1fr;}
+  .arch-row{grid-template-columns:1fr 1fr;}
+  .header-logo{width:auto;border-right:none;}
+  .header-right{display:none;}
+  .mob-toggle{display:flex!important;}
+}
+.mob-toggle{display:none;position:fixed;bottom:20px;right:20px;z-index:300;background:var(--brand-mid);color:#fff;border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.2);}
 </style>
+
+<!-- ── Header ── -->
+<header class="app-header">
+  <div class="header-logo">
+    <div class="logo-mark">N</div>
+    <div class="logo-text">Nep<span>Saathi</span> Docs</div>
+  </div>
+  <div class="header-tabs">
+    <button class="tab-btn active" onclick="switchTab('user')">User Guide</button>
+    <button class="tab-btn"        onclick="switchTab('dev')">Developer Reference</button>
+  </div>
+  <div class="header-right">Last updated Aug 2026</div>
+</header>
 
 <div class="shell">
 
-  <!-- ── Sidebar ── -->
-  <nav class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">N</div>
-      <div class="logo-text">Nep<span>Saathi</span></div>
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
+
+  <nav id="user-nav">
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a class="nav-link" href="#welcome"         onclick="cm()"><span class="ni">🏠</span>Welcome</a>
+      <a class="nav-link" href="#getting-started" onclick="cm()"><span class="ni">🚀</span>Getting Started</a>
     </div>
-
-    <div class="nav-label">Overview</div>
-    <a class="nav-link" href="#what"><span class="dot"></span> What is it</a>
-    <a class="nav-link" href="#access"><span class="dot"></span> How to access</a>
-    <a class="nav-link" href="#features"><span class="dot"></span> Features</a>
-
-    <div class="nav-label">User Side</div>
-    <a class="nav-link" href="#listings"><span class="dot"></span> Listings</a>
-    <a class="nav-link" href="#businesses"><span class="dot"></span> Businesses</a>
-    <a class="nav-link" href="#forum"><span class="dot"></span> Forum</a>
-    <a class="nav-link" href="#messaging"><span class="dot"></span> Messaging</a>
-    <a class="nav-link" href="#sendmoney"><span class="dot"></span> Send Money</a>
-    <a class="nav-link" href="#payments"><span class="dot"></span> Featured / Payments</a>
-
-    <div class="nav-label">Behind the scenes</div>
-    <a class="nav-link" href="#emails"><span class="dot"></span> Emails</a>
-    <a class="nav-link" href="#cron"><span class="dot"></span> Cron jobs</a>
-    <a class="nav-link" href="#notifications"><span class="dot"></span> Push & WebSocket</a>
-
-    <div class="nav-label">Admin</div>
-    <a class="nav-link" href="#admin"><span class="dot"></span> Moderation</a>
-    <a class="nav-link" href="#security"><span class="dot"></span> Security</a>
-
-    <div class="nav-label">Tech</div>
-    <a class="nav-link" href="#tech"><span class="dot"></span> Architecture</a>
-    <a class="nav-link" href="#deploy"><span class="dot"></span> Deployment</a>
+    <div class="nav-group">
+      <div class="nav-label">Listings</div>
+      <a class="nav-link" href="#post-ad"  onclick="cm()"><span class="ni">📢</span>Post an Ad</a>
+      <a class="nav-link" href="#jobs"     onclick="cm()"><span class="ni">💼</span>Jobs &amp; Apply</a>
+      <a class="nav-link" href="#rooms"    onclick="cm()"><span class="ni">🏠</span>Accommodation</a>
+      <a class="nav-link" href="#events"   onclick="cm()"><span class="ni">🎉</span>Events &amp; RSVPs</a>
+      <a class="nav-link" href="#notices"  onclick="cm()"><span class="ni">📋</span>Notices</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Community</div>
+      <a class="nav-link" href="#businesses"  onclick="cm()"><span class="ni">🏪</span>Business Directory</a>
+      <a class="nav-link" href="#forum"        onclick="cm()"><span class="ni">💬</span>Forum</a>
+      <a class="nav-link" href="#looking-for"  onclick="cm()"><span class="ni">🔍</span>Looking For Board</a>
+      <a class="nav-link" href="#services-mkt" onclick="cm()"><span class="ni">🛠</span>Services Marketplace</a>
+      <a class="nav-link" href="#messages"     onclick="cm()"><span class="ni">✉️</span>Messages</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Tools</div>
+      <a class="nav-link" href="#points"         onclick="cm()"><span class="ni">⭐</span>Points &amp; Referrals</a>
+      <a class="nav-link" href="#send-money"     onclick="cm()"><span class="ni">💸</span>Send Money</a>
+      <a class="nav-link" href="#saved-searches" onclick="cm()"><span class="ni">🔔</span>Saved Searches</a>
+      <a class="nav-link" href="#profile"        onclick="cm()"><span class="ni">👤</span>Your Profile</a>
+    </div>
   </nav>
 
-  <!-- ── Main content ── -->
-  <main class="content">
+  <nav id="dev-nav" style="display:none">
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a class="nav-link" href="#what"      onclick="cm()"><span class="ni">🏡</span>What is it</a>
+      <a class="nav-link" href="#features"  onclick="cm()"><span class="ni">✨</span>Features</a>
+      <a class="nav-link" href="#arch"      onclick="cm()"><span class="ni">🏗</span>Architecture</a>
+      <a class="nav-link" href="#dev-setup" onclick="cm()"><span class="ni">💻</span>Local Dev Setup</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">API Reference</div>
+      <a class="nav-link" href="#api-auth"      onclick="cm()"><span class="ni">🔑</span>Auth &amp; Users</a>
+      <a class="nav-link" href="#api-listings"  onclick="cm()"><span class="ni">📢</span>Listings</a>
+      <a class="nav-link" href="#api-types"     onclick="cm()"><span class="ni">🗂</span>Type-specific</a>
+      <a class="nav-link" href="#api-biz"       onclick="cm()"><span class="ni">🏪</span>Businesses</a>
+      <a class="nav-link" href="#api-msgs"      onclick="cm()"><span class="ni">✉️</span>Messaging</a>
+      <a class="nav-link" href="#api-payments"  onclick="cm()"><span class="ni">💳</span>Payments</a>
+      <a class="nav-link" href="#api-forum"     onclick="cm()"><span class="ni">💬</span>Forum</a>
+      <a class="nav-link" href="#api-community" onclick="cm()"><span class="ni">🌏</span>Community</a>
+      <a class="nav-link" href="#api-other"     onclick="cm()"><span class="ni">➕</span>Other</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Internals</div>
+      <a class="nav-link" href="#patterns"  onclick="cm()"><span class="ni">🔧</span>Key Patterns</a>
+      <a class="nav-link" href="#ai-feat"   onclick="cm()"><span class="ni">✨</span>AI Features</a>
+      <a class="nav-link" href="#emails"    onclick="cm()"><span class="ni">📧</span>Emails</a>
+      <a class="nav-link" href="#cron"      onclick="cm()"><span class="ni">⏱</span>Cron Jobs</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Operations</div>
+      <a class="nav-link" href="#security" onclick="cm()"><span class="ni">🔒</span>Security</a>
+      <a class="nav-link" href="#deploy"   onclick="cm()"><span class="ni">🚀</span>Deployment</a>
+      <a class="nav-link" href="#envvars"  onclick="cm()"><span class="ni">🗝</span>Env Vars</a>
+    </div>
+  </nav>
 
-    <!-- Header -->
+</aside>
+
+<!-- ── Main ── -->
+<main class="main">
+
+<!-- ════════════════════════════════════════
+     USER GUIDE PANE
+════════════════════════════════════════ -->
+<div class="pane active" id="user-pane">
+
+  <!-- Welcome -->
+  <section class="section" id="welcome">
     <div class="doc-header">
-      <div class="doc-eyebrow">Project Overview</div>
-      <h1>NepSaathi</h1>
-      <p>A full-stack community platform for Nepalese Australians — marketplace, forum, messaging, remittance tools, and more — all in one place.</p>
+      <div class="doc-eyebrow">User Guide</div>
+      <h1>Welcome to NepSaathi</h1>
+      <p>A community marketplace and resource hub built for Nepalese Australians — find work, accommodation, events, and businesses, all in one trusted place.</p>
       <div class="doc-meta">
-        <div class="doc-meta-item">
-          <span class="label">Live site</span>
-          <span class="val">nepsaathi.com</span>
-        </div>
-        <div class="doc-meta-item">
-          <span class="label">Backend</span>
-          <span class="val">Django · Railway</span>
-        </div>
-        <div class="doc-meta-item">
-          <span class="label">Frontend</span>
-          <span class="val">React · Vercel</span>
-        </div>
-        <div class="doc-meta-item">
-          <span class="label">Database</span>
-          <span class="val">PostgreSQL</span>
-        </div>
+        <div class="doc-meta-item"><span class="label">Live site</span><span class="val">nepsaathi.com</span></div>
+        <div class="doc-meta-item"><span class="label">Browse</span><span class="val">No account needed</span></div>
+        <div class="doc-meta-item"><span class="label">Post / Message</span><span class="val">Free account required</span></div>
       </div>
     </div>
 
-    <!-- ── What is it ── -->
-    <section class="section" id="what">
-      <div class="section-header">
-        <div class="section-icon">🏡</div>
-        <h2 class="section-title">What is NepSaathi</h2>
-      </div>
-      <p>NepSaathi ("Nep" = Nepali, "Saathi" = friend) is a community marketplace and resource hub built specifically for Nepalese people living in Australia. Think of it as Gumtree meets a community forum, tailored entirely for the Nepali diaspora.</p>
-      <p>The platform solves a real gap: Nepalese Australians previously had to rely on scattered Facebook groups, WhatsApp chains, and generic classifieds sites to find jobs, accommodation, connect with local businesses, and share information. NepSaathi brings all of that into one trusted, community-first space.</p>
+    <div class="card-grid">
+      <div class="card-mini"><div class="cm-icon">💼</div><div class="cm-title">Jobs</div><div class="cm-desc">Post and find jobs — full-time, part-time, casual, volunteer and more.</div></div>
+      <div class="card-mini"><div class="cm-icon">🏠</div><div class="cm-title">Rooms</div><div class="cm-desc">Browse room rentals or list your spare room across all AU states.</div></div>
+      <div class="card-mini"><div class="cm-icon">🎉</div><div class="cm-title">Events</div><div class="cm-desc">Discover cultural, sports, music and community events with RSVP.</div></div>
+      <div class="card-mini"><div class="cm-icon">🏪</div><div class="cm-title">Businesses</div><div class="cm-desc">Find Nepalese-owned businesses with reviews and booking links.</div></div>
+      <div class="card-mini"><div class="cm-icon">💬</div><div class="cm-title">Forum</div><div class="cm-desc">Ask questions, share tips, and vote in community discussions.</div></div>
+      <div class="card-mini"><div class="cm-icon">💸</div><div class="cm-title">Send Money</div><div class="cm-desc">Compare live AUD→NPR rates from Wise, Remitly, WorldRemit, WU.</div></div>
+    </div>
+    <div class="callout"><div class="callout-icon">ℹ️</div><div>You can <strong>browse all listings, forum posts, and businesses without an account.</strong> You need to sign up to post, apply, message, or RSVP.</div></div>
+  </section>
 
-      <h3>Who it's for</h3>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-title">New arrivals</div>
-          <div class="card-body">People who just moved to Australia looking for accommodation, jobs, and community connections.</div>
-        </div>
-        <div class="card">
-          <div class="card-title">Established community</div>
-          <div class="card-body">Nepalese Australians posting jobs, renting rooms, advertising events, and running businesses.</div>
-        </div>
-        <div class="card">
-          <div class="card-title">Business owners</div>
-          <div class="card-body">Nepali restaurant owners, travel agents, migration agents, and other service providers.</div>
-        </div>
-        <div class="card">
-          <div class="card-title">Anyone sending money</div>
-          <div class="card-body">Nepalese Australians who regularly transfer money back home to Nepal.</div>
-        </div>
-      </div>
-    </section>
+  <!-- Getting Started -->
+  <section class="section" id="getting-started">
+    <div class="section-header"><div class="section-icon">🚀</div><h2 class="section-title">Getting Started</h2></div>
 
-    <!-- ── How to access ── -->
-    <section class="section" id="access">
-      <div class="section-header">
-        <div class="section-icon">🔑</div>
-        <h2 class="section-title">How to Access</h2>
-      </div>
+    <h3>Create an account</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Go to /register</div><div class="step-desc">Enter first name, last name, email and a password. Or click <strong>Continue with Google</strong> for instant one-click signup.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Verify your email</div><div class="step-desc">Check your inbox for a verification link. Google OAuth accounts are auto-verified — no email step needed.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Complete your profile</div><div class="step-desc">Go to <strong>Profile</strong> to add your photo, phone, location, and a short bio. A full profile builds trust with other members.</div></div></div>
+    </div>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Register page — email form + Google sign-in button</span></div>
 
-      <h3>The site</h3>
-      <p>Everything is at <strong>nepsaathi.com</strong>. No app to install — it works in any browser, and there is a PWA (Progressive Web App) install prompt so users can add it to their home screen.</p>
+    <h3>Referral bonus</h3>
+    <p>If a friend invited you, use their referral link or append <code>?ref=THEIR_CODE</code> to the register URL. Both of you earn bonus points on successful signup.</p>
 
-      <h3>Without an account</h3>
-      <p>Anyone can browse the site without logging in:</p>
-      <div class="callout">
-        You can view all listings (jobs, rooms, events, notices), browse businesses and reviews, read all forum posts and replies, use the Send Money rate comparator, and see live exchange rates — <strong>no account needed</strong>.
-      </div>
-      <p>The only things hidden from guests are: the listing owner's phone/WhatsApp number and email (shown as "Sign in to view contact details").</p>
+    <h3>Auth tokens</h3>
+    <p>Login issues a 60-minute access token and 7-day refresh token. The frontend refreshes silently when the access token expires. Logging out blacklists the refresh token so it cannot be reused.</p>
+  </section>
 
-      <h3>Creating an account</h3>
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left">
-            <div class="flow-num">1</div>
-            <div class="flow-line"></div>
-          </div>
-          <div class="flow-content">
-            <div class="flow-step-title">Go to /register</div>
-            <div class="flow-step-desc">Enter your first name, last name, email, and password. Or click "Continue with Google" for one-click signup via Google OAuth.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left">
-            <div class="flow-num">2</div>
-            <div class="flow-line"></div>
-          </div>
-          <div class="flow-content">
-            <div class="flow-step-title">Verify your email</div>
-            <div class="flow-step-desc">A verification link is sent immediately. Google OAuth accounts are auto-verified — no email step needed.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left">
-            <div class="flow-num">3</div>
-          </div>
-          <div class="flow-content">
-            <div class="flow-step-title">Fully unlocked</div>
-            <div class="flow-step-desc">Post listings, message other users, RSVP to events, write business reviews, create forum posts, and save search alerts.</div>
-          </div>
-        </div>
-      </div>
+  <!-- Post an Ad -->
+  <section class="section" id="post-ad">
+    <div class="section-header"><div class="section-icon">📢</div><h2 class="section-title">Post an Ad</h2></div>
+    <p>All listings follow a multi-step wizard. You can post up to <strong>20 active listings</strong> at a time, and must wait <strong>5 minutes</strong> between posts.</p>
 
-      <h3>Auth tokens</h3>
-      <p>Login issues JWT tokens — a short-lived <strong>access token</strong> (60 min) and a long-lived <strong>refresh token</strong> (7 days). The frontend auto-refreshes silently when the access token expires. Logging out blacklists the refresh token so it can't be reused.</p>
-    </section>
+    <h3>Step 1 — Choose listing type</h3>
+    <div class="card-grid">
+      <div class="type-card jobs"><div class="type-label">Job</div><div class="card-body">Offering a vacancy — or tick "I'm looking for work" to post as a job seeker.</div></div>
+      <div class="type-card rooms"><div class="type-label">Room</div><div class="card-body">Renting out a room — or tick "I'm seeking accommodation".</div></div>
+      <div class="type-card events"><div class="type-label">Event</div><div class="card-body">Promoting a cultural, sports, food, religious or community event.</div></div>
+      <div class="type-card notices"><div class="type-label">Notice</div><div class="card-body">Classifieds: items for sale, services, lost &amp; found, general announcements.</div></div>
+    </div>
+    <div class="callout green"><div class="callout-icon">💡</div><div><strong>Wanted listings</strong> (I'm looking for…) skip the photo upload step and go live immediately after you fill in the details.</div></div>
 
-    <!-- ── Features ── -->
-    <section class="section" id="features">
-      <div class="section-header">
-        <div class="section-icon">✨</div>
-        <h2 class="section-title">Features at a Glance</h2>
-      </div>
-      <div class="tbl-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Who can use it</th>
-              <th>What it does</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Jobs</strong></td><td>Anyone (post: logged in)</td><td>Full-time, part-time, casual, contract job listings with salary info</td></tr>
-            <tr><td><strong>Rooms</strong></td><td>Anyone (post: logged in)</td><td>Room rentals with price/week, bond, furnishing, Nepali household filter</td></tr>
-            <tr><td><strong>Events</strong></td><td>Anyone (RSVP: logged in)</td><td>Community events with RSVP, attendee limit, free/paid tickets</td></tr>
-            <tr><td><strong>Notices</strong></td><td>Anyone (post: logged in)</td><td>Classifieds — items for sale, services, lost & found, news</td></tr>
-            <tr><td><strong>Businesses</strong></td><td>Anyone (register: logged in)</td><td>Nepali business directory with reviews, images, verified badge</td></tr>
-            <tr><td><strong>Forum</strong></td><td>Anyone (post/reply: logged in)</td><td>Community discussion across 6 topic categories with upvotes, polls, AI body improve</td></tr>
-            <tr><td><strong>Messaging</strong></td><td>Logged in only</td><td>1-to-1 conversations tied to listings, real-time via WebSocket</td></tr>
-            <tr><td><strong>Send Money</strong></td><td>Anyone</td><td>Live AUD→NPR rate comparison across 4 providers</td></tr>
-            <tr><td><strong>Exchange Rates</strong></td><td>Anyone</td><td>Live AUD/GBP/USD/CAD → NPR widget, cached hourly</td></tr>
-            <tr><td><strong>Search alerts</strong></td><td>Logged in only</td><td>Save search filters, get email when a matching listing is posted</td></tr>
-            <tr><td><strong>Featured listings</strong></td><td>Logged in (listing owners)</td><td>Pay via Stripe to feature a listing for 7 days</td></tr>
-            <tr><td><strong>New listings</strong></td><td>Anyone</td><td>Homepage carousel + /new-listings page showing posts from the last 24 hours</td></tr>
-            <tr><td><strong>AI Improve</strong></td><td>Logged in only</td><td>✨ button on Post Ad and forum create — rewrites description/body via Groq Llama 3 (5/day)</td></tr>
-            <tr><td><strong>Address autocomplete</strong></td><td>Anyone posting</td><td>Suburb suggestions via Nominatim (OpenStreetMap, free) on all posting forms</td></tr>
-            <tr><td><strong>Push notifications</strong></td><td>Logged in (opt-in)</td><td>Browser push for new messages, expiry warnings, RSVP confirmations</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <h3>Step 2 — Basic details</h3>
+    <p>Title, description, location (suburb autocomplete via OpenStreetMap), state, and contact details. The <strong>✨ Improve with AI</strong> button rewrites your description professionally — you'll see a purple preview box to accept or discard.</p>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: AI improve preview box with "Use this" and "Discard" buttons</span></div>
 
-    <!-- ── Listings ── -->
-    <section class="section" id="listings">
-      <div class="section-header">
-        <div class="section-icon">📋</div>
-        <h2 class="section-title">Listings — Jobs, Rooms, Events, Notices</h2>
-      </div>
+    <h3>Step 3 — Type-specific details</h3>
+    <p>Salary range for jobs · rent/week and bond for rooms · date and venue for events · price and condition for notices.</p>
 
-      <div class="card-grid" style="margin-bottom: 16px;">
-        <div class="type-card jobs">
-          <div class="type-label">Jobs</div>
-          <div class="card-title">Job listings</div>
-          <div class="card-body">Company name, job type, salary, experience. Filterable by type, state, urgency. Route: <span class="url-chip">/jobs</span></div>
-        </div>
-        <div class="type-card rooms">
-          <div class="type-label">Rooms</div>
-          <div class="card-title">Accommodation</div>
-          <div class="card-body">Price/week, bond, furnishing, Nepali household flag. Route: <span class="url-chip">/rooms</span></div>
-        </div>
-        <div class="type-card events">
-          <div class="type-label">Events</div>
-          <div class="card-title">Community events</div>
-          <div class="card-body">Date, venue, RSVP with overbooking protection, free/paid. Route: <span class="url-chip">/events</span></div>
-        </div>
-        <div class="type-card notices">
-          <div class="type-label">Notices</div>
-          <div class="card-title">Classifieds</div>
-          <div class="card-body">For sale, services, lost & found, news. Route: <span class="url-chip">/notices</span></div>
-        </div>
-      </div>
+    <h3>Step 4 — Add photos (offering listings only)</h3>
+    <p>Upload up to 5 photos, max 5 MB each. Drag-and-drop or click to select. Wanted/seeking listings skip this step entirely.</p>
 
-      <h3>How posting a listing works (2-step)</h3>
-      <div class="callout">
-        Every listing is a <strong>2-step create</strong>: first a base Listing record is created (title, description, location, contact), then the type-specific details (e.g. Job: salary, company) are attached to it. This keeps the data model clean and lets all listings share common fields.
-      </div>
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Fill the base form at /post-ad</div>
-            <div class="flow-step-desc">Title, description, location (with Nominatim suburb autocomplete), state, contact details. The <strong>✨ Improve with AI</strong> button rewrites the description via Groq Llama 3 (5 uses/day). A base Listing record is created and returns an ID.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Type-specific details are attached</div>
-            <div class="flow-step-desc">Using the listing ID, the form posts job/room/event/notice-specific fields. The listing is now complete and goes live.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Spam check runs in background</div>
-            <div class="flow-step-desc">A background thread checks for duplicate phone numbers + similar titles, or near-identical descriptions. If flagged, the listing is set to "under review" and admin is notified by email.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">4</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Saved search alerts fire</div>
-            <div class="flow-step-desc">Any user who has a saved search matching this listing's type and filters gets an email alert immediately.</div>
-          </div>
-        </div>
-      </div>
+    <div class="callout orange"><div class="callout-icon">⚠️</div><div>A <strong>live countdown timer</strong> appears in amber if you try to post within 5 minutes of your last listing. Submit buttons are disabled until it reaches zero. The 10/hour rate limit shows a separate longer countdown.</div></div>
+  </section>
 
-      <h3>Listing lifecycle</h3>
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>Status</th><th>Meaning</th><th>How it gets there</th></tr></thead>
-          <tbody>
-            <tr><td><span class="pill green">active</span></td><td>Visible to everyone</td><td>Default on create</td></tr>
-            <tr><td><span class="pill">expired</span></td><td>Hidden — 30 days passed</td><td>Cron runs nightly</td></tr>
-            <tr><td><span class="pill orange">filled</span></td><td>Owner marked as done</td><td>Owner clicks "Mark as filled"</td></tr>
-            <tr><td><span class="pill red">deleted</span></td><td>Soft deleted — never hard-deleted</td><td>Owner or admin deletes</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="margin-top:10px;">Owners can <strong>renew</strong> a listing within 7 days of expiry — free, extends by 30 days. Up to <strong>20 active listings</strong> per user at a time. Up to <strong>5 images</strong> per listing (stored on Cloudinary, deduplicated by MD5 hash).</p>
-    </section>
+  <!-- Jobs -->
+  <section class="section" id="jobs">
+    <div class="section-header"><div class="section-icon">💼</div><h2 class="section-title">Jobs &amp; Quick Apply</h2></div>
 
-    <!-- ── Businesses ── -->
-    <section class="section" id="businesses">
-      <div class="section-header">
-        <div class="section-icon">🏪</div>
-        <h2 class="section-title">Business Directory</h2>
-      </div>
-      <p>Businesses are completely separate from listings — they have their own lifecycle, images, and reviews. They don't expire. A business profile is a permanent presence on the platform.</p>
+    <h3>Browse jobs</h3>
+    <p>Visit <span class="url-chip">/jobs</span> and filter by job type, salary type, salary range, and state. Toggle <strong>Map View</strong> to see listings plotted on a map. Verified employers show a blue ✓ badge next to the company name.</p>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Jobs list page — filter panel, card grid, map view toggle</span></div>
 
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Register a business at /register-business</div>
-            <div class="flow-step-desc">Business name, category (14 options: restaurant, grocery, legal, migration, etc.), suburb, state, contact details, operating hours. Up to 5 images.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Community can leave reviews</div>
-            <div class="flow-step-desc">Anyone logged in can leave a star rating (1–5) and comment. One review per user. Business owners cannot review their own business.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Admin can verify</div>
-            <div class="flow-step-desc">Verified businesses get a badge. Verification is admin-only and done manually to ensure trust.</div>
-          </div>
-        </div>
-      </div>
+    <h3>Quick Apply with cover letter</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open a job listing and click Apply</div><div class="step-desc">A modal appears with a textarea for your cover letter (max 2 000 characters, with live character counter).</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Optionally use ✨ AI suggestion</div><div class="step-desc">Click the AI button to get a professionally rewritten version of your draft. It signs off automatically with your real name.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Submit</div><div class="step-desc">The job poster receives your letter by email. You cannot apply to the same job twice.</div></div></div>
+    </div>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Quick Apply modal — cover letter textarea + AI preview box</span></div>
+    <div class="callout"><div class="callout-icon">ℹ️</div><div>AI improve (listings + cover letters + forum) share a single <strong>5-uses-per-day</strong> limit per account.</div></div>
+  </section>
 
-      <div class="callout orange">
-        Max <strong>5 businesses per user</strong>. Duplicate name + state is blocked at registration. ABN is stored privately and never shown publicly.
-      </div>
-    </section>
+  <!-- Rooms -->
+  <section class="section" id="rooms">
+    <div class="section-header"><div class="section-icon">🏠</div><h2 class="section-title">Find Accommodation</h2></div>
+    <p>Browse <span class="url-chip">/rooms</span> and filter by room type, price range, furnishing, bond period, bills included, pets allowed, and parking. Toggle <strong>Map View</strong> to browse by area.</p>
+    <ul>
+      <li>Use the <strong>Nepalese household</strong> filter to find Nepali-speaking flatmates</li>
+      <li>Verified hosts show a <span class="pill">✓ Verified host</span> label on their card</li>
+      <li>Click a listing to see the full street address, available-from date, and bond details</li>
+      <li>Contact the host via <strong>Send a Message</strong> on the detail page (login required)</li>
+    </ul>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Rooms list with map view and filter sidebar</span></div>
+  </section>
 
-    <!-- ── Forum ── -->
-    <section class="section" id="forum">
-      <div class="section-header">
-        <div class="section-icon">💬</div>
-        <h2 class="section-title">Community Forum</h2>
-      </div>
-      <p>The forum is a community discussion board at <span class="url-chip">/forum</span>. Posts are organized into 6 topic categories:</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
-        <span class="pill">Visa & Immigration</span>
-        <span class="pill">Accommodation</span>
-        <span class="pill">Jobs & Work</span>
-        <span class="pill">Events</span>
-        <span class="pill">Business</span>
-        <span class="pill">General</span>
-      </div>
-      <p>Anyone can read posts. Logged-in users can create posts, reply, and upvote both posts and replies. Posts can optionally include a <strong>poll</strong> (2–4 options, one vote per user). Posts can be pinned by admins and closed to prevent further replies.</p>
-      <p>The <strong>✨ Improve with AI</strong> button on the create form rewrites the post body for clarity and grammar via Groq Llama 3 — shared 5/day limit with the listing AI improve.</p>
-      <div class="callout green">
-        Every new forum post triggers an <strong>IndexNow ping to Bing</strong> so it gets indexed by search engines within minutes — good for SEO without any manual effort.
-      </div>
-    </section>
+  <!-- Events -->
+  <section class="section" id="events">
+    <div class="section-header"><div class="section-icon">🎉</div><h2 class="section-title">Events &amp; RSVPs</h2></div>
+    <p>Discover upcoming events at <span class="url-chip">/events</span> — cultural, sports, music, religious, and community gatherings.</p>
+    <h3>RSVP</h3>
+    <p>Free events support in-app RSVP. Click <strong>RSVP</strong> on the event detail page. If the organiser set a cap, the event shows as full once reached. RSVPed users receive an email reminder 24 hours before the event.</p>
+    <div class="callout"><div class="callout-icon">ℹ️</div><div>Paid events link to an external ticketing site — RSVP is not available for paid events on NepSaathi.</div></div>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Event detail page — RSVP button, attendee count, organiser info</span></div>
+  </section>
 
-    <!-- ── Messaging ── -->
-    <section class="section" id="messaging">
-      <div class="section-header">
-        <div class="section-icon">📨</div>
-        <h2 class="section-title">Messaging</h2>
-      </div>
-      <p>1-to-1 conversations between users, typically started from a listing page. At <span class="url-chip">/messages</span>.</p>
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">User clicks "Message" on a listing</div>
-            <div class="flow-step-desc">The "Get in Touch" section on every listing and business detail page has a Message button. Clicking it opens a pre-filled message dialog.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Conversation is created (or resumed)</div>
-            <div class="flow-step-desc">If a conversation already exists between these two users about this listing, it resumes. Otherwise a new conversation is created and the message is sent.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Real-time via WebSocket</div>
-            <div class="flow-step-desc">Once in a conversation, new messages appear instantly without refreshing — powered by Django Channels over ASGI. The connection pings every 10 seconds to stay alive on Railway's proxy.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">4</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Notifications fire</div>
-            <div class="flow-step-desc">The recipient gets a browser push notification (if subscribed) and sees an unread badge on the navbar. If they're already on the site but not on the messages page, a toast notification appears.</div>
-          </div>
-        </div>
-      </div>
-      <p>Conversations are soft-deleted (hidden, not removed) — each user can hide a conversation from their inbox independently without the other party losing their history.</p>
-    </section>
+  <!-- Notices -->
+  <section class="section" id="notices">
+    <div class="section-header"><div class="section-icon">📋</div><h2 class="section-title">Notices</h2></div>
+    <p>Visit <span class="url-chip">/notices</span> for community classifieds — items for sale, services offered, lost &amp; found, education notices, and general announcements. Filter by category, condition, price range, and urgency. Free items show a <span class="pill green">Free</span> badge.</p>
+  </section>
 
-    <!-- ── Send Money ── -->
-    <section class="section" id="sendmoney">
-      <div class="section-header">
-        <div class="section-icon">💸</div>
-        <h2 class="section-title">Send Money Comparator</h2>
-      </div>
-      <p>At <span class="url-chip">/send-money</span> — no login required. Compares live AUD → NPR rates across Wise, Remitly, WorldRemit, and Western Union.</p>
+  <!-- Businesses -->
+  <section class="section" id="businesses">
+    <div class="section-header"><div class="section-icon">🏪</div><h2 class="section-title">Business Directory</h2></div>
+    <p>Browse <span class="url-chip">/businesses</span> — restaurants, groceries, legal services, migration agents, travel, beauty, health, and more. Filter by category and state.</p>
+    <ul>
+      <li>The <span class="pill">✓ Verified</span> badge means our team has confirmed the business</li>
+      <li>Leave a star review (1–5 stars + comment) — one review per user; owners cannot review themselves</li>
+      <li>Some businesses have a <strong>Book Now</strong> button linking directly to their booking page</li>
+    </ul>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Business detail page — verified badge, star reviews, Book Now button</span></div>
+    <h3>Register your business</h3>
+    <p>Go to <span class="url-chip">/register-business</span>. Fill in name, category, description, address, and contact details. You can paste a direct booking URL. After submission, upload up to 5 photos. Max 5 businesses per account.</p>
+  </section>
 
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Cron fetches mid-market rate every run</div>
-            <div class="flow-step-desc">The <code>fetch_remittance_rates</code> command pulls the live AUD→NPR mid-market rate from open.er-api.com (free, no API key needed).</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Provider rates are derived</div>
-            <div class="flow-step-desc">Each provider's typical margin is applied to the mid-market rate: Wise ~0.55%, Remitly ~1.2%, WorldRemit ~1.8%, Western Union ~3.5%. Stored in the database.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">User enters an amount and compares</div>
-            <div class="flow-step-desc">The page shows a table sorted by "most NPR received". User types an AUD amount, the table updates instantly client-side. Each row has a "Send now →" link to the provider's site.</div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- Forum -->
+  <section class="section" id="forum">
+    <div class="section-header"><div class="section-icon">💬</div><h2 class="section-title">Forum</h2></div>
+    <p>Community discussion board at <span class="url-chip">/forum</span>. Read without an account; post and reply with one.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+      <span class="pill">Visa &amp; Immigration</span><span class="pill">Accommodation</span><span class="pill">Jobs &amp; Work</span>
+      <span class="pill">Events</span><span class="pill">Business</span><span class="pill">General</span>
+    </div>
+    <ul>
+      <li><strong>Upvote</strong> posts and replies you find helpful</li>
+      <li><strong>Polls:</strong> post creators can add a multiple-choice poll — one vote per user, changeable</li>
+      <li><strong>AI body improve:</strong> click ✨ Improve with AI when writing a post to refine your text</li>
+      <li>New posts are indexed by Bing via IndexNow within minutes</li>
+    </ul>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Forum post — upvote buttons, poll percentage bars, reply thread</span></div>
+  </section>
 
-    <!-- ── Featured / Payments ── -->
-    <section class="section" id="payments">
-      <div class="section-header">
-        <div class="section-icon">⭐</div>
-        <h2 class="section-title">Featured Listings & Payments</h2>
-      </div>
-      <p>Listing owners can pay a small fee to have their listing shown as "Featured" — pinned to the top of the relevant page and shown in the Featured carousel on the homepage. Only job/room/event/notice listings can be featured (not businesses).</p>
+  <!-- Looking For -->
+  <section class="section" id="looking-for">
+    <div class="section-header"><div class="section-icon">🔍</div><h2 class="section-title">Looking For Board</h2></div>
+    <p>Visit <span class="url-chip">/looking-for</span> to post what you need — a job, a room, a service, or something else. It's a reverse marketplace: you post the request, and the community offers help.</p>
+    <ul>
+      <li>Filter by category (job / room / services / other) and AU state</li>
+      <li>Post using the inline form — no separate page needed</li>
+      <li>Delete your own request at any time</li>
+    </ul>
+  </section>
 
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Owner clicks "Feature this listing" from My Listings</div>
-            <div class="flow-step-desc">A Stripe Checkout session is created. The owner is redirected to Stripe's hosted payment page.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Payment completes on Stripe</div>
-            <div class="flow-step-desc">Stripe fires a webhook to the backend. The webhook verifies the signature, marks payment as completed, and sets <code>is_featured = True</code> on the listing.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Invoice emailed with PDF attachment</div>
-            <div class="flow-step-desc">A GST-compliant PDF invoice is generated and emailed to the owner. It's also downloadable any time from My Listings.</div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- Services -->
+  <section class="section" id="services-mkt">
+    <div class="section-header"><div class="section-icon">🛠</div><h2 class="section-title">Services Marketplace</h2></div>
+    <p>At <span class="url-chip">/services</span>, community members offer skills — tutoring, translation, IT help, photography, cooking, accounting, transport, cleaning, and more. Each listing shows the rate (hourly / fixed / negotiable) and provider location. Message the provider directly from their card.</p>
+  </section>
 
-    <!-- ── Emails ── -->
-    <section class="section" id="emails">
-      <div class="section-header">
-        <div class="section-icon">📧</div>
-        <h2 class="section-title">Emails — What Gets Sent & When</h2>
-      </div>
-      <p>All emails fire in background daemon threads — they never delay the API response. In production (Railway) emails go via <strong>Resend API</strong>. In local dev they go via <strong>Zoho SMTP</strong>.</p>
+  <!-- Messages -->
+  <section class="section" id="messages">
+    <div class="section-header"><div class="section-icon">✉️</div><h2 class="section-title">Messages</h2></div>
+    <p>1-to-1 in-app messaging so you can contact listing owners without sharing personal contact details publicly.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Start from a listing or business</div><div class="step-desc">Click <strong>Send a Message</strong> on any detail page. Your first message goes with the listing context so the recipient knows what you're asking about.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Access your inbox at /messages</div><div class="step-desc">The envelope icon in the navbar shows a red badge for unread messages. A toast notification pops up when a new message arrives while you're elsewhere on the site.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Reply in real time</div><div class="step-desc">Conversations are live — messages appear instantly via WebSocket without refreshing. Push notifications fire if you're not in the conversation tab.</div></div></div>
+    </div>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Inbox page and conversation thread with real-time messages</span></div>
+  </section>
 
-      <div class="email-item">
-        <div class="email-icon">👋</div>
-        <div>
-          <div class="email-trigger">Welcome email</div>
-          <div class="email-desc">Sent when a user registers with email/password (not Google OAuth — those are auto-verified).</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">⏰</div>
-        <div>
-          <div class="email-trigger">Listing expiry warning</div>
-          <div class="email-desc">Sent when a listing is within 4 days of its 30-day expiry. Includes a one-click renew link. Sent only once per listing (flagged with <code>expiry_warning_sent=True</code>).</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">🚨</div>
-        <div>
-          <div class="email-trigger">Listing reported</div>
-          <div class="email-desc">Sent to admins when a user reports a listing, and to the listing owner if their listing is removed for violations.</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">🎟️</div>
-        <div>
-          <div class="email-trigger">Event reminder</div>
-          <div class="email-desc">Sent to all RSVPed attendees 24 hours before an event starts.</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">🔔</div>
-        <div>
-          <div class="email-trigger">Saved search alert</div>
-          <div class="email-desc">Sent when a new listing matches a user's saved search filters. Fires immediately on listing creation in a background thread.</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">💳</div>
-        <div>
-          <div class="email-trigger">Payment invoice</div>
-          <div class="email-desc">Sent after a successful Stripe payment for a featured listing. Includes a PDF invoice attachment.</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">🔄</div>
-        <div>
-          <div class="email-trigger">Listing renewal confirmation</div>
-          <div class="email-desc">Sent when an owner renews a listing. Confirms new expiry date.</div>
-        </div>
-      </div>
-      <div class="email-item">
-        <div class="email-icon">🚫</div>
-        <div>
-          <div class="email-trigger">Account banned</div>
-          <div class="email-desc">Sent when an admin bans a user, explaining the reason.</div>
-        </div>
-      </div>
-    </section>
+  <!-- Points -->
+  <section class="section" id="points">
+    <div class="section-header"><div class="section-icon">⭐</div><h2 class="section-title">Points &amp; Referrals</h2></div>
+    <p>NepSaathi rewards activity with points. Check your balance and history at <span class="url-chip">/points</span>.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Action</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Sign up</td><td>10 pts</td></tr>
+          <tr><td>Post a listing</td><td>5 pts</td></tr>
+          <tr><td>Refer a friend who registers</td><td>25 pts</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Share your referral link</h3>
+    <p>Visit <span class="url-chip">/points</span> and copy your unique link. When a friend registers through it, both of you earn bonus points. Your referral code can also be appended to the register URL: <code>/register?ref=YOUR_CODE</code>.</p>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Points page — balance card, copy referral link, earn guide, event history</span></div>
+  </section>
 
-    <!-- ── Cron ── -->
-    <section class="section" id="cron">
-      <div class="section-header">
-        <div class="section-icon">⏱️</div>
-        <h2 class="section-title">Cron Jobs — What Runs Automatically</h2>
-      </div>
-      <p>A separate Railway service runs <code>cron.sh</code> on a schedule. Each command is independent — if one fails, the others still run.</p>
+  <!-- Send Money -->
+  <section class="section" id="send-money">
+    <div class="section-header"><div class="section-icon">💸</div><h2 class="section-title">Send Money</h2></div>
+    <p>Compare live AUD→NPR rates at <span class="url-chip">/send-money</span> — no login required.</p>
+    <ul>
+      <li>Live rates from <strong>Wise</strong>, <strong>Remitly</strong>, <strong>WorldRemit</strong>, and <strong>Western Union</strong></li>
+      <li>Table sorted by best NPR received — top row = most rupees</li>
+      <li>Quick-amount chips (AUD $100, $200, $500, $1 000) calculate received amount instantly</li>
+      <li>Click any row to go directly to that provider's transfer page</li>
+    </ul>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Send Money rate comparison table with quick-amount chips</span></div>
+  </section>
 
-      <div class="card">
-        <div class="card-title">expire_listings</div>
-        <div class="card-body">Finds all active listings past their 30-day expiry and sets their status to <code>expired</code>. They disappear from the site but are not deleted.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">expire_featured_businesses</div>
-        <div class="card-body">Clears the <code>is_featured</code> flag on businesses whose featured period has ended.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">send_expiry_warnings</div>
-        <div class="card-body">Finds listings expiring within 4 days that haven't had a warning sent yet. Sends email + push notification to the owner. The 4-day window means it catches up if the cron missed a day.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">send_event_reminders</div>
-        <div class="card-body">Finds events happening within the next 24 hours. Sends a reminder email to every user who RSVPed.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">fetch_remittance_rates</div>
-        <div class="card-body">Fetches the live AUD→NPR mid-market rate and updates all 4 provider rows in the database. The /send-money page always shows the most recently fetched rates.</div>
-      </div>
-    </section>
+  <!-- Saved Searches -->
+  <section class="section" id="saved-searches">
+    <div class="section-header"><div class="section-icon">🔔</div><h2 class="section-title">Saved Searches &amp; Alerts</h2></div>
+    <p>Get an email the moment a listing matching your filters is posted.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Apply your filters</div><div class="step-desc">On any listing page, set the filters you care about — type, state, price range, keywords.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Click "Save this search"</div><div class="step-desc">Give the search a label like "Rooms in Hurstville under $300/wk".</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Receive instant email alerts</div><div class="step-desc">When a new listing matches, you're emailed immediately — no delay. Manage up to 10 saved searches at /saved-searches.</div></div></div>
+    </div>
+  </section>
 
-    <!-- ── Push & WebSocket ── -->
-    <section class="section" id="notifications">
-      <div class="section-header">
-        <div class="section-icon">🔔</div>
-        <h2 class="section-title">Push Notifications & Real-time</h2>
-      </div>
+  <!-- Profile -->
+  <section class="section" id="profile">
+    <div class="section-header"><div class="section-icon">👤</div><h2 class="section-title">Your Profile</h2></div>
+    <p>Edit your details at <span class="url-chip">/profile</span> — display name, phone, location, bio, and avatar photo.</p>
+    <ul>
+      <li><strong>Verified badge</strong> — a blue ✓ badge appears on your listings and public profile once our team verifies your account</li>
+      <li><strong>Public profile</strong> — anyone can view <code>/users/&lt;id&gt;</code>: your name, avatar, bio, active listings, and star reviews from other members</li>
+      <li><strong>User reviews</strong> — other members can leave you a 1–5 star rating and comment; one review per pair</li>
+      <li><strong>Delete account</strong> — permanently removes your account, all listings, and all Cloudinary images. This cannot be undone</li>
+    </ul>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Profile edit page and public profile with verified badge + reviews</span></div>
+  </section>
 
-      <h3>Browser push notifications</h3>
-      <p>When a logged-in user first visits, the browser asks for notification permission. If granted, a VAPID-based push subscription is registered with the server. Push is sent for:</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
-        <span class="pill">New message received</span>
-        <span class="pill">Listing expiring soon</span>
-        <span class="pill">Event reminder</span>
-      </div>
+</div><!-- /user-pane -->
 
-      <h3>WebSocket (real-time chat)</h3>
-      <p>Each conversation has a live WebSocket channel. When one user sends a message:</p>
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">REST API saves the message to the database</div>
-            <div class="flow-step-desc">POST /api/messages/&lt;id&gt;/send/ — the message is persisted first.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Django Channels broadcasts over WebSocket</div>
-            <div class="flow-step-desc">The message is pushed to the other participant's open connection instantly — no polling.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Push notification fires if other user is not in the conversation</div>
-            <div class="flow-step-desc">If the recipient's browser isn't in that conversation tab, they get a push notification.</div>
-          </div>
-        </div>
-      </div>
 
-      <h3>Navbar unread badge</h3>
-      <p>The message icon in the navbar polls for an unread count every 30 seconds. If the count increases while the user is on any other page, a toast notification pops up with a link to the inbox.</p>
-    </section>
+<!-- ════════════════════════════════════════
+     DEVELOPER REFERENCE PANE
+════════════════════════════════════════ -->
+<div class="pane" id="dev-pane">
 
-    <!-- ── Admin ── -->
-    <section class="section" id="admin">
-      <div class="section-header">
-        <div class="section-icon">🛡️</div>
-        <h2 class="section-title">Admin & Moderation</h2>
-      </div>
+  <!-- Header card -->
+  <div class="doc-header">
+    <div class="doc-eyebrow">Developer Reference</div>
+    <h1>NepSaathi — Technical Docs</h1>
+    <p>Architecture, all API endpoints, key code patterns, security, and deployment reference for the NepSaathi full-stack application.</p>
+    <div class="doc-meta">
+      <div class="doc-meta-item"><span class="label">Backend</span><span class="val">Django 6 + DRF · Railway</span></div>
+      <div class="doc-meta-item"><span class="label">Frontend</span><span class="val">React 19 · Vercel</span></div>
+      <div class="doc-meta-item"><span class="label">Database</span><span class="val">PostgreSQL</span></div>
+      <div class="doc-meta-item"><span class="label">Real-time</span><span class="val">Django Channels (ASGI)</span></div>
+    </div>
+  </div>
 
-      <h3>Accessing admin</h3>
-      <p>The Django admin panel is at a non-standard URL (obscured for security). Only staff + superuser accounts can access it. From the frontend, superusers also have access to <span class="url-chip">/panel</span> — a dashboard showing site-wide stats, revenue, reports, and recent activity.</p>
+  <!-- What is it -->
+  <section class="section" id="what">
+    <div class="section-header"><div class="section-icon">🏡</div><h2 class="section-title">What is NepSaathi</h2></div>
+    <p>NepSaathi ("Nep" = Nepali, "Saathi" = friend) is a community marketplace built for Nepalese people living in Australia. Think Gumtree meets a community forum, tailored for the Nepali diaspora.</p>
+    <h3>Django apps (15 local)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>App</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>users</code></td><td>Custom email-based User, profiles, points, referrals, user reviews, push subscriptions</td></tr>
+          <tr><td><code>listings</code></td><td>Base <code>Listing</code> model — polymorphic parent for jobs/rooms/events/notices</td></tr>
+          <tr><td><code>jobs</code></td><td>Job-specific fields, JobApplication model, Quick Apply, AI cover letter improve</td></tr>
+          <tr><td><code>rooms</code></td><td>Room rental details (price/wk, furnishing, bond, amenities)</td></tr>
+          <tr><td><code>events</code></td><td>Event details, RSVP with select_for_update overbooking protection</td></tr>
+          <tr><td><code>announcements</code></td><td>Notices/classifieds (price, condition, category)</td></tr>
+          <tr><td><code>businesses</code></td><td>Standalone business profiles — NOT linked to Listing; own lifecycle</td></tr>
+          <tr><td><code>exchange</code></td><td>Live AUD/GBP/USD/CAD→NPR rates (cached 1 hr, no DB)</td></tr>
+          <tr><td><code>messaging</code></td><td>1-to-1 conversations, WebSocket via Django Channels</td></tr>
+          <tr><td><code>payments</code></td><td>Stripe Checkout for featured listings, PDF invoices (fpdf2)</td></tr>
+          <tr><td><code>feedback</code></td><td>Exit-intent survey → Google Sheets async sync</td></tr>
+          <tr><td><code>panel</code></td><td>Superuser-only stats aggregation API</td></tr>
+          <tr><td><code>forum</code></td><td>ForumPost + ForumReply + upvotes + polls (PollOption, PollVote)</td></tr>
+          <tr><td><code>remittance</code></td><td>AUD→NPR rate comparator — Wise, Remitly, WorldRemit, Western Union</td></tr>
+          <tr><td><code>community</code></td><td>Reverse Request Board (ReverseRequest) + Skills &amp; Services Marketplace (ServiceListing)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-      <h3>Listing reports</h3>
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">User reports a listing</div>
-            <div class="flow-step-desc">Reason: spam / fake / inappropriate / scam / wrong category / other. The listing gets an <code>is_under_review</code> flag and admin is emailed.</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Admin reviews in the Django admin</div>
-            <div class="flow-step-desc">Can take a "Clear listing" action (approve it — removes the under-review flag) or a "Remove listing" action (deletes it and emails the owner).</div>
-          </div>
-        </div>
-        <div class="flow-step">
-          <div class="flow-left"><div class="flow-num">3</div></div>
-          <div class="flow-content">
-            <div class="flow-step-title">Auto-ban after 3 removals</div>
-            <div class="flow-step-desc">If an owner's listings are removed for violations 3 times, they are automatically banned. A ban notification email is sent.</div>
-          </div>
-        </div>
-      </div>
+  <!-- Features table -->
+  <section class="section" id="features">
+    <div class="section-header"><div class="section-icon">✨</div><h2 class="section-title">Features at a Glance</h2></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Who can use</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Jobs</strong></td><td>Anyone (post: auth)</td><td>Full/part-time, casual, contract listings with salary; Quick Apply + AI cover letter</td></tr>
+          <tr><td><strong>Rooms</strong></td><td>Anyone (post: auth)</td><td>Rentals with price/wk, bond, furnishing, Nepali household filter, map view</td></tr>
+          <tr><td><strong>Events</strong></td><td>Anyone (RSVP: auth)</td><td>Events with RSVP, attendee limit, free/paid; 24-hr email reminder</td></tr>
+          <tr><td><strong>Notices</strong></td><td>Anyone (post: auth)</td><td>Classifieds — sale, services, lost &amp; found, announcements</td></tr>
+          <tr><td><strong>Businesses</strong></td><td>Anyone (register: auth)</td><td>Directory with reviews, images, booking link, verified badge</td></tr>
+          <tr><td><strong>Forum</strong></td><td>Anyone (post: auth)</td><td>6 categories, upvotes, polls, AI improve, IndexNow pings</td></tr>
+          <tr><td><strong>Looking For</strong></td><td>Anyone (post: auth)</td><td>Reverse request board — post what you need</td></tr>
+          <tr><td><strong>Services</strong></td><td>Anyone (post: auth)</td><td>Skills &amp; services marketplace with rate and category filters</td></tr>
+          <tr><td><strong>Messaging</strong></td><td>Auth only</td><td>1-to-1 conversations, real-time WebSocket, push notifications</td></tr>
+          <tr><td><strong>Send Money</strong></td><td>Anyone</td><td>Live AUD→NPR comparison across 4 providers</td></tr>
+          <tr><td><strong>Points &amp; Referrals</strong></td><td>Auth</td><td>Points on signup/post/referral; unique referral codes; history</td></tr>
+          <tr><td><strong>Saved Searches</strong></td><td>Auth</td><td>Save filters, get email on new matches — instant, background thread</td></tr>
+          <tr><td><strong>Featured listings</strong></td><td>Auth (owners)</td><td>Stripe Checkout; 7-day featured period; PDF invoice on payment</td></tr>
+          <tr><td><strong>AI Improve</strong></td><td>Auth</td><td>Groq Llama 3.1 8B; 5 uses/day shared across listing + forum + cover letter</td></tr>
+          <tr><td><strong>Bilingual UI</strong></td><td>Anyone</td><td>English/Nepali toggle (🇳🇵/🇬🇧); 80+ translated strings; Devanagari</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-      <h3>Featured listing approvals</h3>
-      <p>Featured listings are managed through the Payments admin. Stripe's webhook handles activation automatically — no manual step needed.</p>
+  <!-- Architecture -->
+  <section class="section" id="arch">
+    <div class="section-header"><div class="section-icon">🏗</div><h2 class="section-title">Architecture</h2></div>
 
-      <h3>Business verification</h3>
-      <p>Admin manually sets <code>is_verified=True</code> on businesses after checking legitimacy. Verified businesses show a badge on their profile.</p>
+    <div class="arch-row">
+      <div class="arch-block"><div class="ab-label">Backend</div><div class="ab-val">Django 6 + DRF</div></div>
+      <div class="arch-block"><div class="ab-label">Frontend</div><div class="ab-val">React 19 + Vite</div></div>
+      <div class="arch-block"><div class="ab-label">Database</div><div class="ab-val">PostgreSQL</div></div>
+      <div class="arch-block"><div class="ab-label">Real-time</div><div class="ab-val">Django Channels</div></div>
+      <div class="arch-block"><div class="ab-label">Images</div><div class="ab-val">Cloudinary</div></div>
+      <div class="arch-block"><div class="ab-label">AI</div><div class="ab-val">Groq / Llama 3</div></div>
+    </div>
 
-      <h3>Forum moderation</h3>
-      <p>Admins can pin posts, close threads (no more replies), delete any post or reply. The admin panel has inline replies shown under each post for quick review.</p>
-    </section>
+    <h3>Two-step listing create</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title"><code>POST /api/listings/create/</code></div><div class="step-desc">Creates the base Listing row (title, description, type, location, contact). Returns a <code>listing.id</code>.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title"><code>POST /api/jobs|rooms|events|notices/create/</code></div><div class="step-desc">Creates the type-specific detail row linked to the listing ID. This keeps shared fields unified and type-specific fields separate.</div></div></div>
+    </div>
 
-    <!-- ── Security ── -->
-    <section class="section" id="security">
-      <div class="section-header">
-        <div class="section-icon">🔒</div>
-        <h2 class="section-title">Security</h2>
-      </div>
+    <h3>SilentJWTAuthentication</h3>
+    <p><code>core/authentication.py</code> — extends <code>JWTAuthentication</code> but returns <code>None</code> instead of raising 401 on expired or invalid tokens. Set as <code>DEFAULT_AUTHENTICATION_CLASSES</code>. Without this, users with stale access tokens in localStorage would see 401 errors on public listing pages.</p>
 
-      <div class="info-row"><span class="info-key">Auth</span><span class="info-val">JWT with rotation + blacklist. Google OAuth with PKCE. Refresh tokens expire in 7 days.</span></div>
-      <div class="info-row"><span class="info-key">Rate limiting</span><span class="info-val">Login 5/min · Register 3/min · Password reset 3/hr · Messages 5/min · Listing create 10/hr · Contact form 5/hr</span></div>
-      <div class="info-row"><span class="info-key">Public endpoints</span><span class="info-val">SilentJWTAuthentication — expired tokens return null instead of 401, so anonymous browsing always works cleanly.</span></div>
-      <div class="info-row"><span class="info-key">Stripe</span><span class="info-val">Webhook signature verified. <code>select_for_update()</code> prevents duplicate payment processing.</span></div>
-      <div class="info-row"><span class="info-key">RSVP overbooking</span><span class="info-val"><code>select_for_update()</code> on RSVP creation — concurrent RSVPs can't exceed max_attendees.</span></div>
-      <div class="info-row"><span class="info-key">IP throttling</span><span class="info-val">Uses rightmost X-Forwarded-For header (Railway appends real IP) — can't be spoofed by the client.</span></div>
-      <div class="info-row"><span class="info-key">Admin URL</span><span class="info-val">Obscured — not the default /admin/ path. Returns 404 for anyone who guesses it wrong.</span></div>
-      <div class="info-row"><span class="info-key">Soft deletes</span><span class="info-val">Nothing is hard-deleted. Listings set status='deleted', businesses set is_active=False. Data is always recoverable.</span></div>
-      <div class="info-row"><span class="info-key">Contact details</span><span class="info-val">Phone/WhatsApp/email on listings hidden from unauthenticated users — only visible after login.</span></div>
-    </section>
+    <h3>Key patterns summary</h3>
+    <div class="info-row"><span class="info-key">Soft deletes</span><span class="info-val">Listings → <code>status='deleted'</code>; Businesses → <code>is_active=False</code>; Community posts → <code>is_active=False</code>. Nothing is hard-deleted.</span></div>
+    <div class="info-row"><span class="info-key">Dual email</span><span class="info-val">Resend API in production (Railway); Zoho SMTP in local dev. All emails fire in daemon threads — never block the response.</span></div>
+    <div class="info-row"><span class="info-key">Token refresh queue</span><span class="info-val">Axios interceptor queues concurrent 401s, refreshes once, replays all. Prevents race conditions from multiple tabs.</span></div>
+    <div class="info-row"><span class="info-key">WebSocket keep-alive</span><span class="info-val">Client pings every 10 s — Railway proxy closes idle WS connections without it.</span></div>
+    <div class="info-row"><span class="info-key">Nominatim geocoding</span><span class="info-val">Background thread resolves listing location → lat/lng after creation. Used by map view.</span></div>
+    <div class="info-row"><span class="info-key">SavedSearch alerts</span><span class="info-val">On listing creation, background thread emails all users whose saved search filters match.</span></div>
+    <div class="info-row"><span class="info-key">Max active listings</span><span class="info-val">20 per user (enforced in <code>listings/views.py</code>; old docstring said 10 — code is the truth).</span></div>
+    <div class="info-row"><span class="info-key">Panel security</span><span class="info-val">4-layer: IsSuperUser DRF permission → "Not found." to anyone else; SuperUserRoute in React → NotFoundPage; no UI links; not in sitemap.</span></div>
 
-    <!-- ── Tech ── -->
-    <section class="section" id="tech">
-      <div class="section-header">
-        <div class="section-icon">⚙️</div>
-        <h2 class="section-title">Tech Architecture</h2>
-      </div>
+    <h3>Rate throttle table</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Scope</th><th>Limit</th><th>Applies to</th></tr></thead>
+        <tbody>
+          <tr><td>login (IP)</td><td>5/min</td><td>ThrottledLoginView — rightmost X-Forwarded-For</td></tr>
+          <tr><td>login (email)</td><td>10/period</td><td>SHA-256(email[:16]) key; cleared on success</td></tr>
+          <tr><td>register</td><td>3/min</td><td>Registration endpoint</td></tr>
+          <tr><td>pw_reset</td><td>3/hr</td><td>Password reset email</td></tr>
+          <tr><td>listing_create</td><td>10/hr</td><td>Step 1 base listing create</td></tr>
+          <tr><td>cooldown</td><td>5 min between posts</td><td>Custom DB check → <code>{"cooldown": seconds}</code> → frontend countdown timer</td></tr>
+          <tr><td>business_create</td><td>3/hr</td><td>Business registration</td></tr>
+          <tr><td>message_send</td><td>5/min</td><td>MessageSendView</td></tr>
+          <tr><td>payment_status</td><td>30/min</td><td>Payment status check</td></tr>
+          <tr><td>contact</td><td>5/hr</td><td>Contact form</td></tr>
+          <tr><td>ai_improve</td><td>5/day per user</td><td>Shared across listing + forum + cover letter AI endpoints</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-      <div class="arch-row">
-        <div class="arch-block"><div class="ab-label">Backend</div><div class="ab-val">Django 6 + DRF</div></div>
-        <div class="arch-block"><div class="ab-label">Frontend</div><div class="ab-val">React 19 + Vite</div></div>
-        <div class="arch-block"><div class="ab-label">Database</div><div class="ab-val">PostgreSQL</div></div>
-        <div class="arch-block"><div class="ab-label">Real-time</div><div class="ab-val">Django Channels</div></div>
-        <div class="arch-block"><div class="ab-label">Images</div><div class="ab-val">Cloudinary</div></div>
-        <div class="arch-block"><div class="ab-label">Payments</div><div class="ab-val">Stripe</div></div>
-        <div class="arch-block"><div class="ab-label">Email (prod)</div><div class="ab-val">Resend API</div></div>
-        <div class="arch-block"><div class="ab-label">Email (dev)</div><div class="ab-val">Zoho SMTP</div></div>
-        <div class="arch-block"><div class="ab-label">State</div><div class="ab-val">Zustand + React Query</div></div>
-      </div>
+  <!-- Local dev -->
+  <section class="section" id="dev-setup">
+    <div class="section-header"><div class="section-icon">💻</div><h2 class="section-title">Local Dev Setup</h2></div>
+    <h3>Backend</h3>
+    <pre><code>cd backend
+source ~/nepsaathi/venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+uvicorn core.asgi:application --reload --port 8000
+# WebSockets require ASGI — do NOT use manage.py runserver for WS testing</code></pre>
+    <h3>Frontend</h3>
+    <pre><code>cd frontend
+npm install
+npm run dev</code></pre>
+    <h3>Cron commands (manual in dev)</h3>
+    <pre><code>python manage.py expire_listings
+python manage.py send_expiry_warnings
+python manage.py send_event_reminders
+python manage.py fetch_remittance_rates</code></pre>
+    <div class="callout red"><div class="callout-icon">⚠️</div><div><strong>ASGI is required.</strong> <code>manage.py runserver</code> is WSGI — Django Channels won't function. Always use <code>uvicorn core.asgi:application</code> locally.</div></div>
+  </section>
 
-      <div class="callout" style="margin-top:16px;">
-        The backend runs as an <strong>ASGI application</strong> (uvicorn workers inside gunicorn) — this is required for Django Channels WebSocket support. Both the REST API and WebSocket connections go through the same process.
-      </div>
+  <!-- API: Auth -->
+  <section class="section" id="api-auth">
+    <div class="section-header"><div class="section-icon">🔑</div><h2 class="section-title">API — Auth &amp; Users</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/auth/login/</span><span class="ep-note">5/min IP + 10/period email</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/auth/registration/</span><span class="ep-note">accepts ?ref_code=; 3/min</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/auth/logout/</span><span class="ep-note">blacklists refresh token</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/auth/token/refresh/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/auth/password/reset/</span><span class="ep-note">3/hr</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/auth/password/change/</span><span class="ep-note">auth</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/auth/user/</span><span class="ep-note">current user via USER_DETAILS_SERIALIZER</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/users/auth/google/</span><span class="ep-note">Google OAuth → JWT</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/users/profile/</span></div>
+      <div class="endpoint"><span class="method method-patch">PATCH</span><span class="ep-path">/api/users/profile/</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/users/delete-account/</span><span class="ep-note">hard-deletes user + all data + Cloudinary cleanup</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/users/contact/</span><span class="ep-note">5/hr, public</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/users/push/subscribe/</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/users/push/subscribe/</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/users/&lt;id&gt;/public/</span><span class="ep-note">public — no email exposed</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/users/points/</span><span class="ep-note">balance + PointEvent history (auth)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/users/&lt;id&gt;/reviews/</span><span class="ep-note">public</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/users/&lt;id&gt;/reviews/</span><span class="ep-note">auth; cannot self-review</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/users/reviews/&lt;pk&gt;/</span><span class="ep-note">own review only</span></div>
+    </div>
+    <div class="callout"><div class="callout-icon">ℹ️</div><div>Must set <code>USER_DETAILS_SERIALIZER = 'users.serializers.UserSerializer'</code> in <code>REST_AUTH</code> settings, or custom fields like <code>is_verified</code>, <code>is_staff</code> won't appear in the login response.</div></div>
+  </section>
 
-      <h3>Key design decisions</h3>
-      <div class="card">
-        <div class="card-title">Listings are polymorphic</div>
-        <div class="card-body">A base <code>Listing</code> model holds all shared fields. Job/Room/Event/Notice each have a OneToOne relationship to it, holding only their specific fields. This keeps search, filtering, and reporting unified.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Businesses are completely separate</div>
-        <div class="card-body">The <code>Business</code> model is independent — not linked to <code>Listing</code>. This gives businesses their own lifecycle (no expiry), their own images, and their own review system.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">All emails are non-blocking</div>
-        <div class="card-body">Every email function fires in a daemon thread so the API response is never delayed by email sending. If the email fails, it's logged but the user's action succeeds.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Token refresh without race conditions</div>
-        <div class="card-body">The frontend axios interceptor queues all concurrent 401 responses, refreshes the token once, then replays every queued request. Multiple tabs can't trigger multiple simultaneous refreshes.</div>
-      </div>
-    </section>
+  <!-- API: Listings -->
+  <section class="section" id="api-listings">
+    <div class="section-header"><div class="section-icon">📢</div><h2 class="section-title">API — Listings</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/</span><span class="ep-note">filter: type, state, status, ?new=true</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/create/</span><span class="ep-note">auth; 10/hr; max 20 active; 5-min cooldown</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/my-listings/</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/stats/</span><span class="ep-note">cached 10 min, public</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/saved/</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/search/?q=&amp;state=</span><span class="ep-note">cross-type search</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/search-suggestions/</span><span class="ep-note">autocomplete</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/saved-searches/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/saved-searches/</span><span class="ep-note">max 10</span></div>
+      <div class="endpoint"><span class="method method-patch">PATCH</span><span class="ep-path">/api/listings/saved-searches/&lt;id&gt;/</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/listings/saved-searches/&lt;id&gt;/</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/&lt;slug&gt;/</span><span class="ep-note">public — hides contact if not auth</span></div>
+      <div class="endpoint"><span class="method method-patch">PATCH</span><span class="ep-path">/api/listings/&lt;slug&gt;/</span><span class="ep-note">owner only</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/listings/&lt;slug&gt;/</span><span class="ep-note">soft delete → status='deleted'</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/&lt;id&gt;/images/</span><span class="ep-note">max 5, max 5 MB each</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/listings/&lt;id&gt;/images/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/&lt;id&gt;/save/</span><span class="ep-note">bookmark toggle</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/&lt;id&gt;/report/</span><span class="ep-note">max 5/user/day</span></div>
+      <div class="endpoint"><span class="method method-patch">PATCH</span><span class="ep-path">/api/listings/&lt;id&gt;/status/</span><span class="ep-note">mark filled/active (owner)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/&lt;id&gt;/view/</span><span class="ep-note">unique per user/IP per 24 h</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/&lt;id&gt;/similar/</span><span class="ep-note">up to 3</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/&lt;id&gt;/renew/</span><span class="ep-note">owner; &lt;7 days to expiry</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/listings/ai-improve/</span><span class="ep-note">auth; 5/day shared (ai_improve scope)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/benchmark/</span><span class="ep-note">salary/rent market stats</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/my-analytics/</span><span class="ep-note">per-listing view stats (auth)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/listings/sitemap/</span><span class="ep-note">all active slugs for sitemap</span></div>
+    </div>
+  </section>
 
-    <!-- ── AI Features ── -->
-    <section class="section" id="ai">
-      <div class="section-header">
-        <div class="section-icon">✨</div>
-        <h2 class="section-title">AI Features (Groq + Llama 3)</h2>
-      </div>
-      <p>NepSaathi uses the <strong>Groq API</strong> with <code>llama-3.1-8b-instant</code> (free tier: 14,400 req/day) for AI writing assistance. The API key lives only on the backend — never exposed to the frontend.</p>
+  <!-- API: Type-specific -->
+  <section class="section" id="api-types">
+    <div class="section-header"><div class="section-icon">🗂</div><h2 class="section-title">API — Type-specific (step 2)</h2></div>
+    <p>Same pattern for <code>/api/jobs/</code>, <code>/api/rooms/</code>, <code>/api/events/</code>, <code>/api/notices/</code>.</p>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/jobs/</span><span class="ep-note">filter: job_type, salary_type, is_urgent, state, salary range</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/jobs/create/</span><span class="ep-note">attach job detail to listing</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/jobs/listing/&lt;slug&gt;/</span><span class="ep-note">get job by parent listing slug (public)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/jobs/&lt;id&gt;/apply/</span><span class="ep-note">check if already applied</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/jobs/&lt;id&gt;/apply/</span><span class="ep-note">submit application (emails poster)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/jobs/ai-improve-cover-letter/</span><span class="ep-note">5/day shared; injects applicant name</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/events/&lt;id&gt;/rsvp/</span><span class="ep-note">toggle; free events only; select_for_update overbooking guard</span></div>
+    </div>
+    <div class="callout red"><div class="callout-icon">⚠️</div><div><strong>Type-specific serializers are independent.</strong> <code>jobs/serializers.py</code>, <code>rooms/serializers.py</code>, <code>events/serializers.py</code>, <code>announcements/serializers.py</code> each have their own <code>get_is_reported</code>, <code>get_poster_is_verified</code>, etc. A fix to <code>listings/serializers.py</code> does <em>not</em> propagate. Always update all four.</div></div>
+  </section>
 
-      <div class="tbl-wrap" style="margin-top:14px;">
-        <table>
-          <thead><tr><th>Feature</th><th>Where</th><th>Endpoint</th><th>What it does</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Listing description improve</strong></td><td>Post Ad form</td><td><code>POST /api/listings/ai-improve/</code></td><td>Rewrites rough description into clear, professional listing copy. Knows listing type, location, salary/price.</td></tr>
-            <tr><td><strong>Forum post improve</strong></td><td>Forum create form</td><td><code>POST /api/forum/ai-improve/</code></td><td>Rewrites forum post body for clarity and grammar. Knows category and title.</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <!-- API: Businesses -->
+  <section class="section" id="api-biz">
+    <div class="section-header"><div class="section-icon">🏪</div><h2 class="section-title">API — Businesses</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/businesses/</span><span class="ep-note">filter: category, state, is_nepalese_owned, is_verified</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/businesses/create/</span><span class="ep-note">3/hr; max 5 per user; duplicate name+state blocked</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/businesses/my-businesses/</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/businesses/&lt;slug&gt;/</span></div>
+      <div class="endpoint"><span class="method method-patch">PATCH</span><span class="ep-path">/api/businesses/&lt;slug&gt;/</span><span class="ep-note">owner only</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/businesses/&lt;slug&gt;/</span><span class="ep-note">soft delete → is_active=False</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/businesses/&lt;slug&gt;/reviews/</span><span class="ep-note">public</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/businesses/&lt;slug&gt;/reviews/</span><span class="ep-note">auth; one per user; owner cannot self-review</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/businesses/&lt;slug&gt;/reviews/&lt;pk&gt;/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/businesses/&lt;slug&gt;/images/</span><span class="ep-note">max 5; max 5 MB</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/businesses/&lt;slug&gt;/images/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/businesses/&lt;slug&gt;/report/</span><span class="ep-note">5/user/day</span></div>
+    </div>
+  </section>
 
-      <div class="callout" style="margin-top:14px;">
-        Both endpoints share the same <strong>throttle scope <code>ai_improve</code></strong> — 5 uses per user per day across both features combined. DRF's <code>ScopedRateThrottle</code> enforces this with a single counter per user.
-      </div>
+  <!-- API: Messaging -->
+  <section class="section" id="api-msgs">
+    <div class="section-header"><div class="section-icon">✉️</div><h2 class="section-title">API — Messaging</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/messages/</span><span class="ep-note">user's conversations (auth)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/messages/</span><span class="ep-note">start or resume conversation (auth)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/messages/&lt;id&gt;/</span><span class="ep-note">messages + mark read; participant only</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/messages/&lt;id&gt;/send/</span><span class="ep-note">5/min; broadcasts via WS + push</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/messages/&lt;id&gt;/</span><span class="ep-note">soft hide (hidden_by M2M)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/messages/unread-count/</span><span class="ep-note">badge count</span></div>
+    </div>
+    <p>WebSocket: <code>ws://&lt;host&gt;/ws/messages/&lt;id&gt;/?token=&lt;JWT&gt;</code> — ChatConsumer; pings every 10 s to keep Railway proxy alive.</p>
+  </section>
 
-      <h3 style="margin-top:18px;">New listings (last 24 hours)</h3>
-      <p>The homepage shows a <strong>"New today" carousel</strong> (green-themed, same pattern as the Featured carousel) that only appears when listings were posted in the last 24 hours. Clicking "View all new listings" goes to <span class="url-chip">/new-listings</span> — a full page with type/state filters and pagination.</p>
-      <p style="margin-top:8px;">Backend: <code>GET /api/listings/?new=true</code> filters by <code>created_at__gte=now()-24h</code>. All listing cards site-wide also show a green <strong>NEW</strong> badge on posts under 24 hours old.</p>
-    </section>
+  <!-- API: Payments -->
+  <section class="section" id="api-payments">
+    <div class="section-header"><div class="section-icon">💳</div><h2 class="section-title">API — Payments</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/payments/feature/&lt;listing_id&gt;/</span><span class="ep-note">creates Stripe Checkout session (auth, owner)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/payments/status/&lt;listing_id&gt;/</span><span class="ep-note">30/min</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/payments/invoice/&lt;listing_id&gt;/</span><span class="ep-note">PDF download (auth, owner)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/payments/webhook/</span><span class="ep-note">Stripe signature-verified; no auth; select_for_update prevents duplicates</span></div>
+    </div>
+    <p>Invoice PDF uses fpdf2 with Helvetica only (no Unicode — use plain <code>-</code> not <code>–</code>). Always use <code>pdf.set_xy(x,y)</code> for positioning. Column widths must sum to exactly 180 mm.</p>
+  </section>
 
-    <!-- ── Deploy ── -->
-    <section class="section" id="deploy">
-      <div class="section-header">
-        <div class="section-icon">🚀</div>
-        <h2 class="section-title">Deployment</h2>
-      </div>
+  <!-- API: Forum -->
+  <section class="section" id="api-forum">
+    <div class="section-header"><div class="section-icon">💬</div><h2 class="section-title">API — Forum</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/forum/</span><span class="ep-note">public; filter: category</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/forum/</span><span class="ep-note">auth; pass poll_options[] array to create a poll</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/forum/&lt;slug&gt;/</span></div>
+      <div class="endpoint"><span class="method method-patch">PATCH</span><span class="ep-path">/api/forum/&lt;slug&gt;/</span><span class="ep-note">author only</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/forum/&lt;slug&gt;/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/forum/&lt;slug&gt;/vote/</span><span class="ep-note">toggle upvote</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/forum/&lt;slug&gt;/replies/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/forum/&lt;slug&gt;/replies/</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/forum/replies/&lt;id&gt;/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/forum/replies/&lt;id&gt;/vote/</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/forum/poll/&lt;option_id&gt;/vote/</span><span class="ep-note">one vote per user per post; changeable</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/forum/ai-improve/</span><span class="ep-note">5/day shared</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/sitemap-forum.xml</span><span class="ep-note">live forum sitemap; proxied via Vercel</span></div>
+    </div>
+    <p>New posts trigger an IndexNow ping to Bing. Vercel <code>vercel.json</code> proxies <code>/sitemap-forum.xml</code> → Railway so Google Search Console can crawl it.</p>
+  </section>
 
-      <div class="info-row"><span class="info-key">Frontend</span><span class="info-val">Vercel — auto-deploys on push to main. SPA rewrite sends all routes to index.html.</span></div>
-      <div class="info-row"><span class="info-key">Backend API</span><span class="info-val">Railway — gunicorn with 4 UvicornWorkers. Runs migrations on every deploy via start.sh.</span></div>
-      <div class="info-row"><span class="info-key">Cron service</span><span class="info-val">Separate Railway service runs cron.sh. Note: Railway doesn't always detect cron.sh changes — may need a manual redeploy.</span></div>
-      <div class="info-row"><span class="info-key">Forum sitemap</span><span class="info-val">Django serves a live forum sitemap at /api/sitemap-forum.xml, proxied via Vercel to nepsaathi.com/sitemap-forum.xml for Google Search Console.</span></div>
-      <div class="info-row"><span class="info-key">Media</span><span class="info-val">All images go to Cloudinary. Local dev uses a local /media/ folder.</span></div>
-      <div class="info-row"><span class="info-key">After any deploy</span><span class="info-val">Migrations run automatically. If new remittance/cron features were added, also run <code>fetch_remittance_rates</code> to seed fresh data.</span></div>
+  <!-- API: Community -->
+  <section class="section" id="api-community">
+    <div class="section-header"><div class="section-icon">🌏</div><h2 class="section-title">API — Community</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/community/requests/</span><span class="ep-note">public; filter: category, state</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/community/requests/</span><span class="ep-note">auth</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/community/requests/&lt;pk&gt;/</span><span class="ep-note">soft delete own (auth)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/community/services/</span><span class="ep-note">public; filter: category, state</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/community/services/</span><span class="ep-note">auth</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="ep-path">/api/community/services/&lt;pk&gt;/</span><span class="ep-note">soft delete own (auth)</span></div>
+    </div>
+  </section>
 
-      <div class="callout orange" style="margin-top:16px;">
-        The single point of failure is <strong>PostgreSQL</strong>. If the database goes down, everything goes down. Every other service (Cloudinary, Stripe, Resend, the exchange rate API) degrades gracefully — the affected feature fails but the rest of the site keeps working.
-      </div>
-    </section>
+  <!-- API: Other -->
+  <section class="section" id="api-other">
+    <div class="section-header"><div class="section-icon">➕</div><h2 class="section-title">API — Other</h2></div>
+    <div class="card">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/exchange/</span><span class="ep-note">AUD/GBP/USD/CAD→NPR cached 1 hr; public</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/feedback/</span><span class="ep-note">exit-intent survey → Google Sheets async</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/remittance/rates/</span><span class="ep-note">live AUD→NPR per provider; public</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/panel/stats/</span><span class="ep-note">superuser only — "Not found." to everyone else</span></div>
+    </div>
+  </section>
 
-  </main>
-</div>
+  <!-- Key Patterns -->
+  <section class="section" id="patterns">
+    <div class="section-header"><div class="section-icon">🔧</div><h2 class="section-title">Key Patterns</h2></div>
+
+    <h3>Countdown timer for posting cooldown</h3>
+    <p>Backend returns <code>{"cooldown": seconds_remaining}</code> (not a plain error string) when the 5-minute cooldown is hit. Frontend stores seconds in a <code>useRef</code>, runs <code>setInterval</code> decrementing each second, renders MM:SS in an amber banner, and disables submit buttons until zero. DRF's 429 response (<code>{"detail": "… in N seconds."}</code>) is also parsed via regex <code>/(\d+) seconds?/</code> and fed to the same countdown.</p>
+
+    <h3>Django lazy querysets &amp; try/except</h3>
+    <p>A <code>try/except</code> around <code>.filter()</code> or <code>.exclude()</code> does <strong>not</strong> catch DB errors — SQL runs lazily at serialization time, outside the block. Always evaluate inside the try: <code>qs.first()</code> or <code>list(qs)</code>.</p>
+
+    <h3>Django admin bulk actions bypass save_model</h3>
+    <p>Bulk <code>queryset.update()</code> skips <code>save_model</code>. Any side effects in <code>save_model</code> (e.g. auto-marking reports reviewed) must be duplicated explicitly in each bulk action.</p>
+
+    <h3>DRF BooleanField in multipart POST</h3>
+    <p>An absent BooleanField in a multipart form POST is received as <code>False</code> — HTML checkbox behaviour. Account for it in serializer defaults and frontend form construction.</p>
+
+    <h3>React Query gcTime: 0</h3>
+    <p><code>staleTime: 0</code> alone still shows cached data while refetching in background. For pages where stale data is harmful (e.g. "under review" banners), also set <code>gcTime: 0</code> so cache is deleted on unmount and the next visit always fetches fresh.</p>
+
+    <h3>useToast — correct API</h3>
+    <pre><code>const { addToast } = useToast();   // ✓
+// showToast does not exist — fails silently at runtime</code></pre>
+
+    <h3>is_reported auth gate</h3>
+    <p><code>get_is_reported()</code> in all serializers returns <code>True</code> only when <code>request.user == obj.user</code> or <code>request.user.is_staff</code>. Anonymous and other authenticated users always receive <code>False</code>. Must be updated in all four type-specific serializers independently.</p>
+  </section>
+
+  <!-- AI Features -->
+  <section class="section" id="ai-feat">
+    <div class="section-header"><div class="section-icon">✨</div><h2 class="section-title">AI Features (Groq + Llama 3)</h2></div>
+    <p>All AI endpoints use the Groq API with <code>llama-3.1-8b-instant</code> (free tier: 14,400 req/day). Key: <code>GROQ_API_KEY</code> on Railway — never exposed to the frontend.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Endpoint</th><th>File</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>POST /api/listings/ai-improve/</code></td><td><code>listings/views.py</code></td><td>Rewrites listing description; knows type, location</td></tr>
+          <tr><td><code>POST /api/forum/ai-improve/</code></td><td><code>forum/views.py</code></td><td>Rewrites forum post body; knows category + title</td></tr>
+          <tr><td><code>POST /api/jobs/ai-improve-cover-letter/</code></td><td><code>jobs/views.py</code></td><td>Rewrites cover letter; injects real applicant name</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>All three share <code>throttle_scope = 'ai_improve'</code> — <strong>5 uses/day per user</strong> across all three.</p>
+
+    <h3>Prompt injection protection (added 2026-08-10)</h3>
+    <p>User content is wrapped in XML delimiter tags before sending to Groq. The model sometimes echoes them back — strip on return:</p>
+    <pre><code># Wrap before sending
+prompt = f"...\n\n&lt;user_draft&gt;\n{user_text}\n&lt;/user_draft&gt;\n\nRewrite..."
+
+# Strip after receiving
+import re as _re
+improved = chat.choices[0].message.content.strip()
+improved = _re.sub(r'&lt;/?user_draft&gt;', '', improved).strip()</code></pre>
+    <p>Cover letter uses <code>&lt;applicant_draft&gt;</code> tags instead. Applicant name is injected outside the tags:</p>
+    <pre><code>applicant_name = request.user.get_full_name() or request.user.email.split("@")[0]</code></pre>
+
+    <h3>Error handling</h3>
+    <pre><code>except groq_sdk.APIError as e:
+    logging.getLogger(__name__).error("Groq error: %s", e)
+    return Response({'error': 'AI service temporarily unavailable.'}, status=503)</code></pre>
+  </section>
+
+  <!-- Emails -->
+  <section class="section" id="emails">
+    <div class="section-header"><div class="section-icon">📧</div><h2 class="section-title">Emails</h2></div>
+    <p>All functions in <code>core/emails.py</code>. Routing: <code>RESEND_API_KEY</code> set → Resend API (production); absent → Zoho SMTP (dev). All fire in daemon threads — never block the response.</p>
+    <div class="email-item"><div class="email-icon">👋</div><div><div class="email-trigger">Welcome / verification</div><div class="email-desc">On email registration. Google OAuth accounts are auto-verified — no email sent.</div></div></div>
+    <div class="email-item"><div class="email-icon">⏰</div><div><div class="email-trigger">Listing expiry warning</div><div class="email-desc">Within 4 days of 30-day expiry. Sent once per listing (<code>expiry_warning_sent=True</code> flag).</div></div></div>
+    <div class="email-item"><div class="email-icon">🚨</div><div><div class="email-trigger">Listing reported / removed</div><div class="email-desc">To admin on report; to owner if listing is removed for violations.</div></div></div>
+    <div class="email-item"><div class="email-icon">🎟</div><div><div class="email-trigger">Event reminder</div><div class="email-desc">To all RSVPed attendees 24 hours before event start. Sent by cron.</div></div></div>
+    <div class="email-item"><div class="email-icon">🔔</div><div><div class="email-trigger">Saved search alert</div><div class="email-desc">Fires immediately on listing creation if filters match. Background thread.</div></div></div>
+    <div class="email-item"><div class="email-icon">💳</div><div><div class="email-trigger">Payment invoice</div><div class="email-desc">After successful Stripe payment. PDF invoice attached.</div></div></div>
+    <div class="email-item"><div class="email-icon">🔄</div><div><div class="email-trigger">Listing renewal</div><div class="email-desc">Confirms new expiry date when owner renews.</div></div></div>
+    <div class="email-item"><div class="email-icon">🚫</div><div><div class="email-trigger">Account banned</div><div class="email-desc">Sent by admin action with ban reason.</div></div></div>
+    <div class="email-item"><div class="email-icon">📝</div><div><div class="email-trigger">Job application</div><div class="email-desc">To the job poster when an applicant submits a Quick Apply with cover letter.</div></div></div>
+    <div class="callout red"><div class="callout-icon">⚠️</div><div>All user-supplied strings inserted into email HTML must go through the <code>_h()</code> helper in <code>core/emails.py</code> to prevent HTML injection. This was added 2026-08-10 after the event URL was found to be unescaped.</div></div>
+  </section>
+
+  <!-- Cron -->
+  <section class="section" id="cron">
+    <div class="section-header"><div class="section-icon">⏱</div><h2 class="section-title">Cron Jobs</h2></div>
+    <p>Separate Railway cron service runs <code>cron.sh</code> via <code>entry.sh</code>. Commands are independent — one failure doesn't stop the rest.</p>
+    <div class="card"><div class="card-title">expire_listings</div><div class="card-body">Finds active listings past 30-day expiry → sets <code>status='expired'</code>. They disappear from the site but are never hard-deleted.</div></div>
+    <div class="card"><div class="card-title">expire_featured_businesses</div><div class="card-body">Clears <code>is_featured</code> on businesses whose featured period ended.</div></div>
+    <div class="card"><div class="card-title">send_expiry_warnings</div><div class="card-body">Listings expiring within 4 days, warning not yet sent → email + push to owner. 4-day window catches up if cron missed a day.</div></div>
+    <div class="card"><div class="card-title">send_event_reminders</div><div class="card-body">Events within next 24 hours → reminder email to every RSVPed user.</div></div>
+    <div class="card"><div class="card-title">fetch_remittance_rates</div><div class="card-body">Pulls live AUD→NPR mid-market rate from open.er-api.com, derives per-provider rates, updates DB. /send-money always shows latest.</div></div>
+    <div class="callout orange"><div class="callout-icon">⚠️</div><div>Railway's watched-file deployment <strong>skips redeploy when only <code>cron.sh</code> changes</strong>. Always trigger a manual redeploy after updating cron scripts.</div></div>
+  </section>
+
+  <!-- Security -->
+  <section class="section" id="security">
+    <div class="section-header"><div class="section-icon">🔒</div><h2 class="section-title">Security</h2></div>
+    <div class="info-row"><span class="info-key">Auth</span><span class="info-val">JWT rotation + blacklist. 60-min access token, 7-day refresh. Google OAuth with PKCE.</span></div>
+    <div class="info-row"><span class="info-key">SilentJWT</span><span class="info-val"><code>core/authentication.py</code> returns None on bad token instead of 401 — public pages serve anonymous users cleanly.</span></div>
+    <div class="info-row"><span class="info-key">Login throttle</span><span class="info-val">5/min per IP (rightmost X-Forwarded-For) + 10/period per SHA-256(email[:16]). Both cleared on success.</span></div>
+    <div class="info-row"><span class="info-key">is_reported gate</span><span class="info-val">get_is_reported() returns True only to listing owner or staff. Other auth users receive False — prevents leaking report status.</span></div>
+    <div class="info-row"><span class="info-key">AI prompt injection</span><span class="info-val">User content wrapped in XML delimiter tags before Groq call; re.sub strips any echoed tags from response.</span></div>
+    <div class="info-row"><span class="info-key">HTML injection (emails)</span><span class="info-val">All user-supplied strings in email HTML escaped with _h() helper in core/emails.py.</span></div>
+    <div class="info-row"><span class="info-key">Stripe webhook</span><span class="info-val">Signature-verified. select_for_update() prevents duplicate payment processing.</span></div>
+    <div class="info-row"><span class="info-key">RSVP overbooking</span><span class="info-val">select_for_update() on RSVP creation — concurrent RSVPs cannot exceed max_attendees.</span></div>
+    <div class="info-row"><span class="info-key">Admin URL</span><span class="info-val">Obscured path. Returns 404 for wrong guesses.</span></div>
+    <div class="info-row"><span class="info-key">Panel</span><span class="info-val">IsSuperUser returns "Not found." to non-superusers. No UI links. Not in sitemap.</span></div>
+    <div class="info-row"><span class="info-key">Auto-ban</span><span class="info-val">Owner auto-banned after 3 admin listing removals for violations.</span></div>
+    <div class="info-row"><span class="info-key">Contact details</span><span class="info-val">Phone/WhatsApp/email on listings hidden from unauthenticated users.</span></div>
+    <div class="info-row"><span class="info-key">HSTS + SSL</span><span class="info-val">Enabled when DEBUG=False.</span></div>
+    <h3>Intentionally deferred</h3>
+    <p><code>JWT_AUTH_HTTPONLY: False</code> — looks wrong but is correct. Tokens live in localStorage; the dj-rest-auth cookie is never read by the frontend. True fix = full httpOnly cookie migration (not done).</p>
+  </section>
+
+  <!-- Deployment -->
+  <section class="section" id="deploy">
+    <div class="section-header"><div class="section-icon">🚀</div><h2 class="section-title">Deployment</h2></div>
+    <h3>Backend — Railway</h3>
+    <pre><code># Procfile
+web: gunicorn core.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
+
+# start.sh (runs before server)
+python manage.py migrate
+python manage.py collectstatic --noinput</code></pre>
+    <h3>Frontend — Vercel</h3>
+    <p><code>vercel.json</code> rewrites all routes to <code>index.html</code> (SPA). Also proxies <code>/sitemap-forum.xml</code> → Railway for Google Search Console.</p>
+    <h3>After first deploy / migration</h3>
+    <pre><code>python manage.py migrate
+python manage.py fetch_remittance_rates   # seed initial rates</code></pre>
+    <div class="info-row"><span class="info-key">Single point of failure</span><span class="info-val">PostgreSQL. All other services (Cloudinary, Stripe, Resend, exchange rate API) degrade gracefully — the affected feature fails but the rest of the site keeps working.</span></div>
+  </section>
+
+  <!-- Env vars -->
+  <section class="section" id="envvars">
+    <div class="section-header"><div class="section-icon">🗝</div><h2 class="section-title">Environment Variables</h2></div>
+    <h3>Railway (backend)</h3>
+    <pre><code>DATABASE_URL          SECRET_KEY            ALLOWED_HOSTS
+CORS_ALLOWED_ORIGINS
+
+CLOUDINARY_CLOUD_NAME  CLOUDINARY_API_KEY  CLOUDINARY_API_SECRET
+
+GOOGLE_CLIENT_ID       GOOGLE_CLIENT_SECRET
+
+STRIPE_SECRET_KEY      STRIPE_WEBHOOK_SECRET
+STRIPE_FEATURED_PRICE_CENTS           # e.g. 999 = AUD $9.99
+
+VAPID_PRIVATE_KEY      VAPID_PUBLIC_KEY    VAPID_ADMIN_EMAIL
+
+RESEND_API_KEY                         # production email (absent = Zoho SMTP)
+EMAIL_HOST             EMAIL_PORT      EMAIL_HOST_USER    EMAIL_HOST_PASSWORD
+
+GOOGLE_SHEETS_CREDENTIALS_JSON         # single-line JSON string
+GOOGLE_SHEETS_SPREADSHEET_ID
+
+GROQ_API_KEY                           # AI improve features
+
+INDEXNOW_KEY                           # bab5cd5c2e80de771f58b86a4737ca2a
+FRONTEND_URL                           # https://www.nepsaathi.com
+ADMIN_URL                              # ADMIN_PATH_REDACTED/</code></pre>
+
+    <h3>Vercel (frontend)</h3>
+    <pre><code>VITE_API_URL
+VITE_GOOGLE_CLIENT_ID
+VITE_VAPID_PUBLIC_KEY</code></pre>
+  </section>
+
+</div><!-- /dev-pane -->
+
+</main>
+</div><!-- /shell -->
+
+<button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+
+<script>
+function switchTab(tab) {
+  const up = document.getElementById('user-pane');
+  const dp = document.getElementById('dev-pane');
+  const un = document.getElementById('user-nav');
+  const dn = document.getElementById('dev-nav');
+  const btns = document.querySelectorAll('.tab-btn');
+  if (tab === 'user') {
+    up.classList.add('active'); dp.classList.remove('active');
+    un.style.display = ''; dn.style.display = 'none';
+    btns[0].classList.add('active'); btns[1].classList.remove('active');
+  } else {
+    dp.classList.add('active'); up.classList.remove('active');
+    dn.style.display = ''; un.style.display = 'none';
+    btns[1].classList.add('active'); btns[0].classList.remove('active');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function cm() { document.getElementById('sidebar').classList.remove('open'); }
+
+// Active sidebar link tracking
+(function(){
+  const sections = document.querySelectorAll('.section');
+  const links = document.querySelectorAll('.nav-link');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-54px 0px -55% 0px', threshold: 0 });
+  sections.forEach(s => obs.observe(s));
+})();
+</script>
