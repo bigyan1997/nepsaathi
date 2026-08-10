@@ -450,12 +450,9 @@ export default function PostAdPage() {
 
   const typeConfig = LISTING_TYPES.find((t) => t.value === listingType) || {};
 
-  const STEP_LABELS = [
-    "Choose type",
-    "Basic details",
-    "Specific details",
-    "Add photos",
-  ];
+  const STEP_LABELS = baseForm.is_wanted
+    ? ["Choose type", "Basic details", "Specific details"]
+    : ["Choose type", "Basic details", "Specific details", "Add photos"];
 
   /* ── submit ── */
   const handleSubmit = async () => {
@@ -519,6 +516,11 @@ export default function PostAdPage() {
       queryClient.invalidateQueries({ queryKey: ["home-featured"] });
       setCreatedListingId(listing.id);
       setCreatedListingSlug(listing.slug);
+      if (baseForm.is_wanted) {
+        addToast("Your listing is live!", "success");
+        navigate(`/${listingType}s/${listing.slug}`);
+        return;
+      }
       setStep(4);
       addToast("Listing created! Now add some photos.", "success");
     } catch (err) {
