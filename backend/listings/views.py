@@ -1015,7 +1015,9 @@ Rewrite the description inside <user_draft> to be clear, professional, and appea
                 max_tokens=512,
                 messages=[{"role": "user", "content": prompt}],
             )
+            import re as _re
             improved = chat.choices[0].message.content.strip()
+            improved = _re.sub(r'</?user_draft>', '', improved).strip()
             return Response({'improved': improved})
         except groq_sdk.APIError as e:
             logger.error("Groq API error in ai-improve: %s", e)

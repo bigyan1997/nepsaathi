@@ -207,7 +207,9 @@ Rewrite the cover letter inside <applicant_draft> to be professional, concise, a
                 max_tokens=500,
                 messages=[{"role": "user", "content": prompt}],
             )
+            import re as _re
             improved = chat.choices[0].message.content.strip()
+            improved = _re.sub(r'</?applicant_draft>', '', improved).strip()
             return Response({'improved': improved})
         except groq_sdk.APIError as e:
             import logging
