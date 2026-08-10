@@ -548,7 +548,7 @@ python manage.py fetch_remittance_rates   # seed initial rates
 ## Security Notes
 
 - **SilentJWTAuthentication** — `DEFAULT_AUTHENTICATION_CLASSES`. Returns `None` on bad token instead of 401. Required for public endpoints to serve anonymous users who have stale tokens in localStorage.
-- **Rate limits**: login 5/min, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr, AI improve 5/day (shared across listing + forum improve)
+- **Rate limits**: login 5/min per IP + 10/period per email hash, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr, AI improve 5/day shared across all AI endpoints (`ai_improve` scope)
 - **X-Forwarded-For**: rightmost entry used for IP throttling (Railway appends real IP on right — cannot be spoofed by client)
 - **Stripe webhook**: signature-verified with `STRIPE_WEBHOOK_SECRET`, uses `select_for_update()` to prevent duplicate processing
 - **Admin URL**: obscured — `/ADMIN_PATH_REDACTED/` (not `/admin/`)
@@ -636,6 +636,18 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **AI forum improve** (`POST /api/forum/ai-improve/`) — same button + preview pattern on CreatePostPage; prompt tuned for friendly community posts.
 - **Shared AI rate limit** — both AI endpoints share `throttle_scope = 'ai_improve'`: 5 uses/day per user across all AI features.
 - **Groq integration** — `groq>=1.6.0` in requirements; `GROQ_API_KEY` env var (Railway only, never frontend); model: `llama-3.1-8b-instant` (14,400 req/day free tier).
+
+### Phase 6 — AI features, security hardening, UX polish (2026-08-10)
+- **AI improve on Edit Listing** — "✨ Improve with AI" button added to `EditListingPage`, identical pattern to PostAdPage (purple preview box, "Use this / Discard").
+- **AI cover letter in QuickApplyModal** (`POST /api/jobs/ai-improve-cover-letter/`) — "✨ AI suggestion" button in the job application modal; injects applicant's real full name (`get_full_name() or email.split("@")[0]`) into the prompt and signs off with it; shares `ai_improve` rate limit (5/day).
+- **Prompt injection protection** — all AI improve endpoints wrap user content in XML delimiter tags (`<user_draft>`, `<applicant_draft>`) before sending to Groq; `re.sub` strips any echoed tags from the model response before returning to the frontend.
+- **Quick Apply fixes** — owner check now uses `user?.id` from `useAuthStore` (was comparing `job.user_id !== job.my_user_id` which was always `undefined`); error handler extended to check `non_field_errors`; modal made scrollable (`maxHeight: "90vh"`, flex column layout).
+- **Countdown timer on Post Ad** — replaces static "please wait 5 minutes" message with an amber banner showing live MM:SS countdown; handles both custom 5-min cooldown (`{"cooldown": N}` response) and DRF 429 throttle response (`{"detail": "... N seconds."}` — seconds extracted via regex); submit buttons disabled during countdown. Backend returns `{"cooldown": seconds_left}` instead of a plain error string.
+- **Skip photos for wanted listings** — `is_wanted` postings (job seeker, room seeker) skip the photo upload step entirely and navigate directly to the live listing; step indicator shows only 3 steps for wanted listings.
+- **Verified badges on listing cards** — `VerifiedBadge` SVG component now appears on all four category list pages using `poster_is_verified` (already present in all type-specific serializers): badge next to company name on JobsPage; "Verified host" label on RoomsPage; "Verified organiser" label on EventsPage; inline badge on NoticesPage.
+- **Security: `is_reported` auth gate** — `get_is_reported()` in `listings/serializers.py` now returns `True` only to the listing owner or staff; previously leaked report status to all authenticated users.
+- **Security: per-email login rate limit** — 10 failed attempts per SHA-256-hashed email address added to `ThrottledLoginView` alongside existing per-IP limit; cleared on successful login.
+- **Security: HTML injection in emails** — `event.event_url` in `core/emails.py` now escaped with `_h()` helper in both the `href` attribute and display text.
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
