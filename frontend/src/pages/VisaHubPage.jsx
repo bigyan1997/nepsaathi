@@ -9,6 +9,8 @@ import {
   getVisaStats,
   submitVisaTimeline,
   updateVisaTimeline,
+  getOccupations,
+  getInvitationRounds,
 } from "../api/visa";
 
 // ─── Official Australian Skilled Migration Points (as of 2025) ───────────────
@@ -754,6 +756,329 @@ function ResourcesTab() {
   );
 }
 
+// ─── Tab 4: Occupation Search ────────────────────────────────────────────────
+
+const LIST_BADGE = {
+  MLTSSL: { bg: '#dcfce7', color: '#15803d', label: 'MLTSSL' },
+  STSOL:  { bg: '#fef9c3', color: '#a16207', label: 'STSOL' },
+  ROL:    { bg: '#dbeafe', color: '#1d4ed8', label: 'ROL' },
+  NONE:   { bg: '#f3f4f6', color: '#6b7280', label: 'Not listed' },
+};
+
+const LIST_FULL = {
+  MLTSSL: 'Medium and Long-term Strategic Skills List — eligible for 189, 190, 491',
+  STSOL:  'Short-term Skilled Occupation List — eligible for 190, 491, 482',
+  ROL:    'Regional Occupation List — eligible for 491 (regional only)',
+  NONE:   'Not currently on any skilled occupation list',
+};
+
+function OccupationSearch() {
+  const [query, setQuery] = useState('');
+  const [filterList, setFilterList] = useState('');
+
+  const { data: all = [], isLoading } = useQuery({
+    queryKey: ['occupations'],
+    queryFn: () => getOccupations(),
+    staleTime: 1000 * 60 * 30,
+  });
+
+  const q = query.trim().toLowerCase();
+  const results = all.filter((o) => {
+    const matchesQ =
+      !q ||
+      o.title.toLowerCase().includes(q) ||
+      o.anzsco_code.includes(q) ||
+      (o.alternative_titles && o.alternative_titles.toLowerCase().includes(q));
+    const matchesList = !filterList || o.list_type === filterList;
+    return matchesQ && matchesList;
+  });
+
+  return (
+    <div>
+      <div style={{ background: '#EEEDFE', borderRadius: '14px', padding: '16px 20px', marginBottom: '20px', fontSize: '13.5px', color: '#26215C', lineHeight: 1.6 }}>
+        <strong>Is your occupation on the skills list?</strong> Search below to find your ANZSCO code and see which skilled visas you may be eligible for.
+        Data sourced from the DOHA Skilled Occupation List (August 2025) —{' '}
+        <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list" target="_blank" rel="noopener noreferrer" style={{ color: '#534AB7' }}>
+          verify at doha.gov.au ↗
+        </a>{' '}
+        before relying on this for visa purposes.
+      </div>
+
+      {/* Search + filter row */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by job title or ANZSCO code…"
+          style={{
+            flex: 1,
+            minWidth: '220px',
+            border: '1.5px solid #ddd',
+            borderRadius: '9px',
+            padding: '10px 14px',
+            fontSize: '14px',
+            fontFamily: 'inherit',
+            outline: 'none',
+          }}
+        />
+        <SelectInput
+          value={filterList}
+          onChange={setFilterList}
+          options={[
+            { value: '', label: 'All lists' },
+            { value: 'MLTSSL', label: 'MLTSSL' },
+            { value: 'STSOL',  label: 'STSOL' },
+            { value: 'ROL',    label: 'ROL' },
+          ]}
+        />
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        {Object.entries(LIST_BADGE).filter(([k]) => k !== 'NONE').map(([key, { bg, color, label }]) => (
+          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+            <span style={{ background: bg, color, borderRadius: '5px', padding: '2px 8px', fontWeight: 700 }}>{label}</span>
+            <span style={{ color: '#666' }}>{LIST_FULL[key].split('—')[0].trim()}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Results count */}
+      {!isLoading && (
+        <div style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>
+          {results.length} occupation{results.length !== 1 ? 's' : ''} found
+          {q && ` for "${query}"`}
+        </div>
+      )}
+
+      {/* Results */}
+      {isLoading ? (
+        <div style={{ color: '#888', fontSize: '14px', padding: '24px 0' }}>Loading occupations…</div>
+      ) : results.length === 0 ? (
+        <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '40px', textAlign: 'center', color: '#888' }}>
+          <div style={{ fontSize: '28px', marginBottom: '10px' }}>🔍</div>
+          <div style={{ fontWeight: 600, fontSize: '14px' }}>No occupations found</div>
+          <div style={{ fontSize: '13px', marginTop: '6px' }}>
+            Try a different title or{' '}
+            <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list" target="_blank" rel="noopener noreferrer" style={{ color: '#534AB7' }}>
+              search the full DOHA list ↗
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {results.map((o) => {
+            const badge = LIST_BADGE[o.list_type] || LIST_BADGE.NONE;
+            const visas = o.eligible_visas ? o.eligible_visas.split(',') : [];
+            return (
+              <div key={o.id} style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '14px 18px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '15px', color: '#26215C' }}>{o.title}</span>
+                      <span style={{ background: badge.bg, color: badge.color, borderRadius: '6px', padding: '2px 9px', fontSize: '11.5px', fontWeight: 700 }}>
+                        {badge.label}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '6px' }}>
+                      ANZSCO {o.anzsco_code}
+                      {o.alternative_titles && <span> · Also known as: {o.alternative_titles}</span>}
+                    </div>
+                    {o.notes && (
+                      <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>ℹ️ {o.notes}</div>
+                    )}
+                  </div>
+                  {visas.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '.06em' }}>Eligible visas</div>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {visas.map((v) => (
+                          <span key={v} style={{ background: '#EEEDFE', color: '#534AB7', borderRadius: '6px', padding: '3px 8px', fontSize: '12px', fontWeight: 700 }}>
+                            {v}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div style={{ marginTop: '20px', fontSize: '12px', color: '#aaa', textAlign: 'center' }}>
+        58 occupations listed · Last updated August 2025 ·{' '}
+        <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list" target="_blank" rel="noopener noreferrer" style={{ color: '#534AB7' }}>
+          Full DOHA list ↗
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ─── Tab 5: Invitation Rounds ────────────────────────────────────────────────
+
+const VISA_COLORS = { '189': '#534AB7', '190': '#1B8F5E', '491': '#E87722' };
+
+function InvitationHistory() {
+  const [visaFilter, setVisaFilter] = useState('');
+
+  const { data: rounds = [], isLoading } = useQuery({
+    queryKey: ['invitation-rounds', visaFilter],
+    queryFn: () => getInvitationRounds(visaFilter ? { visa_type: visaFilter } : {}),
+    staleTime: 1000 * 60 * 15,
+  });
+
+  // Build sparkline data per visa type
+  const byVisa = {};
+  rounds.forEach((r) => {
+    if (!byVisa[r.visa_type]) byVisa[r.visa_type] = [];
+    byVisa[r.visa_type].push({ date: r.round_date, score: r.lowest_score });
+  });
+  Object.values(byVisa).forEach((arr) => arr.sort((a, b) => a.date.localeCompare(b.date)));
+
+  const filtered = visaFilter ? rounds.filter((r) => r.visa_type === visaFilter) : rounds;
+
+  return (
+    <div>
+      <div style={{ background: '#EEEDFE', borderRadius: '14px', padding: '16px 20px', marginBottom: '20px', fontSize: '13.5px', color: '#26215C', lineHeight: 1.6 }}>
+        <strong>SkillSelect invitation round history.</strong> Lowest points score required in each round — shows whether competition is increasing or easing over time.
+        Source:{' '}
+        <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/invitation-rounds" target="_blank" rel="noopener noreferrer" style={{ color: '#534AB7' }}>
+          DOHA SkillSelect invitation rounds ↗
+        </a>
+      </div>
+
+      {/* Trend sparklines (only when we have data for multiple visa types) */}
+      {Object.keys(byVisa).length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+          {Object.entries(byVisa).map(([visa, points]) => {
+            if (points.length < 2) return null;
+            const scores = points.map((p) => p.score);
+            const minS = Math.min(...scores) - 5;
+            const maxS = Math.max(...scores) + 5;
+            const W = 200, H = 60;
+            const px = (i) => (i / (points.length - 1)) * W;
+            const py = (s) => H - ((s - minS) / (maxS - minS)) * H;
+            const polyline = points.map((p, i) => `${px(i)},${py(p.score)}`).join(' ');
+            const latest = points[points.length - 1];
+            const prev = points[points.length - 2];
+            const trend = latest.score > prev.score ? '↑' : latest.score < prev.score ? '↓' : '→';
+            const trendColor = latest.score > prev.score ? '#dc2626' : latest.score < prev.score ? '#16a34a' : '#888';
+
+            return (
+              <div key={visa} style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <span style={{ background: '#EEEDFE', color: VISA_COLORS[visa] || '#534AB7', borderRadius: '6px', padding: '3px 10px', fontSize: '13px', fontWeight: 800 }}>
+                    {visa}
+                  </span>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '22px', fontWeight: 800, color: VISA_COLORS[visa] || '#26215C' }}>{latest.score}</span>
+                    <span style={{ fontSize: '16px', color: trendColor, marginLeft: '4px', fontWeight: 700 }}>{trend}</span>
+                    <div style={{ fontSize: '10px', color: '#888' }}>pts ({latest.date})</div>
+                  </div>
+                </div>
+                <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '50px' }}>
+                  <defs>
+                    <linearGradient id={`grad-${visa}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={VISA_COLORS[visa] || '#534AB7'} stopOpacity="0.15" />
+                      <stop offset="100%" stopColor={VISA_COLORS[visa] || '#534AB7'} stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <polygon
+                    points={`0,${H} ${polyline} ${W},${H}`}
+                    fill={`url(#grad-${visa})`}
+                  />
+                  <polyline
+                    points={polyline}
+                    fill="none"
+                    stroke={VISA_COLORS[visa] || '#534AB7'}
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx={px(points.length - 1)} cy={py(latest.score)} r="3" fill={VISA_COLORS[visa] || '#534AB7'} />
+                </svg>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Filter */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center' }}>
+        <SelectInput
+          value={visaFilter}
+          onChange={setVisaFilter}
+          options={[
+            { value: '', label: 'All visa types' },
+            { value: '189', label: '189 — Skilled Independent' },
+            { value: '190', label: '190 — Skilled Nominated' },
+            { value: '491', label: '491 — Skilled Work Regional' },
+          ]}
+        />
+        <span style={{ fontSize: '12px', color: '#888' }}>{filtered.length} round{filtered.length !== 1 ? 's' : ''}</span>
+      </div>
+
+      {/* Table or empty state */}
+      {isLoading ? (
+        <div style={{ color: '#888', fontSize: '14px', padding: '24px 0' }}>Loading rounds…</div>
+      ) : filtered.length === 0 ? (
+        <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '40px', textAlign: 'center', color: '#888' }}>
+          <div style={{ fontSize: '28px', marginBottom: '10px' }}>📊</div>
+          <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '6px' }}>No invitation rounds data yet</div>
+          <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
+            An administrator runs <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>python manage.py fetch_invitation_rounds</code>
+            {' '}to pull the latest data from DOHA, or rounds can be entered manually via the admin panel.
+          </div>
+          <a
+            href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/invitation-rounds"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-block', marginTop: '14px', color: '#534AB7', fontWeight: 600, fontSize: '13px' }}
+          >
+            View current rounds at DOHA ↗
+          </a>
+        </div>
+      ) : (
+        <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#faf9ff' }}>
+                  {['Round', 'Visa', 'Min Score', 'Invitations', 'Tiebreaker Date'].map((h) => (
+                    <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: '#534AB7', borderBottom: '1.5px solid #e8e6f8', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((r) => (
+                  <tr key={r.id} style={{ borderBottom: '1px solid #f0eeff' }}>
+                    <td style={tdStyle}>{r.round_date}</td>
+                    <td style={tdStyle}>
+                      <span style={{ background: '#EEEDFE', color: VISA_COLORS[r.visa_type] || '#534AB7', padding: '2px 9px', borderRadius: '6px', fontWeight: 800, fontSize: '12px' }}>
+                        {r.visa_type}
+                      </span>
+                    </td>
+                    <td style={{ ...tdStyle, fontWeight: 700, fontSize: '15px', color: VISA_COLORS[r.visa_type] || '#26215C' }}>
+                      {r.lowest_score} pts
+                    </td>
+                    <td style={tdStyle}>
+                      {r.invitations_issued ? r.invitations_issued.toLocaleString() : '—'}
+                    </td>
+                    <td style={{ ...tdStyle, color: '#666' }}>{r.tiebreaker_date || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Shared styles ───────────────────────────────────────────────────────────
 
 const labelStyle = {
@@ -798,12 +1123,12 @@ const resourceCardStyle = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function VisaHubPage() {
-  const [tab, setTab] = useState("calculator");
+  const [tab, setTab] = useState("occupations");
 
   usePageMeta(
     "Visa & Immigration Hub — NepSaathi",
-    "PR points calculator, community visa timelines, and official immigration resources for Nepali Australians.",
-    "visa australia nepali, PR points calculator, 485 visa timeline, skilled migration nepal australia"
+    "ANZSCO occupation search, invitation round history, PR points calculator, and community visa timelines for Nepali Australians.",
+    "visa australia nepali, ANZSCO occupation search, PR points calculator, skilled migration invitation rounds, 485 visa timeline, nepal australia"
   );
 
   return (
@@ -817,21 +1142,25 @@ export default function VisaHubPage() {
           Navigate your Australian visa journey
         </h1>
         <p style={{ fontSize: "14px", color: "#666", margin: 0, lineHeight: 1.6 }}>
-          PR points calculator, community timeline tracker, and curated official resources — built for Nepali Australians.
+          ANZSCO occupation lookup, invitation round history, PR points calculator, community timelines, and curated official resources — built for Nepali Australians.
         </p>
       </div>
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "28px", flexWrap: "wrap" }}>
-        <TabBtn label="🔢 PR Calculator" active={tab === "calculator"} onClick={() => setTab("calculator")} />
-        <TabBtn label="📊 Timeline Tracker" active={tab === "timelines"} onClick={() => setTab("timelines")} />
-        <TabBtn label="📚 Resources" active={tab === "resources"} onClick={() => setTab("resources")} />
+        <TabBtn label="🔢 PR Calculator"       active={tab === "calculator"}   onClick={() => setTab("calculator")} />
+        <TabBtn label="🔍 Occupation Search"   active={tab === "occupations"}  onClick={() => setTab("occupations")} />
+        <TabBtn label="📈 Invitation History"  active={tab === "invitations"}  onClick={() => setTab("invitations")} />
+        <TabBtn label="📊 Timeline Tracker"    active={tab === "timelines"}    onClick={() => setTab("timelines")} />
+        <TabBtn label="📚 Resources"           active={tab === "resources"}    onClick={() => setTab("resources")} />
       </div>
 
       {/* Content */}
-      {tab === "calculator" && <PRCalculator />}
-      {tab === "timelines" && <TimelineTracker />}
-      {tab === "resources" && <ResourcesTab />}
+      {tab === "calculator"  && <PRCalculator />}
+      {tab === "occupations" && <OccupationSearch />}
+      {tab === "invitations" && <InvitationHistory />}
+      {tab === "timelines"   && <TimelineTracker />}
+      {tab === "resources"   && <ResourcesTab />}
     </div>
   );
 }

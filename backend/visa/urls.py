@@ -6,4 +6,6 @@ urlpatterns = [
     path('timelines/stats/',    views.VisaTimelineStatsView.as_view(),      name='visa-stats'),
     path('timelines/<int:pk>/', views.VisaTimelineDetailView.as_view(),     name='visa-timeline-detail'),
     path('whatsapp-groups/',    views.WhatsAppGroupListView.as_view(),       name='whatsapp-groups'),
+    path('occupations/',        views.OccupationListView.as_view(),          name='visa-occupations'),
+    path('invitation-rounds/',  views.InvitationRoundListView.as_view(),     name='visa-invitation-rounds'),
 ]

@@ -17,3 +17,9 @@ export const deleteVisaTimeline = (id) =>
 
 export const getWhatsAppGroups = (params) =>
   api.get("/visa/whatsapp-groups/", { params }).then((r) => r.data);
+
+export const getOccupations = (params) =>
+  api.get("/visa/occupations/", { params }).then((r) => r.data);
+
+export const getInvitationRounds = (params) =>
+  api.get("/visa/invitation-rounds/", { params }).then((r) => r.data);

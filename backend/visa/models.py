@@ -79,3 +79,47 @@ class WhatsAppGroup(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.city})'
+
+
+class Occupation(models.Model):
+    LIST_TYPE_CHOICES = [
+        ('MLTSSL', 'Medium and Long-term Strategic Skills List'),
+        ('STSOL',  'Short-term Skilled Occupation List'),
+        ('ROL',    'Regional Occupation List'),
+        ('NONE',   'Not currently on a skilled list'),
+    ]
+    anzsco_code       = models.CharField(max_length=10, unique=True)
+    title             = models.CharField(max_length=150)
+    list_type         = models.CharField(max_length=10, choices=LIST_TYPE_CHOICES)
+    eligible_visas    = models.CharField(max_length=60, blank=True, help_text='Comma-separated, e.g. "189,190,491"')
+    alternative_titles = models.CharField(max_length=200, blank=True, help_text='Common job titles for this ANZSCO code')
+    notes             = models.CharField(max_length=200, blank=True)
+    last_updated      = models.DateField(help_text='Last verified against DOHA skilled occupation list')
+
+    class Meta:
+        db_table = 'visa_occupations'
+        ordering = ['anzsco_code']
+
+    def __str__(self):
+        return f'{self.anzsco_code} – {self.title} ({self.list_type})'
+
+
+class InvitationRound(models.Model):
+    VISA_CHOICES = [
+        ('189', 'Skilled Independent (189)'),
+        ('190', 'Skilled Nominated (190)'),
+        ('491', 'Skilled Work Regional (491)'),
+    ]
+    round_date        = models.CharField(max_length=7, help_text='YYYY-MM format')
+    visa_type         = models.CharField(max_length=10, choices=VISA_CHOICES)
+    lowest_score      = models.PositiveSmallIntegerField()
+    invitations_issued = models.PositiveIntegerField()
+    tiebreaker_date   = models.DateField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'visa_invitation_rounds'
+        ordering = ['-round_date', 'visa_type']
+        unique_together = [('round_date', 'visa_type')]
+
+    def __str__(self):
+        return f'{self.round_date} — {self.visa_type} — {self.lowest_score} pts'

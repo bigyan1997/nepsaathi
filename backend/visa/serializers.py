@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VisaTimeline, WhatsAppGroup
+from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound
 
 
 class VisaTimelineSerializer(serializers.ModelSerializer):
@@ -39,4 +39,22 @@ class WhatsAppGroupSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'state', 'city', 'category',
             'link', 'member_count', 'description', 'is_verified',
+        ]
+
+
+class OccupationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Occupation
+        fields = [
+            'id', 'anzsco_code', 'title', 'list_type', 'eligible_visas',
+            'alternative_titles', 'notes', 'last_updated',
+        ]
+
+
+class InvitationRoundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvitationRound
+        fields = [
+            'id', 'round_date', 'visa_type', 'lowest_score',
+            'invitations_issued', 'tiebreaker_date',
         ]

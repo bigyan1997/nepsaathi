@@ -3,8 +3,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from core.authentication import SilentJWTAuthentication
-from .models import VisaTimeline, WhatsAppGroup
-from .serializers import VisaTimelineSerializer, WhatsAppGroupSerializer
+from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound
+from .serializers import (
+    VisaTimelineSerializer, WhatsAppGroupSerializer,
+    OccupationSerializer, InvitationRoundSerializer,
+)
 
 
 class VisaTimelineListCreateView(generics.ListCreateAPIView):
@@ -89,4 +92,34 @@ class WhatsAppGroupListView(generics.ListAPIView):
             qs = qs.filter(state=state)
         if category := self.request.query_params.get('category'):
             qs = qs.filter(category=category)
+        return qs
+
+
+class OccupationListView(generics.ListAPIView):
+    serializer_class = OccupationSerializer
+    authentication_classes = [SilentJWTAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        qs = Occupation.objects.all()
+        if q := self.request.query_params.get('q'):
+            qs = qs.filter(
+                Q(title__icontains=q) |
+                Q(anzsco_code__icontains=q) |
+                Q(alternative_titles__icontains=q)
+            )
+        if list_type := self.request.query_params.get('list_type'):
+            qs = qs.filter(list_type=list_type)
+        return qs
+
+
+class InvitationRoundListView(generics.ListAPIView):
+    serializer_class = InvitationRoundSerializer
+    authentication_classes = [SilentJWTAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        qs = InvitationRound.objects.all()
+        if visa_type := self.request.query_params.get('visa_type'):
+            qs = qs.filter(visa_type=visa_type)
         return qs
