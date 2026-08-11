@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /nepsaathi-admin/
 Disallow: /login
 Disallow: /register
 Disallow: /verify-email
