@@ -10,7 +10,7 @@ from urllib.parse import quote
 from decouple import config
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
-ADMIN_URL    = config('ADMIN_URL', default='http://localhost:8000/ADMIN_PATH_REDACTED')
+ADMIN_URL    = config('ADMIN_URL', default='http://localhost:8000/admin')
 
 # ─────────────────────────────────────────────────────────────
 # SHARED BASE COMPONENTS

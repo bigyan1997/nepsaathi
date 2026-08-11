@@ -487,7 +487,7 @@ GOOGLE_SHEETS_SPREADSHEET_ID
 
 INDEXNOW_KEY                     # bab5cd5c2e80de771f58b86a4737ca2a
 FRONTEND_URL                     # https://www.nepsaathi.com
-ADMIN_URL                        # ADMIN_PATH_REDACTED/
+ADMIN_URL                        # obscured path (set on Railway, never committed)
 ```
 
 ### Vercel (frontend)
@@ -551,7 +551,7 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Rate limits**: login 5/min per IP + 10/period per email hash, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr, AI improve 5/day shared across all AI endpoints (`ai_improve` scope)
 - **X-Forwarded-For**: rightmost entry used for IP throttling (Railway appends real IP on right — cannot be spoofed by client)
 - **Stripe webhook**: signature-verified with `STRIPE_WEBHOOK_SECRET`, uses `select_for_update()` to prevent duplicate processing
-- **Admin URL**: obscured — `/ADMIN_PATH_REDACTED/` (not `/admin/`)
+- **Admin URL**: obscured path set via `ADMIN_URL` env var on Railway (not `/admin/`; path never committed to source)
 - **Panel**: `IsSuperUser` permission returns generic "Not found." to non-superusers
 - **Auto-ban**: listing owner is auto-banned after 3 admin removals for violations
 - **HSTS + SSL redirect**: enabled when `DEBUG=False`

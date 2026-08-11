@@ -936,7 +936,7 @@ Build command: `npm run build` → runs `generate-sitemap.mjs` (fetches active l
 | `GOOGLE_SHEETS_CREDENTIALS_JSON` | Single-line JSON (service account key) |
 | `GOOGLE_SHEETS_SPREADSHEET_ID` | Google Sheet ID for feedback sync |
 | `REDIS_URL` | Optional — falls back to in-memory cache |
-| `ADMIN_URL` | Custom admin path (default: `ADMIN_PATH_REDACTED/`) |
+| `ADMIN_URL` | Custom admin path — set on Railway, never committed to source |
 
 ### Frontend (Vercel)
 
@@ -966,7 +966,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Admin panel available at `http://localhost:8000/<ADMIN_URL>` (default path: `ADMIN_PATH_REDACTED/`).
+Admin panel available at `http://localhost:8000/<ADMIN_URL>` (set via env var; not the default `/admin/` path).
 
 ### Frontend
 
