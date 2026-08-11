@@ -84,10 +84,10 @@ const POINTS_CONFIG = [
   {
     id: "professional_year",
     label: "Professional Year in Australia",
-    note: "Completed in your nominated occupation",
+    note: "⚠️ Only available for Accounting (CPA/CAANZ/IPA), Engineering (Engineers Australia), and ICT (ACS) graduates. Nurses, teachers, healthcare, and all other fields do NOT qualify.",
     options: [
-      { label: "Yes — completed Professional Year", value: 5 },
-      { label: "No", value: 0 },
+      { label: "Yes — completed Professional Year (Accounting / Engineering / ICT only)", value: 5 },
+      { label: "No / My field is not eligible", value: 0 },
     ],
   },
   {
@@ -405,7 +405,15 @@ function PRCalculator() {
           <div key={section.id} style={{ background: "#fff", border: "1.5px solid #e8e6f8", borderRadius: "12px", overflow: "hidden" }}>
             <div style={{ padding: "14px 18px", borderBottom: "1px solid #f0eeff", background: "#faf9ff" }}>
               <div style={{ fontWeight: 700, fontSize: "14px", color: "#26215C" }}>{section.label}</div>
-              {section.note && <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>{section.note}</div>}
+              {section.note && (
+                section.note.startsWith("⚠️") ? (
+                  <div style={{ fontSize: "12px", color: "#92400e", background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: "6px", padding: "6px 10px", marginTop: "8px", lineHeight: 1.5 }}>
+                    {section.note}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>{section.note}</div>
+                )
+              )}
             </div>
             <div style={{ padding: "4px 0" }}>
               {section.options.map((opt) => {
