@@ -99,6 +99,7 @@ class OccupationListView(generics.ListAPIView):
     serializer_class = OccupationSerializer
     authentication_classes = [SilentJWTAuthentication]
     permission_classes = [permissions.AllowAny]
+    pagination_class = None
 
     def get_queryset(self):
         qs = Occupation.objects.all()
@@ -117,6 +118,7 @@ class InvitationRoundListView(generics.ListAPIView):
     serializer_class = InvitationRoundSerializer
     authentication_classes = [SilentJWTAuthentication]
     permission_classes = [permissions.AllowAny]
+    pagination_class = None
 
     def get_queryset(self):
         qs = InvitationRound.objects.all()
