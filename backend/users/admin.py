@@ -12,6 +12,26 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_verified', 'is_staff', 'is_active')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('-created_at',)
+    actions = ['verify_users', 'unverify_users']
+
+    @admin.action(description='✅ Verify selected users (sends confirmation email)')
+    def verify_users(self, request, queryset):
+        from core.emails import send_user_verified_email
+        count = 0
+        for user in queryset.filter(is_verified=False):
+            user.is_verified = True
+            user.save(update_fields=['is_verified'])
+            try:
+                send_user_verified_email(user)
+            except Exception as e:
+                print(f'Verify email failed for {user.email}: {e}', flush=True)
+            count += 1
+        self.message_user(request, f'{count} user(s) verified and notified by email.')
+
+    @admin.action(description='❌ Unverify selected users')
+    def unverify_users(self, request, queryset):
+        updated = queryset.filter(is_verified=True).update(is_verified=False)
+        self.message_user(request, f'{updated} user(s) unverified.')
 
     # Override fieldsets — remove username completely
     fieldsets = (
