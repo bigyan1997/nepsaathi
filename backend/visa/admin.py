@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound
+from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound, OccupationInvitation
 
 
 @admin.register(VisaTimeline)
@@ -31,6 +31,13 @@ class WhatsAppGroupAdmin(admin.ModelAdmin):
     ordering = ('order', '-created_at')
 
 
+class OccupationInvitationInline(admin.TabularInline):
+    model = OccupationInvitation
+    extra = 0
+    fields = ('round_date', 'visa_type', 'score', 'was_invited', 'notes')
+    ordering = ('-round_date', 'visa_type')
+
+
 @admin.register(Occupation)
 class OccupationAdmin(admin.ModelAdmin):
     list_display = ('anzsco_code', 'title', 'list_type', 'eligible_visas', 'last_updated')
@@ -38,6 +45,15 @@ class OccupationAdmin(admin.ModelAdmin):
     search_fields = ('anzsco_code', 'title', 'alternative_titles')
     list_editable = ('list_type', 'eligible_visas')
     ordering = ('anzsco_code',)
+    inlines = [OccupationInvitationInline]
+
+
+@admin.register(OccupationInvitation)
+class OccupationInvitationAdmin(admin.ModelAdmin):
+    list_display = ('occupation', 'round_date', 'visa_type', 'score', 'was_invited', 'notes')
+    list_filter = ('visa_type', 'was_invited', 'round_date')
+    search_fields = ('occupation__anzsco_code', 'occupation__title', 'round_date')
+    ordering = ('-round_date', 'visa_type', 'occupation__anzsco_code')
 
 
 @admin.register(InvitationRound)

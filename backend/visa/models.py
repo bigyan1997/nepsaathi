@@ -104,14 +104,16 @@ class Occupation(models.Model):
         return f'{self.anzsco_code} – {self.title} ({self.list_type})'
 
 
+SKILLSELECT_VISA_CHOICES = [
+    ('189', 'Skilled Independent (189)'),
+    ('190', 'Skilled Nominated (190)'),
+    ('491', 'Skilled Work Regional (491)'),
+]
+
+
 class InvitationRound(models.Model):
-    VISA_CHOICES = [
-        ('189', 'Skilled Independent (189)'),
-        ('190', 'Skilled Nominated (190)'),
-        ('491', 'Skilled Work Regional (491)'),
-    ]
     round_date        = models.CharField(max_length=7, help_text='YYYY-MM format')
-    visa_type         = models.CharField(max_length=10, choices=VISA_CHOICES)
+    visa_type         = models.CharField(max_length=10, choices=SKILLSELECT_VISA_CHOICES)
     lowest_score      = models.PositiveSmallIntegerField(null=True, blank=True, help_text='Lowest points score across all occupations; null if not published')
     invitations_issued = models.PositiveIntegerField()
     tiebreaker_date   = models.DateField(null=True, blank=True)
@@ -123,3 +125,21 @@ class InvitationRound(models.Model):
 
     def __str__(self):
         return f'{self.round_date} — {self.visa_type} — {self.lowest_score} pts'
+
+
+class OccupationInvitation(models.Model):
+    occupation  = models.ForeignKey(Occupation, on_delete=models.CASCADE, related_name='invitations')
+    round_date  = models.CharField(max_length=7, help_text='YYYY-MM format')
+    visa_type   = models.CharField(max_length=10, choices=SKILLSELECT_VISA_CHOICES)
+    score       = models.PositiveSmallIntegerField(null=True, blank=True, help_text='Points score for this occupation in this round; null if not invited or unpublished')
+    was_invited = models.BooleanField(default=True, help_text='Was this occupation invited in this round?')
+    notes       = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        db_table = 'visa_occupation_invitations'
+        ordering = ['-round_date', 'visa_type']
+        unique_together = [('occupation', 'round_date', 'visa_type')]
+
+    def __str__(self):
+        status = f'{self.score} pts' if self.score is not None else ('not invited' if not self.was_invited else 'score N/A')
+        return f'{self.occupation.anzsco_code} | {self.round_date} | {self.visa_type} | {status}'

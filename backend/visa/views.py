@@ -3,7 +3,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from core.authentication import SilentJWTAuthentication
-from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound
+from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound, OccupationInvitation
 from .serializers import (
     VisaTimelineSerializer, WhatsAppGroupSerializer,
     OccupationSerializer, InvitationRoundSerializer,
@@ -102,7 +102,7 @@ class OccupationListView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        qs = Occupation.objects.all()
+        qs = Occupation.objects.prefetch_related('invitations').all()
         if q := self.request.query_params.get('q'):
             qs = qs.filter(
                 Q(title__icontains=q) |

@@ -342,11 +342,94 @@ function SelectInput({ value, onChange, options, style }) {
   );
 }
 
+// ─── Occupation invite context (used by PRCalculator) ────────────────────────
+
+function OccupationInviteContext({ occupation, score, visaType }) {
+  const relevant = occupation.invitations.filter(
+    (inv) => !visaType || inv.visa_type === visaType
+  );
+
+  if (relevant.length === 0) {
+    return (
+      <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '14px 18px', marginBottom: '16px' }}>
+        <div style={{ fontWeight: 700, fontSize: '13px', color: '#26215C', marginBottom: '4px' }}>
+          SkillSelect data — {occupation.title}
+        </div>
+        <div style={{ fontSize: '12.5px', color: '#888' }}>
+          No per-occupation invitation data yet for this occupation.{' '}
+          <a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/invitation-rounds" target="_blank" rel="noopener noreferrer" style={{ color: '#534AB7' }}>
+            Check DOHA SkillSelect ↗
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '14px 18px', marginBottom: '16px' }}>
+      <div style={{ fontWeight: 700, fontSize: '13px', color: '#26215C', marginBottom: '10px' }}>
+        SkillSelect history — {occupation.title} ({occupation.anzsco_code})
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {relevant.map((inv) => {
+          const invited = inv.was_invited;
+          const icon = invited ? '✓' : '✗';
+          const bg = invited ? '#dcfce7' : '#fee2e2';
+          const border = invited ? '#86efac' : '#fca5a5';
+          const textColor = invited ? '#15803d' : '#dc2626';
+
+          let scoreMsg = null;
+          if (invited && inv.score != null) {
+            if (score >= inv.score) {
+              scoreMsg = `Your ${score} pts is above the ${inv.score} pt cutoff — good position if invited ✓`;
+            } else {
+              scoreMsg = `You need ${inv.score - score} more pts to reach the ${inv.score} pt cutoff for this round`;
+            }
+          } else if (!invited) {
+            scoreMsg = `This occupation was not invited even at higher scores — per-occupation ceiling was already filled`;
+          }
+
+          return (
+            <div key={`${inv.round_date}-${inv.visa_type}`} style={{ display: 'flex', gap: '10px', background: bg, border: `1px solid ${border}`, borderRadius: '8px', padding: '10px 14px' }}>
+              <span style={{ fontSize: '16px', lineHeight: 1, flexShrink: 0 }}>{icon}</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '13px', color: textColor }}>
+                  {invited ? 'Invited' : 'Not invited'} in {inv.round_date}
+                  {' '}
+                  <span style={{ background: VISA_COLORS[inv.visa_type] || '#534AB7', color: '#fff', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: 700 }}>
+                    {inv.visa_type}
+                  </span>
+                  {invited && inv.score != null && (
+                    <span style={{ fontWeight: 400, color: '#166534' }}> — {inv.score} pts cutoff</span>
+                  )}
+                </div>
+                {scoreMsg && (
+                  <div style={{ fontSize: '12px', color: '#555', marginTop: '3px' }}>{scoreMsg}</div>
+                )}
+                {inv.notes && (
+                  <div style={{ fontSize: '11.5px', color: '#888', marginTop: '2px' }}>{inv.notes}</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Tab 1: PR Calculator ────────────────────────────────────────────────────
 
 function PRCalculator() {
   const [selections, setSelections] = useState({});
   const [visaType, setVisaType] = useState("189");
+  const [selectedOccupation, setSelectedOccupation] = useState(null);
+
+  const { data: occupations = [] } = useQuery({
+    queryKey: ['occupations'],
+    queryFn: () => getOccupations(),
+    staleTime: 1000 * 60 * 30,
+  });
 
   const total = Object.values(selections).reduce((s, v) => s + v, 0);
   const bonusPoints = visaType === "190" ? 5 : visaType === "491" ? 15 : 0;
@@ -394,8 +477,30 @@ function PRCalculator() {
               ✓ {bonusPoints} nomination bonus included
             </div>
           )}
+          <div style={{ fontSize: "12px", fontWeight: 600, color: "#666", marginTop: "8px" }}>Your occupation (optional):</div>
+          <select
+            value={selectedOccupation?.id || ''}
+            onChange={(e) => {
+              const occ = occupations.find((o) => String(o.id) === e.target.value);
+              setSelectedOccupation(occ || null);
+            }}
+            style={{ border: "1.5px solid #c4b5fd", borderRadius: "9px", padding: "8px 10px", fontSize: "12px", background: "#fff", cursor: "pointer", fontFamily: "inherit", color: "#333", outline: "none" }}
+          >
+            <option value="">— Select to see invite data —</option>
+            {[...occupations].sort((a, b) => a.title.localeCompare(b.title)).map((o) => (
+              <option key={o.id} value={String(o.id)}>{o.title}</option>
+            ))}
+          </select>
         </div>
       </div>
+
+      {selectedOccupation && (
+        <OccupationInviteContext
+          occupation={selectedOccupation}
+          score={finalTotal}
+          visaType={visaType}
+        />
+      )}
 
       <div style={{ background: "#fffbe6", border: "1px solid #fcd34d", borderRadius: "10px", padding: "12px 16px", marginBottom: "20px", fontSize: "13px", color: "#92400e" }}>
         <strong>Note:</strong> This calculator uses the official points table as of 2025. Always verify with the{" "}
@@ -758,6 +863,8 @@ function ResourcesTab() {
 
 // ─── Tab 4: Occupation Search ────────────────────────────────────────────────
 
+const VISA_COLORS = { '189': '#534AB7', '190': '#1B8F5E', '491': '#E87722' };
+
 const LIST_BADGE = {
   MLTSSL: { bg: '#dcfce7', color: '#15803d', label: 'MLTSSL' },
   STSOL:  { bg: '#fef9c3', color: '#a16207', label: 'STSOL' },
@@ -902,6 +1009,42 @@ function OccupationSearch() {
                     </div>
                   )}
                 </div>
+                {o.invitations && o.invitations.length > 0 && (
+                  <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #f0eeff' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: '6px' }}>
+                      Recent SkillSelect
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {o.invitations.map((inv) => (
+                        <span
+                          key={`${inv.round_date}-${inv.visa_type}`}
+                          title={inv.notes || undefined}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            background: inv.was_invited ? '#dcfce7' : '#fee2e2',
+                            border: `1px solid ${inv.was_invited ? '#86efac' : '#fca5a5'}`,
+                            borderRadius: '6px',
+                            padding: '3px 9px',
+                            fontSize: '11.5px',
+                            fontWeight: 600,
+                            color: inv.was_invited ? '#15803d' : '#dc2626',
+                            cursor: 'default',
+                          }}
+                        >
+                          {inv.was_invited ? '✓' : '✗'}
+                          {' '}{inv.round_date}{' '}
+                          <span style={{ background: VISA_COLORS[inv.visa_type] || '#534AB7', color: '#fff', borderRadius: '3px', padding: '0 4px', fontSize: '10px', fontWeight: 700 }}>
+                            {inv.visa_type}
+                          </span>
+                          {inv.was_invited && inv.score != null && ` ${inv.score} pts`}
+                          {!inv.was_invited && ' not invited'}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -919,8 +1062,6 @@ function OccupationSearch() {
 }
 
 // ─── Tab 5: Invitation Rounds ────────────────────────────────────────────────
-
-const VISA_COLORS = { '189': '#534AB7', '190': '#1B8F5E', '491': '#E87722' };
 
 function InvitationHistory() {
   const [visaFilter, setVisaFilter] = useState('');
