@@ -18,6 +18,7 @@ import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
 import JsonLd from "../../components/ui/JsonLd";
 import QuickApplyModal from "../../components/ui/QuickApplyModal";
+import WhatsAppButton from "../../components/ui/WhatsAppButton";
 import { checkApplied } from "../../api/jobs";
 
 function timeAgo(dateStr) {
@@ -968,9 +969,7 @@ export default function JobDetailPage() {
                       </a>
                     )}
                     {job.contact_whatsapp && (
-                      <a href={`https://wa.me/${job.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        WhatsApp
-                      </a>
+                      <WhatsAppButton phone={job.contact_whatsapp} listingTitle={job.listing_title} size="small" />
                     )}
                     {job.contact_email && (
                       <a href={`mailto:${job.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>

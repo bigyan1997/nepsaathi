@@ -11,6 +11,7 @@ import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
 import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
+import WhatsAppButton from "../../components/ui/WhatsAppButton";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView } from "../../api/listings";
 import { useEffect, useState } from "react";
@@ -1106,9 +1107,7 @@ export default function EventDetailPage() {
                       </a>
                     )}
                     {event.contact_whatsapp && (
-                      <a href={`https://wa.me/${event.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        WhatsApp
-                      </a>
+                      <WhatsAppButton phone={event.contact_whatsapp} listingTitle={event.listing_title} size="small" />
                     )}
                     {event.contact_email && (
                       <a href={`mailto:${event.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>

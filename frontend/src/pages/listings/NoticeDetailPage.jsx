@@ -10,6 +10,7 @@ import ReportButton from "../../components/ui/ReportButton";
 import MessageButton from "../../components/ui/MessageButton";
 import GetInTouchSection from "../../components/ui/GetInTouchSection";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
+import WhatsAppButton from "../../components/ui/WhatsAppButton";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
@@ -809,9 +810,7 @@ export default function NoticeDetailPage() {
                       </a>
                     )}
                     {notice.contact_whatsapp && (
-                      <a href={`https://wa.me/${notice.contact_whatsapp?.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", background: "#25D366", color: "#fff", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        WhatsApp
-                      </a>
+                      <WhatsAppButton phone={notice.contact_whatsapp} listingTitle={notice.listing_title} size="small" />
                     )}
                     {notice.contact_email && (
                       <a href={`mailto:${notice.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
