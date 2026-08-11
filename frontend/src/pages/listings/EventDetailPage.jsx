@@ -1137,6 +1137,7 @@ export default function EventDetailPage() {
           isVerified={event.poster_is_verified}
           joinedDate={event.user_joined}
           themeColor="#534AB7"
+          whatsapp={event.contact_whatsapp || event.contact_phone}
         />
 
         {/* ── Similar events ── */}

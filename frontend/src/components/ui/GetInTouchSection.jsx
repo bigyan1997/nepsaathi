@@ -5,6 +5,7 @@ import { startConversation } from "../../api/messages";
 import useAuthStore from "../../store/authStore";
 import { useToast } from "./Toast";
 import VerifiedBadge from "./VerifiedBadge";
+import WhatsAppButton from "./WhatsAppButton";
 
 const DEFAULT_MESSAGE = "Hi, I'm interested in this listing. Is it available?";
 
@@ -17,6 +18,7 @@ export default function GetInTouchSection({
   isVerified = false,
   joinedDate,
   themeColor = "#534AB7",
+  whatsapp = null,
 }) {
   const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
@@ -158,37 +160,44 @@ export default function GetInTouchSection({
                   color: "#333",
                 }}
               />
-              <button
-                type="submit"
-                disabled={!message.trim() || mutation.isPending}
-                style={{
-                  marginTop: "12px",
-                  background: mutation.isPending || !message.trim() ? "#ccc" : "#1B8F5E",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "10px",
-                  padding: "12px 28px",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  cursor: mutation.isPending || !message.trim() ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                <span>✈️</span>
-                {mutation.isPending ? "Sending..." : "Send message"}
-              </button>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "12px" }}>
+                <button
+                  type="submit"
+                  disabled={!message.trim() || mutation.isPending}
+                  style={{
+                    background: mutation.isPending || !message.trim() ? "#ccc" : "#1B8F5E",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "10px",
+                    padding: "12px 28px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: mutation.isPending || !message.trim() ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    width: "100%",
+                  }}
+                >
+                  <span>✈️</span>
+                  {mutation.isPending ? "Sending..." : "Send message"}
+                </button>
+                {whatsapp && (
+                  <WhatsAppButton phone={whatsapp} listingTitle={listingTitle} />
+                )}
+              </div>
             </form>
           ) : (
-            <div>
-              <p style={{ fontSize: "13px", color: "#666", margin: "0 0 12px", lineHeight: 1.5 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <p style={{ fontSize: "13px", color: "#666", margin: 0, lineHeight: 1.5 }}>
                 Sign in to message the poster directly.
               </p>
               <Link
                 to="/login"
                 style={{
-                  display: "inline-block",
+                  display: "block",
+                  textAlign: "center",
                   background: "#1B8F5E",
                   color: "#fff",
                   padding: "10px 24px",
@@ -200,6 +209,9 @@ export default function GetInTouchSection({
               >
                 Sign in to message →
               </Link>
+              {whatsapp && (
+                <WhatsAppButton phone={whatsapp} listingTitle={listingTitle} />
+              )}
             </div>
           )}
         </div>

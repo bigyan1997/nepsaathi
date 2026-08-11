@@ -839,6 +839,7 @@ export default function NoticeDetailPage() {
           isVerified={notice.poster_is_verified}
           joinedDate={notice.user_joined}
           themeColor={footerBg}
+          whatsapp={notice.contact_whatsapp || notice.contact_phone}
         />
 
         {/* ── Similar notices ── */}

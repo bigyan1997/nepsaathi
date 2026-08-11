@@ -18,6 +18,7 @@ import ReportButton from "../../components/ui/ReportButton";
 import usePageMeta from "../../hooks/usePageMeta";
 import useIsMobile from "../../hooks/useIsMobile";
 import { useToast } from "../../components/ui/Toast";
+import WhatsAppButton from "../../components/ui/WhatsAppButton";
 import JsonLd from "../../components/ui/JsonLd";
 import ImageGallery from "../../components/ui/ImageGallery";
 
@@ -1118,24 +1119,7 @@ export default function BusinessDetailPage() {
                       </a>
                     )}
                     {business.whatsapp && (
-                      <a
-                        href={`https://wa.me/${business.whatsapp?.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: "block",
-                          textAlign: "center",
-                          background: "#25D366",
-                          color: "#fff",
-                          padding: "10px",
-                          borderRadius: "9px",
-                          textDecoration: "none",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                        }}
-                      >
-                        WhatsApp
-                      </a>
+                      <WhatsAppButton phone={business.whatsapp} listingTitle={business.name} size="small" />
                     )}
                     {business.email && (
                       <a

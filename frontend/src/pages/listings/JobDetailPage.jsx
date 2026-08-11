@@ -999,6 +999,7 @@ export default function JobDetailPage() {
           isVerified={job.poster_is_verified}
           joinedDate={job.user_joined}
           themeColor="#534AB7"
+          whatsapp={job.contact_whatsapp || job.contact_phone}
         />
 
         {/* ── Similar jobs ── */}

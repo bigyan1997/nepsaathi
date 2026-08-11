@@ -1008,6 +1008,7 @@ export default function RoomDetailPage() {
           isVerified={room.poster_is_verified}
           joinedDate={room.user_joined}
           themeColor="#E87722"
+          whatsapp={room.contact_whatsapp || room.contact_phone}
         />
 
         {/* ── Similar rooms ── */}

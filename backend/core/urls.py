@@ -110,6 +110,9 @@ urlpatterns = [
 
     # Community: reverse requests + skills marketplace
     path('api/community/', include('community.urls')),
+
+    # Visa hub: timelines + WhatsApp groups
+    path('api/visa/', include('visa.urls')),
 ]
 
 # Only serve media files locally — Cloudinary handles production

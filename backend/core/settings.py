@@ -61,6 +61,7 @@ LOCAL_APPS = [
     'forum',
     'remittance',
     'community',
+    'visa',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
