@@ -934,6 +934,7 @@ function InvitationHistory() {
   // Build sparkline data per visa type
   const byVisa = {};
   rounds.forEach((r) => {
+    if (r.lowest_score == null) return; // skip rounds with no score for chart
     if (!byVisa[r.visa_type]) byVisa[r.visa_type] = [];
     byVisa[r.visa_type].push({ date: r.round_date, score: r.lowest_score });
   });
@@ -1061,8 +1062,8 @@ function InvitationHistory() {
                         {r.visa_type}
                       </span>
                     </td>
-                    <td style={{ ...tdStyle, fontWeight: 700, fontSize: '15px', color: VISA_COLORS[r.visa_type] || '#26215C' }}>
-                      {r.lowest_score} pts
+                    <td style={{ ...tdStyle, fontWeight: 700, fontSize: '15px', color: r.lowest_score != null ? (VISA_COLORS[r.visa_type] || '#26215C') : '#aaa' }}>
+                      {r.lowest_score != null ? `${r.lowest_score} pts` : 'varies by occupation'}
                     </td>
                     <td style={tdStyle}>
                       {r.invitations_issued ? r.invitations_issued.toLocaleString() : '—'}

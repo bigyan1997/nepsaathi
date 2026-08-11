@@ -112,7 +112,7 @@ class InvitationRound(models.Model):
     ]
     round_date        = models.CharField(max_length=7, help_text='YYYY-MM format')
     visa_type         = models.CharField(max_length=10, choices=VISA_CHOICES)
-    lowest_score      = models.PositiveSmallIntegerField()
+    lowest_score      = models.PositiveSmallIntegerField(null=True, blank=True, help_text='Lowest points score across all occupations; null if not published')
     invitations_issued = models.PositiveIntegerField()
     tiebreaker_date   = models.DateField(null=True, blank=True)
 
