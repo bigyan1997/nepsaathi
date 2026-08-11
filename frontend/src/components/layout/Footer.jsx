@@ -17,6 +17,8 @@ export default function Footer() {
     { to: "/services",         key: "footer.services" },
     { to: "/send-money",       key: "footer.sendMoney" },
     { to: "/new-to-australia", key: "footer.newToAustralia" },
+    { to: "/visa",             key: "footer.visaHub" },
+    { to: "/whatsapp-groups",  key: "footer.whatsappGroups" },
   ];
 
   const accountLinks = [
