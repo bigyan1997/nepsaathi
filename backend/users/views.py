@@ -76,24 +76,21 @@ class LogoutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
+        # Refresh token may arrive in the request body (Google OAuth) or in the
+        # httpOnly cookie 'nepsaathi-refresh' (email/password login).
+        refresh_token = (
+            request.data.get('refresh')
+            or request.COOKIES.get('nepsaathi-refresh', '')
+        )
+        if not refresh_token:
+            # Nothing to blacklist — still a successful logout for the client
+            return Response({'detail': 'Logged out.'}, status=status.HTTP_200_OK)
         try:
-            refresh_token = request.data.get('refresh')
-            if not refresh_token:
-                return Response(
-                    {'detail': 'Refresh token is required.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response(
-                {'detail': 'Successfully logged out.'},
-                status=status.HTTP_200_OK
-            )
         except Exception:
-            return Response(
-                {'detail': 'Invalid token.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            pass  # Already invalid or expired — treat as logged out
+        return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
     
 class DeleteAccountView(APIView):
         """

@@ -628,6 +628,11 @@ class MarkListingStatusView(APIView):
                 {'detail': 'Invalid status. Use active or filled.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        if new_status == 'active' and listing.renewal_blocked:
+            return Response(
+                {'detail': 'This listing has been restricted by an administrator and cannot be reactivated.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         listing.status = new_status
         listing.save()
         return Response({'detail': f'Listing marked as {new_status}.'})
@@ -1146,6 +1151,7 @@ class SavedSearchDetailView(APIView):
 
     def delete(self, request, pk):
         self._get(pk, request.user).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SitemapDataView(APIView):
@@ -1195,4 +1201,3 @@ class SitemapDataView(APIView):
                 for b in businesses
             ],
         })
-        return Response(status=status.HTTP_204_NO_CONTENT)

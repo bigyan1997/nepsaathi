@@ -78,6 +78,7 @@ class PollVote(models.Model):
 
     class Meta:
         db_table = 'forum_poll_votes'
+        unique_together = [('voter', 'option')]
 
 
 class ForumReply(models.Model):

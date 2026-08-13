@@ -1,5 +1,6 @@
 import threading
 import requests as http_requests
+from django.db import transaction
 from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
@@ -213,9 +214,10 @@ class ForumPollVoteView(APIView):
         except PollOption.DoesNotExist:
             return Response({'detail': 'Invalid option.'}, status=400)
 
-        # Remove any existing vote for this user on this post's options
-        PollVote.objects.filter(option__post=post, voter=request.user).delete()
-        PollVote.objects.create(option=option, voter=request.user)
+        # Remove any existing vote and cast new one atomically
+        with transaction.atomic():
+            PollVote.objects.filter(option__post=post, voter=request.user).select_for_update().delete()
+            PollVote.objects.create(option=option, voter=request.user)
 
         # Return updated vote counts for all options
         options = post.poll_options.prefetch_related('votes').all()

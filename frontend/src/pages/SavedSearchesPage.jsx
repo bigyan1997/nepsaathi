@@ -19,6 +19,7 @@ export default function SavedSearchesPage() {
   const { data: searches = [], isLoading } = useQuery({
     queryKey: ["saved-searches"],
     queryFn: getSavedSearches,
+    gcTime: 0,
   });
 
   const deleteMutation = useMutation({
