@@ -25,7 +25,7 @@ export default function LoginPage() {
     setError("");
     try {
       const data = await login(form.email, form.password);
-      setAuth(data.user, data.access, data.refresh);
+      setAuth(data.user, data.access);
       navigate(from, { replace: true }); // ← send them back where they came from
     } catch (err) {
       const status = err.response?.status;

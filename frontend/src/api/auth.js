@@ -19,17 +19,18 @@ export const login = async (email, password) => {
   return response.data;
 };
 
-// Logout — blacklists the refresh token on Django
+// Logout — blacklists the refresh token on Django.
+// For email/password users the backend reads the httpOnly cookie directly.
+// For Google OAuth users the refresh token is passed from localStorage.
 export const logout = async (refreshToken) => {
   try {
     const response = await api.post("/api/users/auth/logout/", {
-      refresh: refreshToken,
+      refresh: refreshToken || undefined,
     });
     return response.data;
   } finally {
-    // ALWAYS remove tokens, even if the API call fails (e.g., token already invalid)
     sessionStorage.removeItem("nepsaathi_access_token");
-    localStorage.removeItem("nepsaathi_refresh_token");
+    localStorage.removeItem("nepsaathi_refresh_token"); // no-op for email users; clears Google OAuth token
   }
 };
 

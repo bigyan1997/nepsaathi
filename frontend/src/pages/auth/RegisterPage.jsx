@@ -60,7 +60,7 @@ export default function RegisterPage() {
     try {
       const data = await register({ ...form, refCode });
       if (data.access) {
-        setAuth(data.user, data.access, data.refresh);
+        setAuth(data.user, data.access);
         navigate("/");
       } else {
         // Email verification required — backend returned {"detail": "Verification e-mail sent."}
