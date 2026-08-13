@@ -58,6 +58,8 @@ class UserSerializer(serializers.ModelSerializer):
             'location',
             'bio',
             'is_verified',
+            'is_staff',
+            'is_superuser',
             'created_at',
             'updated_at',
         )
@@ -65,6 +67,8 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'email',
             'is_verified',
+            'is_staff',
+            'is_superuser',
             'created_at',
             'updated_at',
             'google_avatar',
