@@ -29,12 +29,20 @@ def _notify_n8n(listing):
     import json, time, urllib.request
     try:
         time.sleep(60)  # wait for images to finish uploading
-        path = _LISTING_TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
+        from .models import Listing as _Listing
+        fresh = _Listing.objects.prefetch_related('images').get(id=listing.id)
+        path = _LISTING_TYPE_PATH.get(fresh.listing_type, fresh.listing_type + 's')
+        first_image = fresh.images.first()
+        image_url = first_image.image.url if first_image else None
+        # Make relative image URLs absolute
+        if image_url and image_url.startswith('/'):
+            image_url = f"https://nepsaathi-production.up.railway.app{image_url}"
         payload = json.dumps({
-            "title": listing.title,
-            "category": listing.listing_type,
-            "location": f"{listing.location}, {listing.state}",
-            "url": f"https://www.nepsaathi.com/{path}/{listing.slug}",
+            "title": fresh.title,
+            "category": fresh.listing_type,
+            "location": f"{fresh.location}, {fresh.state}",
+            "url": f"https://www.nepsaathi.com/{path}/{fresh.slug}",
+            "image_url": image_url,
         }).encode()
         req = urllib.request.Request(
             _N8N_WEBHOOK, data=payload,
