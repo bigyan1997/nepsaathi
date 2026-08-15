@@ -26,8 +26,9 @@ _LISTING_TYPE_PATH = {
 }
 
 def _notify_n8n(listing):
-    import json, urllib.request
+    import json, time, urllib.request
     try:
+        time.sleep(60)  # wait for images to finish uploading
         path = _LISTING_TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
         payload = json.dumps({
             "title": listing.title,
