@@ -1,7 +1,40 @@
+import json
+import threading
+import urllib.request
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView, SavedSearch
+
+N8N_WEBHOOK_URL = "https://n8n-production-d0c4.up.railway.app/webhook/nepsaathi-listing"
+
+TYPE_PATH = {
+    'job': 'jobs', 'room': 'rooms', 'event': 'events',
+    'notice': 'notices', 'business': 'businesses',
+}
+
+def _fire_n8n_webhook(listing):
+    """Fire-and-forget POST to n8n when a listing is approved."""
+    def _send():
+        try:
+            path = TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
+            url = f"https://www.nepsaathi.com/{path}/{listing.slug}"
+            payload = json.dumps({
+                "title": listing.title,
+                "category": listing.listing_type,
+                "location": f"{listing.location}, {listing.state}",
+                "url": url,
+            }).encode()
+            req = urllib.request.Request(
+                N8N_WEBHOOK_URL,
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=10)
+        except Exception:
+            pass
+    threading.Thread(target=_send, daemon=True).start()
 
 
 class ListingImageInline(admin.TabularInline):
@@ -75,6 +108,7 @@ class ListingAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change and 'is_under_review' in form.changed_data and not obj.is_under_review:
             obj.reports.filter(is_reviewed=False).update(is_reviewed=True)
+            _fire_n8n_webhook(obj)
         super().save_model(request, obj, form, change)
 
     def review_badge(self, obj):
@@ -98,10 +132,13 @@ class ListingAdmin(admin.ModelAdmin):
 
     def approve_listings(self, request, queryset):
         to_approve = queryset.filter(is_under_review=True)
-        listing_ids = list(to_approve.values_list('id', flat=True))
+        approved_listings = list(to_approve)
+        listing_ids = [l.id for l in approved_listings]
         updated = to_approve.update(is_under_review=False)
         if listing_ids:
             ListingReport.objects.filter(listing_id__in=listing_ids, is_reviewed=False).update(is_reviewed=True)
+            for listing in approved_listings:
+                _fire_n8n_webhook(listing)
         self.message_user(request, f'{updated} listing(s) approved and made public.')
     approve_listings.short_description = '✅ Approve — make listing public'
 
