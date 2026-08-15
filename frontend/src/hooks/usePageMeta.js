@@ -21,7 +21,9 @@ function setCanonical(href) {
   el.href = href;
 }
 
-export default function usePageMeta(title, description) {
+const DEFAULT_IMAGE = "https://www.nepsaathi.com/icon-512.png";
+
+export default function usePageMeta(title, description, image) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${SITE_NAME}` : DEFAULT_TITLE;
     const metaDesc = description
@@ -30,14 +32,17 @@ export default function usePageMeta(title, description) {
     const canonicalUrl = title
       ? window.location.origin + window.location.pathname
       : DEFAULT_CANONICAL;
+    const metaImage = image || DEFAULT_IMAGE;
 
     const prevTitle = document.title;
     const prevDesc = document.querySelector('meta[name="description"]')?.getAttribute("content") ?? "";
     const prevOgTitle = document.querySelector('meta[property="og:title"]')?.getAttribute("content") ?? "";
     const prevOgDesc = document.querySelector('meta[property="og:description"]')?.getAttribute("content") ?? "";
     const prevOgUrl = document.querySelector('meta[property="og:url"]')?.getAttribute("content") ?? "";
+    const prevOgImage = document.querySelector('meta[property="og:image"]')?.getAttribute("content") ?? "";
     const prevTwTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute("content") ?? "";
     const prevTwDesc = document.querySelector('meta[name="twitter:description"]')?.getAttribute("content") ?? "";
+    const prevTwImage = document.querySelector('meta[name="twitter:image"]')?.getAttribute("content") ?? "";
     const prevCanonical = document.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? DEFAULT_CANONICAL;
 
     document.title = fullTitle;
@@ -45,8 +50,10 @@ export default function usePageMeta(title, description) {
     setMeta('meta[property="og:title"]', "content", fullTitle);
     setMeta('meta[property="og:description"]', "content", metaDesc);
     setMeta('meta[property="og:url"]', "content", canonicalUrl);
+    setMeta('meta[property="og:image"]', "content", metaImage);
     setMeta('meta[name="twitter:title"]', "content", fullTitle);
     setMeta('meta[name="twitter:description"]', "content", metaDesc);
+    setMeta('meta[name="twitter:image"]', "content", metaImage);
     setCanonical(canonicalUrl);
 
     return () => {
@@ -55,9 +62,11 @@ export default function usePageMeta(title, description) {
       setMeta('meta[property="og:title"]', "content", prevOgTitle);
       setMeta('meta[property="og:description"]', "content", prevOgDesc);
       setMeta('meta[property="og:url"]', "content", prevOgUrl);
+      setMeta('meta[property="og:image"]', "content", prevOgImage);
       setMeta('meta[name="twitter:title"]', "content", prevTwTitle);
       setMeta('meta[name="twitter:description"]', "content", prevTwDesc);
+      setMeta('meta[name="twitter:image"]', "content", prevTwImage);
       setCanonical(prevCanonical);
     };
-  }, [title, description]);
+  }, [title, description, image]);
 }

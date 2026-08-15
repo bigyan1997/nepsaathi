@@ -136,6 +136,7 @@ export default function RoomDetailPage() {
   usePageMeta(
     room?.listing_title ? `${room.listing_title} — Room` : null,
     room?.description,
+    room?.images?.[0]?.url,
   );
 
   useEffect(() => {

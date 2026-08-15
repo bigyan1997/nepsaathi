@@ -16,6 +16,7 @@ import { trackView, getSimilarListings } from "../../api/listings";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
+import JsonLd from "../../components/ui/JsonLd";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -138,6 +139,7 @@ export default function NoticeDetailPage() {
   usePageMeta(
     notice?.listing_title ? `${notice.listing_title} — Notice` : null,
     notice?.description,
+    notice?.images?.[0]?.url,
   );
 
   useEffect(() => {
@@ -161,6 +163,16 @@ export default function NoticeDetailPage() {
 
   return (
     <>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": notice.listing_title,
+        "description": notice.description,
+        "datePublished": notice.created_at,
+        "author": { "@type": "Person", "name": notice.posted_by || "NepSaathi" },
+        "publisher": { "@type": "Organization", "name": "NepSaathi", "url": "https://www.nepsaathi.com" },
+        ...(notice.images?.[0]?.url && { "image": notice.images[0].url }),
+      }} />
       <style>{`
         .ann-detail-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) { .ann-detail-grid { grid-template-columns: 1fr !important; } }

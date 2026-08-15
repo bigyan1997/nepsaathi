@@ -14,11 +14,16 @@ const STATIC_PAGES = [
   { path: '/events',      changefreq: 'daily',   priority: '0.8' },
   { path: '/notices',     changefreq: 'daily',   priority: '0.8' },
   { path: '/businesses',  changefreq: 'weekly',  priority: '0.8' },
-  { path: '/forum',       changefreq: 'hourly',  priority: '0.9' },
-  { path: '/search',      changefreq: 'always',  priority: '0.7' },
-  { path: '/privacy',     changefreq: 'monthly', priority: '0.4' },
-  { path: '/terms',       changefreq: 'monthly', priority: '0.4' },
-  { path: '/contact',     changefreq: 'monthly', priority: '0.4' },
+  { path: '/forum',            changefreq: 'hourly',  priority: '0.9' },
+  { path: '/visa-hub',         changefreq: 'weekly',  priority: '0.8' },
+  { path: '/send-money',       changefreq: 'daily',   priority: '0.7' },
+  { path: '/new-to-australia', changefreq: 'monthly', priority: '0.7' },
+  { path: '/services',         changefreq: 'daily',   priority: '0.7' },
+  { path: '/looking-for',      changefreq: 'daily',   priority: '0.7' },
+  { path: '/search',           changefreq: 'always',  priority: '0.7' },
+  { path: '/privacy',          changefreq: 'monthly', priority: '0.4' },
+  { path: '/terms',            changefreq: 'monthly', priority: '0.4' },
+  { path: '/contact',          changefreq: 'monthly', priority: '0.4' },
 ];
 
 function urlEntry({ loc, lastmod, changefreq, priority }) {

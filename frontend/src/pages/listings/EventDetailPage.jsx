@@ -218,6 +218,7 @@ export default function EventDetailPage() {
   usePageMeta(
     event?.listing_title ? `${event.listing_title} — Event` : null,
     event?.description,
+    event?.images?.[0]?.url,
   );
 
   useEffect(() => {

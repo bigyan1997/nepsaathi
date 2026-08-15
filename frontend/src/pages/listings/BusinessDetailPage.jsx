@@ -232,6 +232,7 @@ export default function BusinessDetailPage() {
   usePageMeta(
     business?.business_name ? `${business.business_name} — Business` : null,
     business?.description,
+    business?.images?.[0]?.thumbnail || business?.images?.[0]?.image,
   );
 
   if (isLoading) return <SkeletonDetailPage />;
