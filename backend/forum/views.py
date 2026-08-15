@@ -265,7 +265,7 @@ Rewrite the post body to be clear, friendly, and easy to read. Fix grammar and s
         try:
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
-                model="llama-3.1-8b-instant",
+                model="llama-3.3-70b-versatile",
                 max_tokens=600,
                 messages=[{"role": "user", "content": prompt}],
             )
