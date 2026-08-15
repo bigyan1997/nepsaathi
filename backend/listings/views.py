@@ -19,6 +19,31 @@ from django.db.models import Count, Case, When, IntegerField, Value
 from core.emails import send_spam_detected_email
 
 
+_N8N_WEBHOOK = "https://n8n-production-d0c4.up.railway.app/webhook/nepsaathi-listing"
+_LISTING_TYPE_PATH = {
+    'job': 'jobs', 'room': 'rooms', 'event': 'events',
+    'notice': 'notices', 'business': 'businesses',
+}
+
+def _notify_n8n(listing):
+    import json, urllib.request
+    try:
+        path = _LISTING_TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
+        payload = json.dumps({
+            "title": listing.title,
+            "category": listing.listing_type,
+            "location": f"{listing.location}, {listing.state}",
+            "url": f"https://www.nepsaathi.com/{path}/{listing.slug}",
+        }).encode()
+        req = urllib.request.Request(
+            _N8N_WEBHOOK, data=payload,
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        urllib.request.urlopen(req, timeout=10)
+    except Exception:
+        pass
+
+
 def _normalize_phone(phone):
     """Strip all non-digit characters so '0412 345 678' and '+61412345678' compare equal."""
     return re.sub(r'\D', '', phone or '')
@@ -261,6 +286,9 @@ class ListingCreateView(generics.CreateAPIView):
             user.award_points(5, 'post_ad', f'Posted listing: {listing.title[:60]}')
         except Exception:
             pass
+
+        # Notify n8n to post to Facebook (fire-and-forget)
+        threading.Thread(target=_notify_n8n, args=(listing,), daemon=True).start()
 
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
