@@ -452,7 +452,7 @@ export default function RoomDetailPage() {
               {room.listing_title}
             </h1>
             <a
-              href={mapsUrl([room.street_address, room.listing_state, "Australia"].filter(Boolean).join(", "))}
+              href={mapsUrl([room.street_address, room.listing_location, room.listing_postcode, room.listing_state, "Australia"].filter(Boolean).join(", "))}
               target="_blank"
               rel="noopener noreferrer"
               style={{ fontSize: "14px", color: "#E87722", fontWeight: 600, textDecoration: "none" }}
@@ -605,7 +605,7 @@ export default function RoomDetailPage() {
                 })()}
               </div>
               <MarketBenchmark type="room" location={room.listing_location} state={room.listing_state} />
-              <SafeMeetingPoints state={room.listing_state} />
+              <SafeMeetingPoints state={room.listing_state} suburb={room.listing_location} />
             </div>
 
             {/* Room details — orange tinted */}
@@ -887,7 +887,7 @@ export default function RoomDetailPage() {
                 >
                   <IconPin />
                   <a
-                    href={mapsUrl([room.street_address, room.listing_state, "Australia"].filter(Boolean).join(", "))}
+                    href={mapsUrl([room.street_address, room.listing_location, room.listing_postcode, room.listing_state, "Australia"].filter(Boolean).join(", "))}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
