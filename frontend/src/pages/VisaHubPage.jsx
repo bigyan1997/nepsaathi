@@ -1221,6 +1221,316 @@ function InvitationHistory() {
   );
 }
 
+// ─── Tax calculation helpers ─────────────────────────────────────────────────
+
+function calcIncomeTax(income, isResident) {
+  if (!isResident) {
+    if (income <= 120000) return income * 0.325;
+    if (income <= 180000) return 39000 + (income - 120000) * 0.37;
+    return 61200 + (income - 180000) * 0.45;
+  }
+  if (income <= 18200) return 0;
+  if (income <= 45000) return (income - 18200) * 0.19;
+  if (income <= 120000) return 5092 + (income - 45000) * 0.325;
+  if (income <= 180000) return 29467 + (income - 120000) * 0.37;
+  return 51667 + (income - 180000) * 0.45;
+}
+
+function calcLITO(income, isResident) {
+  if (!isResident) return 0;
+  if (income <= 37500) return 700;
+  if (income <= 45000) return 700 - (income - 37500) * 0.05;
+  if (income <= 66667) return Math.max(0, 325 - (income - 45000) * 0.015);
+  return 0;
+}
+
+function calcMedicare(income, isResident, exempt) {
+  if (!isResident || exempt) return 0;
+  if (income <= 26000) return 0;
+  if (income <= 32500) return (income - 26000) * 0.1; // shade-in rate
+  return income * 0.02;
+}
+
+function calcMLS(income, isResident, hasPrivateCover) {
+  if (!isResident || hasPrivateCover || income <= 93000) return 0;
+  if (income <= 108000) return income * 0.01;
+  if (income <= 144000) return income * 0.0125;
+  return income * 0.015;
+}
+
+function fmtAUD(n) {
+  return new Intl.NumberFormat('en-AU', {
+    style: 'currency', currency: 'AUD', maximumFractionDigits: 0,
+  }).format(Math.abs(n));
+}
+
+const PAY_PERIODS = [
+  { value: '52', label: 'Weekly' },
+  { value: '26', label: 'Fortnightly' },
+  { value: '12', label: 'Monthly' },
+  { value: '1',  label: 'Annually' },
+];
+
+function TaxToggle({ label, active, onToggle, note }) {
+  return (
+    <button onClick={onToggle} title={note} style={{
+      display: 'flex', alignItems: 'center', gap: '8px',
+      padding: '8px 14px', borderRadius: '9px', border: '1.5px solid',
+      borderColor: active ? '#534AB7' : '#ddd',
+      background: active ? '#EEEDFE' : '#fff',
+      color: active ? '#534AB7' : '#666',
+      fontWeight: active ? 600 : 400,
+      fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
+    }}>
+      <span style={{ width: '16px', height: '16px', borderRadius: '50%', border: `2px solid ${active ? '#534AB7' : '#ccc'}`, background: active ? '#534AB7' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {active && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff' }} />}
+      </span>
+      {label}
+    </button>
+  );
+}
+
+function TaxRow({ label, value, color, bold, last }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 18px', borderBottom: last ? 'none' : '1px solid #f8f7ff' }}>
+      <span style={{ fontSize: '13px', color: '#555', fontWeight: bold ? 700 : 400 }}>{label}</span>
+      <span style={{ fontSize: '14px', fontWeight: bold ? 800 : 600, color, fontVariantNumeric: 'tabular-nums' }}>{value}</span>
+    </div>
+  );
+}
+
+// ─── Sub-calculator: Tax Return Estimator ────────────────────────────────────
+
+function TaxReturnEstimator() {
+  const [income, setIncome] = useState('');
+  const [withheld, setWithheld] = useState('');
+  const [isResident, setIsResident] = useState(true);
+  const [medicareExempt, setMedicareExempt] = useState(false);
+  const [hasPrivateCover, setHasPrivateCover] = useState(true);
+
+  const inc  = parseFloat(income) || 0;
+  const wth  = parseFloat(withheld) || 0;
+  const ready = inc > 0 && withheld !== '';
+
+  const tax      = calcIncomeTax(inc, isResident);
+  const lito     = calcLITO(inc, isResident);
+  const medicare = calcMedicare(inc, isResident, medicareExempt);
+  const mls      = calcMLS(inc, isResident, hasPrivateCover);
+  const totalLiability = Math.max(0, tax - lito + medicare + mls);
+  const diff     = wth - totalLiability;
+  const isRefund = diff >= 0;
+  const effectiveRate = inc > 0 ? ((totalLiability / inc) * 100).toFixed(1) : 0;
+
+  return (
+    <div>
+      <div style={{ background: '#EEEDFE', borderRadius: '14px', padding: '16px 20px', marginBottom: '20px', fontSize: '13.5px', color: '#26215C', lineHeight: 1.6 }}>
+        <strong>2024–25 financial year.</strong> Enter your annual income and total tax withheld from your payslips. We'll calculate your ATO liability and show if you're getting a refund or owe more.
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+        <label style={{ fontSize: '13px', fontWeight: 600, color: '#444' }}>
+          Total income (gross annual) *
+          <div style={{ position: 'relative', marginTop: '6px' }}>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: '#888', pointerEvents: 'none' }}>$</span>
+            <input type="number" min="0" value={income} onChange={(e) => setIncome(e.target.value)}
+              placeholder="e.g. 75000" style={{ ...inputStyle, paddingLeft: '26px', marginTop: 0 }} />
+          </div>
+        </label>
+        <label style={{ fontSize: '13px', fontWeight: 600, color: '#444' }}>
+          Tax withheld from payslips *
+          <div style={{ position: 'relative', marginTop: '6px' }}>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: '#888', pointerEvents: 'none' }}>$</span>
+            <input type="number" min="0" value={withheld} onChange={(e) => setWithheld(e.target.value)}
+              placeholder="e.g. 16000" style={{ ...inputStyle, paddingLeft: '26px', marginTop: 0 }} />
+          </div>
+        </label>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
+        <TaxToggle label="Australian resident for tax" active={isResident} onToggle={() => setIsResident((v) => !v)}
+          note="Non-residents pay 32.5% from $1 — no tax-free threshold, no LITO" />
+        <TaxToggle label="Medicare Levy exempt" active={medicareExempt} onToggle={() => setMedicareExempt((v) => !v)}
+          note="Some temporary visa holders are exempt — check your Notice of Medicare Entitlement (NOMC)" />
+        <TaxToggle label="Have private hospital cover" active={hasPrivateCover} onToggle={() => setHasPrivateCover((v) => !v)}
+          note="Without private cover, high earners (>$93k) pay Medicare Levy Surcharge on top" />
+      </div>
+
+      {ready && (
+        <>
+          <div style={{ background: isRefund ? '#f0fdf4' : '#fff5f5', border: `2px solid ${isRefund ? '#86efac' : '#fca5a5'}`, borderRadius: '16px', padding: '28px', textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: isRefund ? '#15803d' : '#dc2626', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px' }}>
+              {isRefund ? '🎉 Estimated tax refund' : '⚠️ Estimated tax owing'}
+            </div>
+            <div style={{ fontSize: '52px', fontWeight: 800, color: isRefund ? '#15803d' : '#dc2626', letterSpacing: '-.02em', lineHeight: 1 }}>
+              {fmtAUD(diff)}
+            </div>
+            <div style={{ fontSize: '13px', color: '#666', marginTop: '10px' }}>
+              Effective tax rate: <strong>{effectiveRate}%</strong>
+            </div>
+          </div>
+
+          <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px' }}>
+            <div style={{ padding: '11px 18px', background: '#faf9ff', borderBottom: '1px solid #f0eeff', fontSize: '11px', fontWeight: 700, color: '#534AB7', textTransform: 'uppercase', letterSpacing: '.07em' }}>
+              Tax breakdown
+            </div>
+            <TaxRow label="Gross income"                                          value={fmtAUD(inc)}                                                  color="#26215C" />
+            <TaxRow label="Income tax (ATO 2024–25 brackets)"                     value={`−${fmtAUD(tax)}`}                                            color="#dc2626" />
+            {lito > 0 && <TaxRow label="Low Income Tax Offset (LITO)"            value={`+${fmtAUD(lito)}`}                                           color="#1B8F5E" />}
+            <TaxRow label={`Medicare Levy (2%)${medicareExempt ? ' — exempt' : ''}`} value={medicare > 0 ? `−${fmtAUD(medicare)}` : '$0'}            color={medicare > 0 ? '#dc2626' : '#aaa'} />
+            {mls > 0 && <TaxRow label="Medicare Levy Surcharge"                  value={`−${fmtAUD(mls)}`}                                            color="#dc2626" />}
+            <TaxRow label="Total tax liability"                                   value={fmtAUD(totalLiability)}                                       color="#26215C" bold />
+            <TaxRow label="Tax withheld (from payslips)"                          value={fmtAUD(wth)}                                                  color="#534AB7" last />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', background: isRefund ? '#f0fdf4' : '#fff5f5' }}>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#26215C' }}>{isRefund ? 'Estimated refund' : 'Estimated tax owing'}</span>
+              <span style={{ fontSize: '16px', fontWeight: 800, color: isRefund ? '#15803d' : '#dc2626', fontVariantNumeric: 'tabular-nums' }}>{fmtAUD(diff)}</span>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div style={{ marginTop: '16px', fontSize: '12px', color: '#aaa', textAlign: 'center' }}>
+        Estimate only — 2024–25 ATO rates. Does not include deductions, HECS/HELP, salary packaging, or offsets beyond LITO.{' '}
+        <a href="https://www.ato.gov.au/individuals-and-families/your-tax-return" target="_blank" rel="noopener noreferrer" style={{ color: '#534AB7' }}>Lodge at ATO ↗</a>
+      </div>
+    </div>
+  );
+}
+
+// ─── Sub-calculator: Take-Home Pay ───────────────────────────────────────────
+
+function TakeHomeCalculator() {
+  const [gross, setGross] = useState('');
+  const [period, setPeriod] = useState('52');
+  const [isResident, setIsResident] = useState(true);
+  const [claimThreshold, setClaimThreshold] = useState(true);
+  const [medicareExempt, setMedicareExempt] = useState(false);
+
+  const grossAmt = parseFloat(gross) || 0;
+  const periodsPerYear = parseInt(period, 10);
+  const annualGross = grossAmt * periodsPerYear;
+
+  const baseTax  = calcIncomeTax(annualGross, isResident);
+  const lito     = (isResident && claimThreshold) ? calcLITO(annualGross, isResident) : 0;
+  // Not claiming threshold: ATO Scale 2 adds ~$3,519/yr extra withholding
+  const scaleAdj = (isResident && !claimThreshold) ? 3519 : 0;
+  const annualTax = Math.max(0, baseTax - lito + scaleAdj);
+  const annualMedicare = calcMedicare(annualGross, isResident, medicareExempt);
+  const annualNet = annualGross - annualTax - annualMedicare;
+
+  const pp = (v) => v / periodsPerYear;
+  const effectiveRate = annualGross > 0 ? (((annualTax + annualMedicare) / annualGross) * 100).toFixed(1) : 0;
+  const periodLabel = PAY_PERIODS.find((p) => p.value === period)?.label || '';
+  const ready = grossAmt > 0;
+
+  return (
+    <div>
+      <div style={{ background: '#EEEDFE', borderRadius: '14px', padding: '16px 20px', marginBottom: '20px', fontSize: '13.5px', color: '#26215C', lineHeight: 1.6 }}>
+        <strong>Take-home pay estimator.</strong> Enter your gross (before-tax) pay and pay period. Results are an estimate — your actual payslip may differ due to HECS/HELP, super, or salary packaging.
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+        <label style={{ fontSize: '13px', fontWeight: 600, color: '#444' }}>
+          Gross pay (before tax) *
+          <div style={{ position: 'relative', marginTop: '6px' }}>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px', color: '#888', pointerEvents: 'none' }}>$</span>
+            <input type="number" min="0" value={gross} onChange={(e) => setGross(e.target.value)}
+              placeholder="e.g. 1200" style={{ ...inputStyle, paddingLeft: '26px', marginTop: 0 }} />
+          </div>
+        </label>
+        <label style={{ fontSize: '13px', fontWeight: 600, color: '#444' }}>
+          Pay period
+          <div style={{ marginTop: '6px' }}>
+            <SelectInput value={period} onChange={setPeriod} options={PAY_PERIODS} style={{ width: '100%' }} />
+          </div>
+        </label>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
+        <TaxToggle label="Australian resident for tax" active={isResident} onToggle={() => setIsResident((v) => !v)}
+          note="Non-residents pay 32.5% from $1 — no tax-free threshold" />
+        <TaxToggle label="Claiming tax-free threshold" active={claimThreshold} onToggle={() => setClaimThreshold((v) => !v)}
+          note="Disable if this is your second job — you can only claim the threshold from one employer at a time" />
+        <TaxToggle label="Medicare Levy exempt" active={medicareExempt} onToggle={() => setMedicareExempt((v) => !v)}
+          note="Some temporary visa holders are exempt — check your NOMC" />
+      </div>
+
+      {ready && (
+        <>
+          <div style={{ background: '#f0fdf4', border: '2px solid #86efac', borderRadius: '16px', padding: '28px', textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px' }}>
+              💸 {periodLabel} take-home
+            </div>
+            <div style={{ fontSize: '52px', fontWeight: 800, color: '#15803d', letterSpacing: '-.02em', lineHeight: 1 }}>
+              {fmtAUD(pp(annualNet))}
+            </div>
+            <div style={{ fontSize: '13px', color: '#666', marginTop: '10px' }}>
+              Effective tax rate: <strong>{effectiveRate}%</strong> · Annual take-home: <strong>{fmtAUD(annualNet)}</strong>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {[
+              { title: `${periodLabel} breakdown`, rows: [
+                { label: 'Gross pay',         value: fmtAUD(pp(annualGross)),    color: '#26215C' },
+                { label: 'Income tax',        value: `−${fmtAUD(pp(annualTax))}`, color: '#dc2626' },
+                { label: `Medicare Levy${medicareExempt ? ' (exempt)' : ''}`, value: pp(annualMedicare) > 0 ? `−${fmtAUD(pp(annualMedicare))}` : '$0', color: pp(annualMedicare) > 0 ? '#dc2626' : '#aaa' },
+                { label: 'Net (take-home)',   value: fmtAUD(pp(annualNet)),      color: '#1B8F5E', bold: true },
+              ]},
+              { title: 'Annual equivalent', rows: [
+                { label: 'Annual gross',      value: fmtAUD(annualGross),        color: '#26215C' },
+                { label: 'Annual tax',        value: `−${fmtAUD(annualTax)}`,    color: '#dc2626' },
+                { label: 'Annual Medicare',   value: annualMedicare > 0 ? `−${fmtAUD(annualMedicare)}` : '$0', color: annualMedicare > 0 ? '#dc2626' : '#aaa' },
+                { label: 'Annual take-home',  value: fmtAUD(annualNet),          color: '#1B8F5E', bold: true },
+              ]},
+            ].map(({ title, rows }) => (
+              <div key={title} style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', overflow: 'hidden' }}>
+                <div style={{ padding: '10px 16px', background: '#faf9ff', borderBottom: '1px solid #f0eeff', fontSize: '11px', fontWeight: 700, color: '#534AB7', textTransform: 'uppercase', letterSpacing: '.07em' }}>
+                  {title}
+                </div>
+                {rows.map(({ label, value, color, bold }, i) => (
+                  <TaxRow key={label} label={label} value={value} color={color} bold={bold} last={i === rows.length - 1} />
+                ))}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div style={{ marginTop: '16px', fontSize: '12px', color: '#aaa', textAlign: 'center' }}>
+        Based on 2024–25 ATO withholding rates. Does not include HECS/HELP, super, salary packaging, or other adjustments.
+      </div>
+    </div>
+  );
+}
+
+// ─── Tab 6: Tax Calculator ───────────────────────────────────────────────────
+
+function TaxCalculatorTab() {
+  const [mode, setMode] = useState('return');
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+        {[
+          { id: 'return',   label: '📋 Tax Return Estimator' },
+          { id: 'takehome', label: '💵 Take-Home Pay' },
+        ].map(({ id, label }) => (
+          <button key={id} onClick={() => setMode(id)} style={{
+            padding: '9px 20px', borderRadius: '8px', border: '1.5px solid',
+            borderColor: mode === id ? '#534AB7' : '#ddd',
+            background: mode === id ? '#EEEDFE' : '#fff',
+            color: mode === id ? '#534AB7' : '#666',
+            fontWeight: mode === id ? 700 : 500,
+            fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit',
+          }}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {mode === 'return' ? <TaxReturnEstimator /> : <TakeHomeCalculator />}
+    </div>
+  );
+}
+
 // ─── Shared styles ───────────────────────────────────────────────────────────
 
 const labelStyle = {
@@ -1293,6 +1603,7 @@ export default function VisaHubPage() {
         <TabBtn label="🔢 PR Calculator"       active={tab === "calculator"}   onClick={() => setTab("calculator")} />
         <TabBtn label="🔍 Occupation Search"   active={tab === "occupations"}  onClick={() => setTab("occupations")} />
         <TabBtn label="📈 Invitation History"  active={tab === "invitations"}  onClick={() => setTab("invitations")} />
+        <TabBtn label="🧾 Tax Calculator"      active={tab === "tax"}          onClick={() => setTab("tax")} />
         <TabBtn label="📊 Timeline Tracker"    active={tab === "timelines"}    onClick={() => setTab("timelines")} />
         <TabBtn label="📚 Resources"           active={tab === "resources"}    onClick={() => setTab("resources")} />
       </div>
@@ -1301,6 +1612,7 @@ export default function VisaHubPage() {
       {tab === "calculator"  && <PRCalculator />}
       {tab === "occupations" && <OccupationSearch />}
       {tab === "invitations" && <InvitationHistory />}
+      {tab === "tax"         && <TaxCalculatorTab />}
       {tab === "timelines"   && <TimelineTracker />}
       {tab === "resources"   && <ResourcesTab />}
     </div>
