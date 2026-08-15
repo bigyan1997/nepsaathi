@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import axios from "axios";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -111,6 +112,25 @@ function App() {
     el.style.opacity = "0";
     const t = setTimeout(() => el.remove(), 400);
     return () => clearTimeout(t);
+  }, []);
+
+  // Silent refresh for new tabs: sessionStorage is tab-scoped so a new tab
+  // has no access token even if the user is marked as authenticated in localStorage.
+  useEffect(() => {
+    const { isAuthenticated, logout } = useAuthStore.getState();
+    if (!isAuthenticated) return;
+    if (sessionStorage.getItem("nepsaathi_access_token")) return;
+    const refreshToken = localStorage.getItem("nepsaathi_refresh_token");
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/api/auth/token/refresh/`,
+        refreshToken ? { refresh: refreshToken } : {},
+        { withCredentials: true },
+      )
+      .then((res) => {
+        sessionStorage.setItem("nepsaathi_access_token", res.data.access);
+      })
+      .catch(() => logout());
   }, []);
 
   return (
