@@ -1258,6 +1258,21 @@ function calcMLS(income, isResident, hasPrivateCover) {
   return income * 0.015;
 }
 
+// HECS/HELP compulsory repayment — 2024-25 thresholds (ATO)
+function calcHECS(income) {
+  const tiers = [
+    [152619, 0.10], [143959, 0.095], [135839, 0.09], [128179, 0.085],
+    [120899, 0.08],  [114097, 0.075], [107974, 0.07], [101900, 0.065],
+    [96395, 0.06],   [91982, 0.055],  [88493, 0.05],  [84108, 0.045],
+    [79348, 0.04],   [74856, 0.035],  [70520, 0.03],  [66530, 0.025],
+    [62739, 0.02],   [54436, 0.01],
+  ];
+  for (const [min, rate] of tiers) {
+    if (income >= min) return Math.round(income * rate);
+  }
+  return 0;
+}
+
 function fmtAUD(n) {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency', currency: 'AUD', maximumFractionDigits: 0,
@@ -1404,6 +1419,7 @@ function TakeHomeCalculator() {
   const [isResident, setIsResident] = useState(true);
   const [claimThreshold, setClaimThreshold] = useState(true);
   const [medicareExempt, setMedicareExempt] = useState(false);
+  const [hasHecs, setHasHecs] = useState(false);
 
   const grossAmt = parseFloat(gross) || 0;
   const periodsPerYear = parseInt(period, 10);
@@ -1415,17 +1431,18 @@ function TakeHomeCalculator() {
   const scaleAdj = (isResident && !claimThreshold) ? 3519 : 0;
   const annualTax = Math.max(0, baseTax - lito + scaleAdj);
   const annualMedicare = calcMedicare(annualGross, isResident, medicareExempt);
-  const annualNet = annualGross - annualTax - annualMedicare;
+  const annualHECS = hasHecs ? calcHECS(annualGross) : 0;
+  const annualNet = annualGross - annualTax - annualMedicare - annualHECS;
 
   const pp = (v) => v / periodsPerYear;
-  const effectiveRate = annualGross > 0 ? (((annualTax + annualMedicare) / annualGross) * 100).toFixed(1) : 0;
+  const effectiveRate = annualGross > 0 ? (((annualTax + annualMedicare + annualHECS) / annualGross) * 100).toFixed(1) : 0;
   const periodLabel = PAY_PERIODS.find((p) => p.value === period)?.label || '';
   const ready = grossAmt > 0;
 
   return (
     <div>
       <div style={{ background: '#EEEDFE', borderRadius: '14px', padding: '16px 20px', marginBottom: '20px', fontSize: '13.5px', color: '#26215C', lineHeight: 1.6 }}>
-        <strong>Take-home pay estimator.</strong> Enter your gross (before-tax) pay and pay period. Results are an estimate — your actual payslip may differ due to HECS/HELP, super, or salary packaging.
+        <strong>Take-home pay estimator.</strong> Enter your gross (before-tax) pay and pay period. Toggle HECS/HELP if you have a student loan — it's withheld separately from income tax. Results are an estimate; super and salary packaging are not included.
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
@@ -1452,6 +1469,8 @@ function TakeHomeCalculator() {
           note="Disable if this is your second job — you can only claim the threshold from one employer at a time" />
         <TaxToggle label="Medicare Levy exempt" active={medicareExempt} onToggle={() => setMedicareExempt((v) => !v)}
           note="Some temporary visa holders are exempt — check your NOMC" />
+        <TaxToggle label="Has HECS/HELP debt" active={hasHecs} onToggle={() => setHasHecs((v) => !v)}
+          note="Domestic students with a student loan have compulsory repayments withheld from each payslip" />
       </div>
 
       {ready && (
@@ -1471,16 +1490,18 @@ function TakeHomeCalculator() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             {[
               { title: `${periodLabel} breakdown`, rows: [
-                { label: 'Gross pay',         value: fmtAUD(pp(annualGross)),    color: '#26215C' },
-                { label: 'Income tax',        value: `−${fmtAUD(pp(annualTax))}`, color: '#dc2626' },
+                { label: 'Gross pay',         value: fmtAUD(pp(annualGross)),       color: '#26215C' },
+                { label: 'Income tax',        value: `−${fmtAUD(pp(annualTax))}`,   color: '#dc2626' },
                 { label: `Medicare Levy${medicareExempt ? ' (exempt)' : ''}`, value: pp(annualMedicare) > 0 ? `−${fmtAUD(pp(annualMedicare))}` : '$0', color: pp(annualMedicare) > 0 ? '#dc2626' : '#aaa' },
-                { label: 'Net (take-home)',   value: fmtAUD(pp(annualNet)),      color: '#1B8F5E', bold: true },
+                ...(hasHecs ? [{ label: 'HECS/HELP repayment', value: `−${fmtAUD(pp(annualHECS))}`, color: '#d97706' }] : []),
+                { label: 'Net (take-home)',   value: fmtAUD(pp(annualNet)),          color: '#1B8F5E', bold: true },
               ]},
               { title: 'Annual equivalent', rows: [
-                { label: 'Annual gross',      value: fmtAUD(annualGross),        color: '#26215C' },
-                { label: 'Annual tax',        value: `−${fmtAUD(annualTax)}`,    color: '#dc2626' },
+                { label: 'Annual gross',      value: fmtAUD(annualGross),            color: '#26215C' },
+                { label: 'Annual tax',        value: `−${fmtAUD(annualTax)}`,        color: '#dc2626' },
                 { label: 'Annual Medicare',   value: annualMedicare > 0 ? `−${fmtAUD(annualMedicare)}` : '$0', color: annualMedicare > 0 ? '#dc2626' : '#aaa' },
-                { label: 'Annual take-home',  value: fmtAUD(annualNet),          color: '#1B8F5E', bold: true },
+                ...(hasHecs ? [{ label: 'Annual HECS/HELP',   value: `−${fmtAUD(annualHECS)}`,       color: '#d97706' }] : []),
+                { label: 'Annual take-home',  value: fmtAUD(annualNet),              color: '#1B8F5E', bold: true },
               ]},
             ].map(({ title, rows }) => (
               <div key={title} style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', overflow: 'hidden' }}>
@@ -1496,8 +1517,12 @@ function TakeHomeCalculator() {
         </>
       )}
 
-      <div style={{ marginTop: '16px', fontSize: '12px', color: '#aaa', textAlign: 'center' }}>
-        Based on 2024–25 ATO withholding rates. Does not include HECS/HELP, super, salary packaging, or other adjustments.
+      <div style={{ marginTop: '16px', fontSize: '12px', color: '#aaa', textAlign: 'center', lineHeight: 1.6 }}>
+        Based on 2024–25 ATO tax brackets.{' '}
+        <span style={{ color: '#888' }}>
+          Your payslip may show a slightly different amount (±$5–10/week) because employers use pre-computed PAYG withholding tables — any difference is reconciled at tax return time.
+        </span>
+        {' '}Does not include super or salary packaging.
       </div>
     </div>
   );
