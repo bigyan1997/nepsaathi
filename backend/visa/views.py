@@ -13,6 +13,7 @@ from .serializers import (
 class VisaTimelineListCreateView(generics.ListCreateAPIView):
     serializer_class = VisaTimelineSerializer
     authentication_classes = [SilentJWTAuthentication]
+    pagination_class = None
 
     def get_permissions(self):
         if self.request.method == 'POST':
