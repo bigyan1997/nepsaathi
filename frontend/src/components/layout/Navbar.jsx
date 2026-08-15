@@ -221,6 +221,7 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
         </div>
 
         {/* Desktop right side */}
@@ -373,6 +374,7 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
+
 
           <div style={{ borderTop: "0.5px solid #f0f0f0", margin: "8px 0" }} />
 

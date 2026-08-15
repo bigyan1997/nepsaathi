@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
 import useAuthStore from "../store/authStore";
 import { useToast } from "../components/ui/Toast";
@@ -1600,7 +1600,9 @@ const resourceCardStyle = {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function VisaHubPage() {
-  const [tab, setTab] = useState("occupations");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") || "occupations";
+  const setTab = (t) => setSearchParams({ tab: t }, { replace: true });
 
   usePageMeta(
     "Visa & Immigration Hub — NepSaathi",
