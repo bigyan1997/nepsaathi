@@ -310,7 +310,8 @@ p:last-child{margin-bottom:0;}
       <a class="nav-link" href="#patterns"  onclick="cm()"><span class="ni">🔧</span>Key Patterns</a>
       <a class="nav-link" href="#ai-feat"   onclick="cm()"><span class="ni">✨</span>AI Features</a>
       <a class="nav-link" href="#emails"    onclick="cm()"><span class="ni">📧</span>Emails</a>
-      <a class="nav-link" href="#cron"      onclick="cm()"><span class="ni">⏱</span>Cron Jobs</a>
+      <a class="nav-link" href="#cron"        onclick="cm()"><span class="ni">⏱</span>Cron Jobs</a>
+      <a class="nav-link" href="#automation" onclick="cm()"><span class="ni">📲</span>Automation</a>
     </div>
     <div class="nav-group">
       <div class="nav-label">Operations</div>
@@ -968,6 +969,35 @@ improved = _re.sub(r'&lt;/?user_draft&gt;', '', improved).strip()</code></pre>
     <div class="card"><div class="card-title">send_event_reminders</div><div class="card-body">Events within next 24 hours → reminder email to every RSVPed user.</div></div>
     <div class="card"><div class="card-title">fetch_remittance_rates</div><div class="card-body">Pulls live AUD→NPR mid-market rate from open.er-api.com, derives per-provider rates, updates DB. /send-money always shows latest.</div></div>
     <div class="callout orange"><div class="callout-icon">⚠️</div><div>Railway's watched-file deployment <strong>skips redeploy when only <code>cron.sh</code> changes</strong>. Always trigger a manual redeploy after updating cron scripts.</div></div>
+  </section>
+
+  <!-- Automation -->
+  <section class="section" id="automation">
+    <div class="section-header"><div class="section-icon">📲</div><h2 class="section-title">Social Media Automation</h2></div>
+    <p>New listings are automatically posted to the NepSaathi Facebook Page and Instagram Business account via <strong>n8n</strong> (self-hosted on Railway, Postgres-backed). No manual posting required.</p>
+
+    <div class="card"><div class="card-title">Trigger — listing creation</div><div class="card-body"><code>perform_create</code> in <code>listings/views.py</code> starts a daemon thread. It sleeps 60s (waiting for image uploads to complete), re-fetches the listing with images, then POSTs <code>title / category / location / description / image_url</code> to the n8n webhook. Admin actions (<code>approve_listings</code>, <code>save_model</code>) also fire the webhook when spam-flagged listings are cleared.</div></div>
+
+    <div class="card"><div class="card-title">n8n workflow — 6 nodes</div><div class="card-body">
+      <strong>Webhook</strong> → <strong>Code (JS)</strong> → <strong>HTTP Request (Facebook)</strong> → <strong>IF (image?)</strong> → <strong>Instagram Create Container</strong> → <strong>Wait 5s</strong> → <strong>Instagram Publish</strong><br><br>
+      Facebook posts via <code>POST /v26.0/{page_id}/photos</code> (single call, instant).<br>
+      Instagram requires two calls: <code>/media</code> (create container) → <code>/media_publish</code>. IF node skips Instagram when no image is present.
+    </div></div>
+
+    <div class="card"><div class="card-title">Dynamic hashtags</div><div class="card-body">
+      Code node builds hashtags per category and state:<br>
+      • <strong>Facebook:</strong> 6 tags — 4 core + 2 category-specific<br>
+      • <strong>Instagram:</strong> up to 15 — core + full category set + location tags (e.g. <code>#Sydney #SydneyLife</code> for NSW)<br>
+      Categories: job / room / event / notice / business. States: NSW / VIC / QLD / WA / SA / ACT / TAS / NT.
+    </div></div>
+
+    <div class="card"><div class="card-title">Tokens & persistence</div><div class="card-body">
+      Permanent Facebook Page token (never expires) stored only in n8n credentials — never in code.<br>
+      Instagram token requires <code>instagram_content_publish</code> scope; generated via long-lived User Token → Page Token exchange.<br>
+      n8n data persists in Railway Postgres (<code>DB_TYPE=postgresdb</code>). <code>N8N_ENCRYPTION_KEY</code> env var ensures credentials survive container restarts.
+    </div></div>
+
+    <div class="callout orange"><div class="callout-icon">⚠️</div><div>Facebook's scraper does not execute JavaScript — React's <code>usePageMeta</code> og:image updates are invisible to the link preview fetcher. Images are sent directly via the <code>url</code> param on the <code>/photos</code> endpoint instead.</div></div>
   </section>
 
   <!-- Security -->

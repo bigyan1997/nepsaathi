@@ -55,7 +55,11 @@ Railway (Django ASGI)
     ├── Cloudinary (images)
     ├── Stripe (payments)
     ├── Resend (email)
-    └── Redis (optional, for channel layer)
+    ├── Redis (optional, for channel layer)
+    └── n8n (self-hosted on Railway, Postgres-backed)
+            │
+            ├── Facebook Page auto-post (Graph API /photos)
+            └── Instagram Business auto-post (Graph API /media → /media_publish)
 ```
 
 ### Key architectural patterns
@@ -68,6 +72,8 @@ Railway (Django ASGI)
 - **Token refresh queue** — axios interceptor queues concurrent 401s, refreshes once, replays all queued requests.
 - **WebSocket keep-alive** — client pings every 10 s to prevent Railway's proxy from closing idle connections.
 - **SavedSearch alerts** — on listing creation, background thread emails all users with matching saved searches.
+- **n8n social automation** — on listing creation, `perform_create` fires a background thread (`time.sleep(60)` to wait for image uploads) that POSTs to n8n webhook. n8n posts to Facebook (`/photos`) and Instagram (`/media` → wait → `/media_publish`). Also triggered from Django admin when spam-cleared listings are approved. n8n self-hosted on Railway with Postgres persistence.
+- **Silent token refresh** — on App mount, if `isAuthenticated` but no sessionStorage access token (new tab), proactively calls the refresh endpoint with localStorage refresh token before any API calls fail.
 - **Max active listings per user: 20** (enforced in `listings/views.py`).
 - **Panel security** — 4-layer: `IsSuperUser` DRF permission (returns "Not found." to anyone else), `SuperUserRoute` in React (renders `NotFoundPage`), no UI links, not in sitemap.
 
@@ -648,6 +654,16 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Security: `is_reported` auth gate** — `get_is_reported()` in `listings/serializers.py` now returns `True` only to the listing owner or staff; previously leaked report status to all authenticated users.
 - **Security: per-email login rate limit** — 10 failed attempts per SHA-256-hashed email address added to `ThrottledLoginView` alongside existing per-IP limit; cleared on successful login.
 - **Security: HTML injection in emails** — `event.event_url` in `core/emails.py` now escaped with `_h()` helper in both the `href` attribute and display text.
+
+### Phase 7 — Social media automation (2026-08-16)
+- **Facebook auto-post** — when a listing is created, `perform_create` fires a daemon thread that sleeps 60s (waiting for image uploads), re-fetches the listing with images, and POSTs title/category/location/description/image_url to an n8n webhook. n8n posts to the NepSaathi Facebook Page via Graph API `/photos` endpoint with caption + image.
+- **Instagram auto-post** — same webhook triggers Instagram posting via a two-step flow: create media container (`/media`) → 5s Wait node → publish (`/media_publish`). IF node skips Instagram when no image is present.
+- **Dynamic hashtags** — n8n Code node builds category-specific hashtags (e.g. `#RoomForRent #ShareHouse` for rooms, `#JobsInAustralia #HiringNow` for jobs) and state-based location tags (e.g. `#Sydney #SydneyLife` for NSW). Facebook gets 6 clean tags; Instagram gets up to 15.
+- **Description teaser in posts** — webhook payload now includes listing description; Code node strips markdown (`**`, `##`, etc.) and includes a 200-char teaser in the caption.
+- **AI description prompt improved** — rewritten to produce professional prose with a strong opening sentence, short paragraphs, no markdown, under 250 words.
+- **n8n persistence** — n8n self-hosted on Railway (Docker image `n8nio/n8n`), backed by Railway Postgres (`DB_TYPE=postgresdb`). `N8N_ENCRYPTION_KEY` env var ensures credentials survive container restarts.
+- **Admin webhook** — `save_model` and `approve_listings` bulk action in `listings/admin.py` also fire the webhook when spam-flagged listings are cleared, so admin-approved listings also auto-post.
+- **New-tab logout fix** — `App.jsx` mounts a `useEffect` that detects `isAuthenticated` with no sessionStorage access token (new browser tab), proactively calls token refresh with the localStorage refresh token (for Google OAuth users) or httpOnly cookie (for email users), and stores the new access token in sessionStorage before any API calls run.
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.

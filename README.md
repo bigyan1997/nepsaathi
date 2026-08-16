@@ -2,7 +2,7 @@
 
 > Your trusted Nepali friend, wherever you are. Connecting the Nepalese diaspora across Australia.
 
-NepSaathi is a full-stack community marketplace and networking platform for Nepalese Australians. It provides job listings, room rentals, events, a business directory, community notices, 1-to-1 messaging, featured listing payments, a community forum with polls, a reverse request board, a skills & services marketplace, a points & referral system, an AUD→NPR remittance comparator, and a bilingual Nepali/English interface. Progressive Web App (PWA) with push notifications.
+NepSaathi is a full-stack community marketplace and networking platform for Nepalese Australians. It provides job listings, room rentals, events, a business directory, community notices, 1-to-1 messaging, featured listing payments, a community forum with polls, a reverse request board, a skills & services marketplace, a points & referral system, an AUD→NPR remittance comparator, and a bilingual Nepali/English interface. Progressive Web App (PWA) with push notifications. New listings are automatically posted to the NepSaathi Facebook Page and Instagram via n8n automation (self-hosted on Railway).
 
 ---
 
