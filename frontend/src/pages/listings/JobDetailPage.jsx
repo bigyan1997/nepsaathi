@@ -130,6 +130,7 @@ export default function JobDetailPage() {
   usePageMeta(
     job?.listing_title ? `${job.listing_title} — Job` : null,
     job?.description,
+    job?.images?.[0]?.url,
   );
 
   const { data: similarListings } = useQuery({
@@ -339,7 +340,7 @@ export default function JobDetailPage() {
         {/* ── Image gallery ── */}
         {job?.images?.length > 0 && (
           <div style={{ marginBottom: "14px" }}>
-            <ImageGallery images={job.images} />
+            <ImageGallery images={job.images} title={job.listing_title} />
           </div>
         )}
 

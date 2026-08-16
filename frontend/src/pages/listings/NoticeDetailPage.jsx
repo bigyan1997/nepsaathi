@@ -303,7 +303,7 @@ export default function NoticeDetailPage() {
         {/* ── Image gallery ── */}
         {notice?.images?.length > 0 && (
           <div style={{ marginBottom: "14px" }}>
-            <ImageGallery images={notice.images} />
+            <ImageGallery images={notice.images} title={notice.listing_title} />
           </div>
         )}
 

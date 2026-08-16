@@ -98,6 +98,8 @@ class BusinessCreateView(generics.CreateAPIView):
             _trigger_business_saved_search_alerts(business, send_business_saved_search_alert_email)
         except Exception:
             pass
+        from core.indexnow import ping_indexnow
+        ping_indexnow(f"/businesses/{business.slug}")
 
 
 def _trigger_business_saved_search_alerts(business, send_fn):

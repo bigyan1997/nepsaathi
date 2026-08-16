@@ -407,7 +407,7 @@ export default function EventDetailPage() {
         {/* ── Image gallery ── */}
         {event?.images?.length > 0 && (
           <div style={{ marginBottom: "14px" }}>
-            <ImageGallery images={event.images} />
+            <ImageGallery images={event.images} title={event.listing_title} />
           </div>
         )}
 

@@ -74,8 +74,9 @@ async function generate() {
     console.warn(`Forum sitemap fetch failed (${err.message})`);
   }
 
+  const today = new Date().toISOString().slice(0, 10);
   const entries = [
-    ...STATIC_PAGES.map(p => urlEntry({ loc: `${BASE_URL}${p.path}`, ...p })),
+    ...STATIC_PAGES.map(p => urlEntry({ loc: `${BASE_URL}${p.path}`, lastmod: today, ...p })),
     ...listings.map(l => urlEntry({ loc: `${BASE_URL}${l.path}`, lastmod: l.lastmod, changefreq: 'weekly', priority: '0.6' })),
     ...businesses.map(b => urlEntry({ loc: `${BASE_URL}${b.path}`, lastmod: b.lastmod, changefreq: 'weekly', priority: '0.6' })),
     ...forumPosts.map(p => urlEntry({ loc: `${BASE_URL}/forum/${p.slug}`, lastmod: p.updated_at?.slice(0, 10), changefreq: 'weekly', priority: '0.7' })),

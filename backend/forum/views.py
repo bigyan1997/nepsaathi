@@ -1,41 +1,22 @@
 import threading
-import requests as http_requests
 from django.db import transaction
 from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from decouple import config
 from .models import ForumPost, ForumReply, PollOption, PollVote
 from .serializers import ForumPostListSerializer, ForumPostDetailSerializer, ForumReplySerializer
+from core.indexnow import ping_indexnow
 
 import logging
 from rest_framework.throttling import ScopedRateThrottle
 
 logger = logging.getLogger(__name__)
 
-FRONTEND_URL = config('FRONTEND_URL', default='https://www.nepsaathi.com')
-INDEXNOW_KEY = config('INDEXNOW_KEY', default='')
-
-
-def _ping_indexnow(url):
-    """Fire-and-forget IndexNow ping to Bing so new posts are indexed quickly."""
-    if not INDEXNOW_KEY:
-        return
-    try:
-        http_requests.post(
-            "https://api.indexnow.org/indexnow",
-            json={"host": "www.nepsaathi.com", "key": INDEXNOW_KEY, "urlList": [url]},
-            timeout=5,
-        )
-    except Exception:
-        pass
-
 
 def ping_indexnow_async(slug):
-    url = f"{FRONTEND_URL}/forum/{slug}"
-    threading.Thread(target=_ping_indexnow, args=(url,), daemon=True).start()
+    ping_indexnow(f"/forum/{slug}")
 
 
 class ForumPostListView(generics.ListCreateAPIView):

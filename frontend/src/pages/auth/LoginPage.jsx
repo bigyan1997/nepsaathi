@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
+import SEO from "../../components/ui/SEO";
 
 export default function LoginPage() {
   usePageTitle("Sign In");
@@ -47,6 +48,8 @@ export default function LoginPage() {
   };
 
   return (
+    <>
+    <SEO title="Sign In" noindex />
     <div
       style={{
         minHeight: "80vh",
@@ -336,5 +339,6 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }

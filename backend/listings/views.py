@@ -308,6 +308,11 @@ class ListingCreateView(generics.CreateAPIView):
         # Notify n8n to post to Facebook (fire-and-forget)
         threading.Thread(target=_notify_n8n, args=(listing,), daemon=True).start()
 
+        # Ping IndexNow so Bing/Yandex index the new listing quickly
+        from core.indexnow import ping_indexnow
+        type_path = _LISTING_TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
+        ping_indexnow(f"/{type_path}/{listing.slug}")
+
 
 class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -1228,14 +1233,14 @@ class SitemapDataView(APIView):
             Listing.objects
             .filter(status='active', is_under_review=False)
             .filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))
-            .values('slug', 'listing_type', 'created_at')
-            .order_by('-created_at')
+            .values('slug', 'listing_type', 'updated_at')
+            .order_by('-updated_at')
         )
         businesses = (
             Business.objects
             .filter(is_active=True)
-            .values('slug', 'created_at')
-            .order_by('-created_at')
+            .values('slug', 'updated_at')
+            .order_by('-updated_at')
         )
 
         type_to_path = {
@@ -1249,7 +1254,7 @@ class SitemapDataView(APIView):
             'listings': [
                 {
                     'path': f"/{type_to_path.get(l['listing_type'], l['listing_type'])}/{l['slug']}",
-                    'lastmod': l['created_at'].strftime('%Y-%m-%d'),
+                    'lastmod': l['updated_at'].strftime('%Y-%m-%d'),
                 }
                 for l in listings
                 if l['listing_type'] in type_to_path
@@ -1257,7 +1262,7 @@ class SitemapDataView(APIView):
             'businesses': [
                 {
                     'path': f"/businesses/{b['slug']}",
-                    'lastmod': b['created_at'].strftime('%Y-%m-%d'),
+                    'lastmod': b['updated_at'].strftime('%Y-%m-%d'),
                 }
                 for b in businesses
             ],

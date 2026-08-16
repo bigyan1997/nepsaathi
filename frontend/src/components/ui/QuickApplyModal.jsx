@@ -123,7 +123,10 @@ export default function QuickApplyModal({ job, onClose, onApplied }) {
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit} style={{ padding: "24px", overflowY: "auto", flex: 1 }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ padding: "24px", overflowY: "auto", flex: 1 }}
+        >
           <p
             style={{
               fontSize: "13px",
@@ -136,7 +139,14 @@ export default function QuickApplyModal({ job, onClose, onApplied }) {
             the poster alongside your message.
           </p>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "8px",
+            }}
+          >
             <label
               style={{
                 fontSize: "12px",
@@ -153,11 +163,18 @@ export default function QuickApplyModal({ job, onClose, onApplied }) {
               onClick={handleAiImprove}
               disabled={!coverLetter.trim() || ai.loading}
               style={{
-                background: coverLetter.trim() && !ai.loading ? "linear-gradient(135deg,#7C3AED,#4F46E5)" : "#e5e5e5",
+                background:
+                  coverLetter.trim() && !ai.loading
+                    ? "linear-gradient(135deg,#7C3AED,#4F46E5)"
+                    : "#e5e5e5",
                 color: coverLetter.trim() && !ai.loading ? "#fff" : "#aaa",
-                border: "none", borderRadius: "8px", padding: "5px 12px",
-                fontSize: "12px", fontWeight: 600,
-                cursor: coverLetter.trim() && !ai.loading ? "pointer" : "not-allowed",
+                border: "none",
+                borderRadius: "8px",
+                padding: "5px 12px",
+                fontSize: "12px",
+                fontWeight: 600,
+                cursor:
+                  coverLetter.trim() && !ai.loading ? "pointer" : "not-allowed",
               }}
             >
               {ai.loading ? "Improving…" : "✨ Improve with AI"}
@@ -198,25 +215,72 @@ export default function QuickApplyModal({ job, onClose, onApplied }) {
           </div>
 
           {ai.preview && (
-            <div style={{ marginTop: "14px", background: "#F3F0FF", border: "1px solid #C4B5FD", borderRadius: "10px", padding: "14px 16px" }}>
-              <div style={{ fontSize: "11px", fontWeight: 700, color: "#7C3AED", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>
+            <div
+              style={{
+                marginTop: "14px",
+                background: "#F3F0FF",
+                border: "1px solid #C4B5FD",
+                borderRadius: "10px",
+                padding: "14px 16px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  color: "#7C3AED",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  marginBottom: "8px",
+                }}
+              >
                 ✨ AI suggestion
               </div>
-              <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>
+              <div
+                style={{
+                  fontSize: "13px",
+                  color: "#333",
+                  lineHeight: 1.7,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {ai.preview}
               </div>
               <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
                 <button
                   type="button"
-                  onClick={() => { setCoverLetter(ai.preview); setAi({ loading: false, preview: null }); }}
-                  style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", background: "#7C3AED", color: "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}
+                  onClick={() => {
+                    setCoverLetter(ai.preview);
+                    setAi({ loading: false, preview: null });
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#7C3AED",
+                    color: "#fff",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
                 >
                   Use this
                 </button>
                 <button
                   type="button"
                   onClick={() => setAi({ loading: false, preview: null })}
-                  style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "1px solid #C4B5FD", background: "transparent", color: "#7C3AED", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "1px solid #C4B5FD",
+                    background: "transparent",
+                    color: "#7C3AED",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
                 >
                   Discard
                 </button>

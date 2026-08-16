@@ -323,7 +323,7 @@ export default function RoomDetailPage() {
         {/* ── Image gallery ── */}
         {room?.images?.length > 0 && (
           <div style={{ marginBottom: "14px" }}>
-            <ImageGallery images={room.images} />
+            <ImageGallery images={room.images} title={room.listing_title} />
           </div>
         )}
 

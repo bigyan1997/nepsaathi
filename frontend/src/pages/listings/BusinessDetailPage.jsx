@@ -319,7 +319,7 @@ export default function BusinessDetailPage() {
         {/* ── Image gallery ── */}
         {business.images?.length > 0 && (
           <div style={{ marginBottom: "14px" }}>
-            <ImageGallery images={business.images.map((img) => ({ id: img.id, url: img.image }))} />
+            <ImageGallery images={business.images.map((img) => ({ id: img.id, url: img.image }))} title={business.business_name} />
           </div>
         )}
 

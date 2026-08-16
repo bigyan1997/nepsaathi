@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ImageGallery({ images }) {
+export default function ImageGallery({ images, title = "" }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
@@ -25,8 +25,10 @@ export default function ImageGallery({ images }) {
         <div style={{ position: "relative", background: "#F5F4F0" }}>
           <img
             src={images[activeIndex]?.url}
-            alt={`Photo ${activeIndex + 1}`}
+            alt={title ? `${title} — photo ${activeIndex + 1}` : `Photo ${activeIndex + 1}`}
             onClick={() => setLightboxOpen(true)}
+            fetchpriority={activeIndex === 0 ? "high" : undefined}
+            loading={activeIndex === 0 ? "eager" : "lazy"}
             style={{
               width: "100%",
               height: "min(280px, 56vw)",
@@ -140,7 +142,7 @@ export default function ImageGallery({ images }) {
               <img
                 key={img.id}
                 src={img.url}
-                alt={`Thumbnail ${index + 1}`}
+                alt={title ? `${title} — photo ${index + 1}` : `Photo ${index + 1}`}
                 loading="lazy"
                 onClick={() => setActiveIndex(index)}
                 style={{
@@ -246,7 +248,7 @@ export default function ImageGallery({ images }) {
 
           <img
             src={images[activeIndex]?.url}
-            alt={`Photo ${activeIndex + 1}`}
+            alt={title ? `${title} — photo ${activeIndex + 1}` : `Photo ${activeIndex + 1}`}
             onClick={(e) => e.stopPropagation()}
             style={{
               maxWidth: "90vw",

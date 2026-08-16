@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getForumPosts } from "../../api/forum";
 import useAuthStore from "../../store/authStore";
-import usePageTitle from "../../hooks/usePageTitle";
 import SEO from "../../components/ui/SEO";
 
 const CATEGORIES = [
@@ -120,7 +119,6 @@ const ANIM_STYLE = `
 `;
 
 export default function ForumPage() {
-  usePageTitle("Community Forum");
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const [category, setCategory] = useState("");
