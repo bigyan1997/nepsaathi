@@ -19,6 +19,8 @@ import { ProgressProvider } from "./components/ui/ProgressBar";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
 import FeedbackModal from "./components/ui/FeedbackModal";
 import CookieConsent from "./components/ui/CookieConsent";
+import IdleTimeoutModal from "./components/ui/IdleTimeoutModal";
+import useIdleTimeout from "./hooks/useIdleTimeout";
 import UserProfilePage from "./pages/UserProfilePage";
 import useExitIntent from "./hooks/useExitIntent";
 
@@ -89,6 +91,35 @@ function PushInit() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   usePushNotifications(isAuthenticated);
   return null;
+}
+
+const IDLE_WARNING_MS = 30 * 60 * 1000;  // 30 min idle → show modal
+const IDLE_LOGOUT_MS  =  3 * 60 * 1000;  //  3 min to respond → auto-logout
+
+function IdleGuard() {
+  const { isAuthenticated, logout } = useAuthStore();
+  const [show, setShow] = useState(false);
+
+  const handleLogout = useCallback(() => {
+    setShow(false);
+    logout();
+  }, [logout]);
+
+  const { stay } = useIdleTimeout({
+    warningAfter: IDLE_WARNING_MS,
+    logoutAfter:  IDLE_LOGOUT_MS,
+    onWarning: useCallback(() => setShow(true), []),
+    onTimeout: handleLogout,
+  });
+
+  if (!isAuthenticated || !show) return null;
+  return (
+    <IdleTimeoutModal
+      secondsTotal={IDLE_LOGOUT_MS / 1000}
+      onStay={() => { setShow(false); stay(); }}
+      onLogout={handleLogout}
+    />
+  );
 }
 
 const FEEDBACK_PATHS = ["/jobs", "/rooms", "/events", "/notices", "/businesses", "/search", "/featured"];
@@ -219,6 +250,7 @@ function App() {
               <PushInit />
               <PWAInstallPrompt />
               <FeedbackTrigger />
+              <IdleGuard />
               <CookieConsent />
             </ToastProvider>
           </ProgressProvider>
