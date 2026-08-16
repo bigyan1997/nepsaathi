@@ -257,11 +257,12 @@ class ListingCreateView(generics.CreateAPIView):
                 'You have reached the maximum of 20 active listings.'
             )
         
-        # Check 5 minute cooldown
+        # Check 5 minute cooldown — exclude soft-deleted listings so a failed
+        # attempt that gets rolled back doesn't lock the user out.
         five_mins_ago = timezone.now() - timedelta(minutes=5)
         last_recent = Listing.objects.filter(
             user=user, created_at__gte=five_mins_ago
-        ).order_by('-created_at').first()
+        ).exclude(status='deleted').order_by('-created_at').first()
         if last_recent:
             elapsed = (timezone.now() - last_recent.created_at).total_seconds()
             seconds_left = max(1, int(300 - elapsed))
