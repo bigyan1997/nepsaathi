@@ -33,6 +33,8 @@ class ConversationListView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         recipient_id = request.data.get('recipient_id')
         listing_id = request.data.get('listing_id')
         listing_title = request.data.get('listing_title', '')

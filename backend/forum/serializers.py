@@ -62,10 +62,10 @@ class ForumPostListSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_poll(self, obj):
-        return obj.poll_options.exists()
+        return len(obj.poll_options.all()) > 0  # uses prefetch cache
 
     def get_total_votes(self, obj):
-        return PollVote.objects.filter(option__post=obj).count()
+        return sum(len(o.votes.all()) for o in obj.poll_options.all())  # uses prefetch cache
 
     class Meta:
         model = ForumPost

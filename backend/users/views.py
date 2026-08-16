@@ -103,6 +103,7 @@ class DeleteAccountView(APIView):
             user = request.user
             try:
                 from listings.models import Listing
+                from django.db import transaction
                 listings = Listing.objects.filter(user=user).prefetch_related('images')
                 cloudinary_errors = []
                 for listing in listings:
@@ -118,7 +119,8 @@ class DeleteAccountView(APIView):
                         'Cloudinary cleanup errors during account deletion for user %s: %s',
                         user.id, cloudinary_errors
                     )
-                user.delete()
+                with transaction.atomic():
+                    user.delete()
                 return Response(
                     {'detail': 'Your account has been permanently deleted.'},
                     status=status.HTTP_200_OK

@@ -191,8 +191,10 @@ class AIImproveCoverLetterView(APIView):
         context = f"Job: {job_title}" + (f" at {company}" if company else "")
         prompt = f"""You are helping a Nepalese Australian write a professional job application cover letter on NepSaathi.
 
+<job_context>
 {context}
 Applicant's full name: {applicant_name}
+</job_context>
 
 <applicant_draft>
 {cover_letter}

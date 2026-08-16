@@ -1,5 +1,5 @@
 from rest_framework import generics, permissions, filters
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from .models import ReverseRequest, ServiceListing
 from .serializers import ReverseRequestSerializer, ServiceListingSerializer
 
@@ -25,6 +25,8 @@ class ReverseRequestListCreateView(generics.ListCreateAPIView):
         return qs
 
     def perform_create(self, serializer):
+        if self.request.user.is_banned:
+            raise ValidationError('Your account has been suspended.')
         serializer.save(user=self.request.user)
 
 
@@ -63,6 +65,8 @@ class ServiceListingListCreateView(generics.ListCreateAPIView):
         return qs
 
     def perform_create(self, serializer):
+        if self.request.user.is_banned:
+            raise ValidationError('Your account has been suspended.')
         serializer.save(user=self.request.user)
 
 

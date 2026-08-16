@@ -16,6 +16,7 @@ TYPE_PATH = {
 def _fire_n8n_webhook(listing):
     """Fire-and-forget POST to n8n when a listing is approved."""
     def _send():
+        import os
         try:
             path = TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
             url = f"https://www.nepsaathi.com/{path}/{listing.slug}"
@@ -25,10 +26,14 @@ def _fire_n8n_webhook(listing):
                 "location": f"{listing.location}, {listing.state}",
                 "url": url,
             }).encode()
+            headers = {"Content-Type": "application/json"}
+            secret = os.environ.get('N8N_WEBHOOK_SECRET', '')
+            if secret:
+                headers['X-Webhook-Secret'] = secret
             req = urllib.request.Request(
                 N8N_WEBHOOK_URL,
                 data=payload,
-                headers={"Content-Type": "application/json"},
+                headers=headers,
                 method="POST",
             )
             urllib.request.urlopen(req, timeout=10)

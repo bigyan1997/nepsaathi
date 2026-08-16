@@ -56,7 +56,7 @@ class ForumPostListView(generics.ListCreateAPIView):
         return ForumPostListSerializer
 
     def get_queryset(self):
-        return ForumPost.objects.select_related('author').prefetch_related('upvotes', 'replies')
+        return ForumPost.objects.select_related('author').prefetch_related('upvotes', 'replies', 'poll_options', 'poll_options__votes')
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -119,6 +119,8 @@ class ForumPostVoteView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, slug):
+        if request.user.is_banned:
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         try:
             post = ForumPost.objects.get(slug=slug)
         except ForumPost.DoesNotExist:
@@ -166,6 +168,8 @@ class ForumReplyVoteView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk):
+        if request.user.is_banned:
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         try:
             reply = ForumReply.objects.get(pk=pk)
         except ForumReply.DoesNotExist:
@@ -220,13 +224,13 @@ class ForumPollVoteView(APIView):
             PollVote.objects.create(option=option, voter=request.user)
 
         # Return updated vote counts for all options
-        options = post.poll_options.prefetch_related('votes').all()
-        total = sum(o.votes.count() for o in options)
+        options = list(post.poll_options.prefetch_related('votes').all())
+        total = sum(len(o.votes.all()) for o in options)
         return Response({
             'voted_option_id': option.id,
             'total_votes': total,
             'options': [
-                {'id': o.id, 'text': o.text, 'votes': o.votes.count()}
+                {'id': o.id, 'text': o.text, 'votes': len(o.votes.all())}
                 for o in options
             ],
         })
@@ -254,8 +258,10 @@ class AIImproveForumPostView(APIView):
 
         prompt = f"""You are helping a Nepalese Australian write a clear forum post on NepSaathi, a community platform.
 
+<post_context>
 Category: {category}
 Title: {title}
+</post_context>
 
 <user_draft>
 {body}

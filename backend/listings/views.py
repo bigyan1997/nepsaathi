@@ -661,6 +661,8 @@ class MarkListingStatusView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def patch(self, request, pk):
+        if request.user.is_banned:
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         try:
             listing = Listing.objects.get(pk=pk, user=request.user)
         except Listing.DoesNotExist:
@@ -753,7 +755,7 @@ class SimilarListingsView(APIView):
             status='active',
             is_under_review=False,
             state=listing.state,
-        ).exclude(pk=pk).order_by('-is_featured', '-created_at')[:3]
+        ).exclude(pk=pk).select_related('user').prefetch_related('images').order_by('-is_featured', '-created_at')[:3]
 
         # If not enough in same state, get from anywhere
         similar_list = list(similar)
@@ -766,7 +768,7 @@ class SimilarListingsView(APIView):
                 pk=pk
             ).exclude(
                 pk__in=[s.pk for s in similar_list]
-            ).order_by('-is_featured', '-created_at')[:3 - len(similar_list)]
+            ).select_related('user').prefetch_related('images').order_by('-is_featured', '-created_at')[:3 - len(similar_list)]
             similar_list = similar_list + list(extra)
         similar = similar_list
 
@@ -901,6 +903,8 @@ class RenewListingView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk):
+        if request.user.is_banned:
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         try:
             listing = Listing.objects.get(pk=pk, user=request.user)
         except Listing.DoesNotExist:
@@ -1051,8 +1055,9 @@ class AIImproveDescriptionView(APIView):
 
         prompt = f"""You are a professional copywriter improving listings on NepSaathi, a community platform for Nepalese Australians.
 
-Listing details:
+<listing_context>
 {context_block}
+</listing_context>
 
 <user_draft>
 {description}
