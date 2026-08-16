@@ -46,12 +46,11 @@ def _notify_n8n(listing):
             "image_url": image_url,
             "description": fresh.description or "",
         }).encode()
-        import os, hmac as _hmac
+        import os
         headers = {"Content-Type": "application/json"}
         secret = os.environ.get('N8N_WEBHOOK_SECRET', '')
         if secret:
-            sig = _hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
-            headers['X-Hub-Signature-256'] = f'sha256={sig}'
+            headers['X-Webhook-Secret'] = secret
         req = urllib.request.Request(
             _N8N_WEBHOOK, data=payload,
             headers=headers, method="POST",
