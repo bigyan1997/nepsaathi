@@ -472,7 +472,7 @@ class UserReviewListCreateView(APIView):
             {
                 'id': r.id,
                 'reviewer_id': r.reviewer_id,
-                'reviewer_name': r.reviewer.full_name or r.reviewer.email.split('@')[0],
+                'reviewer_name': r.reviewer.full_name or "NepSaathi User",
                 'rating': r.rating,
                 'comment': r.comment,
                 'created_at': r.created_at,
@@ -517,7 +517,7 @@ class UserReviewListCreateView(APIView):
         )
         return Response({
             'id': review.id,
-            'reviewer_name': request.user.full_name or request.user.email.split('@')[0],
+            'reviewer_name': request.user.full_name or "NepSaathi User",
             'rating': review.rating,
             'comment': review.comment,
             'created_at': review.created_at,

@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Listing, ListingImage, ListingReport, SavedListing, ListingView, SavedSearch
 from .serializers import ListingReportSerializer, ListingSerializer, ListingCreateSerializer, ListingImageSerializer, SavedListingSerializer, SavedSearchSerializer
 from .throttles import ListingCreateThrottle, ListingViewThrottle
+from rest_framework.throttling import ScopedRateThrottle
 from django.utils import timezone
 from django.db.models import Q
 from datetime import timedelta
@@ -45,9 +46,15 @@ def _notify_n8n(listing):
             "image_url": image_url,
             "description": fresh.description or "",
         }).encode()
+        import os, hmac as _hmac
+        headers = {"Content-Type": "application/json"}
+        secret = os.environ.get('N8N_WEBHOOK_SECRET', '')
+        if secret:
+            sig = _hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
+            headers['X-Hub-Signature-256'] = f'sha256={sig}'
         req = urllib.request.Request(
             _N8N_WEBHOOK, data=payload,
-            headers={"Content-Type": "application/json"}, method="POST",
+            headers=headers, method="POST",
         )
         urllib.request.urlopen(req, timeout=10)
     except Exception:
@@ -1012,6 +1019,7 @@ class ListingBenchmarkView(APIView):
 class AIImproveDescriptionView(APIView):
     """POST /api/listings/ai-improve/ — rewrites a rough listing description using Llama 3 via Groq."""
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
     throttle_scope = 'ai_improve'
 
     def post(self, request):

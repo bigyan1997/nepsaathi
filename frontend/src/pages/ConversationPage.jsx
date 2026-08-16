@@ -48,10 +48,24 @@ export default function ConversationPage() {
     let dead = false;
     let delay = 2000; // backoff: 2s → 4s → 8s … capped at 30s
 
-    const connect = () => {
+    const connect = async () => {
       const token = sessionStorage.getItem("nepsaathi_access_token");
       if (!token || dead) return;
-      ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?token=${token}`);
+      // Exchange the JWT for a short-lived one-time ticket so the token never
+      // appears in WebSocket URLs (server logs, browser history, proxy logs).
+      let ticket;
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/ws-ticket/`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        if (!res.ok || dead) return;
+        ticket = (await res.json()).ticket;
+      } catch {
+        return;
+      }
+      if (!ticket || dead) return;
+      ws = new WebSocket(`${WS_BASE}/ws/messages/${id}/?ticket=${ticket}`);
       wsRef.current = ws;
       ws.onopen = () => { setWsConnected(true); delay = 2000; }; // reset backoff on success
       ws.onmessage = (e) => {

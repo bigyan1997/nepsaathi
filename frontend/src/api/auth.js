@@ -20,17 +20,13 @@ export const login = async (email, password) => {
 };
 
 // Logout — blacklists the refresh token on Django.
-// For email/password users the backend reads the httpOnly cookie directly.
-// For Google OAuth users the refresh token is passed from localStorage.
-export const logout = async (refreshToken) => {
+// The backend reads the httpOnly cookie; no refresh token is stored in localStorage.
+export const logout = async () => {
   try {
-    const response = await api.post("/api/users/auth/logout/", {
-      refresh: refreshToken || undefined,
-    });
+    const response = await api.post("/api/users/auth/logout/", {});
     return response.data;
   } finally {
     sessionStorage.removeItem("nepsaathi_access_token");
-    localStorage.removeItem("nepsaathi_refresh_token"); // no-op for email users; clears Google OAuth token
   }
 };
 
@@ -79,9 +75,7 @@ export const googleLogin = async (accessToken) => {
   if (data.access) {
     try {
       sessionStorage.setItem("nepsaathi_access_token", data.access);
-      if (data.refresh) {
-        localStorage.setItem("nepsaathi_refresh_token", data.refresh);
-      }
+      // Refresh token is set as an httpOnly cookie by the backend — never stored in localStorage
       const profileResponse = await api.get("/api/users/profile/");
       data.user = profileResponse.data;
     } catch (e) {

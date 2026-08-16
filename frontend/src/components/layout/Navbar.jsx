@@ -114,11 +114,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      // Always call the logout API — for email users the backend reads the
-      // httpOnly refresh cookie directly; for Google OAuth users the token is
-      // passed from localStorage.
-      const refreshToken = localStorage.getItem("nepsaathi_refresh_token");
-      await logoutApi(refreshToken);
+      await logoutApi();
     } catch (e) {
       console.error("Logout API failed, continuing with local cleanup");
     } finally {

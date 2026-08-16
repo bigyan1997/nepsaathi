@@ -7,7 +7,7 @@ class MessageSerializer(serializers.ModelSerializer):
     sender_id = serializers.IntegerField(source='sender.id', read_only=True)
 
     def get_sender_name(self, obj):
-        return f"{obj.sender.first_name} {obj.sender.last_name}".strip() or obj.sender.email
+        return f"{obj.sender.first_name} {obj.sender.last_name}".strip() or "NepSaathi User"
 
     class Meta:
         model = Message
@@ -27,7 +27,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             return None
         return {
             'id': other.id,
-            'name': f"{other.first_name} {other.last_name}".strip() or other.email,
+            'name': f"{other.first_name} {other.last_name}".strip() or "NepSaathi User",
             'avatar': getattr(other, 'google_avatar', None),
         }
 

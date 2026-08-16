@@ -155,6 +155,8 @@ class MessageSendView(APIView):
     throttle_classes = (MessageSendThrottle,)
 
     def post(self, request, pk):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         try:
             convo = Conversation.objects.prefetch_related('participants').get(pk=pk)
         except Conversation.DoesNotExist:
@@ -225,3 +227,15 @@ class UnreadCountView(APIView):
         ).exclude(sender=request.user).count()
         set_cached_unread(request.user.pk, count)
         return Response({'unread_count': count})
+
+
+class WSTicketView(APIView):
+    """POST /api/messages/ws-ticket/ — issues a 30-second one-time ticket for WebSocket auth."""
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        import uuid
+        from django.core.cache import cache
+        ticket = uuid.uuid4().hex
+        cache.set(f'ws_ticket:{ticket}', request.user.pk, 30)
+        return Response({'ticket': ticket})

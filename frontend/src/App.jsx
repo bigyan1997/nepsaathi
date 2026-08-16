@@ -116,15 +116,15 @@ function App() {
 
   // Silent refresh for new tabs: sessionStorage is tab-scoped so a new tab
   // has no access token even if the user is marked as authenticated in localStorage.
+  // The httpOnly refresh cookie is sent automatically via withCredentials.
   useEffect(() => {
     const { isAuthenticated, logout } = useAuthStore.getState();
     if (!isAuthenticated) return;
     if (sessionStorage.getItem("nepsaathi_access_token")) return;
-    const refreshToken = localStorage.getItem("nepsaathi_refresh_token");
     axios
       .post(
         `${import.meta.env.VITE_API_URL}/api/auth/token/refresh/`,
-        refreshToken ? { refresh: refreshToken } : {},
+        {},
         { withCredentials: true },
       )
       .then((res) => {

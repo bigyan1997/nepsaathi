@@ -38,6 +38,11 @@ class JobSerializer(serializers.ModelSerializer):
         return obj.listing.views.count()
 
     def get_is_reported(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        if request.user != obj.listing.user and not request.user.is_staff:
+            return False
         return obj.listing.reports.filter(is_reviewed=False).exists()
 
     def get_images(self, obj):

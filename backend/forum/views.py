@@ -257,8 +257,9 @@ class AIImproveForumPostView(APIView):
 Category: {category}
 Title: {title}
 
-User's draft:
+<user_draft>
 {body}
+</user_draft>
 
 Rewrite the post body to be clear, friendly, and easy to read. Fix grammar and spelling. Keep all the facts and questions the user wrote. Do not add new information or change the meaning. Keep it natural and conversational. Return only the improved post body — no preamble, no explanation."""
 
