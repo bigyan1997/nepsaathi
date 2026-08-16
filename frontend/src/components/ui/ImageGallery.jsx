@@ -26,6 +26,8 @@ export default function ImageGallery({ images, title = "" }) {
           <img
             src={images[activeIndex]?.url}
             alt={title ? `${title} — photo ${activeIndex + 1}` : `Photo ${activeIndex + 1}`}
+            width="800"
+            height="560"
             onClick={() => setLightboxOpen(true)}
             fetchpriority={activeIndex === 0 ? "high" : undefined}
             loading={activeIndex === 0 ? "eager" : "lazy"}

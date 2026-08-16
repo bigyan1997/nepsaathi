@@ -278,28 +278,31 @@ export function SkeletonDesktopCard() {
 
 export function SkeletonDetailPage() {
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "28px" }}>
+    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "14px 14px 28px", minHeight: "100vh" }}>
       <Skeleton width="100px" height="13px" style={{ marginBottom: "20px" }} />
+
+      {/* Image gallery placeholder — matches ImageGallery height */}
+      <Skeleton
+        width="100%"
+        height="min(280px, 56vw)"
+        borderRadius="14px"
+        style={{ marginBottom: "12px" }}
+      />
+
+      {/* Main content card */}
       <div
         style={{
           background: "#fff",
           border: "0.5px solid #e5e5e5",
           borderRadius: "14px",
-          padding: "28px",
+          padding: "20px 16px",
           display: "flex",
           flexDirection: "column",
           gap: "16px",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-              flex: 1,
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", flex: 1 }}>
             <Skeleton width="120px" height="11px" />
             <Skeleton width="60%" height="22px" />
             <Skeleton width="40%" height="14px" />
@@ -311,18 +314,9 @@ export function SkeletonDetailPage() {
           <Skeleton width="120px" height="24px" borderRadius="10px" />
         </div>
         <Skeleton width="100%" height="0.5px" />
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "16px",
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
-            >
+            <div key={i} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <Skeleton width="60px" height="11px" />
               <Skeleton width="80%" height="14px" />
             </div>
@@ -333,6 +327,9 @@ export function SkeletonDetailPage() {
         <Skeleton width="100%" height="14px" />
         <Skeleton width="90%" height="14px" />
         <Skeleton width="80%" height="14px" />
+        <Skeleton width="70%" height="14px" />
+        <Skeleton width="85%" height="14px" />
+        <Skeleton width="100%" height="44px" borderRadius="10px" style={{ marginTop: "8px" }} />
       </div>
     </div>
   );

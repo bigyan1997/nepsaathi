@@ -357,6 +357,8 @@ function BusinessMobileCard({ biz }) {
           <img
             src={biz.logo_url}
             alt={biz.business_name}
+            width="64"
+            height="64"
             loading="lazy"
             style={{
               width: "64px",
@@ -576,6 +578,8 @@ function BusinessCard({ business }) {
           <img
             src={business.logo_url}
             alt={business.business_name}
+            width="64"
+            height="64"
             loading="lazy"
             style={{
               width: "64px",

@@ -399,6 +399,9 @@ function RoomMobileCard({ room }) {
           <img
             src={room.images[0].url}
             alt={room.listing_title}
+            width="400"
+            height="130"
+            loading="lazy"
             style={{
               width: "100%",
               height: "100%",
@@ -637,6 +640,9 @@ function RoomCard({ room }) {
           <img
             src={room.images[0].url}
             alt={room.listing_title}
+            width="400"
+            height="130"
+            loading="lazy"
             style={{
               width: "100%",
               height: "100%",
