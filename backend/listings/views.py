@@ -267,14 +267,15 @@ class ListingCreateView(generics.CreateAPIView):
             elapsed = (timezone.now() - last_recent.created_at).total_seconds()
             seconds_left = max(1, int(300 - elapsed))
             raise ValidationError({'cooldown': seconds_left})
-        # Check duplicate title in last 24 hours across all statuses
+        # Check duplicate title in last 24 hours — exclude soft-deleted listings
+        # so a rolled-back failed attempt doesn't block a retry with the same title.
         yesterday = timezone.now() - timedelta(hours=24)
         title = self.request.data.get('title', '').strip().lower()
         duplicate = Listing.objects.filter(
             user=user,
             title__iexact=title,
             created_at__gte=yesterday,
-        ).exists()
+        ).exclude(status='deleted').exists()
         if duplicate:
             raise ValidationError(
                 'You already posted a listing with this title in the last 24 hours.'
