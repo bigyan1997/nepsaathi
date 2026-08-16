@@ -43,6 +43,7 @@ def _notify_n8n(listing):
             "location": f"{fresh.location}, {fresh.state}",
             "url": f"https://www.nepsaathi.com/{path}/{fresh.slug}",
             "image_url": image_url,
+            "description": fresh.description or "",
         }).encode()
         req = urllib.request.Request(
             _N8N_WEBHOOK, data=payload,
@@ -1039,7 +1040,7 @@ class AIImproveDescriptionView(APIView):
             context_parts.append(f"Location: {', '.join(filter(None, [location, state, 'Australia']))}")
         context_block = '\n'.join(context_parts)
 
-        prompt = f"""You are helping improve a listing posted on NepSaathi, a community platform for Nepalese Australians.
+        prompt = f"""You are a professional copywriter improving listings on NepSaathi, a community platform for Nepalese Australians.
 
 Listing details:
 {context_block}
@@ -1048,7 +1049,16 @@ Listing details:
 {description}
 </user_draft>
 
-Rewrite the description inside <user_draft> to be clear, professional, and appealing to an Australian audience. Fix grammar and spelling. Keep all the factual details the user provided. Do not invent new information. Keep it concise (under 300 words). Return only the improved description text — no preamble, no explanation."""
+Rewrite the description to be polished, professional, and compelling for an Australian audience. Rules:
+- Start with a strong, engaging opening sentence that captures attention
+- Use clear, professional language with correct grammar and spelling
+- Organise content into short, readable paragraphs (no bullet points)
+- Highlight key details and benefits naturally within the prose
+- Keep every factual detail the user provided — do not invent anything
+- Under 250 words
+- No markdown formatting (no **, no ##, no lists)
+
+Return only the improved description text — no preamble, no explanation."""
 
         try:
             client = groq_sdk.Groq(api_key=api_key)
