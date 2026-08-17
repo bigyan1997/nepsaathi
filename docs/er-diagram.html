@@ -1,0 +1,769 @@
+<title>NepSaathi DB Schema</title>
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #F5F4F0;
+  color: #1C1833;
+  min-height: 100vh;
+}
+
+/* ── Header banner ── */
+.banner {
+  background: #26215C;
+  color: #fff;
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+}
+.banner-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+.banner-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.48);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+.banner-stats {
+  display: flex;
+  gap: 24px;
+}
+.stat { text-align: center; }
+.stat-n {
+  font-size: 22px;
+  font-weight: 800;
+  color: #E87722;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-label {
+  font-size: 9.5px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-top: 2px;
+}
+
+/* ── Legend strip ── */
+.legend {
+  background: #fff;
+  border-bottom: 1px solid #E0DCEF;
+  padding: 10px 28px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.legend-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #9490B5;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-right: 2px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px 3px 8px;
+  border-radius: 20px;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+.chip-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  flex-shrink: 0;
+}
+
+/* ── Notation guide ── */
+.notation {
+  background: #fff;
+  border-bottom: 1px solid #E0DCEF;
+  padding: 8px 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+.notation-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9490B5;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.notation-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #4B4468;
+}
+.notation-sym {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #534AB7;
+  background: #EDEAFF;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* ── Zoom toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 28px;
+  background: #F5F4F0;
+  border-bottom: 1px solid #E0DCEF;
+}
+.toolbar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B6784;
+}
+.zoom-slider {
+  -webkit-appearance: none;
+  width: 140px;
+  height: 4px;
+  border-radius: 2px;
+  background: #C8C4E0;
+  outline: none;
+  cursor: pointer;
+}
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #534AB7;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(83,74,183,0.4);
+}
+.zoom-pct {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: #534AB7;
+  font-weight: 700;
+  min-width: 38px;
+}
+.zoom-btn {
+  background: #fff;
+  border: 1px solid #D0CCEC;
+  color: #534AB7;
+  font-size: 14px;
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  transition: background 0.1s;
+}
+.zoom-btn:hover { background: #EDEAFF; }
+.zoom-reset {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: #fff;
+  border: 1px solid #D0CCEC;
+  color: #6B6784;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.zoom-reset:hover { background: #EDEAFF; color: #534AB7; }
+.toolbar-tip {
+  font-size: 10.5px;
+  color: #9490B5;
+  margin-left: auto;
+}
+
+/* ── Diagram container ── */
+.diagram-outer {
+  overflow: auto;
+  padding: 24px 28px 32px;
+  min-height: 520px;
+  background: #F5F4F0;
+}
+.diagram-inner {
+  background: #fff;
+  border: 1px solid #E0DCEF;
+  border-radius: 12px;
+  padding: 28px;
+  overflow: visible;
+  display: inline-block;
+  min-width: 100%;
+  transform-origin: top left;
+}
+
+/* ── Mermaid override — ensure SVG is centered within white card ── */
+.diagram-inner pre.mermaid {
+  display: flex;
+  justify-content: center;
+}
+.diagram-inner pre.mermaid svg {
+  max-width: none !important;
+}
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  padding: 16px 28px 32px;
+  font-size: 11px;
+  color: #9490B5;
+  line-height: 1.7;
+}
+.page-footer strong { color: #6B6784; }
+
+/* ── Key table ── */
+.key-section {
+  padding: 0 28px 24px;
+}
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.key-card {
+  background: #fff;
+  border: 1px solid #E0DCEF;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.key-card-head {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #9490B5;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #F0EDFF;
+}
+.key-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 11.5px;
+}
+.key-name {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: #534AB7;
+  min-width: 80px;
+}
+.key-desc { color: #6B6784; }
+
+/* ── Section label ── */
+.section-head {
+  padding: 16px 28px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #9490B5;
+}
+
+@media (max-width: 600px) {
+  .banner { padding: 12px 16px; }
+  .banner-stats { display: none; }
+  .diagram-outer { padding: 12px; }
+  .legend, .notation, .toolbar { padding-left: 14px; padding-right: 14px; }
+}
+</style>
+
+<!-- ── Header ── -->
+<div class="banner">
+  <div>
+    <div class="banner-title">नेपसाथी · NepSaathi — Database Schema</div>
+    <div class="banner-sub">PostgreSQL · Django ORM · Entity Relationship Diagram · 2026</div>
+  </div>
+  <div class="banner-stats">
+    <div class="stat"><div class="stat-n">29</div><div class="stat-label">Entities</div></div>
+    <div class="stat"><div class="stat-n">42</div><div class="stat-label">Relations</div></div>
+    <div class="stat"><div class="stat-n">14</div><div class="stat-label">Apps</div></div>
+    <div class="stat"><div class="stat-n">35+</div><div class="stat-label">FK / M2M</div></div>
+  </div>
+</div>
+
+<!-- ── Domain legend ── -->
+<div class="legend">
+  <span class="legend-label">Domain</span>
+  <span class="chip" style="background:#534AB7"><span class="chip-dot"></span>Users &amp; Auth</span>
+  <span class="chip" style="background:#26215C"><span class="chip-dot"></span>Listings</span>
+  <span class="chip" style="background:#1558A0"><span class="chip-dot"></span>Listing Types</span>
+  <span class="chip" style="background:#1A6B3C"><span class="chip-dot"></span>Business</span>
+  <span class="chip" style="background:#B34D00"><span class="chip-dot"></span>Forum</span>
+  <span class="chip" style="background:#6A1B9A"><span class="chip-dot"></span>Messaging</span>
+  <span class="chip" style="background:#336791"><span class="chip-dot"></span>Payments &amp; Other</span>
+</div>
+
+<!-- ── Crow's foot notation guide ── -->
+<div class="notation">
+  <span class="notation-label">Notation</span>
+  <span class="notation-item"><span class="notation-sym">||--||</span>exactly one–to–one</span>
+  <span class="notation-item"><span class="notation-sym">||--o|</span>one–to–zero-or-one</span>
+  <span class="notation-item"><span class="notation-sym">||--o{</span>one–to–zero-or-many</span>
+  <span class="notation-item"><span class="notation-sym">o|--o{</span>opt-one–to–opt-many</span>
+  <span class="notation-item"><span class="notation-sym">PK</span>primary key</span>
+  <span class="notation-item"><span class="notation-sym">FK</span>foreign key</span>
+  <span class="notation-item"><span class="notation-sym">UK</span>unique key</span>
+</div>
+
+<!-- ── Zoom toolbar ── -->
+<div class="toolbar">
+  <span class="toolbar-label">Zoom</span>
+  <button class="zoom-btn" onclick="adjustZoom(-0.1)">−</button>
+  <input class="zoom-slider" id="zoomSlider" type="range" min="20" max="200" value="70"
+         oninput="setZoom(this.value / 100)">
+  <button class="zoom-btn" onclick="adjustZoom(0.1)">+</button>
+  <span class="zoom-pct" id="zoomPct">70%</span>
+  <button class="zoom-reset" onclick="setZoom(1)">Reset 100%</button>
+  <span class="toolbar-tip">Scroll inside the diagram to pan · Ctrl+scroll to zoom</span>
+</div>
+
+<!-- ── Main ER Diagram ── -->
+<div class="diagram-outer" id="diagramOuter">
+  <div class="diagram-inner" id="diagramInner">
+    <pre class="mermaid">
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#EDE9FF',
+  'primaryTextColor': '#1C1833',
+  'primaryBorderColor': '#534AB7',
+  'lineColor': '#534AB7',
+  'attributeBackgroundColorOdd': '#F8F7FF',
+  'attributeBackgroundColorEven': '#FFFFFF',
+  'fontFamily': 'ui-monospace, SF Mono, Menlo, monospace',
+  'fontSize': '12px'
+}}}%%
+erDiagram
+
+    User {
+        int        id          PK
+        string     email       UK
+        string     username    UK
+        string     avatar
+        text       bio
+        string     phone_number
+        bool       is_verified
+        bool       is_banned
+        int        points
+    }
+
+    UserReview {
+        int        id          PK
+        int        reviewer_id FK
+        int        reviewee_id FK
+        int        rating
+        text       comment
+        datetime   created_at
+    }
+
+    PointEvent {
+        int        id          PK
+        int        user_id     FK
+        string     action
+        int        delta
+        datetime   created_at
+    }
+
+    PushSubscription {
+        int        id          PK
+        int        user_id     FK
+        string     endpoint
+        string     p256dh
+        string     auth
+        datetime   created_at
+    }
+
+    Listing {
+        int        id          PK
+        int        user_id     FK
+        string     listing_type
+        string     slug        UK
+        string     listing_title
+        text       description
+        string     location
+        decimal    latitude
+        decimal    longitude
+        bool       is_active
+        bool       is_deleted
+        bool       is_featured
+        datetime   created_at
+        datetime   updated_at
+    }
+
+    ListingImage {
+        int        id          PK
+        int        listing_id  FK
+        string     url
+        int        order
+        datetime   created_at
+    }
+
+    SavedListing {
+        int        id          PK
+        int        user_id     FK
+        int        listing_id  FK
+        datetime   saved_at
+    }
+
+    ListingReport {
+        int        id          PK
+        int        listing_id  FK
+        int        reporter_id FK
+        string     reason
+        datetime   created_at
+    }
+
+    ListingView {
+        int        id          PK
+        int        listing_id  FK
+        string     ip_address
+        datetime   viewed_at
+    }
+
+    SavedSearch {
+        int        id          PK
+        int        user_id     FK
+        string     listing_type
+        string     keywords
+        json       filters
+        bool       is_active
+        datetime   last_notified_at
+    }
+
+    Job {
+        int        id              PK
+        int        listing_id      FK
+        string     employment_type
+        decimal    salary
+        string     salary_period
+        string     industry
+        string     work_rights
+        string     apply_method
+        string     apply_link
+    }
+
+    JobApplication {
+        int        id           PK
+        int        job_id       FK
+        int        applicant_id FK
+        text       message
+        datetime   applied_at
+    }
+
+    Room {
+        int        id               PK
+        int        listing_id       FK
+        string     room_type
+        decimal    rent_per_week
+        decimal    bond
+        date       available_from
+        bool       furnished
+        bool       bills_included
+        string     preferred_tenant
+    }
+
+    Event {
+        int        id          PK
+        int        listing_id  FK
+        datetime   event_date
+        string     venue
+        bool       is_free
+        decimal    price
+        int        capacity
+    }
+
+    EventRSVP {
+        int        id       PK
+        int        event_id FK
+        int        user_id  FK
+        datetime   rsvp_at
+    }
+
+    Announcement {
+        int        id          PK
+        int        listing_id  FK
+        string     notice_type
+        date       expiry_date
+    }
+
+    Business {
+        int        id          PK
+        int        owner_id    FK
+        string     name
+        string     slug        UK
+        string     category
+        string     logo_url
+        string     phone
+        string     email
+        string     website
+        string     address
+        decimal    latitude
+        decimal    longitude
+        decimal    avg_rating
+        bool       is_verified
+        datetime   created_at
+    }
+
+    BusinessImage {
+        int        id           PK
+        int        business_id  FK
+        string     url
+        int        order
+        datetime   created_at
+    }
+
+    BusinessReview {
+        int        id           PK
+        int        business_id  FK
+        int        reviewer_id  FK
+        int        rating
+        text       comment
+        datetime   created_at
+    }
+
+    BusinessReport {
+        int        id           PK
+        int        business_id  FK
+        int        reporter_id  FK
+        string     reason
+        datetime   created_at
+    }
+
+    ForumPost {
+        int        id          PK
+        int        author_id   FK
+        string     title
+        string     slug        UK
+        text       body
+        string     category
+        bool       has_poll
+        bool       is_pinned
+        int        view_count
+        datetime   created_at
+        datetime   updated_at
+    }
+
+    ForumUpvote {
+        int        id       PK
+        int        post_id  FK
+        int        user_id  FK
+        datetime   created_at
+    }
+
+    ForumReply {
+        int        id        PK
+        int        post_id   FK
+        int        author_id FK
+        text       body
+        datetime   created_at
+    }
+
+    PollOption {
+        int        id         PK
+        int        post_id    FK
+        string     text
+        int        vote_count
+    }
+
+    PollVote {
+        int        id        PK
+        int        option_id FK
+        int        user_id   FK
+        datetime   voted_at
+    }
+
+    Conversation {
+        int        id              PK
+        int        listing_id      FK
+        datetime   last_message_at
+        datetime   created_at
+    }
+
+    ConvParticipant {
+        int        id              PK
+        int        conversation_id FK
+        int        user_id         FK
+    }
+
+    Message {
+        int        id              PK
+        int        conversation_id FK
+        int        sender_id       FK
+        text       content
+        bool       is_read
+        datetime   created_at
+    }
+
+    FeaturedPayment {
+        int        id               PK
+        int        user_id          FK
+        int        listing_id       FK
+        decimal    amount
+        string     stripe_session_id
+        datetime   created_at
+    }
+
+    %% ─── User relationships ───
+    User ||--o{ UserReview      : "reviewer"
+    User ||--o{ UserReview      : "reviewee"
+    User ||--o{ PointEvent      : "earns"
+    User ||--o| PushSubscription : "has (unique)"
+    User ||--o{ Listing         : "posts"
+    User ||--o{ SavedListing    : "saves"
+    User ||--o{ ListingReport   : "reports"
+    User ||--o{ SavedSearch     : "tracks"
+    User ||--o{ JobApplication  : "applies"
+    User ||--o{ EventRSVP       : "attends"
+    User ||--o{ Business        : "owns"
+    User ||--o{ BusinessReview  : "writes"
+    User ||--o{ BusinessReport  : "files"
+    User ||--o{ ForumPost       : "authors"
+    User ||--o{ ForumUpvote     : "upvotes"
+    User ||--o{ ForumReply      : "writes"
+    User ||--o{ PollVote        : "votes"
+    User ||--o{ FeaturedPayment : "makes"
+    User ||--o{ ConvParticipant : "in"
+    User ||--o{ Message         : "sends"
+
+    %% ─── Listing relationships ───
+    Listing ||--o| Job          : "type detail"
+    Listing ||--o| Room         : "type detail"
+    Listing ||--o| Event        : "type detail"
+    Listing ||--o| Announcement : "type detail"
+    Listing ||--o{ ListingImage  : "has"
+    Listing ||--o{ SavedListing  : "in"
+    Listing ||--o{ ListingReport : "has"
+    Listing ||--o{ ListingView   : "tracks"
+    Listing ||--o{ FeaturedPayment : "for"
+    Listing o|--o{ Conversation  : "about"
+
+    %% ─── Type detail relationships ───
+    Job   ||--o{ JobApplication : "receives"
+    Event ||--o{ EventRSVP      : "has"
+
+    %% ─── Business relationships ───
+    Business ||--o{ BusinessImage  : "has"
+    Business ||--o{ BusinessReview : "receives"
+    Business ||--o{ BusinessReport : "receives"
+
+    %% ─── Forum relationships ───
+    ForumPost ||--o{ ForumReply   : "has"
+    ForumPost ||--o{ ForumUpvote  : "has"
+    ForumPost ||--o{ PollOption   : "has"
+    PollOption ||--o{ PollVote    : "receives"
+
+    %% ─── Messaging relationships ───
+    Conversation ||--o{ ConvParticipant : "has"
+    Conversation ||--o{ Message         : "contains"
+    </pre>
+  </div>
+</div>
+
+<!-- ── Field type key ── -->
+<div class="section-head">Field &amp; Constraint Key</div>
+<div class="key-section">
+  <div class="key-grid">
+    <div class="key-card">
+      <div class="key-card-head">Types</div>
+      <div class="key-row"><span class="key-name">int</span><span class="key-desc">INTEGER (auto-increment PK or FK)</span></div>
+      <div class="key-row"><span class="key-name">string</span><span class="key-desc">VARCHAR / CharField</span></div>
+      <div class="key-row"><span class="key-name">text</span><span class="key-desc">TEXT / TextField (long)</span></div>
+      <div class="key-row"><span class="key-name">bool</span><span class="key-desc">BOOLEAN</span></div>
+      <div class="key-row"><span class="key-name">decimal</span><span class="key-desc">NUMERIC / DecimalField</span></div>
+      <div class="key-row"><span class="key-name">datetime</span><span class="key-desc">TIMESTAMPTZ</span></div>
+      <div class="key-row"><span class="key-name">date</span><span class="key-desc">DATE</span></div>
+      <div class="key-row"><span class="key-name">json</span><span class="key-desc">JSONB / JSONField</span></div>
+    </div>
+    <div class="key-card">
+      <div class="key-card-head">Constraints</div>
+      <div class="key-row"><span class="key-name">PK</span><span class="key-desc">Primary key — auto-increment</span></div>
+      <div class="key-row"><span class="key-name">FK</span><span class="key-desc">Foreign key reference</span></div>
+      <div class="key-row"><span class="key-name">UK</span><span class="key-desc">Unique constraint (UNIQUE INDEX)</span></div>
+    </div>
+    <div class="key-card">
+      <div class="key-card-head">Notable Patterns</div>
+      <div class="key-row"><span class="key-name">is_deleted</span><span class="key-desc">Soft-delete — Listing never hard-deleted</span></div>
+      <div class="key-row"><span class="key-name">updated_at</span><span class="key-desc">auto_now=True — used for sitemap lastmod</span></div>
+      <div class="key-row"><span class="key-name">avg_rating</span><span class="key-desc">Denormalised on Business for performance</span></div>
+      <div class="key-row"><span class="key-name">vote_count</span><span class="key-desc">Denormalised on PollOption</span></div>
+      <div class="key-row"><span class="key-name">last_message_at</span><span class="key-desc">Denormalised on Conversation for inbox sort</span></div>
+    </div>
+    <div class="key-card">
+      <div class="key-card-head">Unique Together</div>
+      <div class="key-row"><span class="key-name">SavedListing</span><span class="key-desc">(user, listing)</span></div>
+      <div class="key-row"><span class="key-name">JobApplication</span><span class="key-desc">(job, applicant)</span></div>
+      <div class="key-row"><span class="key-name">EventRSVP</span><span class="key-desc">(event, user)</span></div>
+      <div class="key-row"><span class="key-name">BusinessReview</span><span class="key-desc">(business, reviewer)</span></div>
+      <div class="key-row"><span class="key-name">PollVote</span><span class="key-desc">(post, user) — enforced by query</span></div>
+      <div class="key-row"><span class="key-name">ForumUpvote</span><span class="key-desc">(post, user)</span></div>
+      <div class="key-row"><span class="key-name">UserReview</span><span class="key-desc">(reviewer, reviewee)</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  <strong>NepSaathi Database Schema</strong> · Generated 2026 · PostgreSQL on Railway · Django ORM<br>
+  Entity counts: 29 tables · 42 declared relationships · 35+ FK / M2M indexes
+</div>
+
+<script>
+// ── Zoom/pan ──
+let currentScale = 0.70;
+const inner = document.getElementById('diagramInner');
+const slider = document.getElementById('zoomSlider');
+const pctLabel = document.getElementById('zoomPct');
+
+function applyZoom() {
+  inner.style.transform = `scale(${currentScale})`;
+  inner.style.transformOrigin = 'top left';
+  slider.value = Math.round(currentScale * 100);
+  pctLabel.textContent = Math.round(currentScale * 100) + '%';
+}
+
+function setZoom(val) {
+  currentScale = Math.min(2.0, Math.max(0.2, val));
+  applyZoom();
+}
+
+function adjustZoom(delta) {
+  setZoom(currentScale + delta);
+}
+
+// Slider input
+slider.addEventListener('input', () => setZoom(slider.value / 100));
+
+// Ctrl+wheel zoom on diagram area
+document.getElementById('diagramOuter').addEventListener('wheel', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    adjustZoom(e.deltaY < 0 ? 0.05 : -0.05);
+  }
+}, { passive: false });
+
+// Apply initial zoom after mermaid renders
+requestAnimationFrame(() => applyZoom());
+setTimeout(applyZoom, 600); // fallback after mermaid finishes
+</script>
