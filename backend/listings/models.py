@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 import cloudinary.uploader
 
 class Listing(models.Model):
@@ -99,6 +101,10 @@ class Listing(models.Model):
 
     slug = models.SlugField(max_length=255, unique=True, blank=True, db_index=True)
 
+    # Full-text search vector — weighted combination of title (A), location (B), description (C).
+    # Updated automatically via post_save signal in listings/signals.py.
+    search_vector = SearchVectorField(null=True, blank=True)
+
     class Meta:
         db_table = 'listings'
         ordering = ['-created_at']
@@ -111,6 +117,7 @@ class Listing(models.Model):
             models.Index(fields=['user']),
             models.Index(fields=['expires_at']),
             models.Index(fields=['-created_at']),
+            GinIndex(fields=['search_vector'], name='listing_search_vector_gin'),
         ]
 
     def __str__(self):

@@ -203,13 +203,13 @@ class ListingListView(generics.ListAPIView):
     """
     serializer_class = ListingSerializer
     permission_classes = (permissions.AllowAny,)
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_fields = ('listing_type', 'state', 'status', 'is_featured', 'user')
-    search_fields = ('title', 'location')
     ordering_fields = ('created_at', 'updated_at')
     ordering = ('-created_at',)
 
     def get_queryset(self):
+        from django.contrib.postgres.search import SearchQuery
         qs = Listing.objects.filter(
             status='active',
             is_under_review=False,
@@ -220,6 +220,9 @@ class ListingListView(generics.ListAPIView):
         )
         if self.request.query_params.get('new') == 'true':
             qs = qs.filter(created_at__gte=timezone.now() - timedelta(hours=24))
+        q = self.request.query_params.get('search', '').strip()
+        if q:
+            qs = qs.filter(search_vector=SearchQuery(q, search_type='websearch', config='english'))
         return qs
 
 
@@ -834,6 +837,7 @@ class GlobalSearchView(APIView):
             })
 
         from django.db.models import Q
+        from django.contrib.postgres.search import SearchQuery
         from jobs.models import Job
         from jobs.serializers import JobSerializer
         from rooms.models import Room
@@ -844,7 +848,11 @@ class GlobalSearchView(APIView):
         from announcements.serializers import AnnouncementSerializer
         from businesses.serializers import BusinessSerializer
 
-        base_filter = Q(listing__title__icontains=query) | Q(listing__location__icontains=query) | Q(listing__description__icontains=query)
+        if query:
+            search_query = SearchQuery(query, search_type='websearch', config='english')
+            base_filter = Q(listing__search_vector=search_query)
+        else:
+            base_filter = Q()  # state-only search — no text filter
         state_filter = Q(listing__state=state) if state else Q()
         biz_state_filter = Q(state=state) if state else Q()
 
