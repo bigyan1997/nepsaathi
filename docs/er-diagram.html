@@ -1,4 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NepSaathi DB Schema</title>
+<!-- mermaid.js required for local/standalone use; the artifact platform renders it natively -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
 <style>
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -763,7 +772,9 @@ document.getElementById('diagramOuter').addEventListener('wheel', (e) => {
   }
 }, { passive: false });
 
-// Apply initial zoom after mermaid renders
+// Apply initial zoom after mermaid renders (mermaid is async — wait for it)
 requestAnimationFrame(() => applyZoom());
-setTimeout(applyZoom, 600); // fallback after mermaid finishes
+setTimeout(applyZoom, 2000); // fallback; mermaid can take 1–2 s on large diagrams
 </script>
+</body>
+</html>
