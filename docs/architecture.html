@@ -1,0 +1,1771 @@
+<title>NepSaathi Architecture</title>
+<style>
+/* ── Tokens ── */
+:root {
+  --brand:       #26215C;
+  --violet:      #534AB7;
+  --orange:      #E87722;
+  --surface:     #F5F4F0;
+  --card:        #FFFFFF;
+  --text:        #1C1833;
+  --muted:       #6B6784;
+  --border:      #E0DCEF;
+  --tag-bg:      #EDEAFF;
+  --tag-text:    #3D329E;
+  --green-bg:    #E8F5EE;
+  --green-text:  #1A6B3C;
+  --orange-bg:   #FFF0E4;
+  --orange-text: #B34D00;
+  --teal-bg:     #E4F6F8;
+  --teal-text:   #1A6870;
+  --sidebar-w:   224px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface:     #0F0D1C;
+    --card:        #1A1730;
+    --text:        #EDE9FF;
+    --muted:       #9490B5;
+    --border:      #2E2848;
+    --tag-bg:      #29235A;
+    --tag-text:    #B8AFFF;
+    --green-bg:    #0F2E1E;
+    --green-text:  #5FBF8A;
+    --orange-bg:   #2C1800;
+    --orange-text: #FF9C52;
+    --teal-bg:     #0D2629;
+    --teal-text:   #5ED0DA;
+  }
+}
+:root[data-theme="dark"] {
+  --surface:     #0F0D1C;
+  --card:        #1A1730;
+  --text:        #EDE9FF;
+  --muted:       #9490B5;
+  --border:      #2E2848;
+  --tag-bg:      #29235A;
+  --tag-text:    #B8AFFF;
+  --green-bg:    #0F2E1E;
+  --green-text:  #5FBF8A;
+  --orange-bg:   #2C1800;
+  --orange-text: #FF9C52;
+  --teal-bg:     #0D2629;
+  --teal-text:   #5ED0DA;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--surface);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ── Layout ── */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--brand);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 0 0 32px;
+  scrollbar-width: thin;
+}
+.sidebar-logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 12px;
+}
+.sidebar-logo .wordmark {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+.sidebar-logo .sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.nav-group { margin-bottom: 4px; }
+.nav-group-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  padding: 10px 18px 4px;
+}
+.nav-link {
+  display: block;
+  padding: 5px 18px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+}
+.nav-link:hover { color: #fff; background: rgba(255,255,255,0.07); }
+.nav-link.active { color: #fff; border-left-color: var(--orange); background: rgba(255,255,255,0.08); }
+.nav-sub { padding-left: 12px; }
+.nav-sub .nav-link { font-size: 11.5px; color: rgba(255,255,255,0.5); }
+
+/* ── Content ── */
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 36px 80px;
+  max-width: 940px;
+}
+
+/* ── Page header ── */
+.page-header {
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--brand);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .page-header h1 { color: var(--text); }
+}
+:root[data-theme="dark"] .page-header h1 { color: var(--text); }
+.page-header p {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 13.5px;
+  max-width: 580px;
+}
+
+/* ── Sections ── */
+.section {
+  margin-bottom: 52px;
+  scroll-margin-top: 24px;
+}
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: -0.3px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .section-title { color: var(--violet); }
+}
+:root[data-theme="dark"] .section-title { color: var(--violet); }
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Sub-section ── */
+.subsection { margin-bottom: 28px; }
+.subsection-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Cards / grids ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.card + .card { margin-top: 10px; }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-sm {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+/* ── Tags ── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.tag-model   { background: var(--tag-bg);    color: var(--tag-text); }
+.tag-api     { background: var(--green-bg);  color: var(--green-text); }
+.tag-service { background: var(--orange-bg); color: var(--orange-text); }
+.tag-ws      { background: var(--teal-bg);   color: var(--teal-text); }
+
+/* ── Method pills ── */
+.method {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+.get  { background: #E8F5E9; color: #1B5E20; }
+.post { background: #E3F2FD; color: #0D47A1; }
+.pat  { background: #FFF8E1; color: #7C4D00; }
+.del  { background: #FFEBEE; color: #B71C1C; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .get  { background: #0F2E10; color: #66BB6A; }
+  :root:not([data-theme="light"]) .post { background: #0D1B2E; color: #64B5F6; }
+  :root:not([data-theme="light"]) .pat  { background: #2C2000; color: #FFD54F; }
+  :root:not([data-theme="light"]) .del  { background: #2E0D0D; color: #EF9A9A; }
+}
+:root[data-theme="dark"] .get  { background: #0F2E10; color: #66BB6A; }
+:root[data-theme="dark"] .post { background: #0D1B2E; color: #64B5F6; }
+:root[data-theme="dark"] .pat  { background: #2C2000; color: #FFD54F; }
+:root[data-theme="dark"] .del  { background: #2E0D0D; color: #EF9A9A; }
+
+/* ── Code / mono ── */
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11.5px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Routes tree ── */
+.route-group { margin-bottom: 16px; }
+.route-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 6px;
+}
+.route-list { list-style: none; }
+.route-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+.route-item:last-child { border-bottom: none; }
+.route-path {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--violet);
+  font-size: 12px;
+  min-width: 230px;
+  flex-shrink: 0;
+}
+.route-desc { color: var(--muted); font-size: 12px; }
+.route-guard {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.guard-auth   { background: #E8EEFF; color: #3548C5; }
+.guard-guest  { background: #FFF0F5; color: #B5136F; }
+.guard-super  { background: #FFF0E4; color: #B34D00; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .guard-auth  { background: #1A2050; color: #8BA4FF; }
+  :root:not([data-theme="light"]) .guard-guest { background: #2E0D20; color: #FF85C0; }
+  :root:not([data-theme="light"]) .guard-super { background: #2C1800; color: #FF9C52; }
+}
+:root[data-theme="dark"] .guard-auth  { background: #1A2050; color: #8BA4FF; }
+:root[data-theme="dark"] .guard-guest { background: #2E0D20; color: #FF85C0; }
+:root[data-theme="dark"] .guard-super { background: #2C1800; color: #FF9C52; }
+
+/* ── App blocks ── */
+.app-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.app-block-head {
+  background: var(--tag-bg);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.app-name {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tag-text);
+}
+.app-desc { font-size: 12px; color: var(--muted); }
+.app-block-body { padding: 12px 16px; }
+.model-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.model-chip {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  padding: 3px 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+}
+.api-rows { display: flex; flex-direction: column; gap: 4px; }
+.api-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+}
+.api-path {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--violet);
+  font-size: 11px;
+}
+.api-note { color: var(--muted); font-size: 11px; }
+
+/* ── Infra grid ── */
+.infra-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.infra-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.infra-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.infra-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.infra-card-name { font-size: 13px; font-weight: 700; }
+.infra-card-host { font-size: 11px; color: var(--muted); }
+.infra-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── Flow steps ── */
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.flow-step {
+  display: flex;
+  gap: 14px;
+  position: relative;
+}
+.flow-step + .flow-step { padding-top: 2px; }
+.flow-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.flow-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--violet);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.flow-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 16px;
+  background: var(--border);
+  margin: 3px 0;
+}
+.flow-body {
+  padding-top: 4px;
+  padding-bottom: 20px;
+  flex: 1;
+}
+.flow-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.flow-detail { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── Integration cards ── */
+.int-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+.int-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.int-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.int-icon {
+  font-size: 20px;
+  width: 32px;
+  text-align: center;
+}
+.int-name { font-size: 13px; font-weight: 700; }
+.int-type { font-size: 10.5px; color: var(--muted); }
+.int-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.int-trigger { margin-top: 8px; font-size: 11px; }
+.int-trigger strong { color: var(--orange); }
+
+/* ── SVG diagram ── */
+.diagram-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.diagram-title {
+  padding: 12px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.diagram-svg-wrap { overflow-x: auto; padding: 24px 20px; }
+
+/* ── SVG element styles ── */
+.diag-layer-label {
+  font-family: system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.diag-box-label {
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+}
+.diag-box-sub {
+  font-family: system-ui, sans-serif;
+  font-size: 9px;
+}
+
+/* ── Component tree ── */
+.comp-tree { list-style: none; }
+.comp-tree li { position: relative; padding: 3px 0 3px 20px; font-size: 12.5px; }
+.comp-tree li::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 50%;
+  width: 1px;
+  background: var(--border);
+}
+.comp-tree li::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 10px;
+  height: 1px;
+  background: var(--border);
+}
+.comp-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; color: var(--violet); }
+.comp-desc { color: var(--muted); font-size: 11px; margin-left: 6px; }
+
+/* ── State table ── */
+.state-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.state-table th {
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.state-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.state-table tr:last-child td { border-bottom: none; }
+.state-table td:first-child {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11.5px;
+  color: var(--violet);
+  white-space: nowrap;
+}
+.state-table td:nth-child(2) { color: var(--muted); }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; padding-bottom: 12px; }
+  .content { padding: 20px 16px 60px; }
+  .card-grid, .infra-grid, .int-grid { grid-template-columns: 1fr; }
+  .route-path { min-width: 160px; }
+}
+</style>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="wordmark">नेपसाथी · NepSaathi</div>
+    <div class="sub">Architecture Reference</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Overview</div>
+    <a class="nav-link" href="#overview">System Diagram</a>
+    <a class="nav-link" href="#infra">Infrastructure</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Frontend</div>
+    <a class="nav-link" href="#routes">Page Routes</a>
+    <a class="nav-link" href="#components">Components</a>
+    <a class="nav-link" href="#state">State &amp; Data</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Backend</div>
+    <a class="nav-link" href="#apps">Apps &amp; Models</a>
+    <a class="nav-link" href="#api">API Endpoints</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">System</div>
+    <a class="nav-link" href="#integrations">Integrations</a>
+    <a class="nav-link" href="#flows">Key Data Flows</a>
+    <a class="nav-link" href="#db">Database Design</a>
+  </div>
+</nav>
+
+<!-- ── Main content ── -->
+<main class="content">
+
+  <div class="page-header">
+    <h1>NepSaathi — System Architecture</h1>
+    <p>Complete technical reference for the full-stack platform. Django REST backend on Railway, React SPA on Vercel, WebSocket real-time messaging, AI features via Groq, Stripe payments.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SYSTEM DIAGRAM
+  ══════════════════════════════════════ -->
+  <div class="diagram-wrap" id="overview">
+    <div class="diagram-title">System Architecture — Layer View</div>
+    <div class="diagram-svg-wrap">
+      <svg viewBox="0 0 760 490" width="720" height="465" xmlns="http://www.w3.org/2000/svg" style="display:block; max-width:100%">
+        <defs>
+          <marker id="arr" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0 L8 4 L0 8 Z" fill="#9490B5"/>
+          </marker>
+          <marker id="arr-orange" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M0 0 L8 4 L0 8 Z" fill="#E87722"/>
+          </marker>
+        </defs>
+
+        <!-- Layer bands -->
+        <rect x="8" y="8" width="744" height="56" rx="6" fill="#F0EEFF" opacity="0.6"/>
+        <rect x="8" y="76" width="744" height="60" rx="6" fill="#EAF5FF" opacity="0.6"/>
+        <rect x="8" y="148" width="744" height="64" rx="6" fill="#EDF8F2" opacity="0.6"/>
+        <rect x="8" y="224" width="744" height="60" rx="6" fill="#FFF8ED" opacity="0.6"/>
+        <rect x="8" y="296" width="744" height="60" rx="6" fill="#F5F0FF" opacity="0.6"/>
+        <rect x="8" y="368" width="744" height="104" rx="6" fill="#FFF0F0" opacity="0.5"/>
+
+        <!-- Layer labels -->
+        <text x="20" y="25" class="diag-layer-label" fill="#8B85B5">Users</text>
+        <text x="20" y="95" class="diag-layer-label" fill="#5590B5">Delivery</text>
+        <text x="20" y="167" class="diag-layer-label" fill="#3A9B62">Application</text>
+        <text x="20" y="243" class="diag-layer-label" fill="#C07820">Automation</text>
+        <text x="20" y="315" class="diag-layer-label" fill="#7B60C0">Data</text>
+        <text x="20" y="387" class="diag-layer-label" fill="#B55050">External Services</text>
+
+        <!-- ── Users ── -->
+        <rect x="240" y="17" width="280" height="38" rx="7" fill="#534AB7"/>
+        <text x="380" y="33" text-anchor="middle" class="diag-box-label" fill="white">Browser / Mobile</text>
+        <text x="380" y="47" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.6)">React SPA  ·  PWA  ·  WebSocket Client</text>
+
+        <!-- ── Vercel ── -->
+        <rect x="54" y="84" width="230" height="44" rx="7" fill="#0A0A0A"/>
+        <text x="169" y="102" text-anchor="middle" class="diag-box-label" fill="white">Vercel CDN</text>
+        <text x="169" y="116" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.5)">React 18 · Vite · react-query · Zustand</text>
+
+        <!-- ── n8n ── -->
+        <rect x="476" y="84" width="236" height="44" rx="7" fill="#EA4B71"/>
+        <text x="594" y="102" text-anchor="middle" class="diag-box-label" fill="white">n8n Automation</text>
+        <text x="594" y="116" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.7)">Railway · Webhook trigger → FB/IG post</text>
+
+        <!-- ── Django API ── -->
+        <rect x="54" y="156" width="366" height="48" rx="7" fill="#092E20"/>
+        <text x="237" y="175" text-anchor="middle" class="diag-box-label" fill="white">Django REST Framework</text>
+        <text x="237" y="191" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.5)">Railway  ·  dj-rest-auth  ·  JWT  ·  ScopedRateThrottle</text>
+
+        <!-- ── Django Channels ── -->
+        <rect x="436" y="156" width="276" height="48" rx="7" fill="#092E20"/>
+        <text x="574" y="175" text-anchor="middle" class="diag-box-label" fill="white">Django Channels</text>
+        <text x="574" y="191" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.5)">WebSocket  ·  Redis pub/sub  ·  ticket auth</text>
+
+        <!-- ── n8n trigger zone ── -->
+        <rect x="54" y="232" width="648" height="44" rx="7" fill="#E87722" opacity="0.15" stroke="#E87722" stroke-width="1"/>
+        <text x="378" y="250" text-anchor="middle" class="diag-box-label" fill="#B05B10">New listing → POST /webhook → n8n → Facebook / Instagram</text>
+        <text x="378" y="265" text-anchor="middle" class="diag-box-sub" fill="#C07820">Fire-and-forget via background thread · 60s delay for image upload</text>
+
+        <!-- ── PostgreSQL ── -->
+        <rect x="54" y="304" width="290" height="44" rx="7" fill="#336791"/>
+        <text x="199" y="322" text-anchor="middle" class="diag-box-label" fill="white">PostgreSQL</text>
+        <text x="199" y="337" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.7)">Railway  ·  Django ORM  ·  35+ models</text>
+
+        <!-- ── Redis ── -->
+        <rect x="410" y="304" width="248" height="44" rx="7" fill="#D82C20"/>
+        <text x="534" y="322" text-anchor="middle" class="diag-box-label" fill="white">Redis</text>
+        <text x="534" y="337" text-anchor="middle" class="diag-box-sub" fill="rgba(255,255,255,0.7)">Railway  ·  Cache  ·  WS tickets  ·  Rate limiting</text>
+
+        <!-- External services row -->
+        <!-- Groq -->
+        <rect x="20" y="382" width="100" height="36" rx="6" fill="#FF7900" opacity="0.15" stroke="#FF7900" stroke-width="1"/>
+        <text x="70" y="397" text-anchor="middle" font-size="9.5" font-weight="700" fill="#C05800">Groq AI</text>
+        <text x="70" y="410" text-anchor="middle" font-size="8.5" fill="#C07820">Llama / GPT-OSS</text>
+
+        <!-- Stripe -->
+        <rect x="132" y="382" width="100" height="36" rx="6" fill="#635BFF" opacity="0.12" stroke="#635BFF" stroke-width="1"/>
+        <text x="182" y="397" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4B44D0">Stripe</text>
+        <text x="182" y="410" text-anchor="middle" font-size="8.5" fill="#4B44D0">Payments · Webhooks</text>
+
+        <!-- Email -->
+        <rect x="244" y="382" width="118" height="36" rx="6" fill="#1A73E8" opacity="0.1" stroke="#1A73E8" stroke-width="1"/>
+        <text x="303" y="397" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1558A0">Zoho Mail + Resend</text>
+        <text x="303" y="410" text-anchor="middle" font-size="8.5" fill="#1558A0">Transactional email</text>
+
+        <!-- Google OAuth -->
+        <rect x="374" y="382" width="112" height="36" rx="6" fill="#4285F4" opacity="0.1" stroke="#4285F4" stroke-width="1"/>
+        <text x="430" y="397" text-anchor="middle" font-size="9.5" font-weight="700" fill="#2060C4">Google OAuth</text>
+        <text x="430" y="410" text-anchor="middle" font-size="8.5" fill="#2060C4">Social login</text>
+
+        <!-- IndexNow -->
+        <rect x="498" y="382" width="100" height="36" rx="6" fill="#00897B" opacity="0.1" stroke="#00897B" stroke-width="1"/>
+        <text x="548" y="397" text-anchor="middle" font-size="9.5" font-weight="700" fill="#00695C">IndexNow</text>
+        <text x="548" y="410" text-anchor="middle" font-size="8.5" fill="#00695C">Bing · Yandex</text>
+
+        <!-- GA -->
+        <rect x="610" y="382" width="118" height="36" rx="6" fill="#E37400" opacity="0.12" stroke="#E37400" stroke-width="1"/>
+        <text x="669" y="397" text-anchor="middle" font-size="9.5" font-weight="700" fill="#B35A00">Google Analytics</text>
+        <text x="669" y="410" text-anchor="middle" font-size="8.5" fill="#B35A00">GA4 · G-M6E6RYVXKN</text>
+
+        <!-- Google Sheets -->
+        <rect x="20" y="426" width="100" height="36" rx="6" fill="#0F9D58" opacity="0.12" stroke="#0F9D58" stroke-width="1"/>
+        <text x="70" y="441" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0A7A45">Google Sheets</text>
+        <text x="70" y="454" text-anchor="middle" font-size="8.5" fill="#0A7A45">Feedback responses</text>
+
+        <!-- Push -->
+        <rect x="132" y="426" width="100" height="36" rx="6" fill="#7B1FA2" opacity="0.12" stroke="#7B1FA2" stroke-width="1"/>
+        <text x="182" y="441" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6A1B9A">Web Push</text>
+        <text x="182" y="454" text-anchor="middle" font-size="8.5" fill="#6A1B9A">VAPID notifications</text>
+
+        <!-- ── Arrows ── -->
+        <!-- Users → Vercel (HTTPS) -->
+        <line x1="295" y1="55" x2="210" y2="84" stroke="#9490B5" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <text x="222" y="74" font-size="8" fill="#9490B5">HTTPS</text>
+
+        <!-- Users → Channels (WebSocket) -->
+        <line x1="465" y1="55" x2="548" y2="84" stroke="#9490B5" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+        <text x="480" y="73" font-size="8" fill="#9490B5">WebSocket</text>
+
+        <!-- Vercel → Django REST -->
+        <line x1="169" y1="128" x2="190" y2="156" stroke="#9490B5" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="138" y="147" font-size="8" fill="#9490B5">API calls</text>
+
+        <!-- Django REST → n8n -->
+        <line x1="420" y1="180" x2="476" y2="106" stroke="#E87722" stroke-width="1.5" marker-end="url(#arr-orange)" stroke-dasharray="5,3"/>
+
+        <!-- Django REST → PostgreSQL -->
+        <line x1="200" y1="204" x2="200" y2="304" stroke="#9490B5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Django Channels → Redis -->
+        <line x1="534" y1="204" x2="534" y2="304" stroke="#9490B5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Django REST → External (dashed) -->
+        <line x1="237" y1="204" x2="237" y2="368" stroke="#B55050" stroke-width="1" marker-end="url(#arr)" stroke-dasharray="3,3" opacity="0.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       INFRASTRUCTURE
+  ══════════════════════════════════════ -->
+  <div class="section" id="infra">
+    <div class="section-title">Infrastructure</div>
+    <div class="infra-grid">
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <div class="infra-icon" style="background:#000;color:#fff">▲</div>
+          <div><div class="infra-card-name">Vercel</div><div class="infra-card-host">www.nepsaathi.com</div></div>
+        </div>
+        <div class="infra-card-desc">React 18 / Vite SPA. Catch-all rewrite to <code>index.html</code>. Sitemap-forum.xml proxied to Railway. Auto-deploy on GitHub push.</div>
+      </div>
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <div class="infra-icon" style="background:#0B0D0E;color:#C8F026">🚂</div>
+          <div><div class="infra-card-name">Railway — Django API</div><div class="infra-card-host">[backend-url].up.railway.app</div></div>
+        </div>
+        <div class="infra-card-desc">Django 5 · DRF · dj-rest-auth · Django Channels. Gunicorn + Daphne (ASGI). Auto-deploy on GitHub push.</div>
+      </div>
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <div class="infra-icon" style="background:#336791;color:#fff">🐘</div>
+          <div><div class="infra-card-name">Railway — PostgreSQL</div><div class="infra-card-host">Railway managed</div></div>
+        </div>
+        <div class="infra-card-desc">Primary database. All application data. Django ORM + migrations. 35+ models across 14 apps.</div>
+      </div>
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <div class="infra-icon" style="background:#D82C20;color:#fff">⚡</div>
+          <div><div class="infra-card-name">Railway — Redis</div><div class="infra-card-host">Railway managed</div></div>
+        </div>
+        <div class="infra-card-desc">Django cache backend. WebSocket pub/sub for Channels. One-time WS ticket storage (30s TTL). Rate limit counters.</div>
+      </div>
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <div class="infra-icon" style="background:#EA4B71;color:#fff">🔄</div>
+          <div><div class="infra-card-name">Railway — n8n</div><div class="infra-card-host">[n8n-url].up.railway.app</div></div>
+        </div>
+        <div class="infra-card-desc">Automation server. Receives webhook on new listing → posts to Facebook &amp; Instagram. N8N_TRUST_PROXY=true for Railway proxy.</div>
+      </div>
+      <div class="infra-card">
+        <div class="infra-card-top">
+          <div class="infra-icon" style="background:#24292F;color:#fff">🐙</div>
+          <div><div class="infra-card-name">GitHub</div><div class="infra-card-host">bigyan1997/nepsaathi</div></div>
+        </div>
+        <div class="infra-card-desc">Single monorepo. <code>main</code> branch triggers deploy on both Vercel and Railway. <code>.claude/</code> in .gitignore.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       FRONTEND — ROUTES
+  ══════════════════════════════════════ -->
+  <div class="section" id="routes">
+    <div class="section-title">Frontend — Page Routes</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">React 18 SPA. All routes are lazy-loaded. react-helmet-async manages per-page SEO meta. usePageMeta hook handles dynamic og:title/description/image.</p>
+
+    <div class="card" style="overflow-x:auto">
+      <div class="route-group">
+        <div class="route-group-label">Public — Listings</div>
+        <ul class="route-list">
+          <li class="route-item"><span class="route-path">/jobs</span><span class="route-desc">Job board — list + search + filter</span></li>
+          <li class="route-item"><span class="route-path">/jobs/:slug</span><span class="route-desc">Job detail — apply, quick-apply modal, JSON-LD JobPosting</span></li>
+          <li class="route-item"><span class="route-path">/rooms</span><span class="route-desc">Room listings — wanted &amp; available tabs</span></li>
+          <li class="route-item"><span class="route-path">/rooms/:slug</span><span class="route-desc">Room detail — map, image gallery, JSON-LD RealEstateListing</span></li>
+          <li class="route-item"><span class="route-path">/events</span><span class="route-desc">Events board — upcoming &amp; past</span></li>
+          <li class="route-item"><span class="route-path">/events/:slug</span><span class="route-desc">Event detail — RSVP, JSON-LD Event</span></li>
+          <li class="route-item"><span class="route-path">/notices</span><span class="route-desc">Community notices &amp; announcements</span></li>
+          <li class="route-item"><span class="route-path">/notices/:slug</span><span class="route-desc">Notice detail — JSON-LD Article</span></li>
+          <li class="route-item"><span class="route-path">/businesses</span><span class="route-desc">Business directory</span></li>
+          <li class="route-item"><span class="route-path">/businesses/:slug</span><span class="route-desc">Business detail — reviews, gallery, JSON-LD LocalBusiness</span></li>
+        </ul>
+      </div>
+
+      <div class="route-group" style="margin-top:14px">
+        <div class="route-group-label">Public — Community &amp; Info</div>
+        <ul class="route-list">
+          <li class="route-item"><span class="route-path">/forum</span><span class="route-desc">Community forum — list + search by category</span></li>
+          <li class="route-item"><span class="route-path">/forum/:slug</span><span class="route-desc">Forum post — replies, polls, upvotes, JSON-LD DiscussionForumPosting</span></li>
+          <li class="route-item"><span class="route-path">/services</span><span class="route-desc">Community service listings (ServiceListing model)</span></li>
+          <li class="route-item"><span class="route-path">/looking-for</span><span class="route-desc">Community requests (ReverseRequest model)</span></li>
+          <li class="route-item"><span class="route-path">/send-money</span><span class="route-desc">Remittance rates — live AUD→NPR comparison</span></li>
+          <li class="route-item"><span class="route-path">/visa-hub</span><span class="route-desc">Visa timelines, occupation invitations, SkillSelect rounds</span></li>
+          <li class="route-item"><span class="route-path">/new-to-australia</span><span class="route-desc">Settlement guide for new arrivals</span></li>
+          <li class="route-item"><span class="route-path">/whatsapp-groups</span><span class="route-desc">Curated WhatsApp group directory</span></li>
+          <li class="route-item"><span class="route-path">/new-listings</span><span class="route-desc">Latest across all listing types</span></li>
+          <li class="route-item"><span class="route-path">/featured</span><span class="route-desc">Promoted listings (paid via Stripe)</span></li>
+          <li class="route-item"><span class="route-path">/search</span><span class="route-desc">Global cross-type search</span></li>
+          <li class="route-item"><span class="route-path">/users/:id</span><span class="route-desc">Public user profile + reviews</span></li>
+          <li class="route-item"><span class="route-path">/privacy · /terms · /contact</span><span class="route-desc">Legal &amp; contact pages</span></li>
+        </ul>
+      </div>
+
+      <div class="route-group" style="margin-top:14px">
+        <div class="route-group-label">Auth (Guest Only)</div>
+        <ul class="route-list">
+          <li class="route-item"><span class="route-path">/login</span><span class="route-desc">Email + Google OAuth login</span><span class="route-guard guard-guest">Guest</span></li>
+          <li class="route-item"><span class="route-path">/register</span><span class="route-desc">Email registration — triggers verification email</span><span class="route-guard guard-guest">Guest</span></li>
+          <li class="route-item"><span class="route-path">/verify-email</span><span class="route-desc">Email verification via token</span><span class="route-guard guard-guest">Guest</span></li>
+          <li class="route-item"><span class="route-path">/forgot-password</span><span class="route-desc">Request password reset email</span><span class="route-guard guard-guest">Guest</span></li>
+          <li class="route-item"><span class="route-path">/reset-password/:uid/:token</span><span class="route-desc">Set new password via emailed link</span><span class="route-guard guard-guest">Guest</span></li>
+        </ul>
+      </div>
+
+      <div class="route-group" style="margin-top:14px">
+        <div class="route-group-label">Protected (Auth Required)</div>
+        <ul class="route-list">
+          <li class="route-item"><span class="route-path">/post-ad</span><span class="route-desc">Two-step listing creation — base then type detail</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/register-business</span><span class="route-desc">Business registration form</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/edit-listing/:slug</span><span class="route-desc">Edit owned listing</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/my-listings</span><span class="route-desc">Manage own listings — bulk actions, floating action bar</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/profile</span><span class="route-desc">Edit profile, avatar, settings, delete account</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/messages · /messages/:id</span><span class="route-desc">Inbox + real-time conversation (WebSocket)</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/saved-searches</span><span class="route-desc">Manage saved search alerts</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/points</span><span class="route-desc">Point history and leaderboard</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/forum/new</span><span class="route-desc">Create forum post (with poll support)</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/payment/success · /payment/cancel</span><span class="route-desc">Stripe checkout return pages</span><span class="route-guard guard-auth">Auth</span></li>
+          <li class="route-item"><span class="route-path">/panel</span><span class="route-desc">Internal admin panel</span><span class="route-guard guard-super">Superuser</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       FRONTEND — COMPONENTS
+  ══════════════════════════════════════ -->
+  <div class="section" id="components">
+    <div class="section-title">Frontend — Component Hierarchy</div>
+
+    <div class="card-grid">
+      <div class="card-sm">
+        <div class="subsection-title">Layout</div>
+        <ul class="comp-tree">
+          <li><span class="comp-name">Navbar</span><span class="comp-desc">auth state, unread badge</span></li>
+          <li><span class="comp-name">Footer</span></li>
+          <li><span class="comp-name">PageWrapper</span><span class="comp-desc">progress bar trigger</span></li>
+          <li><span class="comp-name">ScrollToTop</span></li>
+        </ul>
+      </div>
+
+      <div class="card-sm">
+        <div class="subsection-title">Auth Guards</div>
+        <ul class="comp-tree">
+          <li><span class="comp-name">ProtectedRoute</span><span class="comp-desc">→ /login</span></li>
+          <li><span class="comp-name">GuestRoute</span><span class="comp-desc">→ / if authed</span></li>
+          <li><span class="comp-name">SuperUserRoute</span><span class="comp-desc">→ 404</span></li>
+        </ul>
+      </div>
+
+      <div class="card-sm">
+        <div class="subsection-title">UI Primitives</div>
+        <ul class="comp-tree">
+          <li><span class="comp-name">ImageGallery</span><span class="comp-desc">lightbox, fetchpriority</span></li>
+          <li><span class="comp-name">SEO</span><span class="comp-desc">helmet-async wrapper</span></li>
+          <li><span class="comp-name">JsonLd</span><span class="comp-desc">structured data injection</span></li>
+          <li><span class="comp-name">Skeleton*</span><span class="comp-desc">5 variants, minHeight:100vh</span></li>
+          <li><span class="comp-name">Toast / ToastProvider</span></li>
+          <li><span class="comp-name">ProgressBar</span></li>
+          <li><span class="comp-name">Modal / ConfirmModal</span></li>
+        </ul>
+      </div>
+
+      <div class="card-sm">
+        <div class="subsection-title">Listing Actions</div>
+        <ul class="comp-tree">
+          <li><span class="comp-name">SaveButton</span><span class="comp-desc">toggle saved listing</span></li>
+          <li><span class="comp-name">ShareButton</span><span class="comp-desc">native share API</span></li>
+          <li><span class="comp-name">ReportButton</span></li>
+          <li><span class="comp-name">WhatsAppButton</span></li>
+          <li><span class="comp-name">MessageButton</span></li>
+          <li><span class="comp-name">QuickApplyModal</span></li>
+          <li><span class="comp-name">GetInTouchSection</span></li>
+          <li><span class="comp-name">MarketBenchmark</span><span class="comp-desc">salary comparison</span></li>
+        </ul>
+      </div>
+
+      <div class="card-sm">
+        <div class="subsection-title">Global Overlays</div>
+        <ul class="comp-tree">
+          <li><span class="comp-name">IdleTimeoutModal</span><span class="comp-desc">30min idle → 3min countdown</span></li>
+          <li><span class="comp-name">FeedbackModal</span><span class="comp-desc">exit-intent trigger</span></li>
+          <li><span class="comp-name">CookieConsent</span><span class="comp-desc">position:fixed</span></li>
+          <li><span class="comp-name">PWAInstallPrompt</span></li>
+        </ul>
+      </div>
+
+      <div class="card-sm">
+        <div class="subsection-title">Auth Components</div>
+        <ul class="comp-tree">
+          <li><span class="comp-name">GoogleLoginButton</span></li>
+          <li><span class="comp-name">NepSaathiLogo</span></li>
+          <li><span class="comp-name">VerifiedBadge</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       STATE & DATA
+  ══════════════════════════════════════ -->
+  <div class="section" id="state">
+    <div class="section-title">State &amp; Data Layer</div>
+
+    <div class="subsection">
+      <div class="subsection-title">Zustand — Global Store (authStore)</div>
+      <div class="card" style="overflow-x:auto">
+        <table class="state-table">
+          <thead><tr><th>Key</th><th>Storage</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>user</td><td>localStorage (partialize)</td><td><code>is_staff</code> and <code>is_superuser</code> stripped from persist — re-fetched from server</td></tr>
+            <tr><td>isAuthenticated</td><td>localStorage</td><td>Boolean, persisted for splash-screen fast path</td></tr>
+            <tr><td>access token</td><td>sessionStorage</td><td>Tab-scoped — cleared on browser close. Never in Zustand state.</td></tr>
+            <tr><td>refresh token</td><td>httpOnly cookie</td><td>Set by backend. Never readable by JS. Sent automatically via withCredentials.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">React Query — Server State</div>
+      <div class="card" style="overflow-x:auto">
+        <table class="state-table">
+          <thead><tr><th>Query Key Pattern</th><th>staleTime / gcTime</th><th>Used For</th></tr></thead>
+          <tbody>
+            <tr><td>["job", slug]</td><td>0 / 0</td><td>Detail pages — always fresh, cache deleted on unmount</td></tr>
+            <tr><td>["forum-posts", …]</td><td>5 min / default</td><td>Forum list — cached between navigations</td></tr>
+            <tr><td>["similar", id]</td><td>default</td><td>Similar listings widget</td></tr>
+            <tr><td>["businesses", …]</td><td>default</td><td>Business directory</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Key Hooks</div>
+      <div class="card-grid">
+        <div class="card-sm">
+          <div style="font-family:monospace;font-size:11.5px;color:var(--violet);margin-bottom:4px">usePageMeta(title, desc, image)</div>
+          <div style="font-size:11.5px;color:var(--muted)">Updates document.title + og/twitter meta on detail pages. Restores defaults on unmount.</div>
+        </div>
+        <div class="card-sm">
+          <div style="font-family:monospace;font-size:11.5px;color:var(--violet);margin-bottom:4px">useIdleTimeout({warningAfter, logoutAfter})</div>
+          <div style="font-size:11.5px;color:var(--muted)">Mouse/keyboard/scroll idle detection. Feeds IdleGuard in App.jsx.</div>
+        </div>
+        <div class="card-sm">
+          <div style="font-family:monospace;font-size:11.5px;color:var(--violet);margin-bottom:4px">useIsMobile()</div>
+          <div style="font-size:11.5px;color:var(--muted)">Viewport-width breakpoint hook. Controls card layout switching on listings pages.</div>
+        </div>
+        <div class="card-sm">
+          <div style="font-family:monospace;font-size:11.5px;color:var(--violet);margin-bottom:4px">usePushNotifications(isAuth)</div>
+          <div style="font-size:11.5px;color:var(--muted)">Registers VAPID push subscription. Only fires when authenticated. PushInit component in App.jsx.</div>
+        </div>
+        <div class="card-sm">
+          <div style="font-family:monospace;font-size:11.5px;color:var(--violet);margin-bottom:4px">useExitIntent(trigger)</div>
+          <div style="font-size:11.5px;color:var(--muted)">Mouse-leave document detection. Fires feedback modal on listing pages only.</div>
+        </div>
+        <div class="card-sm">
+          <div style="font-family:monospace;font-size:11.5px;color:var(--violet);margin-bottom:4px">useToast() → {addToast}</div>
+          <div style="font-size:11.5px;color:var(--muted)">Programmatic toast. Note: exposes <code>addToast</code>, not <code>showToast</code>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       BACKEND — APPS & MODELS
+  ══════════════════════════════════════ -->
+  <div class="section" id="apps">
+    <div class="section-title">Backend — Django Apps &amp; Models</div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">users</span>
+        <span class="app-desc">Custom AbstractUser, points, reviews, push subscriptions</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">User</span>
+          <span class="model-chip">UserReview</span>
+          <span class="model-chip">PointEvent</span>
+          <span class="model-chip">PushSubscription</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method get">GET</span><span class="method pat">PATCH</span><span class="api-path">/api/users/profile/</span><span class="api-note">— own profile</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/users/{id}/public/</span><span class="api-note">— public profile</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/users/auth/google/</span><span class="api-note">— Google OAuth login</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/users/push/subscribe/</span><span class="api-note">— VAPID subscription</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/users/points/</span><span class="api-note">— point history</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/users/{id}/reviews/</span><span class="api-note">— leave review</span></div>
+          <div class="api-row"><span class="method del">DELETE</span><span class="api-path">/api/users/delete-account/</span><span class="api-note">— wrapped in transaction.atomic()</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">listings</span>
+        <span class="app-desc">Base listing entity shared by all listing types</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">Listing</span>
+          <span class="model-chip">ListingImage</span>
+          <span class="model-chip">SavedListing</span>
+          <span class="model-chip">ListingReport</span>
+          <span class="model-chip">ListingView</span>
+          <span class="model-chip">SavedSearch</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/listings/create/</span><span class="api-note">— step 1 of 2 for new listings; 5-min cooldown, 24h dupe check</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/my-listings/</span><span class="api-note">— own listings with bulk actions</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/listings/ai-improve/</span><span class="api-note">— Groq AI rewrite, 20/day throttle</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/search/</span><span class="api-note">— global cross-type search</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/sitemap/</span><span class="api-note">— sitemap data for generate-sitemap.mjs</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/saved/</span><span class="api-note">— saved listings</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/saved-searches/</span><span class="api-note">— alert subscriptions</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">jobs</span>
+        <span class="app-desc">Job listings — type-detail for base Listing</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">Job</span>
+          <span class="model-chip">JobApplication</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/jobs/create/</span><span class="api-note">— step 2; attaches Job to existing Listing</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/jobs/{id}/apply/</span><span class="api-note">— apply with message</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/jobs/ai-improve-cover-letter/</span><span class="api-note">— Groq AI cover letter assist</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">rooms · events · announcements</span>
+        <span class="app-desc">Type-detail apps for rooms, events (with RSVP), and notice listings</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">Room</span>
+          <span class="model-chip">Event</span>
+          <span class="model-chip">EventRSVP</span>
+          <span class="model-chip">Announcement</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/rooms/create/</span><span class="api-note">— step 2 for rooms</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/events/create/</span><span class="api-note">— step 2 for events</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/events/{id}/rsvp/</span><span class="api-note">— toggle RSVP</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/notices/create/</span><span class="api-note">— step 2 for notices</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">businesses</span>
+        <span class="app-desc">Business directory — separate model (not a Listing subtype)</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">Business</span>
+          <span class="model-chip">BusinessImage</span>
+          <span class="model-chip">BusinessReport</span>
+          <span class="model-chip">BusinessReview</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/businesses/create/</span><span class="api-note">— max 5 per user; IndexNow ping on create</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/businesses/{slug}/reviews/</span><span class="api-note">— leave review</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/businesses/{slug}/images/</span><span class="api-note">— upload photos</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">forum</span>
+        <span class="app-desc">Community forum with polls, upvotes, threaded replies, AI improve</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">ForumPost</span>
+          <span class="model-chip">ForumReply</span>
+          <span class="model-chip">PollOption</span>
+          <span class="model-chip">PollVote</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method get">GET</span><span class="method post">POST</span><span class="api-path">/api/forum/</span><span class="api-note">— list + create; IndexNow ping on create</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/forum/{slug}/vote/</span><span class="api-note">— toggle upvote</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/forum/{slug}/poll-vote/</span><span class="api-note">— cast/change poll vote (atomic)</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/forum/ai-improve/</span><span class="api-note">— Groq AI post rewrite, 20/day throttle</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">messaging</span>
+        <span class="app-desc">Real-time chat via WebSocket. One-time ticket auth — JWT never in WS URL.</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">Conversation</span>
+          <span class="model-chip">Message</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/messages/ws-ticket/</span><span class="api-note">— issues 30s one-time UUID ticket stored in Redis</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/messages/</span><span class="api-note">— conversation list</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/messages/{id}/send/</span><span class="api-note">— send message (REST fallback)</span></div>
+          <div class="api-row"><span class="tag tag-ws">WS</span><span class="api-path">wss://…/ws/messages/{id}/?ticket=&lt;uuid&gt;</span><span class="api-note">— real-time channel</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">payments</span>
+        <span class="app-desc">Stripe checkout for promoted/featured listing slots</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">FeaturedPayment</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/payments/feature/{listing_id}/</span><span class="api-note">— create Stripe checkout session</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/payments/webhook/</span><span class="api-note">— Stripe webhook → mark listing featured</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/payments/invoice/{listing_id}/</span><span class="api-note">— generate PDF invoice (WeasyPrint)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-block">
+      <div class="app-block-head">
+        <span class="app-name">community · remittance · visa · feedback</span>
+        <span class="app-desc">Supporting modules</span>
+      </div>
+      <div class="app-block-body">
+        <div class="model-chips">
+          <span class="model-chip">ServiceListing</span>
+          <span class="model-chip">ReverseRequest</span>
+          <span class="model-chip">RemittanceRate</span>
+          <span class="model-chip">VisaTimeline</span>
+          <span class="model-chip">WhatsAppGroup</span>
+          <span class="model-chip">Occupation</span>
+          <span class="model-chip">InvitationRound</span>
+          <span class="model-chip">OccupationInvitation</span>
+          <span class="model-chip">FeedbackResponse</span>
+        </div>
+        <div class="api-rows">
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/community/services/</span><span class="api-note">— community service listings</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/community/requests/</span><span class="api-note">— community requests (looking-for)</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/remittance/</span><span class="api-note">— live AUD→NPR rates</span></div>
+          <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/visa/</span><span class="api-note">— visa timelines, SkillSelect rounds</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/feedback/</span><span class="api-note">— save to DB + Google Sheets sync</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       API ENDPOINT QUICK REFERENCE
+  ══════════════════════════════════════ -->
+  <div class="section" id="api">
+    <div class="section-title">API Endpoint Quick Reference</div>
+    <div class="card" style="overflow-x:auto">
+      <table class="state-table">
+        <thead><tr><th>Prefix</th><th>Router</th><th>Auth</th><th>Throttle</th></tr></thead>
+        <tbody>
+          <tr><td>/api/auth/login/</td><td>ThrottledLoginView</td><td>—</td><td>5/min</td></tr>
+          <tr><td>/api/auth/registration/</td><td>ThrottledRegisterView</td><td>—</td><td>3/hour</td></tr>
+          <tr><td>/api/auth/password/reset/</td><td>ThrottledPasswordResetView</td><td>—</td><td>3/hour</td></tr>
+          <tr><td>/api/auth/…</td><td>dj-rest-auth</td><td>Varies</td><td>—</td></tr>
+          <tr><td>/api/users/…</td><td>users.urls</td><td>IsAuth</td><td>—</td></tr>
+          <tr><td>/api/listings/…</td><td>listings.urls</td><td>Mixed</td><td>ListingCreateThrottle · ai_improve: 20/day</td></tr>
+          <tr><td>/api/jobs/…</td><td>jobs.urls</td><td>Mixed</td><td>—</td></tr>
+          <tr><td>/api/rooms/…</td><td>rooms.urls</td><td>Mixed</td><td>—</td></tr>
+          <tr><td>/api/events/…</td><td>events.urls</td><td>Mixed</td><td>—</td></tr>
+          <tr><td>/api/notices/…</td><td>announcements.urls</td><td>Mixed</td><td>—</td></tr>
+          <tr><td>/api/businesses/…</td><td>businesses.urls</td><td>Mixed</td><td>BusinessCreateThrottle: 3/hour</td></tr>
+          <tr><td>/api/forum/…</td><td>forum.urls</td><td>IsAuthOrReadOnly</td><td>ai_improve: 20/day</td></tr>
+          <tr><td>/api/messages/…</td><td>messaging.urls</td><td>IsAuth</td><td>—</td></tr>
+          <tr><td>/api/payments/…</td><td>payments.urls</td><td>IsAuth</td><td>—</td></tr>
+          <tr><td>/api/community/…</td><td>community.urls</td><td>IsAuthOrReadOnly</td><td>—</td></tr>
+          <tr><td>/api/remittance/</td><td>remittance.urls</td><td>AllowAny</td><td>—</td></tr>
+          <tr><td>/api/visa/…</td><td>visa.urls</td><td>AllowAny</td><td>—</td></tr>
+          <tr><td>/api/feedback/</td><td>feedback.urls</td><td>AllowAny</td><td>—</td></tr>
+          <tr><td>/api/sitemap-forum.xml</td><td>Django sitemaps</td><td>AllowAny</td><td>—</td></tr>
+          <tr><td>/api/panel/…</td><td>panel.urls</td><td>IsAdminUser</td><td>—</td></tr>
+          <tr><td>/nepsaathi-admin/</td><td>Django Admin</td><td>Staff</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px">Public (read) endpoints use <code>SilentJWTAuthentication</code> — JWT is optional, no 401 on anonymous requests. Authenticated endpoints use standard JWT bearer tokens (sessionStorage) + httpOnly refresh cookie.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       INTEGRATIONS
+  ══════════════════════════════════════ -->
+  <div class="section" id="integrations">
+    <div class="section-title">External Integrations</div>
+    <div class="int-grid">
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">🤖</span><div><div class="int-name">Groq AI</div><div class="int-type">AI text improvement</div></div></div>
+        <div class="int-desc">Llama / GPT-OSS-120b via Groq API. Three endpoints: listing description improve, job cover letter assist, forum post rewrite. XML delimiters protect against prompt injection.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> User clicks "Improve with AI" · Rate limited 20/day (ScopedRateThrottle)</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">💳</span><div><div class="int-name">Stripe</div><div class="int-type">Payments</div></div></div>
+        <div class="int-desc">Checkout Session for featured listing promotion. Webhook on payment_intent.succeeded marks listing as featured and records FeaturedPayment. WeasyPrint generates PDF invoice.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> User clicks "Feature this listing" → /payment/success or /payment/cancel</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">📧</span><div><div class="int-name">Zoho Mail + Resend</div><div class="int-type">Email delivery</div></div></div>
+        <div class="int-desc">Dual routing: Zoho for transactional mail (registration, password reset). Resend for bulk/alert mail (saved search alerts, spam notifications). Routing determined by email type in core/emails.py.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> Registration · Password reset · New listing matching saved search</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">🔄</span><div><div class="int-name">n8n</div><div class="int-type">Social automation</div></div></div>
+        <div class="int-desc">Railway-hosted n8n instance. Receives webhook POST from Django when a new listing is approved. Workflow posts to Facebook Page + Instagram. 60-second delay allows images to upload first.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> New listing created → background thread → POST /webhook (no auth header currently)</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">🌐</span><div><div class="int-name">Google OAuth</div><div class="int-type">Social login</div></div></div>
+        <div class="int-desc">One-click Google sign-in via @react-oauth/google on frontend. Token sent to /api/users/auth/google/ → dj-rest-auth social adapter creates/links User account and returns JWT pair.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> "Continue with Google" on /login or /register</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">🔍</span><div><div class="int-name">IndexNow</div><div class="int-type">Search indexing</div></div></div>
+        <div class="int-desc">Pings api.indexnow.org instantly on new content. Covered: forum posts, all listing types (job/room/event/notice), businesses. Shared utility in core/indexnow.py. Key file at /bab5cd5c…txt.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> perform_create on any listing, business, or forum post view</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">🔔</span><div><div class="int-name">Web Push (VAPID)</div><div class="int-type">Push notifications</div></div></div>
+        <div class="int-desc">Browser push via Web Push Protocol. PushSubscription stored per-user. usePushNotifications hook registers on login. Notifications sent from Django via pywebpush.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> Server-side events (new message, listing approved, etc.)</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">📊</span><div><div class="int-name">Google Analytics</div><div class="int-type">Analytics</div></div></div>
+        <div class="int-desc">GA4 via gtag.js in index.html (async, non-blocking). Measurement ID G-M6E6RYVXKN. No custom events wired — standard pageview tracking only.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> Every page load</div>
+      </div>
+
+      <div class="int-card">
+        <div class="int-card-head"><span class="int-icon">📝</span><div><div class="int-name">Google Sheets</div><div class="int-type">Feedback logging</div></div></div>
+        <div class="int-desc">Exit-intent feedback modal responses synced to a Google Sheet via service account credentials. Stored in DB (FeedbackResponse) + Sheets simultaneously.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> User submits feedback modal (exit intent on listing pages)</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       KEY DATA FLOWS
+  ══════════════════════════════════════ -->
+  <div class="section" id="flows">
+    <div class="section-title">Key Data Flows</div>
+
+    <div class="card-grid" style="grid-template-columns:1fr 1fr">
+
+      <div class="card">
+        <div class="subsection-title">Auth Flow — JWT + Cookie</div>
+        <div class="flow">
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">1</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Login</div><div class="flow-detail">POST /api/auth/login/ → Django returns access (JSON) + sets refresh token as httpOnly SameSite=Lax cookie.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">2</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Access token stored</div><div class="flow-detail">Frontend stores access token in sessionStorage (tab-scoped). Zustand stores user object (is_staff/is_superuser stripped).</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">3</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">API calls</div><div class="flow-detail">axios interceptor reads token from sessionStorage → Authorization: Bearer header on every request.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">4</div></div>
+            <div class="flow-body"><div class="flow-title">Silent refresh</div><div class="flow-detail">New tab: no sessionStorage token → POST /token/refresh/ withCredentials → cookie auto-sent → new access token.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="subsection-title">Listing Creation — Two-Step</div>
+        <div class="flow">
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">1</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Base listing</div><div class="flow-detail">POST /api/listings/create/ → creates Listing (job/room/event/notice). 5-min cooldown + 24h dupe title check (excludes soft-deleted).</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">2</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Type detail</div><div class="flow-detail">POST /api/jobs/create/ (or rooms/events/notices) → attaches type-specific record to the Listing. Rollback soft-deletes base on failure.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">3</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Image upload</div><div class="flow-detail">POST /api/listings/{slug}/images/ — separate request after listing created. Up to 5 images per listing.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">4</div></div>
+            <div class="flow-body"><div class="flow-title">Side effects</div><div class="flow-detail">Background threads: IndexNow ping, n8n webhook (60s delay), geocoding, saved search alert emails, spam duplicate check.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="subsection-title">WebSocket Messaging</div>
+        <div class="flow">
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">1</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Request ticket</div><div class="flow-detail">POST /api/messages/ws-ticket/ with Bearer token → Django generates UUID, stores in Redis with ws_ticket:{uuid} key (30s TTL).</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">2</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Open WebSocket</div><div class="flow-detail">wss://…/ws/messages/{id}/?ticket={uuid} — JWT never in URL. JWTWebsocketMiddleware reads ticket from cache, deletes it (one-time use).</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">3</div></div>
+            <div class="flow-body"><div class="flow-title">Real-time messages</div><div class="flow-detail">Django Channels consumer broadcasts via Redis pub/sub. Messages persisted to DB. Banned users get 403 on REST send.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="subsection-title">Featured Listing — Payment</div>
+        <div class="flow">
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">1</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Initiate checkout</div><div class="flow-detail">POST /api/payments/feature/{id}/ → creates Stripe Checkout Session, returns session URL. Frontend redirects user.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">2</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Stripe processes</div><div class="flow-detail">User completes payment on Stripe hosted page → redirected to /payment/success or /payment/cancel.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">3</div><div class="flow-connector"></div></div>
+            <div class="flow-body"><div class="flow-title">Webhook confirms</div><div class="flow-detail">POST /api/payments/webhook/ → Stripe sends payment_intent.succeeded → listing.is_featured = True, FeaturedPayment created.</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-line"><div class="flow-dot">4</div></div>
+            <div class="flow-body"><div class="flow-title">Invoice</div><div class="flow-detail">GET /api/payments/invoice/{id}/ → WeasyPrint renders PDF invoice with full-width dark header (Wardiere-style layout).</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       DATABASE DESIGN
+  ══════════════════════════════════════ -->
+  <div class="section" id="db">
+    <div class="section-title">Database Design</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:20px">PostgreSQL (Railway managed). Django ORM with migrations. All timestamps use <code>auto_now_add</code> / <code>auto_now</code>. Soft-delete pattern on Listing (<code>is_deleted</code> flag, never hard-deleted). Slugs auto-generated from title via python-slugify + uniqueness loop.</p>
+
+    <!-- Domain Relationship Diagram -->
+    <div class="diagram-wrap" style="margin-bottom:24px">
+      <div class="diagram-title">Entity Relationship — Domain View</div>
+      <div class="diagram-svg-wrap">
+        <svg viewBox="0 0 720 400" width="700" height="388" xmlns="http://www.w3.org/2000/svg" style="display:block;max-width:100%">
+          <defs>
+            <marker id="fk" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0 0 L8 4 L0 8 Z" fill="#9490B5"/>
+            </marker>
+            <marker id="fk2" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0 0 L8 4 L0 8 Z" fill="#534AB7"/>
+            </marker>
+          </defs>
+
+          <!-- ── Domain boxes ── -->
+          <!-- Users domain -->
+          <rect x="270" y="10" width="180" height="70" rx="8" fill="#534AB7"/>
+          <text x="360" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="white">users</text>
+          <text x="360" y="48" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">User · UserReview</text>
+          <text x="360" y="62" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">PointEvent · PushSubscription</text>
+
+          <!-- Listings domain -->
+          <rect x="30" y="130" width="180" height="70" rx="8" fill="#26215C"/>
+          <text x="120" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="white">listings</text>
+          <text x="120" y="168" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">Listing · ListingImage</text>
+          <text x="120" y="182" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">SavedListing · SavedSearch · ListingView</text>
+
+          <!-- Business domain -->
+          <rect x="270" y="130" width="180" height="70" rx="8" fill="#1A6B3C"/>
+          <text x="360" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="white">businesses</text>
+          <text x="360" y="168" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">Business · BusinessImage</text>
+          <text x="360" y="182" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">BusinessReview · BusinessReport</text>
+
+          <!-- Forum domain -->
+          <rect x="510" y="130" width="180" height="70" rx="8" fill="#B34D00"/>
+          <text x="600" y="152" text-anchor="middle" font-size="12" font-weight="700" fill="white">forum</text>
+          <text x="600" y="168" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">ForumPost · ForumReply</text>
+          <text x="600" y="182" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">PollOption · PollVote</text>
+
+          <!-- Listing Types -->
+          <rect x="30" y="250" width="220" height="70" rx="8" fill="#1558A0"/>
+          <text x="140" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="white">listing types</text>
+          <text x="140" y="288" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">Job · JobApplication · Room</text>
+          <text x="140" y="302" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">Event · EventRSVP · Announcement</text>
+
+          <!-- Messaging -->
+          <rect x="270" y="250" width="180" height="70" rx="8" fill="#6A1B9A"/>
+          <text x="360" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="white">messaging</text>
+          <text x="360" y="288" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">Conversation · Message</text>
+          <text x="360" y="302" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">(M2M: User participants)</text>
+
+          <!-- Payments + Other -->
+          <rect x="468" y="250" width="222" height="70" rx="8" fill="#336791"/>
+          <text x="579" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="white">payments &amp; other</text>
+          <text x="579" y="288" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">FeaturedPayment · RemittanceRate</text>
+          <text x="579" y="302" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.75)">VisaTimeline · ServiceListing · FeedbackResponse</text>
+
+          <!-- Community/Visa note -->
+          <text x="360" y="375" text-anchor="middle" font-size="9.5" fill="#9490B5">RemittanceRate · VisaTimeline · WhatsAppGroup are read-mostly reference data (no User FK)</text>
+
+          <!-- ── Relationship lines ── -->
+          <!-- User → Listings: user is FK on Listing -->
+          <line x1="295" y1="80" x2="175" y2="130" stroke="#9490B5" stroke-width="1.5" marker-end="url(#fk)"/>
+          <text x="205" y="107" font-size="8.5" fill="#9490B5">1:N owns</text>
+
+          <!-- User → Business -->
+          <line x1="360" y1="80" x2="360" y2="130" stroke="#9490B5" stroke-width="1.5" marker-end="url(#fk)"/>
+          <text x="368" y="110" font-size="8.5" fill="#9490B5">1:N</text>
+
+          <!-- User → Forum -->
+          <line x1="430" y1="80" x2="545" y2="130" stroke="#9490B5" stroke-width="1.5" marker-end="url(#fk)"/>
+          <text x="490" y="107" font-size="8.5" fill="#9490B5">1:N</text>
+
+          <!-- User → Messaging (M2M participants) -->
+          <line x1="310" y1="80" x2="360" y2="250" stroke="#9490B5" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#fk)"/>
+          <text x="292" y="178" font-size="8.5" fill="#9490B5">M:N</text>
+
+          <!-- Listings → Types -->
+          <line x1="120" y1="200" x2="120" y2="250" stroke="#9490B5" stroke-width="1.5" marker-end="url(#fk)"/>
+          <text x="128" y="226" font-size="8.5" fill="#9490B5">1:1</text>
+
+          <!-- Listings → Payments -->
+          <line x1="210" y1="180" x2="468" y2="285" stroke="#9490B5" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#fk)"/>
+
+          <!-- User → Payments -->
+          <line x1="420" y1="80" x2="560" y2="250" stroke="#9490B5" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#fk)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Schema detail tables -->
+    <div class="subsection">
+      <div class="subsection-title">Core Entities — Key Fields &amp; Constraints</div>
+      <div class="card-grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">User <span style="color:var(--muted);font-weight:400;font-size:11px">(AbstractUser)</span></div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>id</td><td>AutoPK</td></tr>
+              <tr><td>email</td><td>unique, login field</td></tr>
+              <tr><td>username</td><td>unique, auto-generated</td></tr>
+              <tr><td>avatar</td><td>ImageField (Cloudinary)</td></tr>
+              <tr><td>bio</td><td>TextField, blank</td></tr>
+              <tr><td>phone_number</td><td>optional, private</td></tr>
+              <tr><td>is_verified</td><td>BooleanField, default False</td></tr>
+              <tr><td>is_banned</td><td>BooleanField, checked on WS + send</td></tr>
+              <tr><td>points</td><td>IntegerField, default 0</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">Listing</div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>id</td><td>AutoPK</td></tr>
+              <tr><td>user</td><td>FK → User (cascade)</td></tr>
+              <tr><td>listing_type</td><td>choices: job/room/event/notice</td></tr>
+              <tr><td>listing_title</td><td>CharField(200)</td></tr>
+              <tr><td>slug</td><td>unique, auto from title</td></tr>
+              <tr><td>description</td><td>TextField</td></tr>
+              <tr><td>location</td><td>CharField (city)</td></tr>
+              <tr><td>latitude / longitude</td><td>DecimalField, nullable</td></tr>
+              <tr><td>is_active</td><td>default True</td></tr>
+              <tr><td>is_deleted</td><td>soft-delete flag</td></tr>
+              <tr><td>is_featured</td><td>Stripe payment outcome</td></tr>
+              <tr><td>created_at / updated_at</td><td>auto timestamps</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">Job <span style="color:var(--muted);font-weight:400;font-size:11px">(OneToOne Listing)</span></div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>listing</td><td>OneToOneField → Listing</td></tr>
+              <tr><td>employment_type</td><td>full-time / part-time / casual / contract</td></tr>
+              <tr><td>salary</td><td>DecimalField, nullable</td></tr>
+              <tr><td>salary_period</td><td>hourly / weekly / yearly</td></tr>
+              <tr><td>industry</td><td>CharField</td></tr>
+              <tr><td>work_rights</td><td>choices (visa requirements)</td></tr>
+              <tr><td>apply_method</td><td>email / phone / link</td></tr>
+              <tr><td>apply_link</td><td>URLField, nullable</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">Room <span style="color:var(--muted);font-weight:400;font-size:11px">(OneToOne Listing)</span></div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>listing</td><td>OneToOneField → Listing</td></tr>
+              <tr><td>room_type</td><td>available / wanted</td></tr>
+              <tr><td>rent_per_week</td><td>DecimalField</td></tr>
+              <tr><td>bond</td><td>DecimalField, nullable</td></tr>
+              <tr><td>available_from</td><td>DateField</td></tr>
+              <tr><td>furnished</td><td>BooleanField</td></tr>
+              <tr><td>bills_included</td><td>BooleanField</td></tr>
+              <tr><td>preferred_tenant</td><td>any / female / male / couple</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">ForumPost</div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>id</td><td>AutoPK</td></tr>
+              <tr><td>author</td><td>FK → User</td></tr>
+              <tr><td>title</td><td>CharField(300)</td></tr>
+              <tr><td>slug</td><td>unique</td></tr>
+              <tr><td>body</td><td>TextField</td></tr>
+              <tr><td>category</td><td>choices: general/question/advice/news/poll</td></tr>
+              <tr><td>upvotes</td><td>M2M → User (through upvote action)</td></tr>
+              <tr><td>has_poll</td><td>BooleanField</td></tr>
+              <tr><td>is_pinned</td><td>BooleanField (admin)</td></tr>
+              <tr><td>view_count</td><td>IntegerField</td></tr>
+              <tr><td>created_at / updated_at</td><td>auto timestamps</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">Business</div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>id</td><td>AutoPK</td></tr>
+              <tr><td>owner</td><td>FK → User</td></tr>
+              <tr><td>name</td><td>CharField(200)</td></tr>
+              <tr><td>slug</td><td>unique</td></tr>
+              <tr><td>category</td><td>CharField choices</td></tr>
+              <tr><td>logo_url</td><td>ImageField (Cloudinary)</td></tr>
+              <tr><td>phone / email / website</td><td>contact fields</td></tr>
+              <tr><td>address</td><td>CharField</td></tr>
+              <tr><td>latitude / longitude</td><td>DecimalField, nullable</td></tr>
+              <tr><td>avg_rating</td><td>DecimalField (denormalized)</td></tr>
+              <tr><td>is_verified</td><td>BooleanField (admin verified)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">Conversation + Message</div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Conversation.participants</td><td>M2M → User</td></tr>
+              <tr><td>Conversation.listing</td><td>FK → Listing, nullable</td></tr>
+              <tr><td>Conversation.last_message_at</td><td>DateTimeField, indexed</td></tr>
+              <tr><td>Message.conversation</td><td>FK → Conversation (cascade)</td></tr>
+              <tr><td>Message.sender</td><td>FK → User</td></tr>
+              <tr><td>Message.content</td><td>TextField</td></tr>
+              <tr><td>Message.is_read</td><td>BooleanField, default False</td></tr>
+              <tr><td>Message.created_at</td><td>auto timestamp</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-sm">
+          <div style="font-weight:700;font-size:12.5px;margin-bottom:8px;color:var(--violet)">SavedSearch</div>
+          <table class="state-table" style="font-size:11px">
+            <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+            <tbody>
+              <tr><td>user</td><td>FK → User</td></tr>
+              <tr><td>listing_type</td><td>job / room / event / notice</td></tr>
+              <tr><td>keywords</td><td>CharField, blank</td></tr>
+              <tr><td>location</td><td>CharField, blank</td></tr>
+              <tr><td>filters</td><td>JSONField (salary range, room type, etc.)</td></tr>
+              <tr><td>last_notified_at</td><td>DateTimeField, nullable</td></tr>
+              <tr><td>is_active</td><td>BooleanField</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Key FK / Relationship map -->
+    <div class="subsection">
+      <div class="subsection-title">Foreign Key &amp; M2M Relationship Map</div>
+      <div class="card" style="overflow-x:auto">
+        <table class="state-table">
+          <thead><tr><th>From</th><th>To</th><th>Type</th><th>On Delete</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Listing.user</td><td>User</td><td>FK</td><td>CASCADE</td><td>Listing deleted when user deleted</td></tr>
+            <tr><td>Job.listing</td><td>Listing</td><td>OneToOne</td><td>CASCADE</td><td>Step 2 of 2 creation flow</td></tr>
+            <tr><td>Room.listing</td><td>Listing</td><td>OneToOne</td><td>CASCADE</td><td>Step 2 of 2 creation flow</td></tr>
+            <tr><td>Event.listing</td><td>Listing</td><td>OneToOne</td><td>CASCADE</td><td>Step 2 of 2 creation flow</td></tr>
+            <tr><td>Announcement.listing</td><td>Listing</td><td>OneToOne</td><td>CASCADE</td><td>Step 2 of 2 creation flow</td></tr>
+            <tr><td>ListingImage.listing</td><td>Listing</td><td>FK</td><td>CASCADE</td><td>Max 5 images enforced in serializer</td></tr>
+            <tr><td>SavedListing.user + .listing</td><td>User + Listing</td><td>FK×2, unique_together</td><td>CASCADE</td><td>Toggle pattern — create or delete</td></tr>
+            <tr><td>JobApplication.job + .applicant</td><td>Job + User</td><td>FK×2, unique_together</td><td>CASCADE</td><td>One application per job per user</td></tr>
+            <tr><td>EventRSVP.event + .user</td><td>Event + User</td><td>FK×2, unique_together</td><td>CASCADE</td><td>Toggle RSVP</td></tr>
+            <tr><td>Business.owner</td><td>User</td><td>FK</td><td>CASCADE</td><td>Max 5 businesses per user (view-level check)</td></tr>
+            <tr><td>BusinessReview.business + .reviewer</td><td>Business + User</td><td>FK×2, unique_together</td><td>CASCADE</td><td>One review per user per business</td></tr>
+            <tr><td>ForumPost.author</td><td>User</td><td>FK</td><td>CASCADE</td><td></td></tr>
+            <tr><td>ForumPost.upvotes</td><td>User</td><td>M2M</td><td>—</td><td>Toggle via /vote/ endpoint</td></tr>
+            <tr><td>ForumReply.post + .author</td><td>ForumPost + User</td><td>FK×2</td><td>CASCADE</td><td>Flat replies (no threading)</td></tr>
+            <tr><td>PollOption.post</td><td>ForumPost</td><td>FK</td><td>CASCADE</td><td></td></tr>
+            <tr><td>PollVote.option + .user</td><td>PollOption + User</td><td>FK×2, unique(post,user)</td><td>CASCADE</td><td>Atomic swap: delete old, create new</td></tr>
+            <tr><td>Conversation.participants</td><td>User</td><td>M2M</td><td>—</td><td>Always exactly 2 participants</td></tr>
+            <tr><td>Conversation.listing</td><td>Listing</td><td>FK, null=True</td><td>SET_NULL</td><td>Survives listing deletion</td></tr>
+            <tr><td>Message.conversation + .sender</td><td>Conversation + User</td><td>FK×2</td><td>CASCADE</td><td></td></tr>
+            <tr><td>FeaturedPayment.user + .listing</td><td>User + Listing</td><td>FK×2</td><td>CASCADE</td><td>Created by Stripe webhook handler</td></tr>
+            <tr><td>PointEvent.user</td><td>User</td><td>FK</td><td>CASCADE</td><td>Immutable log; updates User.points atomically</td></tr>
+            <tr><td>PushSubscription.user</td><td>User</td><td>FK, unique</td><td>CASCADE</td><td>One active subscription per user</td></tr>
+            <tr><td>UserReview.reviewer + .reviewee</td><td>User + User</td><td>FK×2, unique_together</td><td>CASCADE</td><td>Prevents self-review in serializer validate()</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Indexing notes -->
+    <div class="subsection">
+      <div class="subsection-title">Indexing &amp; Query Patterns</div>
+      <div class="card-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+        <div class="card-sm">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Implicit indexes</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+            All PKs and FK columns. <code>unique=True</code> fields (slug, email). <code>unique_together</code> constraints (e.g. SavedListing, JobApplication). M2M junction tables get two FK indexes.
+          </div>
+        </div>
+        <div class="card-sm">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Ordering &amp; range queries</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+            Most list views order by <code>-updated_at</code>. Sitemap queries also on <code>-updated_at</code>. Conversation list orders by <code>-last_message_at</code> (denormalized for performance).
+          </div>
+        </div>
+        <div class="card-sm">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Soft delete pattern</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+            <code>Listing.is_deleted</code> flag. All public list views filter <code>.filter(is_deleted=False)</code>. Duplicate-title dupe check also excludes deleted. Hard delete only via admin or account deletion transaction.
+          </div>
+        </div>
+        <div class="card-sm">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">N+1 guards</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+            List serializers use <code>select_related</code> for FK (user, listing) and <code>prefetch_related</code> for M2M (images, upvotes, participants). Detail views include nested serializers for images and type detail in one query.
+          </div>
+        </div>
+        <div class="card-sm">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Atomic operations</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+            PollVote swap: <code>transaction.atomic()</code> delete old → create new prevents double-voting race. PointEvent uses <code>F()</code> expression update to avoid read-modify-write race on <code>User.points</code>.
+          </div>
+        </div>
+        <div class="card-sm">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Full-text search</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+            Global search via <code>icontains</code> across title/description per listing type. No dedicated FTS index currently — candidate for <code>SearchVectorField</code> if query volume grows.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// Scrollspy
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+const sections = [...navLinks].map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+
+function updateActive() {
+  const scrollY = window.scrollY + 80;
+  let active = sections[0];
+  for (const s of sections) {
+    if (s.getBoundingClientRect().top + window.scrollY <= scrollY) active = s;
+  }
+  navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + active.id));
+}
+window.addEventListener('scroll', updateActive, { passive: true });
+updateActive();
+</script>
