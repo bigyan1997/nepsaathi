@@ -357,4 +357,19 @@ ADMIN_SITE_HEADER = "NepSaathi Admin"
 ADMIN_SITE_TITLE = "NepSaathi Admin Portal"
 ADMIN_INDEX_TITLE = "NepSaathi Administration"
 
+# ─── Sentry ──────────────────────────────────────────────────────────────────
+SENTRY_DSN = config('SENTRY_DSN', default='')
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), RedisIntegration()],
+        traces_sample_rate=0.1,   # capture 10% of requests for performance tracing
+        send_default_pii=False,   # never send user PII (emails, IPs) to Sentry
+        environment='production' if not DEBUG else 'development',
+    )
+
 
