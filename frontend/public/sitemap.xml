@@ -57,6 +57,31 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.nepsaathi.com/banking</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/health</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/tax</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/work-rights</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/childcare</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.nepsaathi.com/services</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>

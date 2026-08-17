@@ -19,6 +19,11 @@ export default function Footer() {
     { to: "/new-to-australia", key: "footer.newToAustralia" },
     { to: "/visa",             key: "footer.visaHub" },
     { to: "/whatsapp-groups",  key: "footer.whatsappGroups" },
+    { to: "/banking",          key: "footer.banking" },
+    { to: "/health",           key: "footer.health" },
+    { to: "/tax",              key: "footer.tax" },
+    { to: "/work-rights",      key: "footer.workRights" },
+    { to: "/childcare",        key: "footer.childcare" },
   ];
 
   const accountLinks = [

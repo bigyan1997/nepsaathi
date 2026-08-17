@@ -63,6 +63,11 @@ import ServicesPage          from "./pages/ServicesPage";
 import PointsPage            from "./pages/PointsPage";
 import VisaHubPage           from "./pages/VisaHubPage";
 import WhatsAppGroupsPage    from "./pages/WhatsAppGroupsPage";
+import BankingPage           from "./pages/BankingPage";
+import HealthPage            from "./pages/HealthPage";
+import TaxPage               from "./pages/TaxPage";
+import WorkRightsPage        from "./pages/WorkRightsPage";
+import ChildcarePage         from "./pages/ChildcarePage";
 import LoginPage             from "./pages/auth/LoginPage";
 import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
@@ -215,6 +220,12 @@ function App() {
                         <Route path="/points" element={<PointsPage />} />
                         <Route path="/visa" element={<VisaHubPage />} />
                         <Route path="/whatsapp-groups" element={<WhatsAppGroupsPage />} />
+                        {/* Info pages */}
+                        <Route path="/banking" element={<BankingPage />} />
+                        <Route path="/health" element={<HealthPage />} />
+                        <Route path="/tax" element={<TaxPage />} />
+                        <Route path="/work-rights" element={<WorkRightsPage />} />
+                        <Route path="/childcare" element={<ChildcarePage />} />
                         {/* Other public */}
                         <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
                         <Route path="/users/:id" element={<UserProfilePage />} />
