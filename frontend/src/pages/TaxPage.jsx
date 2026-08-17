@@ -186,7 +186,7 @@ export default function TaxPage() {
 
       <div style={{ background: "#fff", borderBottom: "1px solid #e8eaf0", position: "sticky", top: "56px", zIndex: 90 }}>
         <style>{`.tax-nav::-webkit-scrollbar{display:none}`}</style>
-        <div ref={navRef} className="tax-nav" style={{ display: "flex", maxWidth: "900px", margin: "0 auto", padding: "0 8px", overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
+        <div ref={navRef} className="tax-nav" style={{ display: "flex", maxWidth: "900px", margin: "0 auto", padding: "0 8px 2px", overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
