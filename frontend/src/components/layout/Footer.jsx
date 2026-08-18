@@ -64,7 +64,7 @@ export default function Footer() {
 
           {/* Social links */}
           <div style={{ display: "flex", gap: "10px" }}>
-            <a href="https://facebook.com/nepsaathi" target="_blank" rel="noopener noreferrer" title="Facebook"
+            <a href="https://www.facebook.com/nepsaathi/" target="_blank" rel="noopener noreferrer" title="Facebook"
               style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#1877F2")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
@@ -74,7 +74,7 @@ export default function Footer() {
               </svg>
             </a>
 
-            <a href="https://instagram.com/nepsaathi" target="_blank" rel="noopener noreferrer" title="Instagram"
+            <a href="https://www.instagram.com/nepsaathi/" target="_blank" rel="noopener noreferrer" title="Instagram"
               style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#E1306C")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}

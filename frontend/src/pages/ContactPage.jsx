@@ -189,8 +189,8 @@ export default function ContactPage() {
               </p>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 {[
-                  { label: "Facebook", href: "https://www.facebook.com/nepsaathi", bg: "#1877F2" },
-                  { label: "Instagram", href: "https://www.instagram.com/nepsaathi", bg: "#E1306C" },
+                  { label: "Facebook", href: "https://www.facebook.com/nepsaathi/", bg: "#1877F2" },
+                  { label: "Instagram", href: "https://www.instagram.com/nepsaathi/", bg: "#E1306C" },
                 ].map(({ label, href, bg }) => (
                   <a
                     key={label}
