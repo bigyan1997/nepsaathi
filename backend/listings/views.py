@@ -1126,23 +1126,18 @@ class AITagSuggestView(APIView):
         if not api_key:
             return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-        parts = []
-        if listing_type:
-            parts.append(f"Type: {listing_type}")
-        if title:
-            parts.append(f"Title: {title}")
-        if description:
-            parts.append(f"Description: {description[:400]}")
-        listing_text = " | ".join(parts)
+        # Keep input short so the model has room to output
+        desc_snippet = description[:150] if description else ""
+        listing_text = f"{listing_type or 'listing'}: {title}" + (f" — {desc_snippet}" if desc_snippet else "")
 
         try:
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
-                max_tokens=200,
+                max_tokens=300,
                 messages=[
                     {"role": "system", "content": "You output only JSON arrays of strings. No explanation, no markdown, no extra text."},
-                    {"role": "user", "content": f'Give 10 short lowercase tags (1-3 words each, no # symbol) for this listing on NepSaathi (Australian Nepalese community site): {listing_text}. Output only a JSON array. Example: ["kitchen hand", "sydney", "full time", "hospitality", "urgent", "casual", "food industry", "immediate start", "nsw", "nepalese"]'},
+                    {"role": "user", "content": f'Give 10 short lowercase tags (1-3 words each, no # symbol) for: {listing_text}. Output only a JSON array. Example: ["kitchen hand", "sydney", "full time", "hospitality", "urgent", "casual", "food industry", "immediate start", "nsw", "nepalese"]'},
                 ],
             )
             choice = chat.choices[0]
