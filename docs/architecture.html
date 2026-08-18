@@ -844,6 +844,11 @@ code {
           <li class="route-item"><span class="route-path">/send-money</span><span class="route-desc">Remittance rates — live AUD→NPR comparison</span></li>
           <li class="route-item"><span class="route-path">/visa-hub</span><span class="route-desc">Visa timelines, occupation invitations, SkillSelect rounds</span></li>
           <li class="route-item"><span class="route-path">/new-to-australia</span><span class="route-desc">Settlement guide for new arrivals</span></li>
+          <li class="route-item"><span class="route-path">/banking</span><span class="route-desc">Banking &amp; finance guide — scrollspy accordion (green)</span></li>
+          <li class="route-item"><span class="route-path">/health</span><span class="route-desc">Health &amp; insurance guide — scrollspy accordion (blue)</span></li>
+          <li class="route-item"><span class="route-path">/tax</span><span class="route-desc">Tax &amp; accounting guide — scrollspy accordion (amber)</span></li>
+          <li class="route-item"><span class="route-path">/work-rights</span><span class="route-desc">Work rights &amp; legal guide — scrollspy accordion (purple)</span></li>
+          <li class="route-item"><span class="route-path">/childcare</span><span class="route-desc">Childcare &amp; family guide — scrollspy accordion (pink)</span></li>
           <li class="route-item"><span class="route-path">/whatsapp-groups</span><span class="route-desc">Curated WhatsApp group directory</span></li>
           <li class="route-item"><span class="route-path">/new-listings</span><span class="route-desc">Latest across all listing types</span></li>
           <li class="route-item"><span class="route-path">/featured</span><span class="route-desc">Promoted listings (paid via Stripe)</span></li>
@@ -1072,6 +1077,7 @@ code {
           <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/listings/create/</span><span class="api-note">— step 1 of 2 for new listings; 5-min cooldown, 24h dupe check</span></div>
           <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/my-listings/</span><span class="api-note">— own listings with bulk actions</span></div>
           <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/listings/ai-improve/</span><span class="api-note">— Groq AI rewrite, 20/day throttle</span></div>
+          <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/listings/ai-suggest-tags/</span><span class="api-note">— Groq AI tag suggestions (10 tags), 30/day throttle</span></div>
           <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/search/</span><span class="api-note">— global cross-type search</span></div>
           <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/sitemap/</span><span class="api-note">— sitemap data for generate-sitemap.mjs</span></div>
           <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/listings/saved/</span><span class="api-note">— saved listings</span></div>
@@ -1238,7 +1244,7 @@ code {
           <tr><td>/api/auth/password/reset/</td><td>ThrottledPasswordResetView</td><td>—</td><td>3/hour</td></tr>
           <tr><td>/api/auth/…</td><td>dj-rest-auth</td><td>Varies</td><td>—</td></tr>
           <tr><td>/api/users/…</td><td>users.urls</td><td>IsAuth</td><td>—</td></tr>
-          <tr><td>/api/listings/…</td><td>listings.urls</td><td>Mixed</td><td>ListingCreateThrottle · ai_improve: 20/day</td></tr>
+          <tr><td>/api/listings/…</td><td>listings.urls</td><td>Mixed</td><td>ListingCreateThrottle · ai_improve: 20/day · ai_suggest_tags: 30/day</td></tr>
           <tr><td>/api/jobs/…</td><td>jobs.urls</td><td>Mixed</td><td>—</td></tr>
           <tr><td>/api/rooms/…</td><td>rooms.urls</td><td>Mixed</td><td>—</td></tr>
           <tr><td>/api/events/…</td><td>events.urls</td><td>Mixed</td><td>—</td></tr>
@@ -1269,8 +1275,8 @@ code {
 
       <div class="int-card">
         <div class="int-card-head"><span class="int-icon">🤖</span><div><div class="int-name">Groq AI</div><div class="int-type">AI text improvement</div></div></div>
-        <div class="int-desc">Llama / GPT-OSS-120b via Groq API. Three endpoints: listing description improve, job cover letter assist, forum post rewrite. XML delimiters protect against prompt injection.</div>
-        <div class="int-trigger"><strong>Trigger:</strong> User clicks "Improve with AI" · Rate limited 20/day (ScopedRateThrottle)</div>
+        <div class="int-desc">GPT-OSS-120b via Groq API. Four endpoints: listing description improve (20/day), AI tag suggestions (30/day), job cover letter assist, forum post rewrite. XML delimiters protect against prompt injection. 429 shows toast: "You've used your daily AI limit."</div>
+        <div class="int-trigger"><strong>Trigger:</strong> "✨ Improve with AI" or "✨ Suggest tags" buttons · ScopedRateThrottle per scope</div>
       </div>
 
       <div class="int-card">
@@ -1287,8 +1293,8 @@ code {
 
       <div class="int-card">
         <div class="int-card-head"><span class="int-icon">🔄</span><div><div class="int-name">n8n</div><div class="int-type">Social automation</div></div></div>
-        <div class="int-desc">Railway-hosted n8n instance. Receives webhook POST from Django when a new listing is approved. Workflow posts to Facebook Page + Instagram. 60-second delay allows images to upload first.</div>
-        <div class="int-trigger"><strong>Trigger:</strong> New listing created → background thread → POST /webhook (no auth header currently)</div>
+        <div class="int-desc">Railway-hosted n8n instance. Receives webhook POST (title, category, location, description, image_url, tags[]) from Django when a listing is created or admin-approved. Workflow posts to Facebook + Instagram. 60-second delay allows images to upload first. tags[] converted to hashtags (#kitchenhand) and appended to captions; Instagram capped at 30 tags.</div>
+        <div class="int-trigger"><strong>Trigger:</strong> New listing created or admin-approved → background thread → POST /webhook + X-Webhook-Secret</div>
       </div>
 
       <div class="int-card">

@@ -106,7 +106,7 @@ Railway (Django ASGI)
 ### Model Inventory
 
 #### `listings`
-- **Listing** — user(FK), listing_type(job/room/event/notice), title, description, location, state(8 AU states), postcode, status(active/expired/filled/deleted), contact_email/phone/whatsapp, is_featured, is_under_review, renewal_blocked, is_wanted, slug(unique), expires_at(30 days)
+- **Listing** — user(FK), listing_type(job/room/event/notice), title, description, tags(JSONField, list of strings), location, state(8 AU states), postcode, status(active/expired/filled/deleted), contact_email/phone/whatsapp, is_featured, is_under_review, renewal_blocked, is_wanted, slug(unique), expires_at(30 days)
 - **ListingImage** — listing(FK), image(Cloudinary), is_primary, image_hash(md5 for duplicate detection). Max 5 per listing.
 - **SavedListing** — user(FK), listing(FK). unique_together=(user, listing)
 - **ListingReport** — user(FK), listing(FK), reason, details, is_reviewed. unique_together=(user, listing)
@@ -211,7 +211,8 @@ POST   /api/listings/<id>/view/            # track unique view (public)
 GET    /api/listings/<id>/similar/         # up to 3 similar listings (public)
 POST   /api/listings/<id>/renew/           # extend 30 days (owner, <7 days to expiry)
 GET    /api/listings/sitemap/              # all slugs for sitemap (public)
-POST   /api/listings/ai-improve/          # rewrite listing description via Groq Llama 3 (auth, 5/day shared)
+POST   /api/listings/ai-improve/          # rewrite listing description via Groq (auth, 20/day)
+POST   /api/listings/ai-suggest-tags/    # suggest 10 tags for a listing via Groq (auth, 30/day)
 GET    /api/listings/benchmark/           # salary/rent market benchmark (public)
 GET    /api/listings/my-analytics/        # per-listing stats for logged-in user (auth)
 ```
@@ -316,6 +317,12 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 | `/search` | SearchPage |
 | `/send-money` | RemittancePage |
 | `/users/:id` | UserProfilePage — public profile + listings by that user + star reviews |
+| `/new-to-australia` | NewToAustraliaPage — accordion guide, sticky scrollspy nav |
+| `/banking` | BankingPage — banking & finance guide (green accent) |
+| `/health` | HealthPage — health & insurance guide (blue accent) |
+| `/tax` | TaxPage — tax & accounting guide (amber accent) |
+| `/work-rights` | WorkRightsPage — work rights & legal guide (purple accent) |
+| `/childcare` | ChildcarePage — childcare & family guide (pink accent) |
 | `/privacy` | PrivacyPage |
 | `/terms` | TermsPage |
 | `/contact` | ContactPage |
@@ -324,7 +331,7 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 | Route | Page |
 |---|---|
 | `/forum/new` | CreatePostPage — supports optional poll creation + ✨ AI body improve |
-| `/post-ad` | PostAdPage — address autocomplete (Nominatim), ✨ AI description improve |
+| `/post-ad` | PostAdPage — address autocomplete (Nominatim), ✨ AI description improve, ✨ AI tag suggestions (chip input, max 10 tags) |
 | `/register-business` | RegisterBusinessPage — includes booking_link field |
 | `/my-listings` | MyListingsPage |
 | `/profile` | ProfilePage |
@@ -370,7 +377,7 @@ All use the shared axios instance (auto-token + auto-refresh).
 
 Notable additions:
 - `auth.js` — includes `getMyPoints()` and `register()` now accepts an optional `ref_code` param
-- `listings.js` — `getNewListings()` (last 24h filter), `aiImproveDescription()` (Groq endpoint)
+- `listings.js` — `getNewListings()` (last 24h filter), `aiImproveDescription()` (Groq endpoint), `aiSuggestTags()` (Groq tag suggestion endpoint)
 - `forum.js` — `castPollVote(optionId)`, `aiImproveForumPost()` (Groq endpoint)
 - `community.js` — `getRequests`, `createRequest`, `deleteRequest`, `getServices`, `createService`, `deleteService`
 
@@ -554,7 +561,7 @@ python manage.py fetch_remittance_rates   # seed initial rates
 ## Security Notes
 
 - **SilentJWTAuthentication** — `DEFAULT_AUTHENTICATION_CLASSES`. Returns `None` on bad token instead of 401. Required for public endpoints to serve anonymous users who have stale tokens in localStorage.
-- **Rate limits**: login 5/min per IP + 10/period per email hash, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr, AI improve 5/day shared across all AI endpoints (`ai_improve` scope)
+- **Rate limits**: login 5/min per IP + 10/period per email hash, register 3/min, pw reset 3/hr, message send 5/min, listing create 10/hr, business create 3/hr, payment status 30/min, contact 5/hr, AI description improve 20/day (`ai_improve` scope), AI tag suggest 30/day (`ai_suggest_tags` scope). Both show a toast on 429.
 - **X-Forwarded-For**: rightmost entry used for IP throttling (Railway appends real IP on right — cannot be spoofed by client)
 - **Stripe webhook**: signature-verified with `STRIPE_WEBHOOK_SECRET`, uses `select_for_update()` to prevent duplicate processing
 - **Admin URL**: obscured path set via `ADMIN_URL` env var on Railway (not `/admin/`; path never committed to source)
@@ -664,6 +671,13 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **n8n persistence** — n8n self-hosted on Railway (Docker image `n8nio/n8n`), backed by Railway Postgres (`DB_TYPE=postgresdb`). `N8N_ENCRYPTION_KEY` env var ensures credentials survive container restarts.
 - **Admin webhook** — `save_model` and `approve_listings` bulk action in `listings/admin.py` also fire the webhook when spam-flagged listings are cleared, so admin-approved listings also auto-post.
 - **New-tab logout fix** — `App.jsx` mounts a `useEffect` that detects `isAuthenticated` with no sessionStorage access token (new browser tab), proactively calls token refresh with the localStorage refresh token (for Google OAuth users) or httpOnly cookie (for email users), and stores the new access token in sessionStorage before any API calls run.
+
+### Phase 8 — SEO info pages & AI tag suggestions (2026-08-18)
+- **5 SEO info pages** — `/banking`, `/health`, `/tax`, `/work-rights`, `/childcare`. Each follows the `NewToAustraliaPage` pattern: data-driven sections array, sticky scrollspy nav (IntersectionObserver, `threshold:0.2`), accordion toggle, gradient hero, bottom CTA. Each has a distinct accent colour (green/blue/amber/purple/pink). Nav active indicator uses `box-shadow: inset 0 -2px 0 0 accent` to avoid CSS overflow clipping. All 5 added to sitemap, footer, and i18n translations (English + Nepali).
+- **AI tag suggestions** (`POST /api/listings/ai-suggest-tags/`) — "✨ Suggest tags" button in PostAdPage Step 2. Sends title + description (≤150 chars) + listing_type to Groq via system+user message format; returns up to 10 lowercase tags. Frontend shows suggestions as dashed purple chips — click to add. Chip input lets users also type tags manually (Enter/comma to add, Backspace to remove last, max 10). Tags stored in `Listing.tags` (JSONField). Rate limited to 30/day (`ai_suggest_tags` scope).
+- **Tags in n8n webhook** — `tags` array included in both `_notify_n8n` (views.py) and `_fire_n8n_webhook` (admin.py) payloads. n8n Code node converts them to hashtags (`#kitchenhand`, `#fulltime`) and appends to Facebook + Instagram captions alongside existing core/category/location tags. Instagram respects 30-tag limit.
+- **AI rate limit toast** — both "Improve with AI" and "Suggest tags" buttons show a `warning` toast on HTTP 429 instead of inline error: "You've used your daily AI limit. Try again tomorrow. You can still use NepSaathi normally!"
+- **Removed `anthropic` package** — `anthropic>=0.40.0` removed from `requirements.txt` (unused since switch to Groq).
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
