@@ -148,6 +148,11 @@ export const aiImproveDescription = async ({ title, description, listing_type, l
   return response.data;
 };
 
+export const aiSuggestTags = async ({ title, description, listing_type }) => {
+  const response = await api.post("/api/listings/ai-suggest-tags/", { title, description, listing_type });
+  return response.data;
+};
+
 // Lister analytics
 export const getMyAnalytics = async () => {
   const response = await api.get("/api/listings/my-analytics/");

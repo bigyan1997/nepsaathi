@@ -45,6 +45,7 @@ def _notify_n8n(listing):
             "url": f"https://www.nepsaathi.com/{path}/{fresh.slug}",
             "image_url": image_url,
             "description": fresh.description or "",
+            "tags": fresh.tags or [],
         }).encode()
         import os
         headers = {"Content-Type": "application/json"}
@@ -1101,6 +1102,75 @@ Return only the improved description text — no preamble, no explanation."""
         except groq_sdk.APIError as e:
             logger.error("Groq API error in ai-improve: %s", e)
             return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class AITagSuggestView(APIView):
+    """POST /api/listings/ai-suggest-tags/ — returns 5 relevant hashtags for a listing."""
+    permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = 'ai_suggest_tags'
+
+    def post(self, request):
+        import groq as groq_sdk
+        import json as _json
+        from decouple import config as env_config
+
+        title = (request.data.get('title') or '').strip()
+        description = (request.data.get('description') or '').strip()
+        listing_type = (request.data.get('listing_type') or '').strip()
+
+        if not title and not description:
+            return Response({'error': 'Provide a title or description first.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        api_key = env_config('GROQ_API_KEY', default='')
+        if not api_key:
+            return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        parts = []
+        if listing_type:
+            parts.append(f"Type: {listing_type}")
+        if title:
+            parts.append(f"Title: {title}")
+        if description:
+            parts.append(f"Description: {description[:400]}")
+        listing_text = " | ".join(parts)
+
+        try:
+            client = groq_sdk.Groq(api_key=api_key)
+            chat = client.chat.completions.create(
+                model="openai/gpt-oss-120b",
+                max_tokens=200,
+                messages=[
+                    {"role": "system", "content": "You output only JSON arrays of strings. No explanation, no markdown, no extra text."},
+                    {"role": "user", "content": f'Give 10 short lowercase tags (1-3 words each, no # symbol) for this listing on NepSaathi (Australian Nepalese community site): {listing_text}. Output only a JSON array. Example: ["kitchen hand", "sydney", "full time", "hospitality", "urgent", "casual", "food industry", "immediate start", "nsw", "nepalese"]'},
+                ],
+            )
+            choice = chat.choices[0]
+            raw = choice.message.content
+            logger.info("ai-suggest-tags raw=%r finish_reason=%s", raw, choice.finish_reason)
+            if not raw:
+                logger.error("ai-suggest-tags: empty/None content, finish_reason=%s", choice.finish_reason)
+                return Response({'error': 'AI returned no content. Try again.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            raw = raw.strip()
+            import re as _re
+            match = _re.search(r'\[.*\]', raw, _re.DOTALL)
+            if not match:
+                logger.error("ai-suggest-tags: no JSON array in: %r", raw)
+                return Response({'error': 'AI returned unexpected format.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            try:
+                tags = _json.loads(match.group())
+            except _json.JSONDecodeError:
+                # Single-quoted fallback
+                fixed = match.group().replace("'", '"')
+                tags = _json.loads(fixed)
+            tags = [str(t).lower().strip().lstrip('#') for t in tags if t][:10]
+            return Response({'tags': tags})
+        except groq_sdk.APIError as e:
+            logger.error("Groq API error in ai-suggest-tags: %s", e)
+            return Response({'error': 'AI service temporarily unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception as e:
+            logger.error("ai-suggest-tags error: %s", e)
+            return Response({'error': 'Could not generate tags. Try again.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class MyListingAnalyticsView(APIView):

@@ -54,6 +54,7 @@ class Listing(models.Model):
     # Core fields
     title = models.CharField(max_length=200)
     description = models.TextField()
+    tags = models.JSONField(default=list, blank=True)
     location = models.CharField(
         max_length=200,
         help_text='Suburb or city e.g. Parramatta, Sydney'

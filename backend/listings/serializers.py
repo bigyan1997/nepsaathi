@@ -88,6 +88,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'expires_at',
             'view_count',
             'is_wanted',
+            'tags',
         )
         read_only_fields = (
             'id',
@@ -169,6 +170,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             'contact_phone',
             'contact_whatsapp',
             'is_wanted',
+            'tags',
         )
         read_only_fields = ('id', 'slug')
         extra_kwargs = {

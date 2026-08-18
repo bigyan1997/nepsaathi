@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { createListing, deleteListing, aiImproveDescription } from "../../api/listings";
+import { createListing, deleteListing, aiImproveDescription, aiSuggestTags } from "../../api/listings";
 import { createJob } from "../../api/jobs";
 import { createRoom } from "../../api/rooms";
 import { createNotice } from "../../api/notices";
@@ -417,6 +417,41 @@ export default function PostAdPage() {
     event_url: "",
   });
 
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
+  const [aiTagState, setAiTagState] = useState({ loading: false, suggestions: [], error: null });
+
+  function addTag(raw) {
+    const t = raw.toLowerCase().trim().replace(/^#+/, "").replace(/[^\w\s-]/g, "");
+    if (t && !tags.includes(t) && tags.length < 10) setTags((p) => [...p, t]);
+  }
+  function removeTag(t) { setTags((p) => p.filter((x) => x !== t)); }
+  function handleTagKeyDown(e) {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTag(tagInput);
+      setTagInput("");
+    } else if (e.key === "Backspace" && !tagInput && tags.length) {
+      removeTag(tags[tags.length - 1]);
+    }
+  }
+  async function handleSuggestTags() {
+    if (aiTagState.loading) return;
+    setAiTagState({ loading: true, suggestions: [], error: null });
+    try {
+      const res = await aiSuggestTags({ title: baseForm.title, description: baseForm.description, listing_type: listingType });
+      setAiTagState({ loading: false, suggestions: res.tags || [], error: null });
+    } catch (e) {
+      if (e?.response?.status === 429) {
+        addToast("You've used your daily AI limit. Try again tomorrow. You can still use NepSaathi normally!", "warning");
+        setAiTagState({ loading: false, suggestions: [], error: null });
+      } else {
+        const msg = e?.response?.data?.error || "Could not suggest tags. Try again.";
+        setAiTagState({ loading: false, suggestions: [], error: msg });
+      }
+    }
+  }
+
   const [aiState, setAiState] = useState({ loading: false, preview: null, error: null });
 
   async function handleAiImprove() {
@@ -432,8 +467,13 @@ export default function PostAdPage() {
       });
       setAiState({ loading: false, preview: res.improved, error: null });
     } catch (e) {
-      const msg = e?.response?.data?.error || "Could not improve description. Try again.";
-      setAiState({ loading: false, preview: null, error: msg });
+      if (e?.response?.status === 429) {
+        addToast("You've used your daily AI limit. Try again tomorrow. You can still use NepSaathi normally!", "warning");
+        setAiState({ loading: false, preview: null, error: null });
+      } else {
+        const msg = e?.response?.data?.error || "Could not improve description. Try again.";
+        setAiState({ loading: false, preview: null, error: msg });
+      }
     }
   }
 
@@ -463,6 +503,7 @@ export default function PostAdPage() {
       const listing = await createListing({
         ...baseForm,
         listing_type: listingType,
+        tags,
       });
       if (!listing.id) {
         setError("Failed to create listing. Please try again.");
@@ -1038,6 +1079,85 @@ export default function PostAdPage() {
                   </div>
                 )}
               </div>
+              {/* ── Tags ── */}
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                  <label style={{ ...labelStyle, marginBottom: 0 }}>Tags</label>
+                  <button
+                    type="button"
+                    onClick={handleSuggestTags}
+                    disabled={(!baseForm.title.trim() && !baseForm.description.trim()) || aiTagState.loading}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 5,
+                      background: "linear-gradient(135deg, #7c3aed, #4f46e5)",
+                      color: "#fff", border: "none", borderRadius: 6,
+                      padding: "4px 10px", fontSize: 11, fontWeight: 600,
+                      cursor: (!baseForm.title.trim() && !baseForm.description.trim()) || aiTagState.loading ? "not-allowed" : "pointer",
+                      opacity: (!baseForm.title.trim() && !baseForm.description.trim()) || aiTagState.loading ? 0.6 : 1,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {aiTagState.loading ? "Thinking..." : "✨ Suggest tags"}
+                  </button>
+                </div>
+                {/* chip input */}
+                <div style={{
+                  display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center",
+                  border: "0.5px solid #ddd", borderRadius: 8, padding: "7px 10px",
+                  background: "#fff", minHeight: 40,
+                }}>
+                  {tags.map((t) => (
+                    <span key={t} style={{
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                      background: "#EEEDFE", border: "1px solid #AFA9EC",
+                      borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 600, color: "#3C3489",
+                    }}>
+                      #{t}
+                      <button type="button" onClick={() => removeTag(t)} style={{
+                        background: "none", border: "none", cursor: "pointer",
+                        color: "#888", fontSize: 13, lineHeight: 1, padding: 0,
+                      }}>✕</button>
+                    </span>
+                  ))}
+                  {tags.length < 10 && (
+                    <input
+                      style={{
+                        border: "none", outline: "none", fontSize: 13, color: "#26215C",
+                        background: "transparent", minWidth: 100, flex: 1,
+                      }}
+                      placeholder={tags.length === 0 ? "Type a tag, press Enter" : "Add another..."}
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={handleTagKeyDown}
+                      onBlur={() => { if (tagInput.trim()) { addTag(tagInput); setTagInput(""); } }}
+                    />
+                  )}
+                </div>
+                <div style={{ fontSize: 11, color: "#aaa", marginTop: 4 }}>
+                  Press Enter or comma to add · max 10 tags
+                </div>
+                {/* AI suggestions */}
+                {aiTagState.error && (
+                  <p style={{ fontSize: 11, color: "#A32D2D", margin: "4px 0 0" }}>{aiTagState.error}</p>
+                )}
+                {aiTagState.suggestions.length > 0 && (
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 6 }}>✨ Suggested — tap to add</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {aiTagState.suggestions.filter(s => !tags.includes(s)).map((s) => (
+                        <button key={s} type="button" onClick={() => { addTag(s); setAiTagState(p => ({ ...p, suggestions: p.suggestions.filter(x => x !== s) })); }} style={{
+                          background: "#faf5ff", border: "1.5px dashed #c4b5fd",
+                          borderRadius: 20, padding: "3px 12px", fontSize: 12, fontWeight: 600,
+                          color: "#7c3aed", cursor: "pointer",
+                        }}>
+                          +{s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <Grid2>
                 <div>
                   <label style={labelStyle}>Suburb / City *</label>

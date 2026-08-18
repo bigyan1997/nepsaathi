@@ -12,6 +12,7 @@ urlpatterns = [
     path('stats/', views.StatsView.as_view(), name='stats'),
     path('benchmark/', views.ListingBenchmarkView.as_view(), name='benchmark'),
     path('ai-improve/', views.AIImproveDescriptionView.as_view(), name='ai-improve'),
+    path('ai-suggest-tags/', views.AITagSuggestView.as_view(), name='ai-suggest-tags'),
     path('my-analytics/', views.MyListingAnalyticsView.as_view(), name='my-analytics'),
     path('saved/', views.MySavedListingsView.as_view(), name='saved-listings'),
     path('search-suggestions/', views.SearchSuggestionsView.as_view(), name='search-suggestions'),

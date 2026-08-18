@@ -25,6 +25,7 @@ def _fire_n8n_webhook(listing):
                 "category": listing.listing_type,
                 "location": f"{listing.location}, {listing.state}",
                 "url": url,
+                "tags": listing.tags or [],
             }).encode()
             headers = {"Content-Type": "application/json"}
             secret = os.environ.get('N8N_WEBHOOK_SECRET', '')

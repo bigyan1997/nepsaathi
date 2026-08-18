@@ -171,6 +171,7 @@ REST_FRAMEWORK = {
         'payment_status': '30/minute' if not DEBUG else '1000/day',
         'listing_view': '60/minute' if not DEBUG else '1000/day',
         'ai_improve': '20/day' if not DEBUG else '1000/day',
+        'ai_suggest_tags': '30/day' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
