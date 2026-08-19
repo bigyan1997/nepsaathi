@@ -165,7 +165,11 @@ export default function LocationPage({ listingType }) {
   const { data, isLoading, error } = useQuery({
     queryKey: [listingType === "job" ? "jobs-location" : "rooms-location", locationSlug],
     queryFn: () => {
-      const params = { search: displayLabel, page_size: 24 };
+      // City pages (sydney, melbourne…): filter by state to catch all suburbs in that state.
+      // Suburb pages (parramatta, auburn…): search by name since location field contains the suburb.
+      const params = loc?.filterByState
+        ? { "listing__state": loc.state, page_size: 24 }
+        : { search: displayLabel, page_size: 24 };
       return isJob ? getJobs(params) : getRooms(params);
     },
     staleTime: 5 * 60 * 1000,
@@ -353,7 +357,7 @@ export default function LocationPage({ listingType }) {
           </div>
           {data?.next && (
             <div style={{ textAlign: "center" }}>
-              <Link to={`${browsePath}?search=${encodeURIComponent(displayLabel)}`}
+              <Link to={loc?.filterByState ? `${browsePath}?state=${loc.state}` : `${browsePath}?search=${encodeURIComponent(displayLabel)}`}
                 style={{ color: "#534AB7", fontSize: "13px", fontWeight: 500, textDecoration: "none",
                   border: "0.5px solid #AFA9EC", borderRadius: "8px", padding: "8px 20px",
                   display: "inline-block" }}>

@@ -1,9 +1,10 @@
 export const LOCATIONS = {
-  // Major cities
+  // Major cities — filterByState:true means use listing__state instead of search
   sydney: {
     label: "Sydney",
     state: "NSW",
     stateLabel: "New South Wales",
+    filterByState: true,
     emoji: "🌉",
     description:
       "Sydney is home to Australia's largest Nepalese community, concentrated around Parramatta, Hurstville, and the inner west. Find jobs and rooms posted by Nepalese employers and housemates across Greater Sydney.",
@@ -13,6 +14,7 @@ export const LOCATIONS = {
     label: "Melbourne",
     state: "VIC",
     stateLabel: "Victoria",
+    filterByState: true,
     emoji: "☕",
     description:
       "Melbourne's Nepalese community is growing fast, especially in the southeast suburbs and CBD fringe. Explore jobs and accommodation listings from the Nepalese community in Victoria.",
@@ -22,6 +24,7 @@ export const LOCATIONS = {
     label: "Brisbane",
     state: "QLD",
     stateLabel: "Queensland",
+    filterByState: true,
     emoji: "☀️",
     description:
       "Brisbane and South East Queensland have a thriving Nepalese community. Browse jobs and rooms posted by Nepalese Australians across the Sunshine State.",
@@ -31,6 +34,7 @@ export const LOCATIONS = {
     label: "Perth",
     state: "WA",
     stateLabel: "Western Australia",
+    filterByState: true,
     emoji: "🌊",
     description:
       "Perth has a growing Nepalese community, particularly in the northern and eastern suburbs. Find community-posted jobs and rooms in Western Australia.",
@@ -40,6 +44,7 @@ export const LOCATIONS = {
     label: "Adelaide",
     state: "SA",
     stateLabel: "South Australia",
+    filterByState: true,
     emoji: "🍷",
     description:
       "Adelaide's Nepalese community is welcoming and tight-knit. Discover job opportunities and accommodation options posted by the community in South Australia.",
@@ -49,6 +54,7 @@ export const LOCATIONS = {
     label: "Canberra",
     state: "ACT",
     stateLabel: "Australian Capital Territory",
+    filterByState: true,
     emoji: "🏛️",
     description:
       "Canberra hosts many Nepalese students and professionals, especially around the ANU and UC precincts. Find community jobs and rooms in the nation's capital.",
