@@ -140,7 +140,7 @@ export function getLocationMeta(slug, listingType) {
   const typeLabel = listingType === "job" ? "Jobs" : listingType === "room" ? "Rooms" : "Listings";
   const typeVerb = listingType === "job" ? "jobs" : listingType === "room" ? "rooms for rent" : "listings";
   return {
-    title: `Nepali ${typeLabel} in ${loc.label}, ${loc.state}`,
+    title: `${typeLabel} in ${loc.label}, ${loc.state}`,
     description: `Find ${typeVerb} in ${loc.label} posted by the Nepalese community in Australia. Browse Nepali-friendly listings on NepSaathi — ${loc.stateLabel}.`,
   };
 }

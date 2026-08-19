@@ -152,7 +152,7 @@ export default function LocationPage({ listingType }) {
 
   const typeVerb = listingType === "job" ? "jobs" : "rooms for rent";
   usePageMeta(
-    `Nepali ${listingType === "job" ? "Jobs" : "Rooms"} in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    `${listingType === "job" ? "Jobs" : "Rooms"} in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
     `Find ${typeVerb} in ${displayLabel} posted by the Nepalese community in Australia. Browse Nepali-friendly listings on NepSaathi.`
   );
 
@@ -207,7 +207,7 @@ export default function LocationPage({ listingType }) {
           <span style={{ fontSize: "28px" }}>{loc?.emoji || "📍"}</span>
           <div>
             <h1 style={{ fontSize: "22px", fontWeight: 800, lineHeight: 1.2, margin: 0 }}>
-              Nepali {typeLabel} in {displayLabel}
+              {typeLabel} in {displayLabel}
             </h1>
             {loc?.stateLabel && (
               <div style={{ fontSize: "12px", opacity: 0.75, marginTop: "3px" }}>
