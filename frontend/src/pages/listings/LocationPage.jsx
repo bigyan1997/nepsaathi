@@ -142,7 +142,7 @@ function RoomCard({ room }) {
 
 export default function LocationPage({ listingType }) {
   const { location: locationSlug } = useParams();
-  const navigate = useNavigate();
+
   const loc = LOCATIONS[locationSlug];
 
   const displayLabel = loc?.label || locationSlug
