@@ -113,10 +113,10 @@ function RoomCard({ room }) {
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
           {room.listing_title}
         </span>
-        {room.rent_per_week != null && (
+        {room.price_display && (
           <span style={{ background: "#E6F7F0", color: "#1a7a50", fontSize: "10px", fontWeight: 600,
             padding: "2px 8px", borderRadius: "20px", whiteSpace: "nowrap", flexShrink: 0 }}>
-            ${room.rent_per_week}/wk
+            {room.price_display}
           </span>
         )}
       </div>
