@@ -26,7 +26,7 @@ class EventListView(generics.ListAPIView):
         filters.SearchFilter,
         filters.OrderingFilter
     )
-    filterset_fields = ('category', 'is_free', 'is_online')
+    filterset_fields = ('category', 'is_free', 'is_online', 'listing__state')
     search_fields = (
         'listing__title',
         'listing__location',

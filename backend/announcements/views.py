@@ -33,7 +33,7 @@ class AnnouncementListView(generics.ListAPIView):
         filters.SearchFilter,
         filters.OrderingFilter
     )
-    filterset_fields = ('category', 'is_free', 'is_urgent', 'condition')
+    filterset_fields = ('category', 'is_free', 'is_urgent', 'condition', 'listing__state')
     search_fields = (
         'listing__title',
         'listing__description',

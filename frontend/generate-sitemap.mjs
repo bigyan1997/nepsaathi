@@ -30,8 +30,11 @@ const STATIC_PAGES = [
   { path: '/terms',            changefreq: 'monthly', priority: '0.4' },
   { path: '/contact',          changefreq: 'monthly', priority: '0.4' },
   // Location landing pages
-  ...LOCATION_SLUGS.map(s => ({ path: `/jobs/in/${s}`,  changefreq: 'daily', priority: '0.8' })),
-  ...LOCATION_SLUGS.map(s => ({ path: `/rooms/in/${s}`, changefreq: 'daily', priority: '0.8' })),
+  ...LOCATION_SLUGS.map(s => ({ path: `/jobs/in/${s}`,       changefreq: 'daily', priority: '0.8' })),
+  ...LOCATION_SLUGS.map(s => ({ path: `/rooms/in/${s}`,      changefreq: 'daily', priority: '0.8' })),
+  ...LOCATION_SLUGS.map(s => ({ path: `/events/in/${s}`,     changefreq: 'daily', priority: '0.7' })),
+  ...LOCATION_SLUGS.map(s => ({ path: `/notices/in/${s}`,    changefreq: 'daily', priority: '0.7' })),
+  ...LOCATION_SLUGS.map(s => ({ path: `/businesses/in/${s}`, changefreq: 'weekly', priority: '0.7' })),
 ];
 
 function urlEntry({ loc, lastmod, changefreq, priority }) {

@@ -202,12 +202,15 @@ function App() {
                         <Route path="/rooms/:slug" element={<RoomDetailPage />} />
                         {/* Announcements */}
                         <Route path="/notices" element={<NoticesPage />} />
+                        <Route path="/notices/in/:location" element={<LocationPage listingType="notice" />} />
                         <Route path="/notices/:slug" element={<NoticeDetailPage />} />
                         {/* Events */}
                         <Route path="/events" element={<EventsPage />} />
+                        <Route path="/events/in/:location" element={<LocationPage listingType="event" />} />
                         <Route path="/events/:slug" element={<EventDetailPage />} />
                         {/* Businesses */}
                         <Route path="/businesses" element={<BusinessesPage />} />
+                        <Route path="/businesses/in/:location" element={<LocationPage listingType="business" />} />
                         <Route path="/businesses/:slug" element={<BusinessDetailPage />} />
                         {/* Forum */}
                         <Route path="/forum" element={<ForumPage />} />
