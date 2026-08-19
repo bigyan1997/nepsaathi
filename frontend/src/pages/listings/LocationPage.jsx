@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import usePageMeta from "../../hooks/usePageMeta";
 import { LOCATIONS, FEATURED_LOCATIONS, getLocationMeta } from "../../data/locations";
@@ -144,11 +144,16 @@ export default function LocationPage({ listingType }) {
   const { location: locationSlug } = useParams();
   const navigate = useNavigate();
   const loc = LOCATIONS[locationSlug];
-  const meta = loc ? getLocationMeta(locationSlug, listingType) : null;
 
+  const displayLabel = loc?.label || locationSlug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+  const typeVerb = listingType === "job" ? "jobs" : "rooms for rent";
   usePageMeta(
-    meta?.title || "Listings by location",
-    meta?.description || "Browse Nepalese community listings by location on NepSaathi."
+    `Nepali ${listingType === "job" ? "Jobs" : "Rooms"} in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    `Find ${typeVerb} in ${displayLabel} posted by the Nepalese community in Australia. Browse Nepali-friendly listings on NepSaathi.`
   );
 
   const isJob = listingType === "job";
@@ -160,36 +165,16 @@ export default function LocationPage({ listingType }) {
   const { data, isLoading, error } = useQuery({
     queryKey: [listingType === "job" ? "jobs-location" : "rooms-location", locationSlug],
     queryFn: () => {
-      const params = { search: loc?.label || locationSlug, page_size: 24 };
+      const params = { search: displayLabel, page_size: 24 };
       return isJob ? getJobs(params) : getRooms(params);
     },
-    enabled: !!loc,
     staleTime: 5 * 60 * 1000,
   });
 
   const results = data?.results || [];
   const count = data?.count || 0;
 
-  if (!loc) {
-    return (
-      <div style={{ maxWidth: "800px", margin: "60px auto", padding: "0 16px", textAlign: "center" }}>
-        <div style={{ fontSize: "48px", marginBottom: "16px" }}>🗺️</div>
-        <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#26215C", marginBottom: "8px" }}>
-          Location not found
-        </h1>
-        <p style={{ color: "#888", marginBottom: "24px" }}>
-          We don't have a dedicated page for "{locationSlug}" yet.
-        </p>
-        <Link to={browsePath}
-          style={{ background: "#534AB7", color: "#fff", textDecoration: "none",
-            padding: "10px 24px", borderRadius: "8px", fontSize: "14px", fontWeight: 600 }}>
-          Browse all {typeLabel.toLowerCase()}
-        </Link>
-      </div>
-    );
-  }
-
-  const nearbyLocs = (loc.nearby || []).filter((s) => LOCATIONS[s]);
+  const nearbyLocs = (loc?.nearby || []).filter((s) => LOCATIONS[s]);
   const otherCities = FEATURED_LOCATIONS.filter((s) => s !== locationSlug && LOCATIONS[s]).slice(0, 8);
 
   return (
@@ -200,7 +185,7 @@ export default function LocationPage({ listingType }) {
         <span>›</span>
         <Link to={browsePath} style={{ color: "#aaa", textDecoration: "none" }}>{typeLabel}</Link>
         <span>›</span>
-        <span style={{ color: "#534AB7", fontWeight: 500 }}>{loc.label}</span>
+        <span style={{ color: "#534AB7", fontWeight: 500 }}>{displayLabel}</span>
       </div>
 
       {/* Hero header */}
@@ -213,18 +198,22 @@ export default function LocationPage({ listingType }) {
         position: "relative",
         overflow: "hidden",
       }}>
-        <div style={{ position: "absolute", top: -20, right: -20, fontSize: "120px", opacity: 0.08, userSelect: "none" }}>
-          {loc.emoji}
-        </div>
+        {loc?.emoji && (
+          <div style={{ position: "absolute", top: -20, right: -20, fontSize: "120px", opacity: 0.08, userSelect: "none" }}>
+            {loc.emoji}
+          </div>
+        )}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-          <span style={{ fontSize: "28px" }}>{loc.emoji}</span>
+          <span style={{ fontSize: "28px" }}>{loc?.emoji || "📍"}</span>
           <div>
             <h1 style={{ fontSize: "22px", fontWeight: 800, lineHeight: 1.2, margin: 0 }}>
-              Nepali {typeLabel} in {loc.label}
+              Nepali {typeLabel} in {displayLabel}
             </h1>
-            <div style={{ fontSize: "12px", opacity: 0.75, marginTop: "3px" }}>
-              {loc.stateLabel}
-            </div>
+            {loc?.stateLabel && (
+              <div style={{ fontSize: "12px", opacity: 0.75, marginTop: "3px" }}>
+                {loc.stateLabel}
+              </div>
+            )}
           </div>
           {!isLoading && count > 0 && (
             <span style={{
@@ -241,9 +230,11 @@ export default function LocationPage({ listingType }) {
             </span>
           )}
         </div>
-        <p style={{ fontSize: "13px", opacity: 0.85, lineHeight: 1.6, margin: 0, maxWidth: "620px" }}>
-          {loc.description}
-        </p>
+        {loc?.description && (
+          <p style={{ fontSize: "13px", opacity: 0.85, lineHeight: 1.6, margin: 0, maxWidth: "620px" }}>
+            {loc.description}
+          </p>
+        )}
         <div style={{ display: "flex", gap: "10px", marginTop: "18px", flexWrap: "wrap" }}>
           <Link to={postPath}
             style={{
@@ -255,21 +246,23 @@ export default function LocationPage({ listingType }) {
               fontSize: "13px",
               fontWeight: 700,
             }}>
-            + Post a {isJob ? "job" : "room"} in {loc.label}
+            + Post a {isJob ? "job" : "room"} in {displayLabel}
           </Link>
-          <Link to={`${browsePath}?state=${loc.state}`}
-            style={{
-              background: "rgba(255,255,255,0.15)",
-              color: "#fff",
-              textDecoration: "none",
-              padding: "8px 18px",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 500,
-              border: "0.5px solid rgba(255,255,255,0.3)",
-            }}>
-            All {loc.state} {typeLabel.toLowerCase()} →
-          </Link>
+          {loc?.state && (
+            <Link to={`${browsePath}?state=${loc.state}`}
+              style={{
+                background: "rgba(255,255,255,0.15)",
+                color: "#fff",
+                textDecoration: "none",
+                padding: "8px 18px",
+                borderRadius: "8px",
+                fontSize: "13px",
+                fontWeight: 500,
+                border: "0.5px solid rgba(255,255,255,0.3)",
+              }}>
+              All {loc.state} {typeLabel.toLowerCase()} →
+            </Link>
+          )}
         </div>
       </div>
 
@@ -278,7 +271,7 @@ export default function LocationPage({ listingType }) {
         <div style={{ marginBottom: "20px" }}>
           <div style={{ fontSize: "11px", fontWeight: 700, color: "#aaa", textTransform: "uppercase",
             letterSpacing: "0.06em", marginBottom: "8px" }}>
-            Also near {loc.label}
+            Also near {displayLabel}
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {nearbyLocs.map((slug) => (
@@ -308,7 +301,7 @@ export default function LocationPage({ listingType }) {
       {/* Listings grid */}
       <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", margin: 0 }}>
-          {isLoading ? "Loading listings…" : count > 0 ? `${count} ${typeLabel.toLowerCase()} near ${loc.label}` : `${typeLabel} in ${loc.label}`}
+          {isLoading ? "Loading listings…" : count > 0 ? `${count} ${typeLabel.toLowerCase()} near ${displayLabel}` : `${typeLabel} in ${displayLabel}`}
         </h2>
         <Link to={browsePath} style={{ fontSize: "12px", color: "#534AB7", textDecoration: "none", fontWeight: 500 }}>
           View all →
@@ -336,10 +329,10 @@ export default function LocationPage({ listingType }) {
           borderRadius: "12px", border: "0.5px solid #eee" }}>
           <div style={{ fontSize: "36px", marginBottom: "12px" }}>{typeEmoji}</div>
           <p style={{ fontSize: "15px", fontWeight: 600, color: "#555", marginBottom: "6px" }}>
-            No listings in {loc.label} yet
+            No listings in {displayLabel} yet
           </p>
           <p style={{ fontSize: "13px", color: "#888", marginBottom: "20px" }}>
-            Be the first to post a {isJob ? "job" : "room"} in {loc.label}!
+            Be the first to post a {isJob ? "job" : "room"} in {displayLabel}!
           </p>
           <Link to={postPath}
             style={{ background: "#534AB7", color: "#fff", textDecoration: "none",
@@ -360,7 +353,7 @@ export default function LocationPage({ listingType }) {
           </div>
           {data?.next && (
             <div style={{ textAlign: "center" }}>
-              <Link to={`${browsePath}?search=${encodeURIComponent(loc.label)}`}
+              <Link to={`${browsePath}?search=${encodeURIComponent(displayLabel)}`}
                 style={{ color: "#534AB7", fontSize: "13px", fontWeight: 500, textDecoration: "none",
                   border: "0.5px solid #AFA9EC", borderRadius: "8px", padding: "8px 20px",
                   display: "inline-block" }}>
