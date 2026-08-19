@@ -6,6 +6,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE_URL = 'https://www.nepsaathi.com';
 const API_URL = process.env.VITE_API_URL || 'https://nepsaathi-production.up.railway.app';
 
+const LOCATION_SLUGS = [
+  'sydney', 'melbourne', 'brisbane', 'perth', 'adelaide', 'canberra',
+  'parramatta', 'hurstville', 'auburn', 'blacktown',
+];
+
 const STATIC_PAGES = [
   { path: '/',            changefreq: 'daily',   priority: '1.0' },
   { path: '/featured',    changefreq: 'daily',   priority: '0.9' },
@@ -24,6 +29,9 @@ const STATIC_PAGES = [
   { path: '/privacy',          changefreq: 'monthly', priority: '0.4' },
   { path: '/terms',            changefreq: 'monthly', priority: '0.4' },
   { path: '/contact',          changefreq: 'monthly', priority: '0.4' },
+  // Location landing pages
+  ...LOCATION_SLUGS.map(s => ({ path: `/jobs/in/${s}`,  changefreq: 'daily', priority: '0.8' })),
+  ...LOCATION_SLUGS.map(s => ({ path: `/rooms/in/${s}`, changefreq: 'daily', priority: '0.8' })),
 ];
 
 function urlEntry({ loc, lastmod, changefreq, priority }) {

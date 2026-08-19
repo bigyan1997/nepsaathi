@@ -3,113 +3,291 @@
 
   <url>
     <loc>https://www.nepsaathi.com/</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/featured</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/jobs</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/rooms</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/events</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/notices</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/businesses</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/forum</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/visa-hub</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/send-money</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/new-to-australia</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.nepsaathi.com/banking</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.nepsaathi.com/health</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.nepsaathi.com/tax</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.nepsaathi.com/work-rights</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.nepsaathi.com/childcare</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://www.nepsaathi.com/services</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/looking-for</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/search</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>always</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/privacy</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/terms</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/contact</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/sydney</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/melbourne</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/brisbane</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/perth</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/adelaide</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/canberra</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/parramatta</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/hurstville</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/auburn</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/in/blacktown</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/sydney</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/melbourne</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/brisbane</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/perth</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/adelaide</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/canberra</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/parramatta</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/hurstville</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/auburn</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/in/blacktown</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/room-rent-in-dee-why-72</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/front-of-the-house-71</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/events/bipul-chhetri-live-in-sydney-70</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/events/rockheads-live-in-sydney-69</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/couple-room-in-newtown-66</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/apartment-in-hurstville-for-lease-transfer-65</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/room-in-hurstville-64</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/private-room-in-merryland-63</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/jobs/two-full-time-workers-needed-62</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/events/live-music-festival-in-sydney-61</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.nepsaathi.com/rooms/room-available-bella-vista-57</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.nepsaathi.com/jobs/seeking-for-job-around-westminister-56</loc>

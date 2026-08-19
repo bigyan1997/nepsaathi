@@ -58,6 +58,7 @@ import CreatePostPage        from "./pages/forum/CreatePostPage";
 import RemittancePage        from "./pages/RemittancePage";
 import NewListingsPage       from "./pages/NewListingsPage";
 import NewToAustraliaPage   from "./pages/NewToAustraliaPage";
+import LocationPage          from "./pages/listings/LocationPage";
 import LookingForPage        from "./pages/LookingForPage";
 import ServicesPage          from "./pages/ServicesPage";
 import PointsPage            from "./pages/PointsPage";
@@ -193,9 +194,11 @@ function App() {
                         <Route path="/featured" element={<FeaturedPage />} />
                         {/* Jobs */}
                         <Route path="/jobs" element={<JobsPage />} />
+                        <Route path="/jobs/in/:location" element={<LocationPage listingType="job" />} />
                         <Route path="/jobs/:slug" element={<JobDetailPage />} />
                         {/* Rooms */}
                         <Route path="/rooms" element={<RoomsPage />} />
+                        <Route path="/rooms/in/:location" element={<LocationPage listingType="room" />} />
                         <Route path="/rooms/:slug" element={<RoomDetailPage />} />
                         {/* Announcements */}
                         <Route path="/notices" element={<NoticesPage />} />

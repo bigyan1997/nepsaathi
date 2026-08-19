@@ -8,6 +8,7 @@ import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 import ListingsMap from "../../components/ui/ListingsMap";
+import { FEATURED_LOCATIONS, LOCATIONS } from "../../data/locations";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -1337,6 +1338,40 @@ export default function JobsPage() {
             </p>
           </div>
         )}
+
+        {/* Browse by city */}
+        <div style={{ marginTop: "40px", background: "#F8F7FF", borderRadius: "14px", padding: "20px 24px" }}>
+          <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px" }}>
+            💼 Browse jobs by city
+          </div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {FEATURED_LOCATIONS.map((slug) => {
+              const l = LOCATIONS[slug];
+              return (
+                <Link key={slug} to={`/jobs/in/${slug}`}
+                  style={{
+                    background: "#fff",
+                    color: "#534AB7",
+                    textDecoration: "none",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    padding: "6px 14px",
+                    borderRadius: "20px",
+                    border: "0.5px solid #DDD9F9",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#EEEDFE"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
+                >
+                  {l.emoji} {l.label}
+                  <span style={{ fontSize: "10px", color: "#aaa", fontWeight: 400 }}>{l.state}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </>
   );
