@@ -67,7 +67,12 @@ class EventSerializer(serializers.ModelSerializer):
         return obj.listing.views.count()
 
     def get_is_reported(self, obj):
-        return obj.listing.reports.filter(is_reviewed=False).exists()
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        if obj.listing.user == request.user or request.user.is_staff:
+            return obj.listing.reports.filter(is_reviewed=False).exists()
+        return False
 
     def get_images(self, obj):
         return [

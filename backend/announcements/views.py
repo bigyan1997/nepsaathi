@@ -49,7 +49,7 @@ class AnnouncementListView(generics.ListAPIView):
             listing__status='active',
             listing__is_under_review=False,
         ).select_related('listing', 'listing__user').prefetch_related(
-            'listing__reports'
+            'listing__reports', 'listing__images'
         ).annotate(
             view_count_annotated=Count('listing__views')
         )
@@ -110,9 +110,11 @@ class AnnouncementDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
-        return Announcement.objects.select_related(
-            'listing', 'listing__user'
-        )
+        from django.db.models import Q
+        qs = Announcement.objects.select_related('listing', 'listing__user')
+        if self.request.user.is_authenticated:
+            return qs.filter(Q(listing__status='active') | Q(listing__user=self.request.user))
+        return qs.filter(listing__status='active')
 
     def check_object_permissions(self, request, obj):
         super().check_object_permissions(request, obj)
@@ -140,6 +142,6 @@ class AnnouncementDetailByListingView(generics.RetrieveAPIView):
         try:
             return Announcement.objects.select_related(
                 'listing', 'listing__user'
-            ).get(listing__slug=listing_slug)
+            ).get(listing__slug=listing_slug, listing__status='active')
         except Announcement.DoesNotExist:
             raise NotFound('Announcement not found.')

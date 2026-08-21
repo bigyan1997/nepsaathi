@@ -165,11 +165,7 @@ export default function BusinessDetailPage() {
     queryFn: () => getBusiness(slug),
   });
 
-  const { data: similarListings } = useQuery({
-    queryKey: ["similar", business?.listing_id],
-    queryFn: () => getSimilarListings(business.listing_id),
-    enabled: !!business?.listing_id,
-  });
+  // Businesses are not backed by a Listing model so there is no listing_id to query similar listings with
 
   const { data: reviews = [] } = useQuery({
     queryKey: ["business-reviews", slug],
@@ -1120,7 +1116,7 @@ export default function BusinessDetailPage() {
                       </a>
                     )}
                     {business.whatsapp && (
-                      <WhatsAppButton phone={business.whatsapp} listingTitle={business.name} size="small" />
+                      <WhatsAppButton phone={business.whatsapp} listingTitle={business.business_name} size="small" />
                     )}
                     {business.email && (
                       <a

@@ -265,11 +265,11 @@ export default function EventDetailPage() {
           ? { "@type": "VirtualLocation", "url": event.event_url || window.location.href }
           : {
               "@type": "Place",
-              "name": event.venue || event.location,
+              "name": event.venue || event.listing_location,
               "address": {
                 "@type": "PostalAddress",
-                "addressLocality": event.location,
-                "addressRegion": event.state,
+                "addressLocality": event.listing_location,
+                "addressRegion": event.listing_state,
                 "addressCountry": "AU",
               },
             },

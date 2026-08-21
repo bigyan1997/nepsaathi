@@ -323,7 +323,7 @@ class ReportBusinessView(APIView):
 
     def post(self, request, slug):
         try:
-            business = Business.objects.get(slug=slug)
+            business = Business.objects.get(slug=slug, is_active=True)
         except Business.DoesNotExist:
             return Response({'detail': 'Business not found.'}, status=status.HTTP_404_NOT_FOUND)
 

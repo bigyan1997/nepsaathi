@@ -70,7 +70,8 @@ class ForumPostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        ForumPost.objects.filter(pk=instance.pk).update(view_count=instance.view_count + 1)
+        from django.db.models import F
+        ForumPost.objects.filter(pk=instance.pk).update(view_count=F('view_count') + 1)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
