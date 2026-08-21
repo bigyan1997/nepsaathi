@@ -291,7 +291,7 @@ class ListingCreateView(generics.CreateAPIView):
 
         # Cross-user duplicate check — run in background so it doesn't block the response
         import threading
-        threading.Thread(target=_flag_if_duplicate, args=(listing, user), daemon=False).start()
+        threading.Thread(target=_flag_if_duplicate, args=(listing, user), daemon=True).start()
 
         # Geocode suburb+state in background for map view
         threading.Thread(target=_geocode_listing, args=(listing,), daemon=True).start()
@@ -599,7 +599,7 @@ class ReportListingView(APIView):
 
     def post(self, request, pk):
         try:
-            listing = Listing.objects.get(pk=pk)
+            listing = Listing.objects.get(pk=pk, status='active')
         except Listing.DoesNotExist:
             return Response(
                 {'detail': 'Listing not found.'},
@@ -1244,7 +1244,7 @@ def _trigger_saved_search_alerts(listing, send_fn):
             except Exception as e:
                 logger.error('[SEARCH ALERT] Search #%s failed: %s', saved.id, e)
 
-    threading.Thread(target=_run, daemon=False).start()
+    threading.Thread(target=_run, daemon=True).start()
 
 
 class SavedSearchListView(APIView):

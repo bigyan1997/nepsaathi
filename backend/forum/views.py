@@ -37,7 +37,7 @@ class ForumPostListView(generics.ListCreateAPIView):
         return ForumPostListSerializer
 
     def get_queryset(self):
-        return ForumPost.objects.select_related('author').prefetch_related('upvotes', 'replies', 'poll_options', 'poll_options__votes')
+        return ForumPost.objects.select_related('author').prefetch_related('upvotes', 'poll_options', 'poll_options__votes')
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -65,7 +65,8 @@ class ForumPostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return ForumPost.objects.select_related('author').prefetch_related(
-            'upvotes', 'replies__author', 'replies__upvotes'
+            'upvotes', 'replies__author', 'replies__upvotes',
+            'poll_options', 'poll_options__votes'
         )
 
     def retrieve(self, request, *args, **kwargs):

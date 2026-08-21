@@ -470,7 +470,7 @@ class UserReviewListCreateView(APIView):
 
     def get(self, request, id):
         from .models import UserReview
-        reviews = UserReview.objects.filter(reviewed_user_id=id).select_related('reviewer')
+        reviews = UserReview.objects.filter(reviewed_user_id=id).select_related('reviewer').order_by('-created_at')[:100]
         data = [
             {
                 'id': r.id,

@@ -201,8 +201,8 @@ export default function JobDetailPage() {
           "@type": "Place",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": job.location,
-            "addressRegion": job.state,
+            "addressLocality": job.listing_location,
+            "addressRegion": job.listing_state,
             "addressCountry": "AU",
           },
         },
@@ -616,7 +616,7 @@ export default function JobDetailPage() {
                   );
                 })()}
               </div>
-              <MarketBenchmark type="job" jobType={job.job_type} state={job.state} />
+              <MarketBenchmark type="job" jobType={job.job_type} state={job.listing_state} />
             </div>
 
             {/* Job details — purple tinted */}
