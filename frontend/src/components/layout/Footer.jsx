@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import NepSaathiLogo from "../ui/NepSaathiLogo";
 import useT from "../../hooks/useT";
+import api from "../../utils/axios";
 
 const ICON_EXPLORE = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -85,11 +86,7 @@ export default function Footer() {
     if (!email || subscribed) return;
     setSubLoading(true);
     try {
-      await fetch("/api/newsletter/subscribe/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      await api.post("/api/newsletter/subscribe/", { email });
     } catch (_) {}
     setSubscribed(true);
     setSubLoading(false);
