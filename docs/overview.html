@@ -246,7 +246,7 @@ p:last-child{margin-bottom:0;}
     <button class="tab-btn active" onclick="switchTab('user')">User Guide</button>
     <button class="tab-btn"        onclick="switchTab('dev')">Developer Reference</button>
   </div>
-  <div class="header-right">Last updated Aug 2026</div>
+  <div class="header-right">Last updated 21 Aug 2026</div>
 </header>
 
 <div class="shell">
@@ -280,6 +280,7 @@ p:last-child{margin-bottom:0;}
       <div class="nav-label">Tools</div>
       <a class="nav-link" href="#points"         onclick="cm()"><span class="ni">⭐</span>Points &amp; Referrals</a>
       <a class="nav-link" href="#send-money"     onclick="cm()"><span class="ni">💸</span>Send Money</a>
+      <a class="nav-link" href="#visa-hub"       onclick="cm()"><span class="ni">🛂</span>Visa Hub</a>
       <a class="nav-link" href="#saved-searches" onclick="cm()"><span class="ni">🔔</span>Saved Searches</a>
       <a class="nav-link" href="#profile"        onclick="cm()"><span class="ni">👤</span>Your Profile</a>
     </div>
@@ -351,6 +352,7 @@ p:last-child{margin-bottom:0;}
       <div class="card-mini"><div class="cm-icon">🏪</div><div class="cm-title">Businesses</div><div class="cm-desc">Find Nepalese-owned businesses with reviews and booking links.</div></div>
       <div class="card-mini"><div class="cm-icon">💬</div><div class="cm-title">Forum</div><div class="cm-desc">Ask questions, share tips, and vote in community discussions.</div></div>
       <div class="card-mini"><div class="cm-icon">💸</div><div class="cm-title">Send Money</div><div class="cm-desc">Compare live AUD→NPR rates from Wise, Remitly, WorldRemit, WU.</div></div>
+      <div class="card-mini"><div class="cm-icon">🛂</div><div class="cm-title">Visa Hub</div><div class="cm-desc">PR points calculator, community processing times, and WhatsApp groups.</div></div>
     </div>
     <div class="callout"><div class="callout-icon">ℹ️</div><div>You can <strong>browse all listings, forum posts, and businesses without an account.</strong> You need to sign up to post, apply, message, or RSVP.</div></div>
   </section>
@@ -527,6 +529,18 @@ p:last-child{margin-bottom:0;}
     <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Points page — balance card, copy referral link, earn guide, event history</span></div>
   </section>
 
+  <!-- Visa Hub -->
+  <section class="section" id="visa-hub">
+    <div class="section-header"><div class="section-icon">🛂</div><h2 class="section-title">Visa Hub</h2></div>
+    <p>Visit <span class="url-chip">/visa</span> — a self-service reference tool for Nepalese Australians navigating the PR pathway. No account needed.</p>
+    <ul>
+      <li><strong>PR Points Calculator</strong> — inputs age, English level, work experience, qualifications, and extras; calculates your points score against the 189/190/491 thresholds in real time</li>
+      <li><strong>Visa timelines</strong> — community-reported processing times by visa subclass, sorted by date</li>
+      <li><strong>WhatsApp groups</strong> — curated list of state-based community WhatsApp groups for visa applicants</li>
+    </ul>
+    <div class="callout"><div class="callout-icon">ℹ️</div><div>The Visa Hub is a reference guide only — not legal advice. Always consult a registered migration agent for your specific circumstances.</div></div>
+  </section>
+
   <!-- Send Money -->
   <section class="section" id="send-money">
     <div class="section-header"><div class="section-icon">💸</div><h2 class="section-title">Send Money</h2></div>
@@ -604,7 +618,7 @@ p:last-child{margin-bottom:0;}
           <tr><td><code>exchange</code></td><td>Live AUD/GBP/USD/CAD→NPR rates (cached 1 hr, no DB)</td></tr>
           <tr><td><code>messaging</code></td><td>1-to-1 conversations, WebSocket via Django Channels</td></tr>
           <tr><td><code>payments</code></td><td>Stripe Checkout for featured listings, PDF invoices (fpdf2)</td></tr>
-          <tr><td><code>feedback</code></td><td>Exit-intent survey → Google Sheets async sync</td></tr>
+          <tr><td><code>feedback</code></td><td>Exit-intent survey → Google Sheets async sync; newsletter subscriber list with CSV export</td></tr>
           <tr><td><code>panel</code></td><td>Superuser-only stats aggregation API</td></tr>
           <tr><td><code>forum</code></td><td>ForumPost + ForumReply + upvotes + polls (PollOption, PollVote)</td></tr>
           <tr><td><code>remittance</code></td><td>AUD→NPR rate comparator — Wise, Remitly, WorldRemit, Western Union</td></tr>
@@ -636,6 +650,9 @@ p:last-child{margin-bottom:0;}
           <tr><td><strong>Featured listings</strong></td><td>Auth (owners)</td><td>Stripe Checkout; 7-day featured period; PDF invoice on payment</td></tr>
           <tr><td><strong>AI Improve</strong></td><td>Auth</td><td>Groq Llama 3.1 8B; 5 uses/day shared across listing + forum + cover letter</td></tr>
           <tr><td><strong>Bilingual UI</strong></td><td>Anyone</td><td>English/Nepali toggle (🇳🇵/🇬🇧); 80+ translated strings; Devanagari</td></tr>
+          <tr><td><strong>Location SEO pages</strong></td><td>Anyone</td><td>/jobs/in/:location, /rooms/in/:location, /events, /notices, /businesses — city-aware titles + no-index on empty results</td></tr>
+          <tr><td><strong>Visa Hub</strong></td><td>Anyone</td><td>/visa — PR points calculator, visa timelines, WhatsApp groups by state</td></tr>
+          <tr><td><strong>Newsletter</strong></td><td>Anyone</td><td>Email subscribe in footer; stored in DB; idempotent; sends branded welcome email</td></tr>
         </tbody>
       </table>
     </div>
@@ -877,6 +894,7 @@ python manage.py fetch_remittance_rates</code></pre>
     <div class="card">
       <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/exchange/</span><span class="ep-note">AUD/GBP/USD/CAD→NPR cached 1 hr; public</span></div>
       <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/feedback/</span><span class="ep-note">exit-intent survey → Google Sheets async</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="ep-path">/api/newsletter/subscribe/</span><span class="ep-note">subscribe email; idempotent; sends welcome email; 200 if already active, 201 if new</span></div>
       <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/remittance/rates/</span><span class="ep-note">live AUD→NPR per provider; public</span></div>
       <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/panel/stats/</span><span class="ep-note">superuser only — "Not found." to everyone else</span></div>
     </div>
@@ -956,6 +974,7 @@ improved = _re.sub(r'&lt;/?user_draft&gt;', '', improved).strip()</code></pre>
     <div class="email-item"><div class="email-icon">🔄</div><div><div class="email-trigger">Listing renewal</div><div class="email-desc">Confirms new expiry date when owner renews.</div></div></div>
     <div class="email-item"><div class="email-icon">🚫</div><div><div class="email-trigger">Account banned</div><div class="email-desc">Sent by admin action with ban reason.</div></div></div>
     <div class="email-item"><div class="email-icon">📝</div><div><div class="email-trigger">Job application</div><div class="email-desc">To the job poster when an applicant submits a Quick Apply with cover letter.</div></div></div>
+    <div class="email-item"><div class="email-icon">📰</div><div><div class="email-trigger">Newsletter welcome</div><div class="email-desc">Sent on new subscription via <code>POST /api/newsletter/subscribe/</code>. Includes Browse CTA. Re-subscribing after unsubscribing also triggers it.</div></div></div>
     <div class="callout red"><div class="callout-icon">⚠️</div><div>All user-supplied strings inserted into email HTML must go through the <code>_h()</code> helper in <code>core/emails.py</code> to prevent HTML injection. This was added 2026-08-10 after the event URL was found to be unescaped.</div></div>
   </section>
 
@@ -1031,7 +1050,7 @@ web: gunicorn core.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
 python manage.py migrate
 python manage.py collectstatic --noinput</code></pre>
     <h3>Frontend — Vercel</h3>
-    <p><code>vercel.json</code> rewrites all routes to <code>index.html</code> (SPA). Also proxies <code>/sitemap-forum.xml</code> → Railway for Google Search Console.</p>
+    <p><code>vercel.json</code> rewrites all routes to <code>index.html</code> (SPA). Also proxies <code>/sitemap-forum.xml</code> → Railway for Google Search Console. A permanent redirect sends <code>nepsaathi.com/*</code> → <code>www.nepsaathi.com/*</code> using <code>has.host</code> condition. API calls from the frontend must use the full <code>VITE_API_URL</code> (Railway URL) — relative <code>/api/*</code> paths are caught by the SPA rewrite for GET but return 405 for POST, since Vercel serves static files, not a proxy.</p>
     <h3>After first deploy / migration</h3>
     <pre><code>python manage.py migrate
 python manage.py fetch_remittance_rates   # seed initial rates</code></pre>

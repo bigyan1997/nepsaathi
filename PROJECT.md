@@ -95,7 +95,7 @@ Railway (Django ASGI)
 | `exchange` | Live AUD/GBP/USD/CAD → NPR rates (cached 1 hr, no DB) |
 | `messaging` | 1-to-1 conversations tied to listings, WebSocket via Channels |
 | `payments` | Stripe Checkout for featured listings, PDF invoices |
-| `feedback` | Exit-intent survey → Google Sheets sync |
+| `feedback` | Exit-intent survey → Google Sheets sync; newsletter subscriber list |
 | `panel` | Superuser-only stats aggregation API |
 | `forum` | Community board — posts, replies, upvotes, categories, polls |
 | `remittance` | AUD → NPR rate comparator (Wise, Remitly, WorldRemit, Western Union) |
@@ -147,6 +147,7 @@ Railway (Django ASGI)
 
 #### `feedback`
 - **FeedbackResponse** — satisfaction(1–5), reason(6 choices), page_url, user(FK nullable)
+- **NewsletterSubscriber** — email(unique), subscribed_at(auto_now_add), is_active(default True). DB table: `newsletter_subscribers`. Admin includes CSV export action.
 
 #### `forum`
 - **ForumPost** — author(FK), category(visa/accommodation/jobs/events/business/general), title, body(5000), slug(unique), is_pinned, is_closed, upvotes(M2M User), view_count
@@ -283,10 +284,11 @@ Filtering: `?category=<value>&state=<AU_state>` on both list endpoints.
 
 ### Other
 ```
-GET  /api/exchange/           # AUD/GBP/USD/CAD → NPR, cached 1 hr (public)
-POST /api/feedback/           # exit-intent survey → Google Sheets (public)
-GET  /api/panel/stats/        # full site stats (superuser only)
-GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
+GET  /api/exchange/                      # AUD/GBP/USD/CAD → NPR, cached 1 hr (public)
+POST /api/feedback/                      # exit-intent survey → Google Sheets (public)
+POST /api/newsletter/subscribe/          # subscribe email to newsletter; idempotent; sends welcome email (public)
+GET  /api/panel/stats/                   # full site stats (superuser only)
+GET  /api/remittance/rates/              # live AUD→NPR rates per provider (public)
 ```
 
 ---
@@ -317,6 +319,12 @@ GET  /api/remittance/rates/   # live AUD→NPR rates per provider (public)
 | `/search` | SearchPage |
 | `/send-money` | RemittancePage |
 | `/users/:id` | UserProfilePage — public profile + listings by that user + star reviews |
+| `/jobs/in/:location` | LocationPage (listingType=job) — SEO landing page for a city or suburb; uses listing__state filter for known cities, Nominatim search for suburbs |
+| `/rooms/in/:location` | LocationPage (listingType=room) |
+| `/events/in/:location` | LocationPage (listingType=event) |
+| `/notices/in/:location` | LocationPage (listingType=notice) |
+| `/businesses/in/:location` | LocationPage (listingType=business) |
+| `/visa` | VisaHubPage — PR points calculator, visa timelines, WhatsApp groups |
 | `/new-to-australia` | NewToAustraliaPage — accordion guide, sticky scrollspy nav |
 | `/banking` | BankingPage — banking & finance guide (green accent) |
 | `/health` | HealthPage — health & insurance guide (blue accent) |
@@ -383,7 +391,7 @@ Notable additions:
 
 ### Key components
 - **Navbar** — sticky, shows auth-conditional links, unread message badge with toast on new message. Includes `LangToggle` (🇳🇵/🇬🇧 flag pill) for Nepali/English switching in both desktop nav and mobile menu bottom.
-- **Footer** — 4-column grid (Brand, Browse, Account, Contact). All labels translated via `useT()`.
+- **Footer** — Newsletter strip (email subscribe → `POST /api/newsletter/subscribe/`) + 5-column link grid (Brand, Explore, Guides, Account, About) with inline SVG column headers and `›` chevron links. Two bottom bars: legal links + contact emails; darker copyright bar. Responsive: 3-col ≤900px, 2-col ≤560px. All labels via `useT()`.
 - **Toast** — `useToast()` exposes `addToast(content, type, duration)` — NOT `showToast`
 - **ProgressBar** — route-change loading indicator
 - **FeedbackModal** — exit-intent form (satisfaction 1–5 + reason) → Google Sheets
@@ -425,6 +433,7 @@ def _fire(params):
 | `send_payment_invoice_email` | Stripe payment completed (attaches PDF) |
 | `send_saved_search_alert_email` | New listing matches user's saved search |
 | `send_event_reminder_email` | Event within 24 hrs (cron) |
+| `send_newsletter_welcome_email` | Newsletter signup — welcome email with Browse CTA |
 | `send_document_expiry_email` | *(removed — visa tracker deleted)* |
 | `send_visa_expiry_reminder_email` | *(removed — visa tracker deleted)* |
 
@@ -678,6 +687,15 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Tags in n8n webhook** — `tags` array included in both `_notify_n8n` (views.py) and `_fire_n8n_webhook` (admin.py) payloads. n8n Code node converts them to hashtags (`#kitchenhand`, `#fulltime`) and appends to Facebook + Instagram captions alongside existing core/category/location tags. Instagram respects 30-tag limit.
 - **AI rate limit toast** — both "Improve with AI" and "Suggest tags" buttons show a `warning` toast on HTTP 429 instead of inline error: "You've used your daily AI limit. Try again tomorrow. You can still use NepSaathi normally!"
 - **Removed `anthropic` package** — `anthropic>=0.40.0` removed from `requirements.txt` (unused since switch to Groq).
+
+### Phase 9 — SEO location pages, footer redesign, newsletter, bug sweep (2026-08-21)
+- **Location SEO pages** — `LocationPage` component powers `/jobs/in/:location`, `/rooms/in/:location`, `/events/in/:location`, `/notices/in/:location`, `/businesses/in/:location`. Known city slugs (sydney, melbourne, brisbane, perth, adelaide) use `listing__state` filter; suburb slugs use Nominatim geocode → radius search. Each page has `usePageMeta` with city-aware title/description and no-index on empty results. `/announcements` and `/announcements/:slug` redirect to `/notices` and `/notices/:slug`.
+- **VisaHub page** (`/visa`) — PR points calculator (English-skilled worker pathway), visa timeline browser, state-based WhatsApp group links. Tab bar uses horizontal scroll (flex, `overflow-x: auto`, `flex-shrink: 0`, `white-space: nowrap`) for mobile. All grids use `repeat(auto-fit, minmax(..., 1fr))` for responsive layout without media queries.
+- **Soft 404 fixes** — error states on JobDetailPage, RoomDetailPage, EventDetailPage, NoticeDetailPage now render `<meta name="robots" content="noindex, nofollow" />` so Google stops crawling deleted listing URLs. `vercel.json` adds a permanent redirect from non-www to www (`nepsaathi.com → www.nepsaathi.com`) using `has.host` condition.
+- **Footer redesign** — full rebuild: newsletter strip (email subscribe), 5-column link grid with inline SVG icon column headers and `›` chevron links, two bottom bars (legal + copyright). Responsive breakpoints at 900px and 560px. Newsletter subscribe uses `api` axios instance (not bare `fetch`) to reach the Railway backend via `VITE_API_URL`.
+- **Newsletter backend** — `NewsletterSubscriber` model in `feedback` app (`email` unique, `subscribed_at`, `is_active`). `POST /api/newsletter/subscribe/` is idempotent: creates on first call, re-activates on re-subscribe, returns 200 with "already subscribed" on duplicates. Sends `send_newsletter_welcome_email` on successful new subscription. Django admin has CSV export action. Frontend shows distinct success / already-subscribed badge states.
+- **Bug sweep — 35 fixes across 4 audits** — highlights: `is_under_review=False` added to all listing detail view querysets so listings under review are hidden from non-owners; `daemon=True` on background threads (`_flag_if_duplicate`, `_trigger_saved_search_alerts`) for clean gunicorn shutdown; atomic view-count increment via `F('view_count') + 1`; boolean-as-int rating validation (`isinstance(rating, bool)` check); `is_active` in `BusinessSerializer.read_only_fields` prevents owner bypassing admin deactivation; `get_is_reported` returns `False` to non-owners (was leaking report status); `Avg`/`Count` DB aggregation for accurate review stats; N+1 fixed on EventListView with `prefetch_related('listing__images')`; deleted-listing `invoice_url` construction crash fixed; `business.name` → `business.business_name` in WhatsApp button.
+- **llms.txt** added at repo root — H1 title + site links for LLM crawlers.
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
