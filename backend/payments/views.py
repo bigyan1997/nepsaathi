@@ -157,7 +157,11 @@ class StripeWebhookView(APIView):
                 business.featured_until = tz.now() + timedelta(days=payment.duration_days)
                 business.save(update_fields=['is_featured', 'featured_until'])
 
-        send_payment_invoice_email(payment)
+        try:
+            send_payment_invoice_email(payment)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error('Invoice email failed for payment %s: %s', payment.id, e)
 
 
 class InvoicePDFView(APIView):

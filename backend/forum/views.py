@@ -233,6 +233,7 @@ class AIImproveForumPostView(APIView):
         if not body or len(body) < 10:
             return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        from decouple import config
         api_key = config('GROQ_API_KEY', default='')
         if not api_key:
             return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

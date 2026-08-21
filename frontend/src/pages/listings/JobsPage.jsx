@@ -315,6 +315,7 @@ function JobMobileCard({ job }) {
         <span style={{ fontSize: "36px" }}>{isWanted ? "🔍" : "💼"}</span>
 
         {/* Salary — top right */}
+        {job.salary_display && (
         <div
           style={{ position: "absolute", top: "8px", right: "8px", zIndex: 2 }}
         >
@@ -333,6 +334,7 @@ function JobMobileCard({ job }) {
             {job.salary_display}
           </span>
         </div>
+        )}
 
         {/* Badges — bottom left */}
         <div
@@ -606,6 +608,7 @@ function JobCard({ job }) {
             </span>
           )}
         </div>
+        {job.salary_display && (
         <div style={{ position: "absolute", top: "10px", right: "10px" }}>
           <span
             style={{
@@ -620,6 +623,7 @@ function JobCard({ job }) {
             {job.salary_display}
           </span>
         </div>
+        )}
         <div
           style={{
             position: "absolute",
@@ -899,11 +903,7 @@ export default function JobsPage() {
                       borderRadius: "10px",
                     }}
                   >
-                    {value === ""
-                      ? (data?.count ?? allResults.length)
-                      : value === "true"
-                        ? allResults.filter((j) => j.is_wanted).length
-                        : allResults.filter((j) => !j.is_wanted).length}
+                    {value === "" ? (data?.count ?? allResults.length) : null}
                   </span>
                 )}
               </button>

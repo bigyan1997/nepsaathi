@@ -1096,11 +1096,7 @@ export default function RoomsPage() {
                       borderRadius: "10px",
                     }}
                   >
-                    {value === ""
-                      ? (data?.count ?? allResults.length)
-                      : value === "true"
-                        ? allResults.filter((r) => r.is_wanted).length
-                        : allResults.filter((r) => !r.is_wanted).length}
+                    {value === "" ? (data?.count ?? allResults.length) : null}
                   </span>
                 )}
               </button>

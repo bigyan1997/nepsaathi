@@ -91,7 +91,11 @@ class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
-        return Room.objects.select_related('listing', 'listing__user')
+        from django.db.models import Q
+        qs = Room.objects.select_related('listing', 'listing__user')
+        if self.request.user.is_authenticated:
+            return qs.filter(Q(listing__status='active') | Q(listing__user=self.request.user))
+        return qs.filter(listing__status='active')
 
     def check_object_permissions(self, request, obj):
         super().check_object_permissions(request, obj)

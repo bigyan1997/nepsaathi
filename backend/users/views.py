@@ -104,7 +104,7 @@ class DeleteAccountView(APIView):
             try:
                 from listings.models import Listing
                 from django.db import transaction
-                listings = Listing.objects.filter(user=user).prefetch_related('images')
+                listings = list(Listing.objects.filter(user=user).prefetch_related('images'))
                 cloudinary_errors = []
                 for listing in listings:
                     for image in listing.images.all():
@@ -112,7 +112,6 @@ class DeleteAccountView(APIView):
                             image.delete()
                         except Exception as e:
                             cloudinary_errors.append(str(e))
-                    listing.delete()
                 if cloudinary_errors:
                     import logging
                     logging.getLogger(__name__).warning(
@@ -120,6 +119,8 @@ class DeleteAccountView(APIView):
                         user.id, cloudinary_errors
                     )
                 with transaction.atomic():
+                    for listing in listings:
+                        listing.delete()
                     user.delete()
                 return Response(
                     {'detail': 'Your account has been permanently deleted.'},
@@ -508,7 +509,11 @@ class UserReviewListCreateView(APIView):
         rating = request.data.get('rating')
         comment = request.data.get('comment', '').strip()
 
-        if not rating or not isinstance(rating, int) or not (1 <= rating <= 5):
+        try:
+            rating = int(rating)
+        except (TypeError, ValueError):
+            rating = None
+        if not rating or isinstance(rating, bool) or not (1 <= rating <= 5):
             return Response({'detail': 'Rating must be between 1 and 5.'}, status=400)
 
         review = UserReview.objects.create(

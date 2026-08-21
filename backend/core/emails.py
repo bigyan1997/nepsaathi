@@ -1032,7 +1032,10 @@ def send_business_saved_search_alert_email(user, business, saved_search_id):
 def send_payment_invoice_email(payment):
     from payments.pdf import generate_invoice_pdf
     listing = payment.listing
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+    listing_url = (
+        f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+        if listing else FRONTEND_URL
+    )
     try:
         first_name = _h(payment.user.first_name or 'there')
         invoice_number = f"INV-{payment.id:05d}"
