@@ -26,6 +26,7 @@ from django.conf.urls.static import static
 from decouple import config
 from users import views as users_views
 from forum.sitemaps import ForumPostSitemap
+from feedback.views import NewsletterSubscribeView
 
 sitemaps = {
     "forum": ForumPostSitemap,
@@ -95,6 +96,9 @@ urlpatterns = [
 
     # Feedback / exit-intent survey
     path('api/feedback/', include('feedback.urls')),
+
+    # Newsletter subscribe (matches frontend /api/newsletter/subscribe/)
+    path('api/newsletter/subscribe/', NewsletterSubscribeView.as_view()),
 
     # Community forum
     path('api/forum/', include('forum.urls')),
