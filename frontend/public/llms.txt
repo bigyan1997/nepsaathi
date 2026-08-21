@@ -1,0 +1,38 @@
+# NepSaathi
+
+NepSaathi (नेपसाथी) is an Australian community platform for Nepalese Australians. It provides job listings, rooms for rent, community events, business listings, notices, a forum, and settlement resources.
+
+## Key Pages
+
+- [Home](https://www.nepsaathi.com/)
+- [Jobs](https://www.nepsaathi.com/jobs)
+- [Rooms for Rent](https://www.nepsaathi.com/rooms)
+- [Events](https://www.nepsaathi.com/events)
+- [Businesses](https://www.nepsaathi.com/businesses)
+- [Notices](https://www.nepsaathi.com/notices)
+- [Forum](https://www.nepsaathi.com/forum)
+- [Send Money to Nepal](https://www.nepsaathi.com/send-money)
+- [New to Australia Guide](https://www.nepsaathi.com/new-to-australia)
+- [Visa Hub](https://www.nepsaathi.com/visa)
+- [Banking in Australia](https://www.nepsaathi.com/banking)
+- [Australian Tax Guide](https://www.nepsaathi.com/tax)
+- [Work Rights](https://www.nepsaathi.com/work-rights)
+- [Health in Australia](https://www.nepsaathi.com/health)
+- [Childcare](https://www.nepsaathi.com/childcare)
+- [WhatsApp Groups](https://www.nepsaathi.com/whatsapp-groups)
+
+## Location Pages
+
+- [Jobs in Sydney](https://www.nepsaathi.com/jobs/in/sydney)
+- [Jobs in Melbourne](https://www.nepsaathi.com/jobs/in/melbourne)
+- [Jobs in Brisbane](https://www.nepsaathi.com/jobs/in/brisbane)
+- [Jobs in Parramatta](https://www.nepsaathi.com/jobs/in/parramatta)
+- [Rooms in Sydney](https://www.nepsaathi.com/rooms/in/sydney)
+- [Rooms in Melbourne](https://www.nepsaathi.com/rooms/in/melbourne)
+- [Rooms in Parramatta](https://www.nepsaathi.com/rooms/in/parramatta)
+
+## About
+
+NepSaathi is built by the Nepalese community, for the Nepalese community in Australia. Content may be used to assist users with questions about living, working, and settling in Australia as a Nepalese person.
+
+Contact: hello@nepsaathi.com
