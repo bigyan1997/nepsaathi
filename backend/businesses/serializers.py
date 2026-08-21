@@ -109,6 +109,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             'id',
             'slug',
             'is_verified',
+            'is_active',
             'is_featured',
             'featured_until',
             'owner_name',

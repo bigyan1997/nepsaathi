@@ -94,8 +94,10 @@ class JobDetailView(generics.RetrieveUpdateDestroyAPIView):
         from django.db.models import Q
         qs = Job.objects.select_related('listing', 'listing__user')
         if self.request.user.is_authenticated:
-            return qs.filter(Q(listing__status='active') | Q(listing__user=self.request.user))
-        return qs.filter(listing__status='active')
+            return qs.filter(
+                Q(listing__status='active', listing__is_under_review=False) | Q(listing__user=self.request.user)
+            )
+        return qs.filter(listing__status='active', listing__is_under_review=False)
 
     def check_object_permissions(self, request, obj):
         super().check_object_permissions(request, obj)
@@ -117,7 +119,7 @@ class JobDetailByListingView(generics.RetrieveAPIView):
         try:
             return Job.objects.select_related(
                 'listing', 'listing__user'
-            ).get(listing__slug=listing_slug)
+            ).get(listing__slug=listing_slug, listing__status='active', listing__is_under_review=False)
         except Job.DoesNotExist:
             raise NotFound('Job not found.')
 

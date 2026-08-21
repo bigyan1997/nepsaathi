@@ -470,6 +470,8 @@ class UserReviewListCreateView(APIView):
 
     def get(self, request, id):
         from .models import UserReview
+        from django.db.models import Avg, Count as DbCount
+        agg = UserReview.objects.filter(reviewed_user_id=id).aggregate(avg=Avg('rating'), count=DbCount('id'))
         reviews = UserReview.objects.filter(reviewed_user_id=id).select_related('reviewer').order_by('-created_at')[:100]
         data = [
             {
@@ -483,8 +485,8 @@ class UserReviewListCreateView(APIView):
             }
             for r in reviews
         ]
-        avg = round(sum(r['rating'] for r in data) / len(data), 1) if data else 0
-        return Response({'reviews': data, 'avg_rating': avg, 'count': len(data)})
+        avg = round(agg['avg'], 1) if agg['avg'] else 0
+        return Response({'reviews': data, 'avg_rating': avg, 'count': agg['count']})
 
     def post(self, request, id):
         from .models import UserReview
