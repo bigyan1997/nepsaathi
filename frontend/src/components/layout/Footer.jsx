@@ -79,6 +79,7 @@ export default function Footer() {
   const t = useT();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [subLoading, setSubLoading] = useState(false);
 
   const handleSubscribe = async (e) => {
@@ -86,9 +87,15 @@ export default function Footer() {
     if (!email || subscribed) return;
     setSubLoading(true);
     try {
-      await api.post("/api/newsletter/subscribe/", { email });
-    } catch (_) {}
-    setSubscribed(true);
+      const res = await api.post("/api/newsletter/subscribe/", { email });
+      if (res.status === 200) {
+        setAlreadySubscribed(true);
+      } else {
+        setSubscribed(true);
+      }
+    } catch (_) {
+      setSubscribed(true);
+    }
     setSubLoading(false);
     setEmail("");
   };
@@ -120,6 +127,10 @@ export default function Footer() {
           {subscribed ? (
             <div style={{ fontSize: "13.5px", fontWeight: 600, color: "#1B8F5E", background: "#E1F5EE", borderRadius: "9px", padding: "11px 20px" }}>
               ✓ You're subscribed!
+            </div>
+          ) : alreadySubscribed ? (
+            <div style={{ fontSize: "13.5px", fontWeight: 600, color: "#7C6F2E", background: "#FFF8DC", borderRadius: "9px", padding: "11px 20px" }}>
+              You've already subscribed
             </div>
           ) : (
             <form onSubmit={handleSubscribe} style={{ display: "flex", gap: "8px", flexShrink: 0, flexWrap: "wrap" }}>
