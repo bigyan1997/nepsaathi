@@ -299,17 +299,19 @@ function TabBtn({ label, active, onClick }) {
     <button
       onClick={onClick}
       style={{
-        padding: "9px 20px",
+        padding: "9px 16px",
         borderRadius: "8px",
         border: "1.5px solid",
-        borderColor: active ? "#534AB7" : "transparent",
-        background: active ? "#EEEDFE" : "transparent",
+        borderColor: active ? "#534AB7" : "#e8e6f8",
+        background: active ? "#EEEDFE" : "#fff",
         color: active ? "#534AB7" : "#666",
         fontWeight: active ? 700 : 500,
-        fontSize: "14px",
+        fontSize: "13px",
         cursor: "pointer",
         fontFamily: "inherit",
         transition: "all .15s",
+        flexShrink: 0,
+        whiteSpace: "nowrap",
       }}
     >
       {label}
@@ -448,7 +450,7 @@ function PRCalculator() {
 
   return (
     <div>
-      <div style={{ background: "#EEEDFE", borderRadius: "14px", padding: "20px 24px", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+      <div style={{ background: "#EEEDFE", borderRadius: "14px", padding: "20px 24px", marginBottom: "24px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <div style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em", color: "#534AB7", marginBottom: "4px" }}>Your total score</div>
           <div style={{ fontSize: "52px", fontWeight: 800, color: getScoreColor(finalTotal), lineHeight: 1 }}>{finalTotal}</div>
@@ -575,7 +577,7 @@ function PRCalculator() {
 
       <div style={{ marginTop: "20px", background: "#fff", border: "1.5px solid #e8e6f8", borderRadius: "12px", padding: "16px 18px" }}>
         <div style={{ fontWeight: 700, fontSize: "13px", color: "#26215C", marginBottom: "10px" }}>Typical invitation scores (recent rounds)</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "8px" }}>
           {[
             { visa: "189", range: "85–95+", note: "Highly competitive" },
             { visa: "190", range: "65–80", note: "State dependent" },
@@ -662,7 +664,7 @@ function TimelineTracker() {
 
       {/* Stats bar */}
       {stats && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: "10px", marginBottom: "20px" }}>
           {[
             { label: "Submissions", value: stats.total_submissions },
             { label: "Median wait", value: stats.median_wait_months != null ? `${stats.median_wait_months} mo` : "—" },
@@ -707,7 +709,7 @@ function TimelineTracker() {
       {showForm && (
         <div style={{ background: "#fff", border: "1.5px solid #e8e6f8", borderRadius: "12px", padding: "20px", marginBottom: "20px" }}>
           <div style={{ fontWeight: 700, fontSize: "15px", color: "#26215C", marginBottom: "16px" }}>Add your visa timeline</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
             <label style={labelStyle}>
               Visa type *
               <SelectInput value={form.visa_type} onChange={(v) => setForm((f) => ({ ...f, visa_type: v }))}
@@ -1342,7 +1344,7 @@ function TaxReturnEstimator() {
         <strong>2024–25 financial year.</strong> Enter your annual income and total tax withheld from your payslips. We'll calculate your ATO liability and show if you're getting a refund or owe more.
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '16px' }}>
         <label style={{ fontSize: '13px', fontWeight: 600, color: '#444' }}>
           Total income (gross annual) *
           <div style={{ position: 'relative', marginTop: '6px' }}>
@@ -1445,7 +1447,7 @@ function TakeHomeCalculator() {
         <strong>Take-home pay estimator.</strong> Enter your gross (before-tax) pay and pay period. Toggle HECS/HELP if you have a student loan — it's withheld separately from income tax. Results are an estimate; super and salary packaging are not included.
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '16px' }}>
         <label style={{ fontSize: '13px', fontWeight: 600, color: '#444' }}>
           Gross pay (before tax) *
           <div style={{ position: 'relative', marginTop: '6px' }}>
@@ -1626,7 +1628,7 @@ export default function VisaHubPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "28px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "28px", overflowX: "auto", flexWrap: "nowrap", paddingBottom: "4px", WebkitOverflowScrolling: "touch" }}>
         <TabBtn label="🔢 PR Calculator"       active={tab === "calculator"}   onClick={() => setTab("calculator")} />
         <TabBtn label="🔍 Occupation Search"   active={tab === "occupations"}  onClick={() => setTab("occupations")} />
         <TabBtn label="📈 Invitation History"  active={tab === "invitations"}  onClick={() => setTab("invitations")} />
