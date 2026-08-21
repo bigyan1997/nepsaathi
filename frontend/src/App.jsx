@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import useAuthStore from "./store/authStore";
@@ -74,6 +74,11 @@ import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
 import ForgotPasswordPage    from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage     from "./pages/auth/ResetPasswordPage";
+
+function RedirectAnnouncementSlug() {
+  const { slug } = useParams ? useParams() : {};
+  return <Navigate to={`/notices/${slug}`} replace />;
+}
 
 function SuperUserRoute({ children }) {
   const { user, isAuthenticated } = useAuthStore();
@@ -200,7 +205,9 @@ function App() {
                         <Route path="/rooms" element={<RoomsPage />} />
                         <Route path="/rooms/in/:location" element={<LocationPage listingType="room" />} />
                         <Route path="/rooms/:slug" element={<RoomDetailPage />} />
-                        {/* Announcements */}
+                        {/* Announcements — old /announcements path redirects to /notices */}
+                        <Route path="/announcements" element={<Navigate to="/notices" replace />} />
+                        <Route path="/announcements/:slug" element={<RedirectAnnouncementSlug />} />
                         <Route path="/notices" element={<NoticesPage />} />
                         <Route path="/notices/in/:location" element={<LocationPage listingType="notice" />} />
                         <Route path="/notices/:slug" element={<NoticeDetailPage />} />

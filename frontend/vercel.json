@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "nepsaathi.com" }],
+      "destination": "https://www.nepsaathi.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/sitemap-forum.xml",

@@ -232,9 +232,12 @@ export default function EventDetailPage() {
   if (isLoading) return <SkeletonDetailPage />;
   if (error)
     return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
-        Event not found or has been removed.
-      </div>
+      <>
+        <meta name="robots" content="noindex, nofollow" />
+        <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
+          Event not found or has been removed.
+        </div>
+      </>
     );
 
   const catColor = CATEGORY_COLORS[event?.category] || CATEGORY_COLORS.other;
