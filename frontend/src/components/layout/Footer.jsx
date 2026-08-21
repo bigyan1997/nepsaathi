@@ -6,15 +6,18 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   const t = useT();
 
-  const browseLinks = [
-    { to: "/jobs",             key: "footer.jobs" },
-    { to: "/rooms",            key: "footer.rooms" },
-    { to: "/events",           key: "footer.events" },
-    { to: "/notices",          key: "footer.notices" },
-    { to: "/businesses",       key: "footer.businesses" },
-    { to: "/forum",            key: "footer.forum" },
-    { to: "/looking-for",      key: "footer.lookingFor" },
-    { to: "/services",         key: "footer.services" },
+  const coreLinks = [
+    { to: "/jobs",        key: "footer.jobs" },
+    { to: "/rooms",       key: "footer.rooms" },
+    { to: "/events",      key: "footer.events" },
+    { to: "/notices",     key: "footer.notices" },
+    { to: "/businesses",  key: "footer.businesses" },
+    { to: "/forum",       key: "footer.forum" },
+    { to: "/looking-for", key: "footer.lookingFor" },
+    { to: "/services",    key: "footer.services" },
+  ];
+
+  const guideLinks = [
     { to: "/send-money",       key: "footer.sendMoney" },
     { to: "/new-to-australia", key: "footer.newToAustralia" },
     { to: "/visa",             key: "footer.visaHub" },
@@ -43,26 +46,50 @@ export default function Footer() {
     transition: "color 0.15s",
   };
 
-  const handleLinkHover = (e, enter) => {
-    e.currentTarget.style.color = enter ? "#fff" : "#AFA9EC";
+  const hover = (e, enter) => {
+    e.currentTarget.style.color = enter ? "#fff" : "#C9C4F5";
   };
 
   return (
     <footer style={{ background: "#26215C", color: "#fff" }}>
+
+      {/* CTA strip */}
+      <div style={{ borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}>
+        <div
+          className="footer-cta"
+          style={{ maxWidth: "1000px", margin: "0 auto", padding: "18px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}
+        >
+          <span style={{ fontSize: "13.5px", color: "#C9C4F5" }}>
+            Post something for free — connect with the Nepali community across Australia
+          </span>
+          <Link
+            to="/post-ad"
+            className="footer-cta-btn"
+            style={{ background: "#534AB7", color: "#fff", textDecoration: "none", padding: "9px 20px", borderRadius: "9px", fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap", transition: "background 0.15s", flexShrink: 0 }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#6259C8")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#534AB7")}
+          >
+            Post a free ad →
+          </Link>
+        </div>
+      </div>
+
+      {/* Main grid */}
       <div
         className="footer-grid"
-        style={{ maxWidth: "1000px", margin: "0 auto", padding: "48px 28px 36px", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "40px" }}
+        style={{ maxWidth: "1000px", margin: "0 auto", padding: "44px 28px 36px", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: "36px" }}
       >
-        {/* Brand column */}
+        {/* Brand */}
         <div>
-          <Link to="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: "16px" }}>
+          <Link to="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: "14px" }}>
             <NepSaathiLogo size={24} dark />
           </Link>
-          <p style={{ fontSize: "13px", color: "#C9C4F5", lineHeight: 1.7, marginBottom: "20px", maxWidth: "260px" }}>
+          <p style={{ fontSize: "13px", color: "#C9C4F5", lineHeight: 1.7, marginBottom: "6px", maxWidth: "240px" }}>
             {t("footer.tagline")}
           </p>
-
-          {/* Social links */}
+          <p style={{ fontSize: "12px", color: "rgba(201,196,245,0.55)", marginBottom: "20px" }}>
+            🇦🇺 Based in Australia · 🇳🇵 Built for Nepalis
+          </p>
           <div style={{ display: "flex", gap: "10px" }}>
             <a href="https://www.facebook.com/nepsaathi/" target="_blank" rel="noopener noreferrer" title="Facebook"
               style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
@@ -73,7 +100,6 @@ export default function Footer() {
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </a>
-
             <a href="https://www.instagram.com/nepsaathi/" target="_blank" rel="noopener noreferrer" title="Instagram"
               style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#E1306C")}
@@ -83,7 +109,6 @@ export default function Footer() {
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
               </svg>
             </a>
-
             <a href="https://wa.me/your-whatsapp-number" target="_blank" rel="noopener noreferrer" title="WhatsApp"
               style={{ width: "36px", height: "36px", borderRadius: "8px", background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", transition: "background 0.15s" }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#25D366")}
@@ -96,59 +121,70 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Browse column */}
+        {/* Browse — core pages */}
         <div>
-          <h3 style={{ fontSize: "13px", fontWeight: 600, color: "#fff", marginBottom: "16px", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-            {t("footer.browse")}
+          <h3 style={{ fontSize: "11px", fontWeight: 700, color: "#fff", marginBottom: "14px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            Browse
           </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {browseLinks.map(({ to, key }) => (
-              <Link key={to} to={to} style={linkStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
+            {coreLinks.map(({ to, key }) => (
+              <Link key={to} to={to} style={linkStyle} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
                 {t(key)}
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Account column */}
+        {/* Guides & Tools */}
         <div>
-          <h3 style={{ fontSize: "13px", fontWeight: 600, color: "#fff", marginBottom: "16px", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+          <h3 style={{ fontSize: "11px", fontWeight: 700, color: "#fff", marginBottom: "14px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            Guides &amp; Tools
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
+            {guideLinks.map(({ to, key }) => (
+              <Link key={to} to={to} style={linkStyle} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
+                {t(key)}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Account */}
+        <div>
+          <h3 style={{ fontSize: "11px", fontWeight: 700, color: "#fff", marginBottom: "14px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
             {t("footer.account")}
           </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
             {accountLinks.map(({ to, key }) => (
-              <Link key={to} to={to} style={linkStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>
+              <Link key={to} to={to} style={linkStyle} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
                 {t(key)}
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Contact column */}
+        {/* Contact */}
         <div>
-          <h3 style={{ fontSize: "13px", fontWeight: 600, color: "#fff", marginBottom: "16px", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+          <h3 style={{ fontSize: "11px", fontWeight: 700, color: "#fff", marginBottom: "14px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
             {t("footer.contact")}
           </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <a href="mailto:hello@nepsaathi.com" style={linkStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
+            <a href="mailto:hello@nepsaathi.com" style={linkStyle} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
               hello@nepsaathi.com
             </a>
-            <a href="mailto:support@nepsaathi.com" style={linkStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>
+            <a href="mailto:support@nepsaathi.com" style={linkStyle} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
               support@nepsaathi.com
             </a>
-
-            <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", color: "#C9C4F5" }}>
-              🇦🇺 {t("footer.basedAustralia")}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", color: "#C9C4F5" }}>
-              🇳🇵 {t("footer.builtNepalese")}
-            </div>
+            <Link to="/contact" style={{ ...linkStyle, marginTop: "4px" }} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
+              Contact form →
+            </Link>
           </div>
         </div>
       </div>
 
       <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.08)" }} />
 
+      {/* Bottom bar */}
       <div
         className="footer-bottom"
         style={{ maxWidth: "1000px", margin: "0 auto", padding: "18px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}
@@ -162,7 +198,7 @@ export default function Footer() {
             { to: "/terms",   label: "Terms of Use" },
             { to: "/contact", label: "Contact" },
           ].map(({ to, label }) => (
-            <Link key={to} to={to} style={{ fontSize: "12px", color: "#C9C4F5", textDecoration: "none" }} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>
+            <Link key={to} to={to} style={{ fontSize: "12px", color: "#C9C4F5", textDecoration: "none" }} onMouseEnter={(e) => hover(e, true)} onMouseLeave={(e) => hover(e, false)}>
               {label}
             </Link>
           ))}
@@ -170,12 +206,33 @@ export default function Footer() {
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; padding: 32px 16px 24px !important; }
+        @media (max-width: 900px) {
+          .footer-grid {
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 28px !important;
+            padding: 36px 20px 28px !important;
+          }
+          .footer-grid > div:first-child {
+            grid-column: 1 / -1;
+          }
+          .footer-cta {
+            padding: 16px !important;
+          }
         }
-        @media (max-width: 480px) {
-          .footer-grid { grid-template-columns: 1fr !important; padding: 28px 16px 20px !important; }
-          .footer-bottom { padding: 16px !important; flex-direction: column !important; align-items: flex-start !important; }
+        @media (max-width: 560px) {
+          .footer-grid {
+            grid-template-columns: 1fr 1fr !important;
+            padding: 28px 16px 24px !important;
+          }
+          .footer-bottom {
+            padding: 16px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .footer-cta-btn {
+            width: 100%;
+            text-align: center;
+          }
         }
       `}</style>
     </footer>
