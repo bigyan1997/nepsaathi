@@ -1336,3 +1336,29 @@ def send_job_application_email(poster, applicant, job, cover_letter):
         import traceback
         print(f'[EMAIL ERROR] send_job_application_email: {e}', flush=True)
         print(traceback.format_exc(), flush=True)
+
+
+def send_newsletter_welcome_email(email: str) -> None:
+    try:
+        body = f"""
+{_LOGO}
+<h2 style="font-size:22px;font-weight:700;color:#26215C;margin:0 0 12px;font-family:Arial,sans-serif;">Welcome to NepSaathi</h2>
+<p style="font-size:15px;color:#444;line-height:1.6;margin:0 0 16px;font-family:Arial,sans-serif;">
+  You're now subscribed to the NepSaathi newsletter. We'll send you the occasional update on new features, community highlights, and tips for the Nepalese community in Australia.
+</p>
+<p style="font-size:15px;color:#444;line-height:1.6;margin:0 0 24px;font-family:Arial,sans-serif;">
+  In the meantime, explore what's available on the platform.
+</p>
+{_btn("Browse NepSaathi &rarr;", FRONTEND_URL)}
+{_DIVIDER}
+<p {_SMALL}>You're receiving this because you subscribed at nepsaathi.com. You can unsubscribe at any time by replying to this email.</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [email],
+            'subject': 'Welcome to the NepSaathi newsletter',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        import traceback
+        print(f'[EMAIL ERROR] send_newsletter_welcome_email: {e}', flush=True)
+        print(traceback.format_exc(), flush=True)
