@@ -168,6 +168,8 @@ REST_FRAMEWORK = {
         'message_send': '5/minute' if not DEBUG else '1000/day',
         'saved_search_create': '20/day' if not DEBUG else '1000/day',
         'contact': '5/hour' if not DEBUG else '1000/day',
+        'newsletter': '5/hour' if not DEBUG else '1000/day',
+        'og_preview': '120/minute' if not DEBUG else '10000/day',
         'payment_status': '30/minute' if not DEBUG else '1000/day',
         'listing_view': '60/minute' if not DEBUG else '1000/day',
         'ai_improve': '20/day' if not DEBUG else '1000/day',

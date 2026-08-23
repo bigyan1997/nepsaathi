@@ -15,10 +15,8 @@ export async function registerPushSubscription() {
   if (!VAPID_PUBLIC_KEY) return;
   try {
     const registration = await navigator.serviceWorker.ready;
-    console.log("[push] service worker ready:", registration.active?.state);
 
     let subscription = await registration.pushManager.getSubscription();
-    console.log("[push] existing subscription:", subscription ? subscription.endpoint : "none");
 
     // Always force a fresh subscription so the correct VAPID key is used.
     // After the first successful rotation this is a no-op (unsubscribe returns false).
@@ -31,10 +29,7 @@ export async function registerPushSubscription() {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     });
-    console.log("[push] new subscription created:", subscription.endpoint);
-
     await subscribePush(subscription);
-    console.log("[push] subscription saved to server OK");
   } catch (err) {
     console.warn("[push] subscription failed:", err);
   }
@@ -52,7 +47,6 @@ export function usePushNotifications(isLoggedIn) {
 
     (async () => {
       const permission = await Notification.requestPermission();
-      console.log("[push] notification permission:", permission);
       if (permission !== "granted") return;
       await registerPushSubscription();
     })();

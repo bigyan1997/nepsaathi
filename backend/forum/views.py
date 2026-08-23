@@ -195,7 +195,10 @@ class ForumPollVoteView(APIView):
         except ForumPost.DoesNotExist:
             return Response({'detail': 'Post not found.'}, status=404)
 
-        option_id = request.data.get('option_id')
+        try:
+            option_id = int(request.data.get('option_id'))
+        except (TypeError, ValueError):
+            return Response({'detail': 'option_id must be an integer.'}, status=400)
         try:
             option = PollOption.objects.get(pk=option_id, post=post)
         except PollOption.DoesNotExist:
@@ -208,14 +211,11 @@ class ForumPollVoteView(APIView):
 
         # Return updated vote counts for all options
         options = list(post.poll_options.prefetch_related('votes').all())
-        total = sum(len(o.votes.all()) for o in options)
+        option_counts = [{'id': o.id, 'text': o.text, 'votes': len(o.votes.all())} for o in options]
         return Response({
             'voted_option_id': option.id,
-            'total_votes': total,
-            'options': [
-                {'id': o.id, 'text': o.text, 'votes': len(o.votes.all())}
-                for o in options
-            ],
+            'total_votes': sum(o['votes'] for o in option_counts),
+            'options': option_counts,
         })
 
 

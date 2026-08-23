@@ -17,6 +17,7 @@ import ScrollToTop from "./components/layout/ScrollToTop";
 
 import { ToastProvider } from "./components/ui/Toast";
 import { ProgressProvider } from "./components/ui/ProgressBar";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
 import FeedbackModal from "./components/ui/FeedbackModal";
 import CookieConsent from "./components/ui/CookieConsent";
@@ -202,6 +203,7 @@ function App() {
               >
                 <Navbar />
                 <div style={{ flex: 1 }}>
+                  <ErrorBoundary>
                   <PageWrapper>
                     <Routes>
                         {/* Public routes */}
@@ -278,6 +280,7 @@ function App() {
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                   </PageWrapper>
+                  </ErrorBoundary>
                 </div>
                 <Footer />
               </div>

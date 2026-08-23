@@ -27,7 +27,7 @@ from decouple import config
 from users import views as users_views
 from forum.sitemaps import ForumPostSitemap
 from feedback.views import NewsletterSubscribeView
-from core.og_views import og_listing, og_business
+from core.og_views import OGListingView, OGBusinessView
 
 sitemaps = {
     "forum": ForumPostSitemap,
@@ -111,8 +111,8 @@ urlpatterns = [
     path('api/panel/', include('panel.urls')),
 
     # OG prerender for social crawlers (bot traffic routed here by Vercel)
-    path('api/og/<str:listing_type>/<slug:slug>/', og_listing),
-    path('api/og/business/<slug:slug>/', og_business),
+    path('api/og/<str:listing_type>/<slug:slug>/', OGListingView.as_view()),
+    path('api/og/business/<slug:slug>/', OGBusinessView.as_view()),
 
     # Remittance rate comparator
     path('api/remittance/', include('remittance.urls')),

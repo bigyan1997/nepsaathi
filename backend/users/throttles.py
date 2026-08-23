@@ -15,3 +15,11 @@ class PasswordResetThrottle(AnonRateThrottle):
 class ContactRateThrottle(AnonRateThrottle):
     """Limit contact form submissions to prevent email flooding."""
     scope = 'contact'
+
+class NewsletterThrottle(AnonRateThrottle):
+    """Limit newsletter subscriptions to prevent spam/flooding."""
+    scope = 'newsletter'
+
+class OGPreviewThrottle(AnonRateThrottle):
+    """Limit OG prerender endpoint to prevent slug enumeration."""
+    scope = 'og_preview'

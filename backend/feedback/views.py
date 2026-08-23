@@ -1,10 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .serializers import FeedbackSerializer
 from .models import FeedbackResponse, NewsletterSubscriber
 from .sheets import sync_to_sheet
 from core.emails import send_newsletter_welcome_email
+from users.throttles import NewsletterThrottle
 
 
 class FeedbackView(APIView):
@@ -28,10 +31,13 @@ class FeedbackView(APIView):
 
 class NewsletterSubscribeView(APIView):
     permission_classes = (permissions.AllowAny,)
+    throttle_classes = (NewsletterThrottle,)
 
     def post(self, request):
         email = request.data.get('email', '').strip().lower()
-        if not email or '@' not in email:
+        try:
+            validate_email(email)
+        except DjangoValidationError:
             return Response({'detail': 'A valid email is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         subscriber, created = NewsletterSubscriber.objects.get_or_create(

@@ -34,7 +34,7 @@ class JobListView(generics.ListAPIView):
             listing__status='active',
             listing__is_under_review=False,
         ).select_related('listing', 'listing__user').prefetch_related(
-            'listing__reports'
+            'listing__reports', 'listing__images'
         ).annotate(
             view_count_annotated=Count('listing__views')
         )

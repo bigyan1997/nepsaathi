@@ -1,9 +1,11 @@
 from html import escape
 from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import permissions
 from decouple import config
+from users.throttles import OGPreviewThrottle
 
-FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
-# Always use www to avoid the Vercel nepsaathi.com→www.nepsaathi.com 301 loop
 CANONICAL_BASE = "https://www.nepsaathi.com"
 DEFAULT_IMAGE = f"{CANONICAL_BASE}/og-image.png"
 DEFAULT_TITLE = "NepSaathi — Your Nepali friend, wherever you are"
@@ -53,48 +55,56 @@ def _render(title, description, image, canonical_url):
     )
 
 
-def og_listing(request, listing_type, slug):
-    """OG prerender for job/room/event/notice listing pages."""
-    from listings.models import Listing, ListingImage
+class OGListingView(APIView):
+    """OG prerender for job/room/event/notice listing pages (social bot traffic only)."""
+    permission_classes = (permissions.AllowAny,)
+    throttle_classes = (OGPreviewThrottle,)
 
-    path = _TYPE_TO_PATH.get(listing_type, f"{listing_type}s")
-    canonical = f"{CANONICAL_BASE}/{path}/{slug}"
-    title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
+    def get(self, request, listing_type, slug):
+        from listings.models import Listing, ListingImage
 
-    try:
-        listing = Listing.objects.get(slug=slug, listing_type=listing_type, status='active')
-        title = f"{listing.title} — NepSaathi"
-        if listing.description:
-            description = listing.description[:200]
+        path = _TYPE_TO_PATH.get(listing_type, f"{listing_type}s")
+        canonical = f"{CANONICAL_BASE}/{path}/{slug}"
+        title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
 
-        img_qs = ListingImage.objects.filter(listing=listing)
-        primary = img_qs.filter(is_primary=True).first() or img_qs.first()
-        if primary and primary.image:
-            image = primary.image.url
-    except Exception:
-        pass
+        try:
+            listing = Listing.objects.get(slug=slug, listing_type=listing_type, status='active')
+            title = f"{listing.title} — NepSaathi"
+            if listing.description:
+                description = listing.description[:200]
 
-    return _render(title, description, image, canonical)
+            img_qs = ListingImage.objects.filter(listing=listing)
+            primary = img_qs.filter(is_primary=True).first() or img_qs.first()
+            if primary and primary.image:
+                image = primary.image.url
+        except Exception:
+            pass
+
+        return _render(title, description, image, canonical)
 
 
-def og_business(request, slug):
-    """OG prerender for business detail pages."""
-    from businesses.models import Business, BusinessImage
+class OGBusinessView(APIView):
+    """OG prerender for business detail pages (social bot traffic only)."""
+    permission_classes = (permissions.AllowAny,)
+    throttle_classes = (OGPreviewThrottle,)
 
-    canonical = f"{CANONICAL_BASE}/businesses/{slug}"
-    title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
+    def get(self, request, slug):
+        from businesses.models import Business, BusinessImage
 
-    try:
-        business = Business.objects.get(slug=slug, is_active=True)  # Business uses is_active
-        title = f"{business.business_name} — NepSaathi"
-        if business.description:
-            description = business.description[:200]
+        canonical = f"{CANONICAL_BASE}/businesses/{slug}"
+        title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
 
-        img_qs = BusinessImage.objects.filter(business=business)
-        primary = img_qs.filter(is_primary=True).first() or img_qs.first()
-        if primary and primary.image:
-            image = primary.image.url
-    except Exception:
-        pass
+        try:
+            business = Business.objects.get(slug=slug, is_active=True)
+            title = f"{business.business_name} — NepSaathi"
+            if business.description:
+                description = business.description[:200]
 
-    return _render(title, description, image, canonical)
+            img_qs = BusinessImage.objects.filter(business=business)
+            primary = img_qs.filter(is_primary=True).first() or img_qs.first()
+            if primary and primary.image:
+                image = primary.image.url
+        except Exception:
+            pass
+
+        return _render(title, description, image, canonical)

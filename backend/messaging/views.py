@@ -49,6 +49,12 @@ class ConversationListView(APIView):
         except (TypeError, ValueError):
             raise ValidationError({'recipient_id': 'Must be a valid user ID.'})
 
+        if listing_id is not None:
+            try:
+                listing_id = int(listing_id)
+            except (TypeError, ValueError):
+                raise ValidationError({'listing_id': 'Must be a valid listing ID.'})
+
         if recipient_id == request.user.id:
             raise ValidationError('You cannot message yourself.')
 
