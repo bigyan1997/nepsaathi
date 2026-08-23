@@ -6,7 +6,7 @@ import { CARD_ACCENT } from "./homeUtils";
 export default function DesktopCard({
   to,
   accentType,
-  Icon,
+  emoji,
   timeStr,
   title,
   subtitle,
@@ -47,7 +47,7 @@ export default function DesktopCard({
           flexShrink: 0,
         }}
       >
-        {Icon && <Icon size={48} weight="duotone" color={accent.icon || accent.time} />}
+        {emoji && <span style={{ fontSize: "48px" }}>{emoji}</span>}
         {isFeatured && (
           <div
             style={{
