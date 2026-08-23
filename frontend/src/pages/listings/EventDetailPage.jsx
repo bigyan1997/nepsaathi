@@ -300,6 +300,14 @@ export default function EventDetailPage() {
           minHeight: "100vh",
         }}
       >
+        {/* ── Breadcrumb ── */}
+        <nav aria-label="breadcrumb" style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "14px", fontSize: "12px", color: "#aaa" }}>
+          <Link to="/" style={{ color: "#aaa", textDecoration: "none" }}>Home</Link>
+          <span>›</span>
+          <Link to="/events" style={{ color: "#aaa", textDecoration: "none" }}>Events</Link>
+          {event?.listing_title && <><span>›</span><span style={{ color: "#534AB7", fontWeight: 500 }}>{event.listing_title}</span></>}
+        </nav>
+
         {/* ── Top nav ── */}
         <div
           style={{

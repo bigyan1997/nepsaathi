@@ -248,7 +248,7 @@ export default function RegisterBusinessPage() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: "10px" }}>
                 {photoPreviews.map((p, i) => (
                   <div key={p.id} style={{ position: "relative" }}>
-                    <img src={p.url} alt="" style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px", border: i === 0 ? "2px solid #534AB7" : "0.5px solid #e5e5e5" }} />
+                    <img src={p.url} alt={`Business photo ${i + 1}`} style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px", border: i === 0 ? "2px solid #534AB7" : "0.5px solid #e5e5e5" }} />
                     {i === 0 && (
                       <div style={{ position: "absolute", bottom: "4px", left: "4px", background: "#534AB7", color: "#fff", fontSize: "10px", fontWeight: 500, padding: "2px 6px", borderRadius: "4px" }}>
                         Main photo

@@ -1,0 +1,99 @@
+from html import escape
+from django.http import HttpResponse
+from decouple import config
+
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
+BACKEND_URL = config("BACKEND_URL", default="https://nepsaathi-production.up.railway.app")
+DEFAULT_IMAGE = f"{FRONTEND_URL}/og-image.png"
+DEFAULT_TITLE = "NepSaathi — Your Nepali friend, wherever you are"
+DEFAULT_DESC = "Find jobs, rooms, events and businesses for Nepalese Australians. Free to use."
+
+_TYPE_TO_PATH = {
+    "job": "jobs",
+    "room": "rooms",
+    "event": "events",
+    "notice": "notices",
+}
+
+
+def _render(title, description, image, canonical_url):
+    t = escape(title[:120])
+    d = escape(description[:200])
+    img = escape(image)
+    u = escape(canonical_url)
+    return HttpResponse(
+        f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{t}</title>
+<meta name="description" content="{d}">
+<meta property="og:title" content="{t}">
+<meta property="og:description" content="{d}">
+<meta property="og:image" content="{img}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="{u}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NepSaathi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@NepSaathi">
+<meta name="twitter:title" content="{t}">
+<meta name="twitter:description" content="{d}">
+<meta name="twitter:image" content="{img}">
+<meta http-equiv="refresh" content="0; url={u}">
+</head>
+<body>
+<p><a href="{u}">{t}</a></p>
+<script>window.location.replace("{u}");</script>
+</body>
+</html>""",
+        content_type="text/html; charset=utf-8",
+    )
+
+
+def og_listing(request, listing_type, slug):
+    """OG prerender for job/room/event/notice listing pages."""
+    from listings.models import Listing, ListingImage
+
+    path = _TYPE_TO_PATH.get(listing_type, f"{listing_type}s")
+    canonical = f"{FRONTEND_URL}/{path}/{slug}"
+    title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
+
+    try:
+        listing = Listing.objects.get(slug=slug, listing_type=listing_type, is_active=True)
+        title = f"{listing.title} — NepSaathi"
+        if listing.description:
+            description = listing.description[:200]
+
+        img_qs = ListingImage.objects.filter(listing=listing)
+        primary = img_qs.filter(is_primary=True).first() or img_qs.first()
+        if primary and primary.image:
+            image = primary.image.url
+    except Exception:
+        pass
+
+    return _render(title, description, image, canonical)
+
+
+def og_business(request, slug):
+    """OG prerender for business detail pages."""
+    from businesses.models import Business, BusinessImage
+
+    canonical = f"{FRONTEND_URL}/businesses/{slug}"
+    title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
+
+    try:
+        business = Business.objects.get(slug=slug, is_active=True)
+        title = f"{business.business_name} — NepSaathi"
+        if business.description:
+            description = business.description[:200]
+
+        img_qs = BusinessImage.objects.filter(business=business)
+        primary = img_qs.filter(is_primary=True).first() or img_qs.first()
+        if primary and primary.image:
+            image = primary.image.url
+    except Exception:
+        pass
+
+    return _render(title, description, image, canonical)

@@ -21,7 +21,7 @@ function setCanonical(href) {
   el.href = href;
 }
 
-const DEFAULT_IMAGE = "https://www.nepsaathi.com/icon-512.png";
+const DEFAULT_IMAGE = "https://www.nepsaathi.com/og-image.png";
 
 export default function usePageMeta(title, description, image) {
   useEffect(() => {

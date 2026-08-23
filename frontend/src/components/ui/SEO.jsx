@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 const SITE_NAME = "NepSaathi";
 const DEFAULT_DESCRIPTION = "NepSaathi — the community marketplace for Nepalese Australians. Find jobs, rooms, events, businesses and connect with your community.";
-const DEFAULT_IMAGE = "https://www.nepsaathi.com/icon-512.png";
+const DEFAULT_IMAGE = "https://www.nepsaathi.com/og-image.png";
 const SITE_URL = "https://www.nepsaathi.com";
 
 export default function SEO({ title, description, image, url, type = "website", noindex = false }) {

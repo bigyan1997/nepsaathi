@@ -20,6 +20,10 @@ const FAQ = [
     q: "Is NepSaathi only for Nepalese people in Australia?",
     a: "NepSaathi is built for the Nepalese community in Australia, but anyone looking for Nepalese-run services, events or community notices is welcome.",
   },
+  {
+    q: "Is NepSaathi free to use?",
+    a: "Yes — posting jobs, rooms, events and notices is completely free. Featured listings (shown at the top of search results) are available for a small fee to help keep the platform running.",
+  },
 ];
 
 export default function ContactPage() {

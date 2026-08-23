@@ -190,6 +190,14 @@ export default function NoticeDetailPage() {
           minHeight: "100vh",
         }}
       >
+        {/* ── Breadcrumb ── */}
+        <nav aria-label="breadcrumb" style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "14px", fontSize: "12px", color: "#aaa" }}>
+          <Link to="/" style={{ color: "#aaa", textDecoration: "none" }}>Home</Link>
+          <span>›</span>
+          <Link to="/notices" style={{ color: "#aaa", textDecoration: "none" }}>Notices</Link>
+          {notice?.listing_title && <><span>›</span><span style={{ color: "#534AB7", fontWeight: 500 }}>{notice.listing_title}</span></>}
+        </nav>
+
         {/* ── Top nav ── */}
         <div
           style={{

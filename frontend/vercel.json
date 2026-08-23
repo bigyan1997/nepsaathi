@@ -12,6 +12,61 @@
       "source": "/sitemap-forum.xml",
       "destination": "https://nepsaathi-production.up.railway.app/api/sitemap-forum.xml"
     },
+    {
+      "source": "/jobs/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|SkypeUriPreview|Discordbot|Googlebot|AdsBot-Google|bingbot|Applebot|Pinterestbot|Snapchat).*"
+        }
+      ],
+      "destination": "https://nepsaathi-production.up.railway.app/api/og/job/:slug/"
+    },
+    {
+      "source": "/rooms/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|SkypeUriPreview|Discordbot|Googlebot|AdsBot-Google|bingbot|Applebot|Pinterestbot|Snapchat).*"
+        }
+      ],
+      "destination": "https://nepsaathi-production.up.railway.app/api/og/room/:slug/"
+    },
+    {
+      "source": "/events/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|SkypeUriPreview|Discordbot|Googlebot|AdsBot-Google|bingbot|Applebot|Pinterestbot|Snapchat).*"
+        }
+      ],
+      "destination": "https://nepsaathi-production.up.railway.app/api/og/event/:slug/"
+    },
+    {
+      "source": "/notices/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|SkypeUriPreview|Discordbot|Googlebot|AdsBot-Google|bingbot|Applebot|Pinterestbot|Snapchat).*"
+        }
+      ],
+      "destination": "https://nepsaathi-production.up.railway.app/api/og/notice/:slug/"
+    },
+    {
+      "source": "/businesses/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|SkypeUriPreview|Discordbot|Googlebot|AdsBot-Google|bingbot|Applebot|Pinterestbot|Snapchat).*"
+        }
+      ],
+      "destination": "https://nepsaathi-production.up.railway.app/api/og/business/:slug/"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }

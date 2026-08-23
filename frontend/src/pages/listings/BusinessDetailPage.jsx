@@ -283,6 +283,14 @@ export default function BusinessDetailPage() {
           minHeight: "100vh",
         }}
       >
+        {/* ── Breadcrumb ── */}
+        <nav aria-label="breadcrumb" style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "14px", fontSize: "12px", color: "#aaa" }}>
+          <Link to="/" style={{ color: "#aaa", textDecoration: "none" }}>Home</Link>
+          <span>›</span>
+          <Link to="/businesses" style={{ color: "#aaa", textDecoration: "none" }}>Businesses</Link>
+          {business?.business_name && <><span>›</span><span style={{ color: "#534AB7", fontWeight: 500 }}>{business.business_name}</span></>}
+        </nav>
+
         {/* ── Top nav ── */}
         <div
           style={{
@@ -341,7 +349,7 @@ export default function BusinessDetailPage() {
               <div key={img.id} style={{ position: "relative" }}>
                 <img
                   src={img.thumbnail || img.image}
-                  alt=""
+                  alt="Business photo thumbnail"
                   style={{ width: "48px", height: "48px", objectFit: "cover", borderRadius: "8px", border: "0.5px solid #e5e5e5" }}
                 />
                 <button
