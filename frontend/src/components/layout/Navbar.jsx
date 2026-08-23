@@ -8,6 +8,17 @@ import { logout as logoutApi } from "../../api/auth";
 import { getUnreadCount } from "../../api/messages";
 import { useToast } from "../ui/Toast";
 import NepSaathiLogo from "../ui/NepSaathiLogo";
+import {
+  ChatDotsIcon,
+  MagnifyingGlassIcon,
+  WrenchIcon,
+  ClipboardTextIcon,
+  BellIcon,
+  StorefrontIcon,
+  GearIcon,
+  SignOutIcon,
+  MegaphoneIcon,
+} from "@phosphor-icons/react";
 
 const NAV_LINK_DEFS = [
   { to: "/jobs",       key: "nav.jobs",       activeColor: "#534AB7", activeBg: "#EEEDFE" },
@@ -19,9 +30,9 @@ const NAV_LINK_DEFS = [
 ];
 
 const COMMUNITY_LINKS = [
-  { to: "/forum",       label: "Forum",        emoji: "💬" },
-  { to: "/looking-for", label: "Looking For",  emoji: "🔍" },
-  { to: "/services",    label: "Services",     emoji: "🔧" },
+  { to: "/forum",       label: "Forum",        NavIcon: ChatDotsIcon },
+  { to: "/looking-for", label: "Looking For",  NavIcon: MagnifyingGlassIcon },
+  { to: "/services",    label: "Services",     NavIcon: WrenchIcon },
 ];
 
 function LangToggle({ compact }) {
@@ -80,8 +91,9 @@ export default function Navbar() {
       location.pathname.startsWith("/inbox");
     if (unreadCount > prevUnreadRef.current && !isOnMessagesPage) {
       addToast(
-        <span>
-          💬 {t("nav.messages")} —{" "}
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <ChatDotsIcon size={14} weight="fill" color="#3C3489" />
+          {t("nav.messages")} —{" "}
           <a href="/messages" style={{ color: "#26215C", fontWeight: 700, textDecoration: "underline" }}>
             View inbox
           </a>
@@ -202,7 +214,7 @@ export default function Navbar() {
 
             {communityOpen && (
               <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "6px", minWidth: "180px", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
-                {COMMUNITY_LINKS.map(({ to, label, emoji }) => (
+                {COMMUNITY_LINKS.map(({ to, label, NavIcon }) => (
                   <Link
                     key={to}
                     to={to}
@@ -210,7 +222,7 @@ export default function Navbar() {
                     onMouseEnter={(e) => { if (!isActive(to)) e.currentTarget.style.background = "#F5F4F0"; }}
                     onMouseLeave={(e) => { if (!isActive(to)) e.currentTarget.style.background = "transparent"; }}
                   >
-                    <span style={{ fontSize: "14px" }}>{emoji}</span>
+                    <NavIcon size={15} weight="regular" color={isActive(to) ? "#534AB7" : "#777"} />
                     {label}
                   </Link>
                 ))}
@@ -235,11 +247,11 @@ export default function Navbar() {
                   width: "36px", height: "36px", borderRadius: "8px",
                   background: isActive("/messages") ? "#EEEDFE" : "transparent",
                   color: isActive("/messages") ? "#534AB7" : "#555",
-                  textDecoration: "none", fontSize: "18px",
+                  textDecoration: "none",
                 }}
                 title={t("nav.messages")}
               >
-                💬
+                <ChatDotsIcon size={20} weight="regular" color={isActive("/messages") ? "#534AB7" : "#555"} />
                 {unreadCount > 0 && (
                   <span style={{ position: "absolute", top: 2, right: 2, minWidth: 16, height: 16, borderRadius: 8, background: "#E87722", color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}>
                     {unreadCount > 9 ? "9+" : unreadCount}
@@ -279,12 +291,12 @@ export default function Navbar() {
                     </div>
 
                     {[
-                      { to: "/my-listings",       key: "nav.myListings",       emoji: "📋" },
-                      { to: "/messages",           key: "nav.messages",         emoji: "💬", badge: unreadCount },
-                      { to: "/saved-searches",     key: "nav.searchAlerts",     emoji: "🔔" },
-                      { to: "/register-business",  key: "nav.registerBusiness", emoji: "🏪" },
-                      { to: "/profile",            key: "nav.profileSettings",  emoji: "⚙️" },
-                    ].map(({ to, key, emoji, badge }) => (
+                      { to: "/my-listings",       key: "nav.myListings",       NavIcon: ClipboardTextIcon },
+                      { to: "/messages",           key: "nav.messages",         NavIcon: ChatDotsIcon, badge: unreadCount },
+                      { to: "/saved-searches",     key: "nav.searchAlerts",     NavIcon: BellIcon },
+                      { to: "/register-business",  key: "nav.registerBusiness", NavIcon: StorefrontIcon },
+                      { to: "/profile",            key: "nav.profileSettings",  NavIcon: GearIcon },
+                    ].map(({ to, key, NavIcon, badge }) => (
                       <Link
                         key={to}
                         to={to}
@@ -292,7 +304,7 @@ export default function Navbar() {
                         onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F4F0")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                       >
-                        <span style={{ fontSize: "14px" }}>{emoji}</span>
+                        <NavIcon size={15} weight="regular" color="#666" />
                         {t(key)}
                         {badge > 0 && (
                           <span style={{ marginLeft: "auto", minWidth: 18, height: 18, borderRadius: 9, background: "#E87722", color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px" }}>
@@ -309,7 +321,7 @@ export default function Navbar() {
                         onMouseEnter={(e) => (e.currentTarget.style.background = "#FCEBEB")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                       >
-                        <span style={{ fontSize: "14px" }}>🚪</span>
+                        <SignOutIcon size={15} weight="regular" color="#A32D2D" />
                         {t("nav.signOut")}
                       </button>
                     </div>
@@ -360,13 +372,13 @@ export default function Navbar() {
 
           <div style={{ borderTop: "0.5px solid #f0f0f0", margin: "6px 0 2px" }} />
           <div style={{ fontSize: "11px", fontWeight: 600, color: "#aaa", padding: "4px 12px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Community</div>
-          {COMMUNITY_LINKS.map(({ to, label, emoji }) => (
+          {COMMUNITY_LINKS.map(({ to, label, NavIcon }) => (
             <Link
               key={to}
               to={to}
               style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px", color: isActive(to) ? "#26215C" : "#333", textDecoration: "none", fontWeight: isActive(to) ? 600 : 400, padding: "10px 12px", borderRadius: "8px", background: isActive(to) ? "#EEEDFE" : "transparent" }}
             >
-              <span style={{ fontSize: "16px" }}>{emoji}</span>
+              <NavIcon size={16} weight="regular" color={isActive(to) ? "#534AB7" : "#777"} />
               {label}
             </Link>
           ))}
@@ -391,19 +403,19 @@ export default function Navbar() {
               </div>
 
               {[
-                { to: "/post-ad",           key: "nav.postAd",          emoji: "📢", highlight: true },
-                { to: "/my-listings",        key: "nav.myListings",       emoji: "📋" },
-                { to: "/messages",           key: "nav.messages",         emoji: "💬", badge: unreadCount },
-                { to: "/saved-searches",     key: "nav.searchAlerts",     emoji: "🔔" },
-                { to: "/register-business",  key: "nav.registerBusiness", emoji: "🏪" },
-                { to: "/profile",            key: "nav.profileSettings",  emoji: "⚙️" },
-              ].map(({ to, key, emoji, highlight, badge }) => (
+                { to: "/post-ad",           key: "nav.postAd",          NavIcon: MegaphoneIcon, highlight: true },
+                { to: "/my-listings",        key: "nav.myListings",       NavIcon: ClipboardTextIcon },
+                { to: "/messages",           key: "nav.messages",         NavIcon: ChatDotsIcon, badge: unreadCount },
+                { to: "/saved-searches",     key: "nav.searchAlerts",     NavIcon: BellIcon },
+                { to: "/register-business",  key: "nav.registerBusiness", NavIcon: StorefrontIcon },
+                { to: "/profile",            key: "nav.profileSettings",  NavIcon: GearIcon },
+              ].map(({ to, key, NavIcon, highlight, badge }) => (
                 <Link
                   key={to}
                   to={to}
                   style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "8px", fontSize: "14px", color: highlight ? "#E87722" : isActive(to) ? "#534AB7" : "#333", textDecoration: "none", fontWeight: highlight || isActive(to) ? 600 : 400, background: highlight ? "#FFF1E0" : isActive(to) ? "#EEEDFE" : "transparent" }}
                 >
-                  <span style={{ fontSize: "16px" }}>{emoji}</span>
+                  <NavIcon size={16} weight="regular" color={highlight ? "#E87722" : isActive(to) ? "#534AB7" : "#777"} />
                   {t(key)}
                   {badge > 0 && (
                     <span style={{ marginLeft: "auto", minWidth: 18, height: 18, borderRadius: 9, background: "#E87722", color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px" }}>
@@ -417,7 +429,7 @@ export default function Navbar() {
                 onClick={handleLogout}
                 style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", borderRadius: "8px", fontSize: "14px", color: "#A32D2D", background: "transparent", border: "none", cursor: "pointer", width: "100%", textAlign: "left" }}
               >
-                <span style={{ fontSize: "16px" }}>🚪</span>
+                <SignOutIcon size={16} weight="regular" color="#A32D2D" />
                 {t("nav.signOut")}
               </button>
             </>

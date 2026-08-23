@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, MapPinIcon, SparkleIcon } from "@phosphor-icons/react";
 import { getNewListings } from "../api/listings";
 import usePageMeta from "../hooks/usePageMeta";
 
 const TYPE_CONFIG = {
-  job:    { emoji: "💼", label: "Jobs",       bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
-  room:   { emoji: "🏠", label: "Rooms",      bg: "#FFF1E0", color: "#633806", path: "rooms" },
-  event:  { emoji: "🎉", label: "Events",     bg: "#E1F5EE", color: "#085041", path: "events" },
-  notice: { emoji: "📢", label: "Notices",    bg: "#E6F1FB", color: "#0C447C", path: "notices" },
+  job:    { Icon: BriefcaseIcon, label: "Jobs",    bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
+  room:   { Icon: HouseIcon,     label: "Rooms",   bg: "#FFF1E0", color: "#633806", path: "rooms" },
+  event:  { Icon: ConfettiIcon,  label: "Events",  bg: "#E1F5EE", color: "#085041", path: "events" },
+  notice: { Icon: MegaphoneIcon, label: "Notices", bg: "#E6F1FB", color: "#0C447C", path: "notices" },
 };
 
 const STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
@@ -53,8 +54,8 @@ function NewCard({ listing }) {
       }}
     >
       {/* Top strip */}
-      <div style={{ background: cfg.bg, height: "90px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px", position: "relative", flexShrink: 0 }}>
-        {cfg.emoji}
+      <div style={{ background: cfg.bg, height: "90px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+        {cfg.Icon && <cfg.Icon size={40} weight="duotone" color={cfg.color} />}
         <div style={{ position: "absolute", top: 10, left: 10, background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 8px", borderRadius: "6px" }}>
           NEW
         </div>
@@ -72,7 +73,7 @@ function NewCard({ listing }) {
         <div style={{ fontSize: "15px", fontWeight: 700, color: "#26215C", lineHeight: 1.25, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
           {listing.title}
         </div>
-        <div style={{ fontSize: "12px", color: "#888" }}>📍 {listing.location}, {listing.state}</div>
+        <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{listing.location}, {listing.state}</div>
         {listing.description && (
           <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.5, flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
             {listing.description}
@@ -174,7 +175,7 @@ export default function NewListingsPage() {
           <div style={{ fontSize: 11, color: "#86efac", letterSpacing: "0.06em", marginBottom: 6 }}>FRESH LISTINGS</div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
             <div>
-              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fff", margin: "0 0 6px" }}>🆕 New listings</h1>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fff", margin: "0 0 6px", display: "flex", alignItems: "center", gap: "8px" }}><SparkleIcon size={20} weight="fill" color="#86efac" />New listings</h1>
               <p style={{ fontSize: 13, color: "#86efac", margin: 0 }}>
                 {isLoading ? "Loading…" : `${total} listing${total !== 1 ? "s" : ""} posted in the last 24 hours`}
               </p>
@@ -187,7 +188,7 @@ export default function NewListingsPage() {
         <div style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 14, padding: "14px 18px", marginBottom: 20 }}>
           <div className="nl-filter-row" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div className="nl-types" style={{ flex: 1 }}>
-              {[{ value: "", label: "All types" }, ...Object.entries(TYPE_CONFIG).map(([v, c]) => ({ value: v, label: `${c.emoji} ${c.label}` }))].map(({ value, label }) => (
+              {[{ value: "", label: "All types", Icon: null }, ...Object.entries(TYPE_CONFIG).map(([v, c]) => ({ value: v, label: c.label, Icon: c.Icon, color: c.color }))].map(({ value, label, Icon: TypeIcon, color }) => (
                 <button
                   key={value}
                   onClick={() => handleFilter({ type: value })}
@@ -201,9 +202,12 @@ export default function NewListingsPage() {
                     background: filterType === value ? "#f0fdf4" : "#fff",
                     color: filterType === value ? "#15803d" : "#555",
                     whiteSpace: "nowrap",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  {label}
+                  {TypeIcon && <TypeIcon size={12} weight={filterType === value ? "fill" : "regular"} color={filterType === value ? "#15803d" : color || "#777"} />}{label}
                 </button>
               ))}
             </div>
@@ -226,7 +230,7 @@ export default function NewListingsPage() {
           </div>
         ) : listings.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🌱</div>
+            <div style={{ marginBottom: 12 }}><SparkleIcon size={40} weight="duotone" color="#16a34a" /></div>
             <div style={{ fontSize: 16, fontWeight: 600, color: "#26215C", marginBottom: 6 }}>No new listings yet</div>
             <p style={{ fontSize: 13, margin: 0 }}>Check back soon — new listings are posted throughout the day.</p>
             <Link to="/post-ad" style={{ display: "inline-block", marginTop: 16, background: "#16a34a", color: "#fff", padding: "9px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>

@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { EyeIcon, WarningIcon, FlagIcon, BriefcaseIcon, MagnifyingGlassIcon, MapPinIcon, ClockIcon, LightbulbIcon, LightningIcon, PhoneIcon, EnvelopeIcon } from "@phosphor-icons/react";
 import { mapsUrl } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { getJobByListing } from "../../api/jobs";
@@ -270,7 +271,7 @@ export default function JobDetailPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {job?.view_count > 0 && (
               <span style={{ fontSize: "12px", color: "#aaa" }}>
-                👁️ {job.view_count}
+                <EyeIcon size={12} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "3px" }} />{job.view_count}
               </span>
             )}
             <MessageButton
@@ -299,7 +300,7 @@ export default function JobDetailPage() {
               gap: "10px",
             }}
           >
-            <span>⚠️</span>
+            <WarningIcon size={20} weight="fill" color="#633806" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
@@ -332,7 +333,7 @@ export default function JobDetailPage() {
               gap: "10px",
             }}
           >
-            <span>🚩</span>
+            <FlagIcon size={20} weight="fill" color="#A32D2D" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#A32D2D" }}
@@ -386,7 +387,7 @@ export default function JobDetailPage() {
               boxShadow: "0 2px 0 #AFA9EC",
             }}
           >
-            {isWanted ? initial : "💼"}
+            {isWanted ? initial : <BriefcaseIcon size={isMobile ? 26 : 36} weight="duotone" color="#534AB7" />}
           </div>
 
           {/* Title block */}
@@ -411,7 +412,7 @@ export default function JobDetailPage() {
                     borderRadius: "20px",
                   }}
                 >
-                  🔍 Looking for work
+                  <MagnifyingGlassIcon size={11} weight="bold" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Looking for work
                 </span>
               )}
               {job.is_featured && (
@@ -439,7 +440,7 @@ export default function JobDetailPage() {
                     borderRadius: "20px",
                   }}
                 >
-                  🔴 Urgent
+                  <WarningIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Urgent
                 </span>
               )}
               <span
@@ -453,7 +454,7 @@ export default function JobDetailPage() {
                   borderRadius: "20px",
                 }}
               >
-                💼 {job.job_type?.replace("_", " ")}
+                <BriefcaseIcon size={11} weight="duotone" color="#534AB7" style={{ verticalAlign: "middle", marginRight: "4px" }} /> {job.job_type?.replace("_", " ")}
               </span>
             </div>
 
@@ -498,12 +499,12 @@ export default function JobDetailPage() {
                 rel="noopener noreferrer"
                 style={{ fontSize: "14px", color: "#534AB7", fontWeight: 600, textDecoration: "none" }}
               >
-                📍 {job.listing_location}, {job.listing_state}
+                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />{job.listing_location}, {job.listing_state}
               </a>
             </div>
             {job.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
-                🕐 Posted {timeAgo(job.created_at)}
+                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(job.created_at)}
               </div>
             )}
           </div>
@@ -602,7 +603,7 @@ export default function JobDetailPage() {
                       color: "#3C3489",
                     }}
                   >
-                    💡 This person is looking for work — reach out if you have
+                    <LightbulbIcon size={14} weight="fill" color="#3C3489" style={{ verticalAlign: "middle", marginRight: "4px" }} />This person is looking for work — reach out if you have
                     an opportunity for them!
                   </div>
                 )}
@@ -776,7 +777,7 @@ export default function JobDetailPage() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      🔍 Job Seeker
+                      <MagnifyingGlassIcon size={11} weight="bold" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} /> Job Seeker
                     </span>
                   )}
                 </div>
@@ -963,7 +964,7 @@ export default function JobDetailPage() {
                       fontSize: "13px", fontWeight: 700, textAlign: "center",
                     }}
                   >
-                    {applied ? "✓ Applied" : "⚡ Quick Apply"}
+                    {applied ? <><span style={{ marginRight: "4px" }}>✓</span>Applied</> : <><LightningIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Quick Apply</>}
                   </button>
                 )}
                 <MessageButton
@@ -977,7 +978,7 @@ export default function JobDetailPage() {
                   <>
                     {job.contact_phone && (
                       <a href={`tel:${job.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#EEEDFE", color: "#534AB7", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #AFA9EC" }}>
-                        📞 {job.contact_phone}
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{job.contact_phone}
                       </a>
                     )}
                     {job.contact_whatsapp && (
@@ -985,7 +986,7 @@ export default function JobDetailPage() {
                     )}
                     {job.contact_email && (
                       <a href={`mailto:${job.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        ✉️ Email
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
                       </a>
                     )}
                   </>
@@ -1074,11 +1075,10 @@ export default function JobDetailPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "18px",
                         flexShrink: 0,
                       }}
                     >
-                      💼
+                      <BriefcaseIcon size={20} weight="duotone" color="#534AB7" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
@@ -1095,7 +1095,7 @@ export default function JobDetailPage() {
                         {listing.title}
                       </div>
                       <div style={{ fontSize: "12px", color: "#888" }}>
-                        📍 {listing.location}, {listing.state}
+                        <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
                       </div>
                     </div>
                     <span style={{ color: "#534AB7", flexShrink: 0 }}>

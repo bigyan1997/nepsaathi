@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { MapPinIcon, CalendarBlankIcon } from "@phosphor-icons/react";
 import usePageMeta from "../../hooks/usePageMeta";
 import { LOCATIONS, FEATURED_LOCATIONS } from "../../data/locations";
 import { getJobs } from "../../api/jobs";
@@ -64,9 +65,9 @@ function JobCard({ item }) {
       )}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", color: "#888" }}>📍 {item.listing_location}, {item.listing_state}</span>
+          <span style={{ fontSize: "11px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{item.listing_location}, {item.listing_state}</span>
           {item.job_type && <span style={{ background: "#F0EFF9", color: "#534AB7", fontSize: "10px", fontWeight: 500, padding: "1px 6px", borderRadius: "5px" }}>{item.job_type.replace("_", " ")}</span>}
-          {item.is_urgent && <span style={{ background: "#FCEBEB", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "1px 6px", borderRadius: "5px" }}>🔴 Urgent</span>}
+          {item.is_urgent && <span style={{ background: "#FCEBEB", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "1px 6px", borderRadius: "5px" }}><span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "#DC2626", marginRight: "4px", verticalAlign: "middle" }} />Urgent</span>}
         </div>
         <span style={{ fontSize: "10px", color: "#aaa", whiteSpace: "nowrap" }}>{timeAgo(item.created_at)}</span>
       </div>
@@ -87,7 +88,7 @@ function RoomCard({ item }) {
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", color: "#888" }}>📍 {item.listing_location}, {item.listing_state}</span>
+          <span style={{ fontSize: "11px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{item.listing_location}, {item.listing_state}</span>
           {item.room_type && <span style={{ background: "#F0EFF9", color: "#534AB7", fontSize: "10px", fontWeight: 500, padding: "1px 6px", borderRadius: "5px" }}>{item.room_type.replace("_", " ")}</span>}
         </div>
         <span style={{ fontSize: "10px", color: "#aaa", whiteSpace: "nowrap" }}>{timeAgo(item.created_at)}</span>
@@ -109,8 +110,8 @@ function EventCard({ item }) {
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", color: "#888" }}>📍 {item.listing_location}, {item.listing_state}</span>
-          {dateStr && <span style={{ background: "#F0EFF9", color: "#534AB7", fontSize: "10px", fontWeight: 500, padding: "1px 6px", borderRadius: "5px" }}>📅 {dateStr}</span>}
+          <span style={{ fontSize: "11px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{item.listing_location}, {item.listing_state}</span>
+          {dateStr && <span style={{ background: "#F0EFF9", color: "#534AB7", fontSize: "10px", fontWeight: 500, padding: "1px 6px", borderRadius: "5px", display: "inline-flex", alignItems: "center", gap: "3px" }}><CalendarBlankIcon size={10} weight="fill" color="#534AB7" />{dateStr}</span>}
         </div>
         <span style={{ fontSize: "10px", color: "#aaa", whiteSpace: "nowrap" }}>{timeAgo(item.created_at)}</span>
       </div>
@@ -123,11 +124,11 @@ function NoticeCard({ item }) {
     <Link to={`/notices/${item.listing_slug}`} style={cardStyle} {...cardHover}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "6px" }}>
         <span style={titleStyle}>{item.listing_title}</span>
-        {item.is_urgent && <span style={{ background: "#FCEBEB", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px", whiteSpace: "nowrap", flexShrink: 0 }}>🔴 Urgent</span>}
+        {item.is_urgent && <span style={{ background: "#FCEBEB", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px", whiteSpace: "nowrap", flexShrink: 0 }}><span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "#DC2626", marginRight: "4px", verticalAlign: "middle" }} />Urgent</span>}
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "11px", color: "#888" }}>📍 {item.listing_location}, {item.listing_state}</span>
+          <span style={{ fontSize: "11px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{item.listing_location}, {item.listing_state}</span>
           {item.category && <span style={{ background: "#F0EFF9", color: "#534AB7", fontSize: "10px", fontWeight: 500, padding: "1px 6px", borderRadius: "5px" }}>{item.category}</span>}
         </div>
         <span style={{ fontSize: "10px", color: "#aaa", whiteSpace: "nowrap" }}>{timeAgo(item.created_at)}</span>
@@ -144,7 +145,7 @@ function BusinessCard({ item }) {
         {item.category && <span style={{ background: "#FFF4E6", color: "#C05621", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px", whiteSpace: "nowrap", flexShrink: 0 }}>{item.category}</span>}
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px" }}>
-        <span style={{ fontSize: "11px", color: "#888" }}>📍 {item.suburb || item.city || ""}{item.state ? `, ${item.state}` : ""}</span>
+        <span style={{ fontSize: "11px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{item.suburb || item.city || ""}{item.state ? `, ${item.state}` : ""}</span>
         <span style={{ fontSize: "10px", color: "#aaa", whiteSpace: "nowrap" }}>{timeAgo(item.created_at)}</span>
       </div>
     </Link>
@@ -233,13 +234,8 @@ export default function LocationPage({ listingType }) {
 
       {/* Hero */}
       <div style={{ background: "linear-gradient(135deg, #26215C 0%, #534AB7 100%)", borderRadius: "16px", padding: "28px 28px 24px", marginBottom: "28px", color: "#fff", position: "relative", overflow: "hidden" }}>
-        {loc?.emoji && (
-          <div style={{ position: "absolute", top: -20, right: -20, fontSize: "120px", opacity: 0.08, userSelect: "none" }}>
-            {loc.emoji}
-          </div>
-        )}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-          <span style={{ fontSize: "28px" }}>{loc?.emoji || "📍"}</span>
+          <MapPinIcon size={28} weight="duotone" color="#E87722" />
           <div>
             <h1 style={{ fontSize: "22px", fontWeight: 800, lineHeight: 1.2, margin: 0 }}>
               {cfg.label} in {displayLabel}

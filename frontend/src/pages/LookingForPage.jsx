@@ -7,13 +7,14 @@ import useAuthStore from "../store/authStore";
 import usePageMeta from "../hooks/usePageMeta";
 import useT from "../hooks/useT";
 import MessageButton from "../components/ui/MessageButton";
+import { BriefcaseIcon, HouseIcon, WrenchIcon, PushPinIcon, MapPinIcon, CurrencyDollarIcon, PhoneIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 const CATEGORIES = [
   { value: "", label: "All" },
-  { value: "job",      label: "Looking for Work",     emoji: "💼" },
-  { value: "room",     label: "Looking for Room",     emoji: "🏠" },
-  { value: "services", label: "Looking for Services", emoji: "🔧" },
-  { value: "other",    label: "Other",                emoji: "📌" },
+  { value: "job",      label: "Looking for Work",     emoji: "💼", Icon: BriefcaseIcon },
+  { value: "room",     label: "Looking for Room",     emoji: "🏠", Icon: HouseIcon },
+  { value: "services", label: "Looking for Services", emoji: "🔧", Icon: WrenchIcon },
+  { value: "other",    label: "Other",                emoji: "📌", Icon: PushPinIcon },
 ];
 
 const STATES = ["", "NSW", "VIC", "QLD", "WA", "SA", "ACT", "TAS", "NT"];
@@ -160,7 +161,7 @@ export default function LookingForPage() {
 
       {!isLoading && requests.length === 0 && (
         <div style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "14px", padding: "40px", textAlign: "center" }}>
-          <div style={{ fontSize: "36px", marginBottom: "10px" }}>🔍</div>
+          <MagnifyingGlassIcon size={36} weight="duotone" color="#534AB7" style={{ marginBottom: "10px", opacity: 0.6 }} />
           <p style={{ fontSize: "14px", color: "#888", margin: 0 }}>No requests yet. Be the first to post!</p>
         </div>
       )}
@@ -174,10 +175,10 @@ export default function LookingForPage() {
             <div key={req.id} style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "14px", padding: "16px 18px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", marginBottom: "8px" }}>
                 <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-                  <span style={{ background: cat.bg, color: cat.color, fontSize: "11px", fontWeight: 600, padding: "2px 9px", borderRadius: "8px" }}>
-                    {catLabel?.emoji} {catLabel?.label}
+                  <span style={{ background: cat.bg, color: cat.color, fontSize: "11px", fontWeight: 600, padding: "2px 9px", borderRadius: "8px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    {catLabel?.Icon && <catLabel.Icon size={11} weight="regular" color={cat.color} />} {catLabel?.label}
                   </span>
-                  {req.state && <span style={{ fontSize: "12px", color: "#888" }}>📍 {req.state}</span>}
+                  {req.state && <span style={{ fontSize: "12px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={12} weight="fill" color="#E87722" />{req.state}</span>}
                 </div>
                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                   <span style={{ fontSize: "11px", color: "#aaa" }}>{timeAgo(req.created_at)}</span>
@@ -192,8 +193,8 @@ export default function LookingForPage() {
               <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.6, marginBottom: "8px" }}>{req.body}</div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "6px" }}>
                 <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-                  {req.budget && <span style={{ fontSize: "12px", color: "#1D9E75", fontWeight: 600 }}>💰 {req.budget}</span>}
-                  {req.contact && <span style={{ fontSize: "12px", color: "#555" }}>📞 {req.contact}</span>}
+                  {req.budget && <span style={{ fontSize: "12px", color: "#1D9E75", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "3px" }}><CurrencyDollarIcon size={13} weight="fill" color="#1D9E75" />{req.budget}</span>}
+                  {req.contact && <span style={{ fontSize: "12px", color: "#555", display: "inline-flex", alignItems: "center", gap: "3px" }}><PhoneIcon size={12} weight="regular" color="#888" />{req.contact}</span>}
                 </div>
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                   <Link to={`/users/${req.poster_id}`} style={{ fontSize: "12px", color: "#534AB7", textDecoration: "none", fontWeight: 500 }}>

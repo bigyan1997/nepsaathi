@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@react-oauth/google": "^0.13.5",
     "@sentry/react": "^10.70.0",
     "@tailwindcss/vite": "^4.2.2",

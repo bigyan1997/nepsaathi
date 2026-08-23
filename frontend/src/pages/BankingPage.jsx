@@ -1,11 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
+import {
+  BankIcon,
+  CurrencyDollarIcon,
+  CreditCardIcon,
+  HouseIcon,
+  TrendUpIcon,
+  MoneyIcon,
+  ReceiptIcon,
+  LightbulbIcon,
+  HandshakeIcon,
+} from "@phosphor-icons/react";
 
 const sections = [
   {
     id: "first-account",
-    icon: "🏦",
+    Icon: BankIcon,
     title: "Setting Up Your First Bank Account",
     summary: "Open an Australian bank account before you even land — most major banks allow it.",
     steps: [
@@ -21,7 +32,7 @@ const sections = [
   },
   {
     id: "super",
-    icon: "💰",
+    Icon: CurrencyDollarIcon,
     title: "Superannuation (Super)",
     summary: "Your employer must pay super on top of your salary — it's your retirement savings and you own it.",
     steps: [
@@ -37,7 +48,7 @@ const sections = [
   },
   {
     id: "credit",
-    icon: "💳",
+    Icon: CreditCardIcon,
     title: "Credit Cards and Personal Loans",
     summary: "Building a credit history in Australia takes time — start early and carefully.",
     steps: [
@@ -53,7 +64,7 @@ const sections = [
   },
   {
     id: "home-loan",
-    icon: "🏠",
+    Icon: HouseIcon,
     title: "Home Loans for Migrants",
     summary: "Buying property in Australia as a migrant or temporary resident has specific rules.",
     steps: [
@@ -69,7 +80,7 @@ const sections = [
   },
   {
     id: "investing",
-    icon: "📈",
+    Icon: TrendUpIcon,
     title: "Investing in Australia",
     summary: "Once you have stable income, investing is worth exploring — even small amounts compound significantly.",
     steps: [
@@ -85,7 +96,7 @@ const sections = [
   },
   {
     id: "remittance",
-    icon: "💸",
+    Icon: MoneyIcon,
     title: "Sending Money to Nepal",
     summary: "Your bank's international transfer rate is almost never the best — use a specialist service.",
     steps: [
@@ -101,7 +112,7 @@ const sections = [
   },
   {
     id: "tfn-banking",
-    icon: "🧾",
+    Icon: ReceiptIcon,
     title: "Tax File Number and Banking",
     summary: "Your TFN connects your bank accounts and investments to the ATO for tax purposes.",
     steps: [
@@ -167,7 +178,10 @@ export default function BankingPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ background: "linear-gradient(135deg, #1A6B3C 0%, #15803D 60%, #16A34A 100%)", padding: "56px 24px 48px", textAlign: "center", color: "#fff" }}>
-        <div style={{ fontSize: "40px", marginBottom: "16px" }}>🏦💰</div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
+          <BankIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+          <CurrencyDollarIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+        </div>
         <h1 style={{ fontSize: "clamp(24px,5vw,36px)", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
           Banking &amp; Finance in Australia
         </h1>
@@ -190,8 +204,8 @@ export default function BankingPage() {
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
-              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s" }}>
-                {s.icon} {s.title.split(" ")[0]}
+              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s", display: "flex", alignItems: "center", gap: "5px" }}>
+                {s.Icon && <s.Icon size={15} weight="duotone" color={isActive ? accent : "#64748b"} />} {s.title.split(" ")[0]}
               </button>
             );
           })}
@@ -205,7 +219,7 @@ export default function BankingPage() {
             return (
               <div key={s.id} id={s.id} style={{ background: "#fff", border: `1.5px solid ${isOpen ? accent : "#e8eaf0"}`, borderRadius: "12px", overflow: "hidden", transition: "border-color 0.2s" }}>
                 <button onClick={() => toggle(s.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "14px", padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
-                  <span style={{ fontSize: "24px", flexShrink: 0 }}>{s.icon}</span>
+                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{s.Icon && <s.Icon size={28} weight="duotone" color={accent} />}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b", marginBottom: "2px" }}>{s.title}</div>
                     <div style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.4 }}>{s.summary}</div>
@@ -219,7 +233,7 @@ export default function BankingPage() {
                         {s.steps.map((step, i) => <li key={i} style={{ fontSize: "14px", color: "#334155", lineHeight: 1.6 }}>{step}</li>)}
                       </ol>
                       <div style={{ marginTop: "16px", background: accentLight, border: `1px solid ${accentBorder}`, borderRadius: "8px", padding: "12px 14px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                        <span style={{ fontSize: "16px", flexShrink: 0 }}>💡</span>
+                        <LightbulbIcon size={18} weight="fill" color={accent} style={{ flexShrink: 0, marginTop: "1px" }} />
                         <span style={{ fontSize: "13px", color: accent, lineHeight: 1.55 }}>{s.tip}</span>
                       </div>
                       {s.link.url.startsWith("/") ? (
@@ -241,7 +255,7 @@ export default function BankingPage() {
           })}
         </div>
         <div style={{ marginTop: "40px", background: "linear-gradient(135deg, #1A6B3C, #15803D)", borderRadius: "16px", padding: "32px 24px", textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "28px", marginBottom: "12px" }}>🤝</div>
+          <HandshakeIcon size={40} weight="duotone" color="#fff" style={{ marginBottom: "12px", opacity: 0.85 }} />
           <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Have a finance question?</h2>
           <p style={{ fontSize: "14px", opacity: 0.85, marginBottom: "20px", lineHeight: 1.6 }}>Ask the NepSaathi community — Nepali accountants, mortgage brokers, and financial advisers are active on the forum.</p>
           <Link to="/forum" style={{ display: "inline-block", background: "#fff", color: accent, borderRadius: "8px", padding: "12px 24px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>Ask on the Forum</Link>

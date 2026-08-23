@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { useToast } from "./Toast";
+import {
+  LinkSimpleIcon,
+  CopySimpleIcon,
+  WhatsappLogoIcon,
+  FacebookLogoIcon,
+  XLogoIcon,
+  EnvelopeIcon,
+} from "@phosphor-icons/react";
 
 export default function ShareButton({ title, url, compact = false }) {
   const [open, setOpen] = useState(false);
@@ -21,28 +29,28 @@ export default function ShareButton({ title, url, compact = false }) {
   const SHARE_OPTIONS = [
     {
       label: "WhatsApp",
-      emoji: "💬",
+      Icon: WhatsappLogoIcon,
       color: "#25D366",
       bg: "#E8F9EE",
       href: `https://wa.me/?text=${encodeURIComponent(`${shareTitle} ${shareUrl}`)}`,
     },
     {
       label: "Facebook",
-      emoji: "📘",
+      Icon: FacebookLogoIcon,
       color: "#1877F2",
       bg: "#E8F0FE",
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
     },
     {
-      label: "Twitter/X",
-      emoji: "🐦",
+      label: "Twitter / X",
+      Icon: XLogoIcon,
       color: "#000",
       bg: "#F0F0F0",
       href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`,
     },
     {
       label: "Email",
-      emoji: "✉️",
+      Icon: EnvelopeIcon,
       color: "#E87722",
       bg: "#FFF1E0",
       href: `mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(`${shareTitle}\n\n${shareUrl}`)}`,
@@ -71,22 +79,13 @@ export default function ShareButton({ title, url, compact = false }) {
         onMouseEnter={(e) => (e.currentTarget.style.background = "#EEEDFE")}
         onMouseLeave={(e) => (e.currentTarget.style.background = "#F5F4F0")}
       >
-        <span>🔗</span>
+        <LinkSimpleIcon size={15} weight="bold" color="#555" />
         {!compact && "Share"}
       </button>
 
-      {/* Dropdown */}
       {open && (
         <>
-          {/* Backdrop */}
-          <div
-            onClick={() => setOpen(false)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 98,
-            }}
-          />
+          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 98 }} />
 
           <div
             style={{
@@ -115,7 +114,7 @@ export default function ShareButton({ title, url, compact = false }) {
               Share this listing
             </p>
 
-            {SHARE_OPTIONS.map(({ label, emoji, color, bg, href }) => (
+            {SHARE_OPTIONS.map(({ label, Icon, color, bg, href }) => (
               <a
                 key={label}
                 href={href}
@@ -134,18 +133,14 @@ export default function ShareButton({ title, url, compact = false }) {
                   transition: "background 0.1s",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = bg)}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = "transparent")
-                }
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               >
-                <span style={{ fontSize: "16px" }}>{emoji}</span>
+                <Icon size={17} weight="fill" color={color} />
                 <span style={{ fontWeight: 500 }}>{label}</span>
               </a>
             ))}
 
-            <div
-              style={{ borderTop: "0.5px solid #f0f0f0", margin: "4px 0" }}
-            />
+            <div style={{ borderTop: "0.5px solid #f0f0f0", margin: "4px 0" }} />
 
             <button
               onClick={handleCopyLink}
@@ -165,14 +160,10 @@ export default function ShareButton({ title, url, compact = false }) {
                 transition: "background 0.1s",
                 fontWeight: 500,
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "#F5F4F0")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = "transparent")
-              }
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F4F0")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <span style={{ fontSize: "16px" }}>📋</span>
+              <CopySimpleIcon size={17} weight="regular" color="#555" />
               Copy link
             </button>
           </div>

@@ -8,6 +8,7 @@ import usePageTitle from "../hooks/usePageTitle";
 import { useToast } from "../components/ui/Toast";
 import { useNavigate } from "react-router-dom";
 import VerifiedBadge from "../components/ui/VerifiedBadge";
+import { ClipboardTextIcon, PlusIcon, WarningIcon } from "@phosphor-icons/react";
 
 const inputStyle = {
   width: "100%",
@@ -414,7 +415,7 @@ export default function ProfilePage() {
             onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
           >
-            <span style={{ fontSize: "24px", flexShrink: 0 }}>📋</span>
+            <ClipboardTextIcon size={26} weight="duotone" color="#534AB7" style={{ flexShrink: 0 }} />
             <div>
               <div
                 style={{
@@ -447,7 +448,7 @@ export default function ProfilePage() {
             onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
           >
-            <span style={{ fontSize: "24px", flexShrink: 0 }}>➕</span>
+            <PlusIcon size={26} weight="bold" color="#E87722" style={{ flexShrink: 0 }} />
             <div>
               <div
                 style={{
@@ -834,7 +835,7 @@ export default function ProfilePage() {
                     fontWeight: 600,
                   }}
                 >
-                  ⚠️ Are you absolutely sure? This cannot be undone!
+                  <WarningIcon size={14} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "5px" }} />Are you absolutely sure? This cannot be undone!
                 </p>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button

@@ -7,6 +7,15 @@ import {
 } from "recharts";
 import { getAdminStats } from "../api/panel";
 import usePageTitle from "../hooks/usePageTitle";
+import {
+  UserIcon,
+  ClipboardTextIcon,
+  StorefrontIcon,
+  CurrencyDollarIcon,
+  WarningIcon,
+  ChatDotsIcon,
+  ProhibitIcon,
+} from "@phosphor-icons/react";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -95,7 +104,7 @@ function StatCard({ label, value, sub, accent, icon, warn }) {
         <span style={{ fontSize: 11, color: T.text2, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em" }}>
           {label}
         </span>
-        <span style={{ fontSize: 18, opacity: 0.85 }}>{icon}</span>
+        <span style={{ opacity: 0.85, display: "flex", alignItems: "center" }}>{icon}</span>
       </div>
       <div style={{ fontSize: 30, fontWeight: 800, color: warn ? "#F87171" : T.text, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>
         {value}
@@ -201,7 +210,7 @@ export default function AdminPanelPage() {
     return (
       <div style={{ background: T.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", padding: 28 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🚫</div>
+          <div style={{ marginBottom: 12 }}><ProhibitIcon size={40} weight="duotone" color="#DC2626" /></div>
           <div style={{ fontSize: 16, fontWeight: 700, color: T.text }}>Access denied</div>
           <div style={{ fontSize: 13, color: T.text2, marginTop: 6 }}>
             {error?.response?.status === 403 ? "You don't have permission to view this page." : "Failed to load panel data."}
@@ -346,22 +355,22 @@ export default function AdminPanelPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12, marginBottom: 16 }}>
               <StatCard label="Total Users" value={ov.total_users?.toLocaleString() || 0}
                 sub={`+${ov.new_users_today || 0} today · +${ov.new_users_week || 0} this week`}
-                accent="#818CF8" icon="👤" />
+                accent="#818CF8" icon={<UserIcon size={28} weight="duotone" color="#818CF8" />} />
               <StatCard label="Active Listings" value={ov.active_listings?.toLocaleString() || 0}
                 sub={`${ov.total_listings || 0} total · ${ov.featured_listings || 0} featured`}
-                accent="#34D399" icon="📋" />
+                accent="#34D399" icon={<ClipboardTextIcon size={28} weight="duotone" color="#34D399" />} />
               <StatCard label="Businesses" value={ov.total_businesses?.toLocaleString() || 0}
                 sub={`${ov.verified_businesses || 0} verified · ${ov.featured_businesses || 0} featured`}
-                accent="#FBBF24" icon="🏪" />
+                accent="#FBBF24" icon={<StorefrontIcon size={28} weight="duotone" color="#FBBF24" />} />
               <StatCard label="Revenue (AUD)" value={fmtAUD(ov.total_revenue_aud || 0)}
                 sub={`${ov.total_payments || 0} completed payments`}
-                accent="#A78BFA" icon="💰" />
+                accent="#A78BFA" icon={<CurrencyDollarIcon size={28} weight="duotone" color="#A78BFA" />} />
               <StatCard label="Pending Reports" value={pendingReports}
                 sub={`${ov.pending_listing_reports || 0} listings · ${ov.pending_business_reports || 0} businesses`}
-                accent="#F87171" icon="⚠️" warn={pendingReports > 0} />
+                accent="#F87171" icon={<WarningIcon size={28} weight="duotone" color="#F87171" />} warn={pendingReports > 0} />
               <StatCard label="Messages" value={ov.total_messages?.toLocaleString() || 0}
                 sub={`${ov.total_conversations || 0} threads · +${ov.new_messages_week || 0} this week`}
-                accent="#38BDF8" icon="💬" />
+                accent="#38BDF8" icon={<ChatDotsIcon size={28} weight="duotone" color="#38BDF8" />} />
             </div>
 
             {/* ── Mini stat row ───────────────────────────────────────────── */}

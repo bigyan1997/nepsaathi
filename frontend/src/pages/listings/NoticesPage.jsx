@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { MapPinIcon, WarningIcon, MegaphoneIcon, NewspaperIcon, TagIcon, WrenchIcon, MagnifyingGlassIcon, GraduationCapIcon, PushPinIcon } from "@phosphor-icons/react";
 import { getNotices } from "../../api/notices";
 import { SkeletonNoticeCard } from "../../components/ui/Skeleton";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
@@ -27,13 +28,13 @@ const CATEGORY_COLORS = {
   general: { bg: "#F1EFE8", color: "#444441" },
 };
 
-const CATEGORY_EMOJIS = {
-  news: "📰",
-  sale: "🏷️",
-  service: "🛠️",
-  lost_found: "🔎",
-  education: "📚",
-  general: "📢",
+const CATEGORY_ICONS = {
+  news: NewspaperIcon,
+  sale: TagIcon,
+  service: WrenchIcon,
+  lost_found: MagnifyingGlassIcon,
+  education: GraduationCapIcon,
+  general: MegaphoneIcon,
 };
 
 function isNew(dateStr) {
@@ -207,7 +208,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
             {[
               {
                 key: "is_free",
-                label: "🎁 Free items only",
+                label: "Free items only",
                 sub: "Items being given away",
                 color: "#085041",
                 bg: "#E1F5EE",
@@ -215,7 +216,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               },
               {
                 key: "is_urgent",
-                label: "🔴 Urgent only",
+                label: "Urgent only",
                 sub: "Time-sensitive posts",
                 color: "#A32D2D",
                 bg: "#FCEBEB",
@@ -302,7 +303,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 /* ── Mobile card — Option B ───────────────────────── */
 function NoticeMobileCard({ notice }) {
   const catColor = CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
-  const catEmoji = CATEGORY_EMOJIS[notice.category] || "📢";
+  const CatIcon = CATEGORY_ICONS[notice.category] || MegaphoneIcon;
 
   return (
     <Link
@@ -339,7 +340,7 @@ function NoticeMobileCard({ notice }) {
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: "36px" }}>{catEmoji}</span>
+        <CatIcon size={36} weight="duotone" color={catColor.color} />
 
         {/* Price — top right */}
         {(notice.price || notice.is_free) && (
@@ -412,7 +413,7 @@ function NoticeMobileCard({ notice }) {
                 alignSelf: "flex-start",
               }}
             >
-              🔴 Urgent
+              <WarningIcon size={9} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "2px" }} /> Urgent
             </span>
           )}
           {notice.is_free && (
@@ -466,7 +467,7 @@ function NoticeMobileCard({ notice }) {
             alignSelf: "flex-start",
           }}
         >
-          {catEmoji} {notice.category?.replace("_", " ")}
+          <CatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{notice.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -491,7 +492,7 @@ function NoticeMobileCard({ notice }) {
             whiteSpace: "nowrap",
           }}
         >
-          📍 {notice.listing_location}, {notice.listing_state}
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.listing_location}, {notice.listing_state}
         </div>
         <div style={{ fontSize: "10px", color: "#aaa", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
           {notice.posted_by}
@@ -506,7 +507,7 @@ function NoticeMobileCard({ notice }) {
 /* ── Desktop card ─────────────────────────────────── */
 function NoticeCard({ notice }) {
   const catColor = CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
-  const catEmoji = CATEGORY_EMOJIS[notice.category] || "📢";
+  const CatIcon = CATEGORY_ICONS[notice.category] || MegaphoneIcon;
   return (
     <Link
       to={`/notices/${notice.listing_slug}`}
@@ -530,12 +531,11 @@ function NoticeCard({ notice }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "44px",
           position: "relative",
           flexShrink: 0,
         }}
       >
-        {catEmoji}
+        <CatIcon size={44} weight="duotone" color={catColor.color} />
         <div
           style={{
             position: "absolute",
@@ -575,7 +575,7 @@ function NoticeCard({ notice }) {
                 borderRadius: "6px",
               }}
             >
-              🔴 URGENT
+              <WarningIcon size={9} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "2px" }} /> URGENT
             </span>
           )}
         </div>
@@ -630,7 +630,7 @@ function NoticeCard({ notice }) {
               borderRadius: "8px",
             }}
           >
-            {catEmoji} {notice.category?.replace("_", " ")}
+            <CatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{notice.category?.replace("_", " ")}
           </span>
           {notice.is_free && (
             <span
@@ -658,7 +658,7 @@ function NoticeCard({ notice }) {
           {notice.listing_title}
         </div>
         <div style={{ fontSize: "12px", color: "#777" }}>
-          📍 {notice.listing_location}, {notice.listing_state}
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.listing_location}, {notice.listing_state}
         </div>
         {notice.description && (
           <div
@@ -877,7 +877,7 @@ export default function NoticesPage() {
         <div className="an-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
-            placeholder="🔍  Search notices..."
+            placeholder="Search notices..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -910,7 +910,7 @@ export default function NoticesPage() {
               minWidth: "90px",
             }}
           >
-            ⚙️ Filters
+            Filters
             {activeFilterCount > 0 && (
               <span
                 style={{
@@ -1128,8 +1128,8 @@ export default function NoticesPage() {
             }}
           >
             {[
-              { key: "is_free", label: "🎁 Free items only" },
-              { key: "is_urgent", label: "🔴 Urgent only" },
+              { key: "is_free", label: "Free items only" },
+              { key: "is_urgent", label: "Urgent only" },
             ].map(({ key, label }) => (
               <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
                 <input
@@ -1175,7 +1175,7 @@ export default function NoticesPage() {
         )}
         {!isLoading && !isFetching && allResults.length === 0 && (
           <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-            <div style={{ fontSize: "36px", marginBottom: "12px" }}>📢</div>
+            <div style={{ marginBottom: "12px" }}><MegaphoneIcon size={36} weight="duotone" color="#534AB7" /></div>
             <p
               style={{
                 fontSize: "15px",

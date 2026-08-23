@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
 import useAuthStore from "../store/authStore";
 import { useToast } from "../components/ui/Toast";
+import { TimerIcon, ChartBarIcon, GraduationCapIcon, WarningIcon, ConfettiIcon, MagnifyingGlassIcon, CalculatorIcon, TrendUpIcon, ReceiptIcon, BookIcon, ArticleIcon, GlobeHemisphereEastIcon, BriefcaseIcon, CheckCircleIcon, CurrencyDollarIcon, MegaphoneIcon, EnvelopeOpenIcon } from "@phosphor-icons/react";
 import {
   getVisaTimelines,
   getVisaStats,
@@ -139,7 +140,7 @@ const AU_STATES = [
 const RESOURCES = [
   {
     category: "Processing Times",
-    icon: "⏱",
+    Icon: TimerIcon,
     items: [
       {
         title: "Global visa processing times",
@@ -150,7 +151,7 @@ const RESOURCES = [
   },
   {
     category: "SkillSelect & Invitations",
-    icon: "📊",
+    Icon: ChartBarIcon,
     items: [
       {
         title: "SkillSelect invitation rounds",
@@ -166,7 +167,7 @@ const RESOURCES = [
   },
   {
     category: "Skills Assessment Bodies",
-    icon: "🎓",
+    Icon: GraduationCapIcon,
     items: [
       {
         title: "Engineers Australia (EA)",
@@ -202,7 +203,7 @@ const RESOURCES = [
   },
   {
     category: "English Language Tests",
-    icon: "📝",
+    Icon: ArticleIcon,
     items: [
       {
         title: "IELTS — Academic or General",
@@ -228,7 +229,7 @@ const RESOURCES = [
   },
   {
     category: "State & Territory Nomination",
-    icon: "🗺",
+    Icon: GlobeHemisphereEastIcon,
     items: [
       {
         title: "NSW — skilled migration",
@@ -254,7 +255,7 @@ const RESOURCES = [
   },
   {
     category: "Official Calculators & Tools",
-    icon: "🔢",
+    Icon: CalculatorIcon,
     items: [
       {
         title: "Official points calculator — DOHA",
@@ -275,7 +276,7 @@ const RESOURCES = [
   },
   {
     category: "Migration Agents",
-    icon: "👨‍💼",
+    Icon: BriefcaseIcon,
     items: [
       {
         title: "Find a registered migration agent (MARA)",
@@ -455,11 +456,13 @@ function PRCalculator() {
           <div style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em", color: "#534AB7", marginBottom: "4px" }}>Your total score</div>
           <div style={{ fontSize: "52px", fontWeight: 800, color: getScoreColor(finalTotal), lineHeight: 1 }}>{finalTotal}</div>
           <div style={{ fontSize: "13px", color: "#666", marginTop: "6px" }}>
-            {finalTotal >= 65 ? "✅ Meets minimum threshold (65 pts)" : `❌ Need ${65 - finalTotal} more pts to reach minimum (65)`}
+            {finalTotal >= 65
+              ? <><CheckCircleIcon size={13} weight="fill" color="#16a34a" style={{ verticalAlign: "middle", marginRight: "4px" }} />Meets minimum threshold (65 pts)</>
+              : `Need ${65 - finalTotal} more pts to reach minimum (65)`}
           </div>
           {nextThreshold && finalTotal >= 65 && (
             <div style={{ fontSize: "13px", color: "#534AB7", marginTop: "4px" }}>
-              📈 {gap} more pts to reach {nextThreshold}
+              <TrendUpIcon size={13} weight="fill" color="#534AB7" style={{ verticalAlign: "middle", marginRight: "4px" }} />{gap} more pts to reach {nextThreshold}
             </div>
           )}
         </div>
@@ -782,7 +785,7 @@ function TimelineTracker() {
         <div style={{ color: "#888", fontSize: "14px", padding: "20px 0" }}>Loading timelines…</div>
       ) : timelines.length === 0 ? (
         <div style={{ background: "#fff", border: "1.5px solid #e8e6f8", borderRadius: "12px", padding: "36px", textAlign: "center", color: "#888" }}>
-          <div style={{ fontSize: "32px", marginBottom: "10px" }}>📭</div>
+          <div style={{ marginBottom: "10px" }}><EnvelopeOpenIcon size={32} weight="duotone" color="#9CA3AF" /></div>
           <div style={{ fontWeight: 600, fontSize: "14px" }}>No timelines yet for these filters</div>
           <div style={{ fontSize: "13px", marginTop: "4px" }}>Be the first to add yours and help the community!</div>
         </div>
@@ -829,7 +832,7 @@ function ResourcesTab() {
       {RESOURCES.map((section) => (
         <div key={section.category} style={{ marginBottom: "24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-            <span style={{ fontSize: "18px" }}>{section.icon}</span>
+            {section.Icon && <section.Icon size={18} weight="duotone" color="#534AB7" />}
             <span style={{ fontWeight: 700, fontSize: "15px", color: "#26215C" }}>{section.category}</span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -966,7 +969,7 @@ function OccupationSearch() {
         <div style={{ color: '#888', fontSize: '14px', padding: '24px 0' }}>Loading occupations…</div>
       ) : results.length === 0 ? (
         <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '40px', textAlign: 'center', color: '#888' }}>
-          <div style={{ fontSize: '28px', marginBottom: '10px' }}>🔍</div>
+          <MagnifyingGlassIcon size={28} weight="duotone" color="#534AB7" style={{ marginBottom: '10px', opacity: 0.6 }} />
           <div style={{ fontWeight: 600, fontSize: '14px' }}>No occupations found</div>
           <div style={{ fontSize: '13px', marginTop: '6px' }}>
             Try a different title or{' '}
@@ -1170,7 +1173,7 @@ function InvitationHistory() {
         <div style={{ color: '#888', fontSize: '14px', padding: '24px 0' }}>Loading rounds…</div>
       ) : filtered.length === 0 ? (
         <div style={{ background: '#fff', border: '1.5px solid #e8e6f8', borderRadius: '12px', padding: '40px', textAlign: 'center', color: '#888' }}>
-          <div style={{ fontSize: '28px', marginBottom: '10px' }}>📊</div>
+          <ChartBarIcon size={28} weight="duotone" color="#534AB7" style={{ marginBottom: '10px', opacity: 0.6 }} />
           <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '6px' }}>No invitation rounds data yet</div>
           <div style={{ fontSize: '13px', lineHeight: 1.6 }}>
             An administrator runs <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>python manage.py fetch_invitation_rounds</code>
@@ -1376,7 +1379,7 @@ function TaxReturnEstimator() {
         <>
           <div style={{ background: isRefund ? '#f0fdf4' : '#fff5f5', border: `2px solid ${isRefund ? '#86efac' : '#fca5a5'}`, borderRadius: '16px', padding: '28px', textAlign: 'center', marginBottom: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: 700, color: isRefund ? '#15803d' : '#dc2626', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px' }}>
-              {isRefund ? '🎉 Estimated tax refund' : '⚠️ Estimated tax owing'}
+              {isRefund ? <><ConfettiIcon size={14} weight="fill" color="#15803d" style={{ verticalAlign: "middle", marginRight: "4px" }} />Estimated tax refund</> : <><WarningIcon size={14} weight="fill" color="#dc2626" style={{ verticalAlign: "middle", marginRight: "4px" }} />Estimated tax owing</>}
             </div>
             <div style={{ fontSize: '52px', fontWeight: 800, color: isRefund ? '#15803d' : '#dc2626', letterSpacing: '-.02em', lineHeight: 1 }}>
               {fmtAUD(diff)}
@@ -1479,7 +1482,7 @@ function TakeHomeCalculator() {
         <>
           <div style={{ background: '#f0fdf4', border: '2px solid #86efac', borderRadius: '16px', padding: '28px', textAlign: 'center', marginBottom: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px' }}>
-              💸 {periodLabel} take-home
+              <CurrencyDollarIcon size={13} weight="fill" color="#15803d" style={{ verticalAlign: "middle", marginRight: "4px" }} />{periodLabel} take-home
             </div>
             <div style={{ fontSize: '52px', fontWeight: 800, color: '#15803d', letterSpacing: '-.02em', lineHeight: 1 }}>
               {fmtAUD(pp(annualNet))}
@@ -1538,8 +1541,8 @@ function TaxCalculatorTab() {
     <div>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
         {[
-          { id: 'return',   label: '📋 Tax Return Estimator' },
-          { id: 'takehome', label: '💵 Take-Home Pay' },
+          { id: 'return',   label: <><ReceiptIcon size={13} weight={mode === 'return' ? 'fill' : 'regular'} color={mode === 'return' ? '#534AB7' : '#666'} style={{ verticalAlign: 'middle', marginRight: '5px' }} />Tax Return Estimator</> },
+          { id: 'takehome', label: <><CurrencyDollarIcon size={13} weight={mode === 'takehome' ? 'fill' : 'regular'} color={mode === 'takehome' ? '#534AB7' : '#666'} style={{ verticalAlign: 'middle', marginRight: '5px' }} />Take-Home Pay</> },
         ].map(({ id, label }) => (
           <button key={id} onClick={() => setMode(id)} style={{
             padding: '9px 20px', borderRadius: '8px', border: '1.5px solid',
@@ -1629,12 +1632,12 @@ export default function VisaHubPage() {
 
       {/* Tabs */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "28px", overflowX: "auto", flexWrap: "nowrap", paddingBottom: "4px", WebkitOverflowScrolling: "touch" }}>
-        <TabBtn label="🔢 PR Calculator"       active={tab === "calculator"}   onClick={() => setTab("calculator")} />
-        <TabBtn label="🔍 Occupation Search"   active={tab === "occupations"}  onClick={() => setTab("occupations")} />
-        <TabBtn label="📈 Invitation History"  active={tab === "invitations"}  onClick={() => setTab("invitations")} />
-        <TabBtn label="🧾 Tax Calculator"      active={tab === "tax"}          onClick={() => setTab("tax")} />
-        <TabBtn label="📊 Timeline Tracker"    active={tab === "timelines"}    onClick={() => setTab("timelines")} />
-        <TabBtn label="📚 Resources"           active={tab === "resources"}    onClick={() => setTab("resources")} />
+        <TabBtn label={<><CalculatorIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />PR Calculator</>}      active={tab === "calculator"}   onClick={() => setTab("calculator")} />
+        <TabBtn label={<><MagnifyingGlassIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Occupation Search</>} active={tab === "occupations"}  onClick={() => setTab("occupations")} />
+        <TabBtn label={<><TrendUpIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Invitation History</>}        active={tab === "invitations"}  onClick={() => setTab("invitations")} />
+        <TabBtn label={<><ReceiptIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Tax Calculator</>}             active={tab === "tax"}          onClick={() => setTab("tax")} />
+        <TabBtn label={<><ChartBarIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Timeline Tracker</>}          active={tab === "timelines"}    onClick={() => setTab("timelines")} />
+        <TabBtn label={<><BookIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Resources</>}                    active={tab === "resources"}    onClick={() => setTab("resources")} />
       </div>
 
       {/* Content */}

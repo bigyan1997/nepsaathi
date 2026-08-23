@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import { CreditCardIcon } from "@phosphor-icons/react";
 
 export default function PaymentCancelPage() {
   return (
     <div style={{ maxWidth: 520, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
-      <div style={{ fontSize: 64, marginBottom: 16 }}>💳</div>
+      <CreditCardIcon size={72} weight="duotone" color="#A32D2D" style={{ marginBottom: 16, opacity: 0.75 }} />
       <h1 style={{ fontSize: 24, fontWeight: 700, color: "#26215C", margin: "0 0 12px" }}>
         Payment cancelled
       </h1>

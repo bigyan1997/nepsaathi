@@ -4,15 +4,27 @@ import { useQuery } from "@tanstack/react-query";
 import { getForumPosts } from "../../api/forum";
 import useAuthStore from "../../store/authStore";
 import SEO from "../../components/ui/SEO";
+import {
+  ChatsIcon,
+  IdentificationCardIcon,
+  HouseIcon,
+  BriefcaseIcon,
+  ConfettiIcon,
+  BuildingsIcon,
+  ChatDotsIcon,
+  PushPinIcon,
+  LockIcon,
+  EyeIcon,
+} from "@phosphor-icons/react";
 
 const CATEGORIES = [
-  { value: "", label: "All", emoji: "🗣️" },
-  { value: "visa", label: "Visa & Immigration", emoji: "🛂" },
-  { value: "accommodation", label: "Accommodation", emoji: "🏠" },
-  { value: "jobs", label: "Jobs & Work", emoji: "💼" },
-  { value: "events", label: "Events", emoji: "🎉" },
-  { value: "business", label: "Business", emoji: "🏢" },
-  { value: "general", label: "General", emoji: "💬" },
+  { value: "", label: "All", Icon: ChatsIcon },
+  { value: "visa", label: "Visa & Immigration", Icon: IdentificationCardIcon },
+  { value: "accommodation", label: "Accommodation", Icon: HouseIcon },
+  { value: "jobs", label: "Jobs & Work", Icon: BriefcaseIcon },
+  { value: "events", label: "Events", Icon: ConfettiIcon },
+  { value: "business", label: "Business", Icon: BuildingsIcon },
+  { value: "general", label: "General", Icon: ChatDotsIcon },
 ];
 
 const CAT_COLORS = {
@@ -65,16 +77,16 @@ function PostCard({ post }) {
       >
         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           {post.is_pinned && (
-            <span style={{ fontSize: "11px", background: "#26215C", color: "#fff", borderRadius: "6px", padding: "2px 7px", fontWeight: 700 }}>
-              📌 Pinned
+            <span style={{ fontSize: "11px", background: "#26215C", color: "#fff", borderRadius: "6px", padding: "2px 7px", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <PushPinIcon size={10} weight="fill" color="#fff" /> Pinned
             </span>
           )}
-          <span style={{ fontSize: "11px", background: cat.bg, color: cat.color, borderRadius: "6px", padding: "2px 8px", fontWeight: 600 }}>
-            {catInfo.emoji} {catInfo.label}
+          <span style={{ fontSize: "11px", background: cat.bg, color: cat.color, borderRadius: "6px", padding: "2px 8px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "4px" }}>
+            {catInfo.Icon && <catInfo.Icon size={11} weight="regular" color={cat.color} />} {catInfo.label}
           </span>
           {post.is_closed && (
-            <span style={{ fontSize: "11px", background: "#f5f5f5", color: "#888", borderRadius: "6px", padding: "2px 7px" }}>
-              🔒 Closed
+            <span style={{ fontSize: "11px", background: "#f5f5f5", color: "#888", borderRadius: "6px", padding: "2px 7px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <LockIcon size={10} weight="regular" color="#888" /> Closed
             </span>
           )}
         </div>
@@ -89,8 +101,8 @@ function PostCard({ post }) {
           <span>{timeAgo(post.created_at)}</span>
           <span style={{ marginLeft: "auto", display: "flex", gap: "12px" }}>
             <span title="Upvotes">▲ {post.upvote_count}</span>
-            <span title="Replies">💬 {post.reply_count}</span>
-            <span title="Views">👁 {post.view_count}</span>
+            <span title="Replies" style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}><ChatDotsIcon size={12} weight="regular" color="#aaa" /> {post.reply_count}</span>
+            <span title="Views" style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}><EyeIcon size={12} weight="regular" color="#aaa" /> {post.view_count}</span>
           </span>
         </div>
       </div>
@@ -212,9 +224,13 @@ export default function ForumPage() {
               background: category === c.value ? "#26215C" : "#f0eff8",
               color: category === c.value ? "#fff" : "#26215C",
               transition: "all 0.15s",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
             }}
           >
-            {c.emoji} {c.label}
+            {c.Icon && <c.Icon size={13} weight="regular" color={category === c.value ? "#fff" : "#534AB7"} />}
+            {c.label}
           </button>
         ))}
       </div>
@@ -230,7 +246,7 @@ export default function ForumPage() {
           : posts.length === 0
             ? (
               <div className="forum-post-enter" style={{ textAlign: "center", padding: "48px 0", color: "#888" }}>
-                <div style={{ fontSize: "36px", marginBottom: "12px" }}>💬</div>
+                <ChatDotsIcon size={48} weight="duotone" color="#534AB7" style={{ marginBottom: "12px", opacity: 0.6 }} />
                 <div style={{ fontWeight: 600, marginBottom: "6px" }}>No posts yet</div>
                 <div style={{ fontSize: "13px" }}>Be the first to start the conversation</div>
               </div>

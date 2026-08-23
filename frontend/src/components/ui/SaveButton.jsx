@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { saveListing, unsaveListing, checkSaved } from "../../api/listings";
 import { useToast } from "./Toast";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
+import { HeartIcon } from "@phosphor-icons/react";
 
 export default function SaveButton({ listingId, compact = false }) {
   const { isAuthenticated } = useAuthStore();
@@ -11,7 +11,6 @@ export default function SaveButton({ listingId, compact = false }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Check if already saved
   const { data: savedData } = useQuery({
     queryKey: ["saved", listingId],
     queryFn: () => checkSaved(listingId),
@@ -27,7 +26,7 @@ export default function SaveButton({ listingId, compact = false }) {
       queryClient.invalidateQueries({ queryKey: ["saved", listingId] });
       queryClient.invalidateQueries({ queryKey: ["saved-listings"] });
       addToast(
-        data.is_saved ? "Listing saved! ❤️" : "Listing removed from saved.",
+        data.is_saved ? "Listing saved!" : "Listing removed from saved.",
         data.is_saved ? "success" : "info",
       );
     },
@@ -73,7 +72,11 @@ export default function SaveButton({ listingId, compact = false }) {
         e.currentTarget.style.background = isSaved ? "#FCEBEB" : "#F5F4F0";
       }}
     >
-      <span style={{ fontSize: "16px" }}>{isSaved ? "❤️" : "🤍"}</span>
+      <HeartIcon
+        size={16}
+        weight={isSaved ? "fill" : "regular"}
+        color={isSaved ? "#E05252" : "#9CA3AF"}
+      />
       {!compact && (isSaved ? "Saved" : "Save")}
     </button>
   );

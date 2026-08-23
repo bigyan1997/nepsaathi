@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { EyeIcon, WarningIcon, FlagIcon, HouseIcon, MapPinIcon, ClockIcon, CalendarBlankIcon, LightbulbIcon, PhoneIcon, EnvelopeIcon, CouchIcon, PawPrintIcon, CarIcon } from "@phosphor-icons/react";
 import { mapsUrl } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { getRoomByListing } from "../../api/rooms";
@@ -160,21 +161,21 @@ export default function RoomDetailPage() {
   const features = [
     room.furnishing && {
       label: room.furnishing.replace("_", " "),
-      emoji: "🛋️",
+      icon: <CouchIcon size={13} weight="fill" color="#555" />,
     },
     room.bills_included && {
       label: isWanted ? "Bills preferred" : "Bills included",
-      emoji: "💡",
+      icon: <LightbulbIcon size={13} weight="fill" color="#1D9E75" />,
     },
     room.pets_allowed && {
       label: isWanted ? "Has pets" : "Pets allowed",
-      emoji: "🐾",
+      icon: <PawPrintIcon size={13} weight="fill" color="#85510A" />,
     },
     room.parking_available && {
       label: isWanted ? "Needs parking" : "Parking",
-      emoji: "🚗",
+      icon: <CarIcon size={13} weight="fill" color="#444" />,
     },
-    room.nepalese_household && { label: "Nepalese household", emoji: "🇳🇵" },
+    room.nepalese_household && { label: "Nepalese household", icon: "🇳🇵" },
   ].filter(Boolean);
 
   return (
@@ -253,7 +254,7 @@ export default function RoomDetailPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {room?.view_count > 0 && (
               <span style={{ fontSize: "12px", color: "#aaa" }}>
-                👁️ {room.view_count}
+                <EyeIcon size={12} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.view_count}
               </span>
             )}
             <MessageButton
@@ -282,7 +283,7 @@ export default function RoomDetailPage() {
               gap: "10px",
             }}
           >
-            <span>⚠️</span>
+            <WarningIcon size={20} weight="fill" color="#633806" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
@@ -315,7 +316,7 @@ export default function RoomDetailPage() {
               gap: "10px",
             }}
           >
-            <span>🚩</span>
+            <FlagIcon size={20} weight="fill" color="#A32D2D" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#A32D2D" }}
@@ -369,7 +370,7 @@ export default function RoomDetailPage() {
               boxShadow: "0 2px 0 #EFD9C0",
             }}
           >
-            {isWanted ? initial : "🏠"}
+            {isWanted ? initial : <HouseIcon size={isMobile ? 26 : 36} weight="duotone" color="#E87722" />}
           </div>
 
           {/* Title block */}
@@ -393,7 +394,7 @@ export default function RoomDetailPage() {
                     borderRadius: "20px",
                   }}
                 >
-                  🏘️ Looking for room
+                  <HouseIcon size={11} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Looking for room
                 </span>
               )}
               {room.is_featured && (
@@ -421,7 +422,7 @@ export default function RoomDetailPage() {
                   borderRadius: "20px",
                 }}
               >
-                🏠 {room.room_type?.replace("_", " ")}
+                <HouseIcon size={11} weight="duotone" color="#633806" style={{ verticalAlign: "middle", marginRight: "4px" }} /> {room.room_type?.replace("_", " ")}
               </span>
               {room.bills_included && (
                 <span
@@ -469,7 +470,7 @@ export default function RoomDetailPage() {
               rel="noopener noreferrer"
               style={{ fontSize: "14px", color: "#E87722", fontWeight: 600, textDecoration: "none" }}
             >
-              📍{" "}
+              <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />
               {room.street_address ? `${room.street_address}, ` : ""}
               {room.listing_location}
               {room.listing_postcode ? ` ${room.listing_postcode}` : ""},{" "}
@@ -477,7 +478,7 @@ export default function RoomDetailPage() {
             </a>
             {room.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
-                🕐 Posted {timeAgo(room.created_at)}
+                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(room.created_at)}
               </div>
             )}
           </div>
@@ -539,7 +540,7 @@ export default function RoomDetailPage() {
                       marginTop: "18px",
                     }}
                   >
-                    {features.map(({ label, emoji }) => (
+                    {features.map(({ label, icon }) => (
                       <span
                         key={label}
                         style={{
@@ -549,9 +550,12 @@ export default function RoomDetailPage() {
                           fontWeight: 500,
                           padding: "5px 12px",
                           borderRadius: "20px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "5px",
                         }}
                       >
-                        {emoji} {label}
+                        {icon} {label}
                       </span>
                     ))}
                   </div>
@@ -571,7 +575,7 @@ export default function RoomDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    📅{" "}
+                    <CalendarBlankIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />
                     {isWanted ? "Looking to move in from " : "Available from "}
                     {new Date(room.available_from).toLocaleDateString("en-AU", {
                       day: "numeric",
@@ -594,7 +598,7 @@ export default function RoomDetailPage() {
                       color: "#633806",
                     }}
                   >
-                    💡 This person is looking for a room — reach out if you have
+                    <LightbulbIcon size={14} weight="fill" color="#633806" style={{ verticalAlign: "middle", marginRight: "4px" }} />This person is looking for a room — reach out if you have
                     one available!
                   </div>
                 )}
@@ -796,7 +800,7 @@ export default function RoomDetailPage() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      🏘️ Room Seeker
+                      <HouseIcon size={11} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} /> Room Seeker
                     </span>
                   )}
                 </div>
@@ -987,7 +991,7 @@ export default function RoomDetailPage() {
                   <>
                     {room.contact_phone && (
                       <a href={`tel:${room.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#FFF1E0", color: "#E87722", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #EFD9C0" }}>
-                        📞 {room.contact_phone}
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{room.contact_phone}
                       </a>
                     )}
                     {room.contact_whatsapp && (
@@ -995,7 +999,7 @@ export default function RoomDetailPage() {
                     )}
                     {room.contact_email && (
                       <a href={`mailto:${room.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        ✉️ Email
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
                       </a>
                     )}
                   </>
@@ -1084,11 +1088,10 @@ export default function RoomDetailPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "18px",
                       flexShrink: 0,
                     }}
                   >
-                    🏠
+                    <HouseIcon size={20} weight="duotone" color="#E87722" />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
@@ -1105,7 +1108,7 @@ export default function RoomDetailPage() {
                       {listing.title}
                     </div>
                     <div style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {listing.location}{listing.postcode ? ` ${listing.postcode}` : ""}, {listing.state}
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}{listing.postcode ? ` ${listing.postcode}` : ""}, {listing.state}
                     </div>
                   </div>
                   <span style={{ color: "#E87722", flexShrink: 0 }}>

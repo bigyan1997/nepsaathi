@@ -1,19 +1,24 @@
+import { BookOpenIcon, BuildingsIcon, ShieldCheckIcon } from "@phosphor-icons/react";
+
 // Safe meeting spots — dynamically generated from the listing's suburb via Google Maps search.
 const SPOT_TYPES = [
   {
-    icon: '📚',
+    Icon: BookOpenIcon,
+    color: '#c2410c',
     label: 'Library nearby',
     query: (loc) => `public library near ${loc}`,
     tip: 'Free, public, CCTV, friendly staff — great first-meeting choice',
   },
   {
-    icon: '🏬',
+    Icon: BuildingsIcon,
+    color: '#0369a1',
     label: 'Shopping centre nearby',
     query: (loc) => `shopping centre near ${loc}`,
     tip: 'High foot traffic, security cameras, easy parking',
   },
   {
-    icon: '🚔',
+    Icon: ShieldCheckIcon,
+    color: '#15803d',
     label: 'Police station nearby',
     query: (loc) => `police station near ${loc}`,
     tip: 'Open 24/7 — the safest possible first meeting point',
@@ -71,7 +76,7 @@ export default function SafeMeetingPoints({ state, suburb }) {
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.9)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.6)')}
           >
-            <span style={{ fontSize: '16px', flexShrink: 0 }}>{spot.icon}</span>
+            <spot.Icon size={18} weight="duotone" color={spot.color} style={{ flexShrink: 0, marginTop: '1px' }} />
             <div>
               <div style={{ fontSize: '13px', fontWeight: 600, color: '#7c2d12', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 {spot.label}

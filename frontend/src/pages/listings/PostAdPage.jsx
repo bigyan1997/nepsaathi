@@ -10,13 +10,14 @@ import usePageTitle from "../../hooks/usePageTitle";
 import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../components/ui/Toast";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, MagnifyingGlassIcon, BuildingsIcon, SparkleIcon, LightbulbIcon, WarningCircleIcon, PawPrintIcon, CarIcon, GiftIcon } from "@phosphor-icons/react";
 
 /* ── constants ── */
 const LISTING_TYPES = [
   {
     value: "job",
     label: "Job",
-    emoji: "💼",
+    Icon: BriefcaseIcon,
     desc: "Post a vacancy or find work",
     bg: "#EEEDFE",
     border: "#AFA9EC",
@@ -25,7 +26,7 @@ const LISTING_TYPES = [
   {
     value: "room",
     label: "Room",
-    emoji: "🏠",
+    Icon: HouseIcon,
     desc: "List a room or find accommodation",
     bg: "#FFF1E0",
     border: "#EFD9C0",
@@ -34,7 +35,7 @@ const LISTING_TYPES = [
   {
     value: "event",
     label: "Event",
-    emoji: "🎉",
+    Icon: ConfettiIcon,
     desc: "Share a community event",
     bg: "#E1F5EE",
     border: "#9FE1CB",
@@ -43,7 +44,7 @@ const LISTING_TYPES = [
   {
     value: "notice",
     label: "Notice",
-    emoji: "📢",
+    Icon: MegaphoneIcon,
     desc: "Share news or items for sale",
     bg: "#E6F1FB",
     border: "#B5D4F4",
@@ -210,7 +211,7 @@ function WantedToggle({ isWanted, listingType, onChange }) {
   const cfg =
     listingType === "job"
       ? {
-          emoji: "🔍",
+          Icon: MagnifyingGlassIcon,
           label: "I'm looking for a job",
           sub: "Toggle on if you're seeking work, not hiring",
           bg: "#EEEDFE",
@@ -218,7 +219,7 @@ function WantedToggle({ isWanted, listingType, onChange }) {
           color: "#534AB7",
         }
       : {
-          emoji: "🏘️",
+          Icon: BuildingsIcon,
           label: "I'm looking for a room",
           sub: "Toggle on if you're seeking accommodation",
           bg: "#FFF1E0",
@@ -239,7 +240,7 @@ function WantedToggle({ isWanted, listingType, onChange }) {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span style={{ fontSize: "22px" }}>{cfg.emoji}</span>
+        <cfg.Icon size={22} weight="duotone" color={cfg.color} />
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C" }}>
             {cfg.label}
@@ -847,7 +848,7 @@ export default function PostAdPage() {
                       flexShrink: 0,
                     }}
                   >
-                    {item.emoji}
+                    <item.Icon size={22} weight="duotone" color={item.color} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <div
@@ -1018,7 +1019,7 @@ export default function PostAdPage() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {aiState.loading ? "Improving..." : "✨ Improve with AI"}
+                    {aiState.loading ? "Improving..." : <><SparkleIcon size={12} weight="fill" style={{ verticalAlign: "middle", marginRight: "4px" }} />Improve with AI</>}
                   </button>
                 </div>
                 <textarea
@@ -1052,7 +1053,7 @@ export default function PostAdPage() {
                     padding: "10px 12px",
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
-                      ✨ AI suggestion
+                      <SparkleIcon size={11} weight="fill" color="#7c3aed" /> AI suggestion
                     </div>
                     <p style={{ fontSize: 13, color: "#3b1f6e", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>
                       {aiState.preview}
@@ -1097,7 +1098,7 @@ export default function PostAdPage() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {aiTagState.loading ? "Thinking..." : "✨ Suggest tags"}
+                    {aiTagState.loading ? "Thinking..." : <><SparkleIcon size={12} weight="fill" style={{ verticalAlign: "middle", marginRight: "4px" }} />Suggest tags</>}
                   </button>
                 </div>
                 {/* chip input */}
@@ -1142,7 +1143,7 @@ export default function PostAdPage() {
                 )}
                 {aiTagState.suggestions.length > 0 && (
                   <div style={{ marginTop: 8 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 6 }}>✨ Suggested — tap to add</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}><SparkleIcon size={11} weight="fill" color="#7c3aed" /> Suggested — tap to add</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {aiTagState.suggestions.filter(s => !tags.includes(s)).map((s) => (
                         <button key={s} type="button" onClick={() => { addTag(s); setAiTagState(p => ({ ...p, suggestions: p.suggestions.filter(x => x !== s) })); }} style={{
@@ -1217,7 +1218,7 @@ export default function PostAdPage() {
                   color: "#633806",
                 }}
               >
-                💡 Only shown to logged-in NepSaathi members
+                <LightbulbIcon size={12} weight="fill" color="#7C5000" style={{ verticalAlign: "middle", marginRight: "4px" }} />Only shown to logged-in NepSaathi members
               </div>
               <div>
                 <label style={labelStyle}>Phone</label>
@@ -1392,7 +1393,7 @@ export default function PostAdPage() {
                   onChange={(e) =>
                     setJobForm((p) => ({ ...p, is_urgent: e.target.checked }))
                   }
-                  label="🔴 Mark as urgent"
+                  label={<><WarningCircleIcon size={13} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "4px" }} />Mark as urgent</>}
                   sublabel="Adds an urgent badge to your listing"
                   color="#A32D2D"
                   bg="#FCEBEB"
@@ -1567,7 +1568,7 @@ export default function PostAdPage() {
                     bills_included: e.target.checked,
                   }))
                 }
-                label="💡 Bills included"
+                label={<><LightbulbIcon size={13} weight="fill" color="#7C5000" style={{ verticalAlign: "middle", marginRight: "4px" }} />Bills included</>}
                 sublabel={
                   baseForm.is_wanted
                     ? "I prefer bills included"
@@ -1596,7 +1597,7 @@ export default function PostAdPage() {
                 onChange={(e) =>
                   setRoomForm((p) => ({ ...p, pets_allowed: e.target.checked }))
                 }
-                label="🐾 Pets"
+                label={<><PawPrintIcon size={13} weight="fill" color="#633806" style={{ verticalAlign: "middle", marginRight: "4px" }} />Pets</>}
                 sublabel={
                   baseForm.is_wanted ? "I have pets" : "Pets are welcome"
                 }
@@ -1612,7 +1613,7 @@ export default function PostAdPage() {
                     parking_available: e.target.checked,
                   }))
                 }
-                label="🚗 Parking"
+                label={<><CarIcon size={13} weight="fill" color="#0369A1" style={{ verticalAlign: "middle", marginRight: "4px" }} />Parking</>}
                 sublabel={
                   baseForm.is_wanted ? "I need parking" : "Parking is available"
                 }
@@ -1639,7 +1640,7 @@ export default function PostAdPage() {
                     color: "#1A6B3C",
                   }}
                 >
-                  💡 Street address helps renters find the property. Leave blank
+                  <LightbulbIcon size={12} weight="fill" color="#1A6B3C" style={{ verticalAlign: "middle", marginRight: "4px" }} />Street address helps renters find the property. Leave blank
                   if you prefer to share it privately.
                 </div>
                 <div>
@@ -1713,7 +1714,7 @@ export default function PostAdPage() {
                     is_free: e.target.checked,
                   }))
                 }
-                label="🎁 This is free"
+                label={<><GiftIcon size={13} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "4px" }} />This is free</>}
                 sublabel="Marks this listing as a free item or service"
                 color="#085041"
                 bg="#E1F5EE"

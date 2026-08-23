@@ -1,11 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
+import {
+  HospitalIcon,
+  ShieldCheckIcon,
+  GraduationCapIcon,
+  StethoscopeIcon,
+  BrainIcon,
+  ToothIcon,
+  PillIcon,
+  LightbulbIcon,
+  HandshakeIcon,
+} from "@phosphor-icons/react";
 
 const sections = [
   {
     id: "medicare",
-    icon: "🏥",
+    Icon: HospitalIcon,
     title: "Medicare — What's Covered",
     summary: "Medicare is Australia's universal health system. Eligibility depends on your visa.",
     steps: [
@@ -21,7 +32,7 @@ const sections = [
   },
   {
     id: "private-health",
-    icon: "🛡️",
+    Icon: ShieldCheckIcon,
     title: "Private Health Insurance",
     summary: "Private health covers what Medicare doesn't, and is essential if you're not Medicare eligible.",
     steps: [
@@ -37,7 +48,7 @@ const sections = [
   },
   {
     id: "oshc",
-    icon: "🎓",
+    Icon: GraduationCapIcon,
     title: "OSHC — Overseas Student Health Cover",
     summary: "Mandatory for international students — must be purchased before your visa is granted.",
     steps: [
@@ -53,7 +64,7 @@ const sections = [
   },
   {
     id: "gp",
-    icon: "🩺",
+    Icon: StethoscopeIcon,
     title: "Finding a Doctor (GP)",
     summary: "Your GP is your first point of contact for almost all health issues in Australia.",
     steps: [
@@ -69,7 +80,7 @@ const sections = [
   },
   {
     id: "mental-health",
-    icon: "🧠",
+    Icon: BrainIcon,
     title: "Mental Health Support",
     summary: "Australia has strong mental health support — don't hesitate to seek help.",
     steps: [
@@ -85,7 +96,7 @@ const sections = [
   },
   {
     id: "dental-optical",
-    icon: "🦷",
+    Icon: ToothIcon,
     title: "Dental, Optical and Allied Health",
     summary: "Medicare doesn't cover these — plan ahead with extras insurance or savings.",
     steps: [
@@ -101,7 +112,7 @@ const sections = [
   },
   {
     id: "pharmacy",
-    icon: "💊",
+    Icon: PillIcon,
     title: "Pharmacy and the PBS",
     summary: "Australia's Pharmaceutical Benefits Scheme (PBS) makes many medications highly affordable.",
     steps: [
@@ -167,7 +178,10 @@ export default function HealthPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ background: "linear-gradient(135deg, #0369A1 0%, #0284C7 60%, #0EA5E9 100%)", padding: "56px 24px 48px", textAlign: "center", color: "#fff" }}>
-        <div style={{ fontSize: "40px", marginBottom: "16px" }}>🏥🛡️</div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
+          <HospitalIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+          <ShieldCheckIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+        </div>
         <h1 style={{ fontSize: "clamp(24px,5vw,36px)", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
           Health &amp; Insurance in Australia
         </h1>
@@ -190,8 +204,8 @@ export default function HealthPage() {
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
-              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s" }}>
-                {s.icon} {s.title.split(" ")[0]}
+              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s", display: "flex", alignItems: "center", gap: "5px" }}>
+                {s.Icon && <s.Icon size={15} weight="duotone" color={isActive ? accent : "#64748b"} />} {s.title.split(" ")[0]}
               </button>
             );
           })}
@@ -205,7 +219,7 @@ export default function HealthPage() {
             return (
               <div key={s.id} id={s.id} style={{ background: "#fff", border: `1.5px solid ${isOpen ? accent : "#e8eaf0"}`, borderRadius: "12px", overflow: "hidden", transition: "border-color 0.2s" }}>
                 <button onClick={() => toggle(s.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "14px", padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
-                  <span style={{ fontSize: "24px", flexShrink: 0 }}>{s.icon}</span>
+                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{s.Icon && <s.Icon size={28} weight="duotone" color={accent} />}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b", marginBottom: "2px" }}>{s.title}</div>
                     <div style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.4 }}>{s.summary}</div>
@@ -219,7 +233,7 @@ export default function HealthPage() {
                         {s.steps.map((step, i) => <li key={i} style={{ fontSize: "14px", color: "#334155", lineHeight: 1.6 }}>{step}</li>)}
                       </ol>
                       <div style={{ marginTop: "16px", background: accentLight, border: `1px solid ${accentBorder}`, borderRadius: "8px", padding: "12px 14px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                        <span style={{ fontSize: "16px", flexShrink: 0 }}>💡</span>
+                        <LightbulbIcon size={18} weight="fill" color={accent} style={{ flexShrink: 0, marginTop: "1px" }} />
                         <span style={{ fontSize: "13px", color: accent, lineHeight: 1.55 }}>{s.tip}</span>
                       </div>
                       {s.link.url.startsWith("/") ? (
@@ -241,7 +255,7 @@ export default function HealthPage() {
           })}
         </div>
         <div style={{ marginTop: "40px", background: "linear-gradient(135deg, #0369A1, #0284C7)", borderRadius: "16px", padding: "32px 24px", textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "28px", marginBottom: "12px" }}>🤝</div>
+          <HandshakeIcon size={40} weight="duotone" color="#fff" style={{ marginBottom: "12px", opacity: 0.85 }} />
           <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Health question for the community?</h2>
           <p style={{ fontSize: "14px", opacity: 0.85, marginBottom: "20px", lineHeight: 1.6 }}>Nepali doctors, nurses, and healthcare professionals in Australia are active on the NepSaathi forum.</p>
           <Link to="/forum" style={{ display: "inline-block", background: "#fff", color: accent, borderRadius: "8px", padding: "12px 24px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>Ask on the Forum</Link>

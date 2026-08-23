@@ -1,11 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
+import {
+  IdentificationCardIcon,
+  HospitalIcon,
+  BankIcon,
+  ClipboardTextIcon,
+  HouseIcon,
+  StethoscopeIcon,
+  CarIcon,
+  HandshakeIcon,
+  LightbulbIcon,
+} from "@phosphor-icons/react";
 
 const sections = [
   {
     id: "tfn",
-    icon: "🆔",
+    Icon: IdentificationCardIcon,
     title: "Tax File Number (TFN)",
     summary: "You need a TFN to work legally and pay the right amount of tax.",
     steps: [
@@ -20,7 +31,7 @@ const sections = [
   },
   {
     id: "medicare",
-    icon: "🏥",
+    Icon: HospitalIcon,
     title: "Medicare",
     summary: "Medicare gives you access to free or low-cost healthcare in Australia.",
     steps: [
@@ -35,7 +46,7 @@ const sections = [
   },
   {
     id: "bank",
-    icon: "🏦",
+    Icon: BankIcon,
     title: "Opening a Bank Account",
     summary: "You can open an Australian bank account before you even arrive.",
     steps: [
@@ -50,7 +61,7 @@ const sections = [
   },
   {
     id: "visa",
-    icon: "📋",
+    Icon: ClipboardTextIcon,
     title: "Your Visa & Work Rights",
     summary: "Know exactly how many hours you can work and what's allowed on your visa.",
     steps: [
@@ -66,7 +77,7 @@ const sections = [
   },
   {
     id: "rental",
-    icon: "🏠",
+    Icon: HouseIcon,
     title: "Renting in Australia",
     summary: "Understand your rights as a tenant before signing any lease.",
     steps: [
@@ -82,7 +93,7 @@ const sections = [
   },
   {
     id: "gp",
-    icon: "🩺",
+    Icon: StethoscopeIcon,
     title: "Finding a Nepali-Friendly GP",
     summary: "Access to a doctor who understands your background makes a real difference.",
     steps: [
@@ -97,7 +108,7 @@ const sections = [
   },
   {
     id: "licence",
-    icon: "🚗",
+    Icon: CarIcon,
     title: "Driver's Licence",
     summary: "You can drive on your Nepali licence for a limited time after arriving.",
     steps: [
@@ -112,7 +123,7 @@ const sections = [
   },
   {
     id: "community",
-    icon: "🤝",
+    Icon: HandshakeIcon,
     title: "Connecting with the Nepali Community",
     summary: "You are not alone — the Nepali community in Australia is large and welcoming.",
     steps: [
@@ -262,7 +273,7 @@ export default function NewToAustraliaPage() {
                 onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.color = "#4F46E5"; e.currentTarget.style.borderBottomColor = "#4F46E5"; } }}
                 onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.borderBottomColor = "transparent"; } }}
               >
-                {s.icon} {s.title.split(" ")[0]}
+                {s.Icon && <s.Icon size={14} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />}{s.title.split(" ")[0]}
               </button>
             );
           })}
@@ -301,7 +312,7 @@ export default function NewToAustraliaPage() {
                     textAlign: "left",
                   }}
                 >
-                  <span style={{ fontSize: "24px", flexShrink: 0 }}>{s.icon}</span>
+                  {s.Icon && <s.Icon size={28} weight="duotone" color="#6C3FD6" style={{ flexShrink: 0 }} />}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b", marginBottom: "2px" }}>{s.title}</div>
                     <div style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.4 }}>{s.summary}</div>
@@ -344,7 +355,7 @@ export default function NewToAustraliaPage() {
                           alignItems: "flex-start",
                         }}
                       >
-                        <span style={{ fontSize: "16px", flexShrink: 0 }}>💡</span>
+                        <LightbulbIcon size={18} weight="fill" color="#6d28d9" style={{ flexShrink: 0 }} />
                         <span style={{ fontSize: "13px", color: "#6d28d9", lineHeight: 1.55 }}>{s.tip}</span>
                       </div>
 
@@ -405,7 +416,7 @@ export default function NewToAustraliaPage() {
             color: "#fff",
           }}
         >
-          <div style={{ fontSize: "28px", marginBottom: "12px" }}>🤝</div>
+          <HandshakeIcon size={40} weight="duotone" color="#fff" style={{ marginBottom: "12px", opacity: 0.85 }} />
           <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Have a question not answered here?</h2>
           <p style={{ fontSize: "14px", opacity: 0.85, marginBottom: "20px", lineHeight: 1.6 }}>
             Ask the NepSaathi community — thousands of Nepali Australians are happy to help.

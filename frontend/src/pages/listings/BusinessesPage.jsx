@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { MapPinIcon, SealCheckIcon, StorefrontIcon, ForkKnifeIcon, ShoppingCartIcon, AirplaneIcon, ScissorsIcon, FirstAidKitIcon, ScalesIcon, BookOpenIcon, SunIcon, HammerIcon, CarIcon, CurrencyDollarIcon, LaptopIcon, PushPinIcon } from "@phosphor-icons/react";
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonBusinessCard } from "../../components/ui/Skeleton";
 import usePageMeta from "../../hooks/usePageMeta";
@@ -25,21 +26,21 @@ const CATEGORIES = [
   { value: "other", label: "Other" },
 ];
 
-const CATEGORY_EMOJIS = {
-  restaurant: "🍛",
-  grocery: "🛒",
-  travel: "✈️",
-  beauty: "💇",
-  health: "🏥",
-  legal: "⚖️",
-  education: "📚",
-  religious: "🙏",
-  construction: "🔨",
-  transport: "🚗",
-  finance: "💸",
-  freelancer: "🧑‍💻",
-  retail: "🏪",
-  other: "📌",
+const CATEGORY_ICONS = {
+  restaurant: ForkKnifeIcon,
+  grocery: ShoppingCartIcon,
+  travel: AirplaneIcon,
+  beauty: ScissorsIcon,
+  health: FirstAidKitIcon,
+  legal: ScalesIcon,
+  education: BookOpenIcon,
+  religious: SunIcon,
+  construction: HammerIcon,
+  transport: CarIcon,
+  finance: CurrencyDollarIcon,
+  freelancer: LaptopIcon,
+  retail: StorefrontIcon,
+  other: PushPinIcon,
 };
 
 const CATEGORY_COLORS = {
@@ -228,7 +229,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               },
               {
                 key: "is_verified",
-                label: "✓ Verified only",
+                label: <><SealCheckIcon size={13} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "4px" }} />Verified only</>,
                 sub: "Verified by NepSaathi admin",
                 color: "#085041",
                 bg: "#E1F5EE",
@@ -315,7 +316,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 /* ── Mobile card — Option B ───────────────────────── */
 function BusinessMobileCard({ biz }) {
   const catColor = CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[biz.category] || "📌";
+  const CatIcon = CATEGORY_ICONS[biz.category] || PushPinIcon;
 
   return (
     <Link
@@ -368,7 +369,7 @@ function BusinessMobileCard({ biz }) {
             }}
           />
         ) : (
-          <span style={{ fontSize: "36px" }}>{catEmoji}</span>
+          <CatIcon size={36} weight="duotone" color={catColor.color} />
         )}
 
         {/* Verified — top right */}
@@ -389,10 +390,12 @@ function BusinessMobileCard({ biz }) {
                 fontWeight: 700,
                 padding: "3px 8px",
                 borderRadius: "20px",
-                display: "block",
+                display: "flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              ✓ Verified
+              <SealCheckIcon size={10} weight="fill" color="#085041" /> Verified
             </span>
           </div>
         )}
@@ -518,7 +521,7 @@ function BusinessMobileCard({ biz }) {
             alignSelf: "flex-start",
           }}
         >
-          {catEmoji} {biz.category?.replace("_", " ")}
+          <CatIcon size={11} weight="fill" color={catColor.color} style={{ verticalAlign: "middle", marginRight: "3px" }} />{biz.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -529,7 +532,7 @@ function BusinessMobileCard({ biz }) {
             whiteSpace: "nowrap",
           }}
         >
-          📍 {biz.suburb}, {biz.state}
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{biz.suburb}, {biz.state}
         </div>
         {biz.created_at && (
           <div style={{ fontSize: "10px", color: "#aaa" }}>
@@ -544,7 +547,7 @@ function BusinessMobileCard({ biz }) {
 /* ── Desktop card ─────────────────────────────────── */
 function BusinessCard({ business }) {
   const catColor = CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[business.category] || "📌";
+  const CatIcon = CATEGORY_ICONS[business.category] || PushPinIcon;
   return (
     <Link
       to={`/businesses/${business.slug}`}
@@ -568,7 +571,6 @@ function BusinessCard({ business }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "44px",
           position: "relative",
           flexShrink: 0,
           overflow: "hidden",
@@ -589,7 +591,7 @@ function BusinessCard({ business }) {
             }}
           />
         ) : (
-          catEmoji
+          <CatIcon size={44} weight="duotone" color={catColor.color} />
         )}
         {business.is_verified && (
           <div style={{ position: "absolute", top: "10px", right: "10px" }}>
@@ -601,9 +603,12 @@ function BusinessCard({ business }) {
                 fontWeight: 600,
                 padding: "3px 9px",
                 borderRadius: "20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              ✓ Verified
+              <SealCheckIcon size={10} weight="fill" color="#085041" /> Verified
             </span>
           </div>
         )}
@@ -662,7 +667,7 @@ function BusinessCard({ business }) {
             alignSelf: "flex-start",
           }}
         >
-          {catEmoji} {business.category?.replace("_", " ")}
+          <CatIcon size={11} weight="fill" color={catColor.color} style={{ verticalAlign: "middle", marginRight: "3px" }} />{business.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -716,7 +721,7 @@ function BusinessCard({ business }) {
           </div>
         )}
         <div style={{ fontSize: "12px", color: "#777" }}>
-          📍 {business.suburb}, {business.state}
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{business.suburb}, {business.state}
         </div>
         {business.description && (
           <div
@@ -874,7 +879,7 @@ export default function BusinessesPage() {
     },
     filters.is_verified && {
       key: "is_verified",
-      label: "✓ Verified",
+      label: <><SealCheckIcon size={11} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "3px" }} />Verified</>,
       color: "#085041",
       bg: "#E1F5EE",
       border: "#9FE1CB",
@@ -939,7 +944,7 @@ export default function BusinessesPage() {
         <div className="bz-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
-            placeholder="🔍  Search businesses..."
+            placeholder="Search businesses..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -972,7 +977,7 @@ export default function BusinessesPage() {
               minWidth: "90px",
             }}
           >
-            ⚙️ Filters
+            Filters
             {activeFilterCount > 0 && (
               <span
                 style={{
@@ -1007,12 +1012,12 @@ export default function BusinessesPage() {
           }}
         >
           {[
-            { value: "", label: "All", emoji: "🏪" },
+            { value: "", label: "All", Icon: StorefrontIcon },
             ...CATEGORIES.slice(1).map((c) => ({
               ...c,
-              emoji: CATEGORY_EMOJIS[c.value] || "📌",
+              Icon: CATEGORY_ICONS[c.value] || PushPinIcon,
             })),
-          ].map(({ value, label, emoji }) => {
+          ].map(({ value, label, Icon: PillIcon }) => {
             const active = filters.category === value;
             const col = value ? CATEGORY_COLORS[value] : null;
             return (
@@ -1036,7 +1041,7 @@ export default function BusinessesPage() {
                   transition: "all 0.15s",
                 }}
               >
-                {emoji} {label}
+                <PillIcon size={12} weight={active ? "fill" : "regular"} color={active ? col?.color || "#8B5E00" : "#777"} />{label}
               </button>
             );
           })}
@@ -1211,7 +1216,7 @@ export default function BusinessesPage() {
           >
             {[
               { key: "is_nepalese_owned", label: "🇳🇵 Nepalese owned" },
-              { key: "is_verified", label: "✅ Verified only" },
+              { key: "is_verified", label: <><SealCheckIcon size={13} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "4px" }} />Verified only</> },
             ].map(({ key, label }) => (
               <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
                 <input
@@ -1257,7 +1262,7 @@ export default function BusinessesPage() {
         )}
         {!isLoading && !isFetching && allResults.length === 0 && (
           <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-            <div style={{ fontSize: "36px", marginBottom: "12px" }}>🏪</div>
+            <div style={{ marginBottom: "12px" }}><StorefrontIcon size={36} weight="duotone" color="#534AB7" /></div>
             <p
               style={{
                 fontSize: "15px",

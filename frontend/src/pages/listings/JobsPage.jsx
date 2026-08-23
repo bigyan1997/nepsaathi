@@ -9,6 +9,7 @@ import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 import ListingsMap from "../../components/ui/ListingsMap";
 import { FEATURED_LOCATIONS, LOCATIONS } from "../../data/locations";
+import { MapPinIcon, BriefcaseIcon, MagnifyingGlassIcon, WarningIcon, FireIcon } from "@phosphor-icons/react";
 
 const JOB_TYPES = [
   { value: "", label: "All types" },
@@ -20,9 +21,9 @@ const JOB_TYPES = [
 ];
 
 const TABS = [
-  { value: "", label: "All Jobs", emoji: "💼" },
-  { value: "false", label: "Hiring", emoji: "🏢" },
-  { value: "true", label: "Job Seekers", emoji: "🔍" },
+  { value: "", label: "All Jobs" },
+  { value: "false", label: "Hiring" },
+  { value: "true", label: "Job Seekers" },
 ];
 
 const SORT_OPTIONS = [
@@ -229,7 +230,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                 style={{ width: "18px", height: "18px", cursor: "pointer" }}
               />
               <span style={{ fontSize: "14px", fontWeight: 600, color: "#444" }}>
-                🔥 Urgent jobs only
+                <WarningIcon size={13} weight="fill" color="#DC2626" /> Urgent jobs only
               </span>
             </label>
           </div>
@@ -312,7 +313,7 @@ function JobMobileCard({ job }) {
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: "36px" }}>{isWanted ? "🔍" : "💼"}</span>
+        <span style={{ fontSize: "36px" }}>{isWanted ? <MagnifyingGlassIcon size={40} weight="bold" color="#534AB7" /> : <BriefcaseIcon size={40} weight="duotone" color="#534AB7" />}</span>
 
         {/* Salary — top right */}
         {job.salary_display && (
@@ -378,9 +379,12 @@ function JobMobileCard({ job }) {
                 padding: "2px 8px",
                 borderRadius: "5px",
                 alignSelf: "flex-start",
+                display: "flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              🔍 Seeker
+              <MagnifyingGlassIcon size={10} weight="bold" color="#534AB7" style={{ verticalAlign: "middle" }} /> Seeker
             </span>
           )}
           {job.is_urgent && !isWanted && (
@@ -393,9 +397,12 @@ function JobMobileCard({ job }) {
                 padding: "2px 8px",
                 borderRadius: "5px",
                 alignSelf: "flex-start",
+                display: "flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              🔴 Urgent
+              <WarningIcon size={10} weight="fill" color="#DC2626" style={{ verticalAlign: "middle" }} /> Urgent
             </span>
           )}
         </div>
@@ -466,7 +473,7 @@ function JobMobileCard({ job }) {
             whiteSpace: "nowrap",
           }}
         >
-          📍 {job.listing_location}, {job.listing_state}
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{job.listing_location}, {job.listing_state}
         </div>
         <div
           style={{
@@ -549,7 +556,7 @@ function JobCard({ job }) {
           flexShrink: 0,
         }}
       >
-        {isWanted ? "🔍" : "💼"}
+        {isWanted ? <MagnifyingGlassIcon size={44} weight="bold" color="#534AB7" /> : <BriefcaseIcon size={44} weight="duotone" color="#534AB7" />}
         <div
           style={{
             position: "absolute",
@@ -588,9 +595,12 @@ function JobCard({ job }) {
                 fontWeight: 700,
                 padding: "2px 7px",
                 borderRadius: "6px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              🔍 SEEKING
+              <MagnifyingGlassIcon size={10} weight="bold" color="#534AB7" /> SEEKING
             </span>
           )}
           {job.is_urgent && !isWanted && (
@@ -602,9 +612,12 @@ function JobCard({ job }) {
                 fontWeight: 700,
                 padding: "2px 7px",
                 borderRadius: "6px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              🔴 URGENT
+              <WarningIcon size={10} weight="fill" color="#DC2626" /> URGENT
             </span>
           )}
         </div>
@@ -665,7 +678,7 @@ function JobCard({ job }) {
           </div>
         )}
         <div style={{ fontSize: "12px", color: "#777", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          📍 {job.listing_location}, {job.listing_state}
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{job.listing_location}, {job.listing_state}
         </div>
         {job.description && (
           <div
@@ -864,7 +877,7 @@ export default function JobsPage() {
             style={{ overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none", flex: 1 }}
           >
           <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
-            {TABS.map(({ value, label, emoji }) => (
+            {TABS.map(({ value, label }) => (
               <button
                 key={value}
                 onClick={() => {
@@ -887,7 +900,6 @@ export default function JobsPage() {
                   whiteSpace: "nowrap",
                 }}
               >
-                <span>{emoji}</span>
                 {label}
                 {data && (
                   <span
@@ -926,7 +938,7 @@ export default function JobsPage() {
                   transition: "all 0.15s",
                 }}
               >
-                {mode === "grid" ? "⊞ Grid" : "🗺️ Map"}
+                {mode === "grid" ? "Grid" : "Map"}
               </button>
             ))}
           </div>
@@ -936,7 +948,7 @@ export default function JobsPage() {
         <div className="jb-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
-            placeholder="🔍  Search jobs..."
+            placeholder="Search jobs..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -969,7 +981,7 @@ export default function JobsPage() {
               minWidth: "90px",
             }}
           >
-            ⚙️ Filters
+            Filters
             {activeFilterCount > 0 && (
               <span
                 style={{
@@ -1070,7 +1082,7 @@ export default function JobsPage() {
         >
           <input
             type="text"
-            placeholder="🔍  Search jobs..."
+            placeholder="Search jobs..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -1222,7 +1234,7 @@ export default function JobsPage() {
                 checked={filters.is_urgent === "true"}
                 onChange={(e) => updateFilters({ is_urgent: e.target.checked ? "true" : "" })}
               />
-              🔥 Urgent jobs only
+              <FireIcon size={13} weight="fill" color="#DC2626" style={{ verticalAlign: "middle", marginRight: "4px" }} />Urgent jobs only
             </label>
           </div>
         )}
@@ -1261,8 +1273,8 @@ export default function JobsPage() {
           <div
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
           >
-            <div style={{ fontSize: "36px", marginBottom: "12px" }}>
-              {activeTab === "true" ? "🔍" : "💼"}
+            <div style={{ marginBottom: "12px" }}>
+              {activeTab === "true" ? <MagnifyingGlassIcon size={36} weight="bold" color="#534AB7" /> : <BriefcaseIcon size={36} weight="duotone" color="#534AB7" />}
             </div>
             <p
               style={{
@@ -1342,7 +1354,7 @@ export default function JobsPage() {
         {/* Browse by city */}
         <div style={{ marginTop: "40px", background: "#F8F7FF", borderRadius: "14px", padding: "20px 24px" }}>
           <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px" }}>
-            💼 Browse jobs by city
+            <BriefcaseIcon size={13} weight="duotone" color="#26215C" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Browse jobs by city
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {FEATURED_LOCATIONS.map((slug) => {

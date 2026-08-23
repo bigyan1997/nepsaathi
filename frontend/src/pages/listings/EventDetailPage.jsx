@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { EyeIcon, WarningIcon, FlagIcon, MapPinIcon, ClockIcon, CheckCircleIcon, PhoneIcon, EnvelopeIcon, MaskHappyIcon, FootballIcon, ForkKnifeIcon, MusicNotesIcon, SunIcon, UsersIcon, BookOpenIcon, PushPinIcon } from "@phosphor-icons/react";
 import { mapsUrl } from "../../utils/constants";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getEventByListing, toggleRSVP } from "../../api/events";
@@ -30,15 +31,15 @@ const CATEGORY_COLORS = {
   other: { bg: "#F1EFE8", color: "#444441", border: "#D3D1C7" },
 };
 
-const CATEGORY_EMOJIS = {
-  cultural: "🎭",
-  sports: "⚽",
-  food: "🍛",
-  music: "🎵",
-  religious: "🙏",
-  community: "👥",
-  education: "📚",
-  other: "📌",
+const CATEGORY_ICONS = {
+  cultural: MaskHappyIcon,
+  sports: FootballIcon,
+  food: ForkKnifeIcon,
+  music: MusicNotesIcon,
+  religious: SunIcon,
+  community: UsersIcon,
+  education: BookOpenIcon,
+  other: PushPinIcon,
 };
 
 function timeAgo(dateStr) {
@@ -241,7 +242,7 @@ export default function EventDetailPage() {
     );
 
   const catColor = CATEGORY_COLORS[event?.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[event?.category] || "📌";
+  const CatIcon = CATEGORY_ICONS[event?.category] || PushPinIcon;
   const eventDay = new Date(event.event_date).getDate();
   const eventMonth = new Date(event.event_date)
     .toLocaleDateString("en-AU", { month: "short" })
@@ -337,7 +338,7 @@ export default function EventDetailPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {event?.view_count > 0 && (
               <span style={{ fontSize: "12px", color: "#aaa" }}>
-                👁️ {event.view_count}
+                <EyeIcon size={12} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "3px" }} />{event.view_count}
               </span>
             )}
             <MessageButton
@@ -366,7 +367,7 @@ export default function EventDetailPage() {
               gap: "10px",
             }}
           >
-            <span>⚠️</span>
+            <WarningIcon size={20} weight="fill" color="#633806" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
@@ -399,7 +400,7 @@ export default function EventDetailPage() {
               gap: "10px",
             }}
           >
-            <span>🚩</span>
+            <FlagIcon size={20} weight="fill" color="#A32D2D" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#A32D2D" }}
@@ -496,7 +497,7 @@ export default function EventDetailPage() {
                   borderRadius: "20px",
                 }}
               >
-                {catEmoji} {event.category?.replace("_", " ")}
+                <CatIcon size={11} weight="fill" color={catColor.color} style={{ verticalAlign: "middle", marginRight: "4px" }} />{event.category?.replace("_", " ")}
               </span>
               {event.is_free && (
                 <span
@@ -584,7 +585,7 @@ export default function EventDetailPage() {
             </div>
             {event.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "6px" }}>
-                🕐 Posted {timeAgo(event.created_at)}
+                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(event.created_at)}
               </div>
             )}
           </div>
@@ -968,7 +969,7 @@ export default function EventDetailPage() {
                           {isSoldOut
                             ? "No spots remaining"
                             : fillPct >= 85
-                            ? `⚠️ Almost full — ${rsvpState.spots_left} left`
+                            ? <><WarningIcon size={12} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Almost full — {rsvpState.spots_left} left</>
                             : `${rsvpState.spots_left} spot${rsvpState.spots_left === 1 ? "" : "s"} left`}
                         </span>
                         <span style={{ opacity: 0.7 }}>
@@ -1020,7 +1021,8 @@ export default function EventDetailPage() {
                             : isSoldOut
                             ? "Sold out"
                             : rsvpState?.rsvped
-                            ? "✓ You're going — Cancel RSVP"
+                            ? <><CheckCircleIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />You're going — Cancel RSVP</>
+
                             : "RSVP — it's free"}
                         </button>
                       ) : (
@@ -1115,7 +1117,7 @@ export default function EventDetailPage() {
                   <>
                     {event.contact_phone && (
                       <a href={`tel:${event.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#EEEDFE", color: "#534AB7", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #AFA9EC" }}>
-                        📞 {event.contact_phone}
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{event.contact_phone}
                       </a>
                     )}
                     {event.contact_whatsapp && (
@@ -1123,7 +1125,7 @@ export default function EventDetailPage() {
                     )}
                     {event.contact_email && (
                       <a href={`mailto:${event.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        ✉️ Email
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
                       </a>
                     )}
                   </>
@@ -1253,7 +1255,7 @@ export default function EventDetailPage() {
                         {listing.title}
                       </div>
                       <div style={{ fontSize: "12px", color: "#888" }}>
-                        📍 {listing.location}, {listing.state}
+                        <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
                       </div>
                     </div>
                     <span style={{ color: "#534AB7", flexShrink: 0 }}>

@@ -1,11 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
+import {
+  IdentificationCardIcon,
+  ClipboardTextIcon,
+  BriefcaseIcon,
+  CalculatorIcon,
+  FileTextIcon,
+  CurrencyDollarIcon,
+  UserIcon,
+  LightbulbIcon,
+  HandshakeIcon,
+  ReceiptIcon,
+} from "@phosphor-icons/react";
 
 const sections = [
   {
     id: "tfn",
-    icon: "🆔",
+    Icon: IdentificationCardIcon,
     title: "Tax File Number (TFN)",
     summary: "Your TFN is your unique identifier with the Australian Tax Office — apply as soon as you arrive.",
     steps: [
@@ -21,7 +33,7 @@ const sections = [
   },
   {
     id: "tax-return",
-    icon: "📋",
+    Icon: ClipboardTextIcon,
     title: "Lodging Your Tax Return",
     summary: "The Australian financial year runs July 1 to June 30. Your return is due by October 31.",
     steps: [
@@ -37,7 +49,7 @@ const sections = [
   },
   {
     id: "deductions",
-    icon: "💼",
+    Icon: BriefcaseIcon,
     title: "Tax Deductions You Can Claim",
     summary: "Every legitimate deduction reduces your taxable income and increases your refund.",
     steps: [
@@ -53,7 +65,7 @@ const sections = [
   },
   {
     id: "payslip",
-    icon: "🧮",
+    Icon: CalculatorIcon,
     title: "Understanding Your Payslip (PAYG)",
     summary: "PAYG withholding means your employer deducts tax from every pay — you reconcile at tax time.",
     steps: [
@@ -69,7 +81,7 @@ const sections = [
   },
   {
     id: "abn",
-    icon: "📄",
+    Icon: FileTextIcon,
     title: "ABN — Do You Need One?",
     summary: "An ABN is for businesses and the self-employed. You need one if you're contracting or running a business.",
     steps: [
@@ -85,7 +97,7 @@ const sections = [
   },
   {
     id: "gst",
-    icon: "💰",
+    Icon: CurrencyDollarIcon,
     title: "GST and Business Tax",
     summary: "GST (Goods and Services Tax) is 10% on most goods and services sold in Australia.",
     steps: [
@@ -101,7 +113,7 @@ const sections = [
   },
   {
     id: "tax-agent",
-    icon: "👨‍💼",
+    Icon: UserIcon,
     title: "Finding a Tax Agent",
     summary: "A registered tax agent handles your return, extends your deadline, and finds deductions you'd miss.",
     steps: [
@@ -167,7 +179,10 @@ export default function TaxPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ background: "linear-gradient(135deg, #92400E 0%, #B45309 60%, #D97706 100%)", padding: "56px 24px 48px", textAlign: "center", color: "#fff" }}>
-        <div style={{ fontSize: "40px", marginBottom: "16px" }}>🧾📋</div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
+          <ReceiptIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+          <ClipboardTextIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+        </div>
         <h1 style={{ fontSize: "clamp(24px,5vw,36px)", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
           Tax &amp; Accounting in Australia
         </h1>
@@ -190,8 +205,8 @@ export default function TaxPage() {
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
-              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s" }}>
-                {s.icon} {s.title.split(" ")[0]}
+              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s", display: "flex", alignItems: "center", gap: "5px" }}>
+                {s.Icon && <s.Icon size={15} weight="duotone" color={isActive ? accent : "#64748b"} />} {s.title.split(" ")[0]}
               </button>
             );
           })}
@@ -205,7 +220,7 @@ export default function TaxPage() {
             return (
               <div key={s.id} id={s.id} style={{ background: "#fff", border: `1.5px solid ${isOpen ? accent : "#e8eaf0"}`, borderRadius: "12px", overflow: "hidden", transition: "border-color 0.2s" }}>
                 <button onClick={() => toggle(s.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "14px", padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
-                  <span style={{ fontSize: "24px", flexShrink: 0 }}>{s.icon}</span>
+                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{s.Icon && <s.Icon size={28} weight="duotone" color={accent} />}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b", marginBottom: "2px" }}>{s.title}</div>
                     <div style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.4 }}>{s.summary}</div>
@@ -219,7 +234,7 @@ export default function TaxPage() {
                         {s.steps.map((step, i) => <li key={i} style={{ fontSize: "14px", color: "#334155", lineHeight: 1.6 }}>{step}</li>)}
                       </ol>
                       <div style={{ marginTop: "16px", background: accentLight, border: `1px solid ${accentBorder}`, borderRadius: "8px", padding: "12px 14px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                        <span style={{ fontSize: "16px", flexShrink: 0 }}>💡</span>
+                        <LightbulbIcon size={18} weight="fill" color={accent} style={{ flexShrink: 0, marginTop: "1px" }} />
                         <span style={{ fontSize: "13px", color: accent, lineHeight: 1.55 }}>{s.tip}</span>
                       </div>
                       {s.link.url.startsWith("/") ? (
@@ -241,7 +256,7 @@ export default function TaxPage() {
           })}
         </div>
         <div style={{ marginTop: "40px", background: "linear-gradient(135deg, #92400E, #B45309)", borderRadius: "16px", padding: "32px 24px", textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "28px", marginBottom: "12px" }}>🤝</div>
+          <HandshakeIcon size={40} weight="duotone" color="#fff" style={{ marginBottom: "12px", opacity: 0.85 }} />
           <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Tax question for the community?</h2>
           <p style={{ fontSize: "14px", opacity: 0.85, marginBottom: "20px", lineHeight: 1.6 }}>Nepali accountants and tax agents in Australia are active on the NepSaathi forum — get free advice from the community.</p>
           <Link to="/forum" style={{ display: "inline-block", background: "#fff", color: accent, borderRadius: "8px", padding: "12px 24px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>Ask on the Forum</Link>

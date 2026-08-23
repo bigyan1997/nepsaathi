@@ -12,6 +12,7 @@ import {
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
 import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
+import { SparkleIcon } from "@phosphor-icons/react";
 
 const inputStyle = {
   width: "100%",
@@ -326,7 +327,7 @@ export default function EditListingPage() {
                 whiteSpace: "nowrap",
               }}
             >
-              {aiState.loading ? "Improving..." : "✨ Improve with AI"}
+              {aiState.loading ? "Improving..." : <><SparkleIcon size={12} weight="fill" style={{ verticalAlign: "middle", marginRight: "4px" }} />Improve with AI</>}
             </button>
           </div>
           <textarea
@@ -343,7 +344,7 @@ export default function EditListingPage() {
           {aiState.preview && (
             <div style={{ marginTop: 8, border: "1px solid #c4b5fd", borderRadius: 8, background: "#faf5ff", padding: "10px 12px" }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
-                ✨ AI suggestion
+                <SparkleIcon size={11} weight="fill" color="#7c3aed" /> AI suggestion
               </div>
               <p style={{ fontSize: 13, color: "#3b1f6e", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>
                 {aiState.preview}

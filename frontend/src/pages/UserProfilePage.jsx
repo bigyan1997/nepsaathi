@@ -5,6 +5,7 @@ import { getPublicProfile, getUserReviews, submitUserReview, deleteUserReview } 
 import { getListings } from "../api/listings";
 import usePageTitle from "../hooks/usePageTitle";
 import useAuthStore from "../store/authStore";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, PushPinIcon, MapPinIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 const TYPE_COLORS = {
   job:    { bg: "#EEEDFE", color: "#3C3489" },
@@ -12,8 +13,8 @@ const TYPE_COLORS = {
   event:  { bg: "#E1F5EE", color: "#085041" },
   notice: { bg: "#E6F1FB", color: "#0C447C" },
 };
-const TYPE_EMOJIS = { job: "💼", room: "🏠", event: "🎉", notice: "📢" };
-const TYPE_PATHS  = { job: "jobs", room: "rooms", event: "events", notice: "notices" };
+const TYPE_ICONS = { job: BriefcaseIcon, room: HouseIcon, event: ConfettiIcon, notice: MegaphoneIcon };
+const TYPE_PATHS = { job: "jobs", room: "rooms", event: "events", notice: "notices" };
 
 function Avatar({ profile }) {
   const src = profile.avatar || profile.google_avatar;
@@ -128,7 +129,7 @@ export default function UserProfilePage() {
   if (isError || !profile) {
     return (
       <div style={{ maxWidth: "700px", margin: "40px auto", padding: "0 20px", textAlign: "center" }}>
-        <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+        <MagnifyingGlassIcon size={48} weight="duotone" color="#534AB7" style={{ marginBottom: "16px", opacity: 0.6 }} />
         <h1 style={{ fontSize: "20px", fontWeight: 700, color: "#26215C", marginBottom: "8px" }}>Member not found</h1>
         <p style={{ fontSize: "14px", color: "#888", marginBottom: "20px" }}>This profile doesn't exist or has been removed.</p>
         <Link to="/" style={{ color: "#534AB7", fontSize: "14px", fontWeight: 600 }}>← Back to home</Link>
@@ -159,7 +160,7 @@ export default function UserProfilePage() {
             )}
           </div>
           {profile.location && (
-            <p style={{ fontSize: "13px", color: "#AFA9EC", margin: "0 0 4px" }}>📍 {profile.location}</p>
+            <p style={{ fontSize: "13px", color: "#AFA9EC", margin: "0 0 4px", display: "flex", alignItems: "center", gap: "4px" }}><MapPinIcon size={13} weight="fill" color="#E87722" />{profile.location}</p>
           )}
           <p style={{ fontSize: "12px", color: "#AFA9EC", margin: "0 0 4px" }}>
             Member since {memberSince} · {profile.listing_count} active listing{profile.listing_count !== 1 ? "s" : ""}
@@ -205,7 +206,7 @@ export default function UserProfilePage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {listings.map((listing) => {
             const typeColor = TYPE_COLORS[listing.listing_type] || TYPE_COLORS.job;
-            const emoji = TYPE_EMOJIS[listing.listing_type] || "📌";
+            const ListingIcon = TYPE_ICONS[listing.listing_type] || PushPinIcon;
             const path = `/${TYPE_PATHS[listing.listing_type] || "listings"}/${listing.slug}`;
             return (
               <Link
@@ -227,18 +228,18 @@ export default function UserProfilePage() {
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#AFA9EC")}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}
                 >
-                  <div style={{ width: "38px", height: "38px", borderRadius: "9px", background: typeColor.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>
-                    {emoji}
+                  <div style={{ width: "38px", height: "38px", borderRadius: "9px", background: typeColor.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <ListingIcon size={18} weight="duotone" color={typeColor.color} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {listing.title}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>
-                      <span style={{ background: typeColor.bg, color: typeColor.color, fontSize: "10px", fontWeight: 500, padding: "1px 7px", borderRadius: "8px", marginRight: "6px" }}>
+                    <div style={{ fontSize: "12px", color: "#888", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
+                      <span style={{ background: typeColor.bg, color: typeColor.color, fontSize: "10px", fontWeight: 500, padding: "1px 7px", borderRadius: "8px" }}>
                         {listing.listing_type}
                       </span>
-                      📍 {listing.location}, {listing.state}
+                      <MapPinIcon size={11} weight="fill" color="#E87722" />{listing.location}, {listing.state}
                     </div>
                   </div>
                   <span style={{ fontSize: "13px", color: "#534AB7", fontWeight: 600, flexShrink: 0 }}>View →</span>

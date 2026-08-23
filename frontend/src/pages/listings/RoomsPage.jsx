@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { MapPinIcon, HouseIcon, LightbulbIcon, PawPrintIcon, CarIcon, SquaresFourIcon, GlobeHemisphereEastIcon } from "@phosphor-icons/react";
 import { getRooms } from "../../api/rooms";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
@@ -19,9 +20,9 @@ const ROOM_TYPES = [
 ];
 
 const TABS = [
-  { value: "", label: "All Rooms", emoji: "🏠" },
-  { value: "false", label: "Available", emoji: "🏡" },
-  { value: "true", label: "Room Seekers", emoji: "🏘️" },
+  { value: "", label: "All Rooms" },
+  { value: "false", label: "Available" },
+  { value: "true", label: "Room Seekers" },
 ];
 
 const SORT_OPTIONS = [
@@ -235,7 +236,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
             {[
               {
                 key: "bills_included",
-                label: "💡 Bills included",
+                label: <><LightbulbIcon size={13} weight="fill" color="#1D9E75" style={{ verticalAlign: "middle", marginRight: "4px" }} />Bills included</>,
                 sub: "Electricity, water, internet",
                 color: "#1D9E75",
                 bg: "#E1F5EE",
@@ -251,7 +252,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               },
               {
                 key: "pets_allowed",
-                label: "🐾 Pets allowed",
+                label: <><PawPrintIcon size={13} weight="fill" color="#85510A" style={{ verticalAlign: "middle", marginRight: "4px" }} />Pets allowed</>,
                 sub: "Pets welcome",
                 color: "#85510A",
                 bg: "#FFF1E0",
@@ -259,7 +260,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               },
               {
                 key: "parking_available",
-                label: "🚗 Parking available",
+                label: <><CarIcon size={13} weight="fill" color="#444" style={{ verticalAlign: "middle", marginRight: "4px" }} />Parking available</>,
                 sub: "On-site parking included",
                 color: "#444",
                 bg: "#F5F4F0",
@@ -412,7 +413,7 @@ function RoomMobileCard({ room }) {
             }}
           />
         ) : (
-          <span style={{ fontSize: "36px" }}>{isWanted ? "🏘️" : "🏠"}</span>
+          <HouseIcon size={36} weight={isWanted ? "regular" : "duotone"} color="#534AB7" />
         )}
 
         {/* Price pill — top right */}
@@ -479,7 +480,7 @@ function RoomMobileCard({ room }) {
                 alignSelf: "flex-start",
               }}
             >
-              🏘️ Seeker
+              <HouseIcon size={9} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "2px" }} /> Seeker
             </span>
           )}
         </div>
@@ -534,7 +535,7 @@ function RoomMobileCard({ room }) {
             whiteSpace: "nowrap",
           }}
         >
-          📍 {room.listing_location}, {room.listing_state}
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.listing_location}, {room.listing_state}
         </div>
         {room.poster_is_verified && (
           <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "10px", color: "#1A8CD8", fontWeight: 600 }}>
@@ -652,10 +653,8 @@ function RoomCard({ room }) {
               inset: 0,
             }}
           />
-        ) : isWanted ? (
-          "🏘️"
         ) : (
-          "🏠"
+          <HouseIcon size={44} weight={isWanted ? "regular" : "duotone"} color="#534AB7" />
         )}
         <div
           style={{
@@ -697,7 +696,7 @@ function RoomCard({ room }) {
                 borderRadius: "6px",
               }}
             >
-              🏘️ SEEKING
+              <HouseIcon size={9} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "2px" }} /> SEEKING
             </span>
           )}
         </div>
@@ -757,7 +756,7 @@ function RoomCard({ room }) {
           {room.listing_title}
         </div>
         <div style={{ fontSize: "12px", color: "#777" }}>
-          📍 {room.listing_location}, {room.listing_state}
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.listing_location}, {room.listing_state}
         </div>
         {room.poster_is_verified && (
           <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#1A8CD8", fontWeight: 600 }}>
@@ -1057,7 +1056,7 @@ export default function RoomsPage() {
             style={{ overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none", flex: 1 }}
           >
           <div style={{ display: "flex", gap: "8px", width: "max-content" }}>
-            {TABS.map(({ value, label, emoji }) => (
+            {TABS.map(({ value, label }) => (
               <button
                 key={value}
                 onClick={() => {
@@ -1080,7 +1079,6 @@ export default function RoomsPage() {
                   whiteSpace: "nowrap",
                 }}
               >
-                <span>{emoji}</span>
                 {label}
                 {data && (
                   <span
@@ -1119,7 +1117,9 @@ export default function RoomsPage() {
                   transition: "all 0.15s",
                 }}
               >
-                {mode === "grid" ? "⊞ Grid" : "🗺️ Map"}
+                {mode === "grid"
+                  ? <><SquaresFourIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Grid</>
+                  : <><GlobeHemisphereEastIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Map</>}
               </button>
             ))}
           </div>
@@ -1129,7 +1129,7 @@ export default function RoomsPage() {
         <div className="rm-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
-            placeholder="🔍  Search rooms..."
+            placeholder="Search rooms..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -1162,7 +1162,7 @@ export default function RoomsPage() {
               minWidth: "90px",
             }}
           >
-            ⚙️ Filters
+            Filters
             {activeFilterCount > 0 && (
               <span
                 style={{
@@ -1267,7 +1267,7 @@ export default function RoomsPage() {
         >
           <input
             type="text"
-            placeholder="🔍  Search rooms..."
+            placeholder="Search rooms..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -1430,10 +1430,10 @@ export default function RoomsPage() {
             }}
           >
             {[
-              { key: "bills_included", label: "💡 Bills included" },
+              { key: "bills_included", label: <><LightbulbIcon size={13} weight="fill" color="#1D9E75" style={{ verticalAlign: "middle", marginRight: "4px" }} />Bills included</> },
               { key: "nepalese_household", label: "🇳🇵 Nepalese household" },
-              { key: "pets_allowed", label: "🐾 Pets allowed" },
-              { key: "parking_available", label: "🚗 Parking available" },
+              { key: "pets_allowed", label: <><PawPrintIcon size={13} weight="fill" color="#85510A" style={{ verticalAlign: "middle", marginRight: "4px" }} />Pets allowed</> },
+              { key: "parking_available", label: <><CarIcon size={13} weight="fill" color="#444" style={{ verticalAlign: "middle", marginRight: "4px" }} />Parking available</> },
             ].map(({ key, label }) => (
               <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
                 <input
@@ -1484,8 +1484,8 @@ export default function RoomsPage() {
           <div
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
           >
-            <div style={{ fontSize: "36px", marginBottom: "12px" }}>
-              {activeTab === "true" ? "🏘️" : "🏠"}
+            <div style={{ marginBottom: "12px" }}>
+              <HouseIcon size={36} weight={activeTab === "true" ? "regular" : "duotone"} color="#534AB7" />
             </div>
             <p
               style={{
@@ -1566,7 +1566,7 @@ export default function RoomsPage() {
         {/* Browse by city */}
         <div style={{ marginTop: "40px", background: "#FFF8F3", borderRadius: "14px", padding: "20px 24px" }}>
           <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px" }}>
-            🏠 Browse rooms by city
+            <HouseIcon size={13} weight="duotone" color="#26215C" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Browse rooms by city
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {FEATURED_LOCATIONS.map((slug) => {

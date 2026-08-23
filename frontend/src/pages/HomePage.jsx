@@ -20,6 +20,7 @@ import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
 import { timeAgo, isNew, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
 import useT from "../hooks/useT";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, MapPinIcon, StorefrontIcon, MagnifyingGlassIcon, StarIcon } from "@phosphor-icons/react";
 
 const STATES = [
   { value: "", label: "All states" },
@@ -33,12 +34,12 @@ const STATES = [
   { value: "NT", label: "NT" },
 ];
 
-const TYPE_EMOJI = { job: "💼", room: "🏠", event: "🎉", notice: "📢", business: "🏪" };
+const TYPE_ICONS_MAP = { job: BriefcaseIcon, room: HouseIcon, event: ConfettiIcon, notice: MegaphoneIcon, business: StorefrontIcon };
 const SEARCH_TYPES = HOME_SEARCH_TYPES;
 
 const FEATURED_BADGE = (
-  <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap" }}>
-    ⭐ FEATURED
+  <span style={{ background: "linear-gradient(135deg, #E87722, #534AB7)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.03em", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+    <StarIcon size={8} weight="fill" color="#fff" />FEATURED
   </span>
 );
 const NEW_BADGE = (
@@ -250,7 +251,7 @@ export default function HomePage() {
                         <div key={index} className="sugg-item"
                           onClick={() => { setShowSuggestions(false); setSearch(suggestion.label); const p = new URLSearchParams(); p.set("search", suggestion.label); navigate(`/${suggestion.listing_type}s?${p}`); }}
                           style={{ padding: "10px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", borderBottom: index < suggestions.length - 1 ? "0.5px solid #f5f5f5" : "none" }}>
-                          <span style={{ fontSize: "16px" }}>{TYPE_EMOJI[suggestion.listing_type] || "🔍"}</span>
+                          {(() => { const SuggIcon = TYPE_ICONS_MAP[suggestion.listing_type] || MagnifyingGlassIcon; return <SuggIcon size={16} weight="duotone" color="#534AB7" />; })()}
                           <div>
                             <div style={{ fontSize: "13px", fontWeight: 500, color: "#26215C" }}>{highlightMatch(suggestion.label, search)}</div>
                             <div style={{ fontSize: "11px", color: "#888" }}>{suggestion.sublabel}</div>
@@ -313,7 +314,7 @@ export default function HomePage() {
             <Link key={job.id} to={`/jobs/${job.listing_slug}`} className="lc lc-job"
               style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>💼</div>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><BriefcaseIcon size={18} weight="duotone" color="#3C3489" /></div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     {job.listing_title}{job.is_featured && FEATURED_BADGE}{isNew(job.created_at) && NEW_BADGE}
@@ -326,7 +327,7 @@ export default function HomePage() {
             </Link>
           )}
           renderCard={(job) => (
-            <DesktopCard key={job.id} to={`/jobs/${job.listing_slug}`} accentType="job" emoji="💼" isFeatured={!!job.is_featured}
+            <DesktopCard key={job.id} to={`/jobs/${job.listing_slug}`} accentType="job" Icon={BriefcaseIcon} isFeatured={!!job.is_featured}
               timeStr={timeAgo(job.created_at || job.date_posted)} title={job.listing_title}
               subtitle={`${job.company_name} · ${job.listing_location}, ${job.listing_state}`}
               description={job.description || job.listing_description}
@@ -345,13 +346,13 @@ export default function HomePage() {
             <Link key={room.id} to={`/rooms/${room.listing_slug}`} className="lc lc-room"
               style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#FFF1E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>🏠</div>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#FFF1E0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><HouseIcon size={18} weight="duotone" color="#633806" /></div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     {room.listing_title}{room.is_featured && FEATURED_BADGE}{isNew(room.created_at) && NEW_BADGE}
                   </div>
                   <div style={{ fontSize: "12px", color: "#888", display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                    <span>📍 {room.listing_location}, {room.listing_state}</span>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{room.listing_location}, {room.listing_state}</span>
                     {room.nepalese_household && <span>· 🇳🇵 Nepalese home</span>}
                     {room.room_type && <span>· {room.room_type.replace("_", " ")}</span>}
                   </div>
@@ -362,9 +363,9 @@ export default function HomePage() {
             </Link>
           )}
           renderCard={(room) => (
-            <DesktopCard key={room.id} to={`/rooms/${room.listing_slug}`} accentType="room" emoji="🏠" isFeatured={!!room.is_featured}
+            <DesktopCard key={room.id} to={`/rooms/${room.listing_slug}`} accentType="room" Icon={HouseIcon} isFeatured={!!room.is_featured}
               timeStr={timeAgo(room.created_at || room.date_posted)} title={room.listing_title}
-              subtitle={`📍 ${room.listing_location}, ${room.listing_state}`}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.listing_location}, {room.listing_state}</>}
               description={room.description || room.listing_description}
               stats={[{ value: room.price_display || "—", label: "Price" }, { value: room.room_type?.replace("_", " ") || "—", label: "Type" }, { value: room.nepalese_household ? "🇳🇵 Yes" : "No", label: "Nepali home" }]} />
           )}
@@ -395,7 +396,7 @@ export default function HomePage() {
             </Link>
           )}
           renderCard={(event) => (
-            <DesktopCard key={event.id} to={`/events/${event.listing_slug}`} accentType="event" emoji="🎉" isFeatured={!!event.is_featured}
+            <DesktopCard key={event.id} to={`/events/${event.listing_slug}`} accentType="event" Icon={ConfettiIcon} isFeatured={!!event.is_featured}
               timeStr={event.event_date ? new Date(event.event_date).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : ""}
               title={event.listing_title} subtitle={event.venue || `${event.listing_location}, ${event.listing_state}`}
               description={event.description || event.listing_description}
@@ -414,24 +415,24 @@ export default function HomePage() {
             <Link key={notice.id} to={`/notices/${notice.listing_slug}`} className="lc lc-notice"
               style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", flexShrink: 0 }}>📢</div>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><MegaphoneIcon size={18} weight="duotone" color="#0C447C" /></div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     {notice.listing_title}{notice.is_featured && FEATURED_BADGE}{isNew(notice.created_at) && NEW_BADGE}
                   </div>
-                  <div style={{ fontSize: "12px", color: "#888" }}>📍 {notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
+                  <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
                   {notice.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(notice.created_at)}</div>}
                 </div>
               </div>
               <div style={{ background: "#E6F1FB", color: "#0C447C", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "20px", whiteSpace: "nowrap" }}>
-                {notice.is_urgent ? "🔴 Urgent" : timeAgo(notice.created_at || notice.date_posted)}
+                {notice.is_urgent ? <><span style={{ display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", background: "#DC2626", marginRight: "5px", verticalAlign: "middle" }} />Urgent</> : timeAgo(notice.created_at || notice.date_posted)}
               </div>
             </Link>
           )}
           renderCard={(notice) => (
-            <DesktopCard key={notice.id} to={`/notices/${notice.listing_slug}`} accentType="notice" emoji="📢" isFeatured={!!notice.is_featured}
+            <DesktopCard key={notice.id} to={`/notices/${notice.listing_slug}`} accentType="notice" Icon={MegaphoneIcon} isFeatured={!!notice.is_featured}
               timeStr={timeAgo(notice.created_at || notice.date_posted)} title={notice.listing_title}
-              subtitle={`📍 ${notice.listing_location}, ${notice.listing_state}`}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.listing_location}, {notice.listing_state}</>}
               description={notice.description || notice.listing_description}
               stats={[{ value: notice.category?.replace("_", " ") || "General", label: "Category" }, { value: notice.listing_state || "—", label: "State" }, { value: notice.posted_by || "—", label: "Posted by" }]} />
           )}

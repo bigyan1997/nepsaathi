@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
+import {
+  BuildingsIcon,
+  BooksIcon,
+  CurrencyDollarIcon,
+  UsersThreeIcon,
+  HospitalIcon,
+  BackpackIcon,
+  HandshakeIcon,
+  LightbulbIcon,
+} from "@phosphor-icons/react";
 
 const sections = [
   {
     id: "childcare",
-    icon: "🏫",
+    Icon: BuildingsIcon,
     title: "Childcare and Early Learning",
     summary: "Australia's childcare system combines care with early education — starting from 6 weeks old.",
     steps: [
@@ -21,7 +31,7 @@ const sections = [
   },
   {
     id: "school",
-    icon: "📚",
+    Icon: BooksIcon,
     title: "Enrolling Your Child in School",
     summary: "School enrolment is by residential zone — your address determines which public school your child attends.",
     steps: [
@@ -37,7 +47,7 @@ const sections = [
   },
   {
     id: "ccs",
-    icon: "💰",
+    Icon: CurrencyDollarIcon,
     title: "Child Care Subsidy (CCS)",
     summary: "The government pays most of your childcare fees directly to the provider — you only pay the gap.",
     steps: [
@@ -53,7 +63,7 @@ const sections = [
   },
   {
     id: "ftb",
-    icon: "👨‍👩‍👧",
+    Icon: UsersThreeIcon,
     title: "Family Tax Benefit (FTB)",
     summary: "Family Tax Benefit is a fortnightly payment to help with the cost of raising children.",
     steps: [
@@ -69,7 +79,7 @@ const sections = [
   },
   {
     id: "child-health",
-    icon: "🏥",
+    Icon: HospitalIcon,
     title: "Child Health Checks",
     summary: "Australia has a comprehensive child health system — free health checks for children from birth.",
     steps: [
@@ -85,7 +95,7 @@ const sections = [
   },
   {
     id: "holiday-programs",
-    icon: "🎒",
+    Icon: BackpackIcon,
     title: "School Holiday Programs",
     summary: "School holidays run 12 weeks per year — planned care is essential for working parents.",
     steps: [
@@ -101,7 +111,7 @@ const sections = [
   },
   {
     id: "family-support",
-    icon: "🤝",
+    Icon: HandshakeIcon,
     title: "Family Support Services",
     summary: "Australia has extensive support services for families — you don't need to navigate it alone.",
     steps: [
@@ -167,7 +177,10 @@ export default function ChildcarePage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ background: "linear-gradient(135deg, #9D174D 0%, #BE185D 60%, #DB2777 100%)", padding: "56px 24px 48px", textAlign: "center", color: "#fff" }}>
-        <div style={{ fontSize: "40px", marginBottom: "16px" }}>👨‍👩‍👧🏫</div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
+          <UsersThreeIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+          <BuildingsIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+        </div>
         <h1 style={{ fontSize: "clamp(24px,5vw,36px)", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
           Childcare &amp; Family in Australia
         </h1>
@@ -190,8 +203,8 @@ export default function ChildcarePage() {
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
-              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s" }}>
-                {s.icon} {s.title.split(" ")[0]}
+              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s", display: "flex", alignItems: "center", gap: "5px" }}>
+                {s.Icon && <s.Icon size={15} weight="duotone" color={isActive ? accent : "#64748b"} />} {s.title.split(" ")[0]}
               </button>
             );
           })}
@@ -205,7 +218,7 @@ export default function ChildcarePage() {
             return (
               <div key={s.id} id={s.id} style={{ background: "#fff", border: `1.5px solid ${isOpen ? accent : "#e8eaf0"}`, borderRadius: "12px", overflow: "hidden", transition: "border-color 0.2s" }}>
                 <button onClick={() => toggle(s.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "14px", padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
-                  <span style={{ fontSize: "24px", flexShrink: 0 }}>{s.icon}</span>
+                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{s.Icon && <s.Icon size={28} weight="duotone" color={accent} />}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b", marginBottom: "2px" }}>{s.title}</div>
                     <div style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.4 }}>{s.summary}</div>
@@ -219,7 +232,7 @@ export default function ChildcarePage() {
                         {s.steps.map((step, i) => <li key={i} style={{ fontSize: "14px", color: "#334155", lineHeight: 1.6 }}>{step}</li>)}
                       </ol>
                       <div style={{ marginTop: "16px", background: accentLight, border: `1px solid ${accentBorder}`, borderRadius: "8px", padding: "12px 14px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                        <span style={{ fontSize: "16px", flexShrink: 0 }}>💡</span>
+                        <LightbulbIcon size={18} weight="fill" color={accent} style={{ flexShrink: 0, marginTop: "1px" }} />
                         <span style={{ fontSize: "13px", color: accent, lineHeight: 1.55 }}>{s.tip}</span>
                       </div>
                       {s.link.url.startsWith("/") ? (
@@ -241,7 +254,7 @@ export default function ChildcarePage() {
           })}
         </div>
         <div style={{ marginTop: "40px", background: "linear-gradient(135deg, #9D174D, #BE185D)", borderRadius: "16px", padding: "32px 24px", textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "28px", marginBottom: "12px" }}>🤝</div>
+          <HandshakeIcon size={40} weight="duotone" color="#fff" style={{ marginBottom: "12px", opacity: 0.85 }} />
           <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Family question for the community?</h2>
           <p style={{ fontSize: "14px", opacity: 0.85, marginBottom: "20px", lineHeight: 1.6 }}>Connect with Nepali parents, childcare workers, and teachers in Australia on the NepSaathi forum.</p>
           <Link to="/forum" style={{ display: "inline-block", background: "#fff", color: accent, borderRadius: "8px", padding: "12px 24px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>Ask on the Forum</Link>

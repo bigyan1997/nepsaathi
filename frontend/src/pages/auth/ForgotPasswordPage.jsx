@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { EnvelopeIcon } from "@phosphor-icons/react";
 import usePageTitle from "../../hooks/usePageTitle";
 import api from "../../utils/axios";
 import { useToast } from "../../components/ui/Toast";
@@ -62,7 +63,7 @@ export default function ForgotPasswordPage() {
         >
           {sent ? (
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📧</div>
+              <div style={{ marginBottom: "16px" }}><EnvelopeIcon size={48} weight="duotone" color="#534AB7" /></div>
               <h2
                 style={{
                   fontSize: "20px",

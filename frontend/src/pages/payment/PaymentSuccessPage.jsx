@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPaymentStatus } from "../../api/payments";
+import { HourglassMediumIcon, WarningIcon, ConfettiIcon, CheckCircleIcon } from "@phosphor-icons/react";
 
 export default function PaymentSuccessPage() {
   const [params] = useSearchParams();
@@ -42,7 +43,7 @@ export default function PaymentSuccessPage() {
   if (!confirmed && !timedOut) {
     return (
       <div style={{ maxWidth: 520, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
+        <HourglassMediumIcon size={56} weight="duotone" color="#534AB7" style={{ marginBottom: 16, opacity: 0.8 }} />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: "#26215C", margin: "0 0 12px" }}>
           Confirming your payment…
         </h1>
@@ -56,7 +57,7 @@ export default function PaymentSuccessPage() {
   if (timedOut) {
     return (
       <div style={{ maxWidth: 520, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
+        <WarningIcon size={56} weight="duotone" color="#D97706" style={{ marginBottom: 16 }} />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: "#26215C", margin: "0 0 12px" }}>
           Payment received — still processing
         </h1>
@@ -74,7 +75,7 @@ export default function PaymentSuccessPage() {
 
   return (
     <div style={{ maxWidth: 520, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
-      <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
+      <ConfettiIcon size={72} weight="duotone" color="#16a34a" style={{ marginBottom: 16 }} />
       <h1 style={{ fontSize: 24, fontWeight: 700, color: "#26215C", margin: "0 0 12px" }}>
         Your listing is now featured!
       </h1>
@@ -92,7 +93,7 @@ export default function PaymentSuccessPage() {
         color: "#085041",
         textAlign: "left",
       }}>
-        ✅ Payment confirmed · Featured for 7 days · Visible at the top of search results
+        <CheckCircleIcon size={14} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: 6 }} />Payment confirmed · Featured for 7 days · Visible at the top of search results
       </div>
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         <Link

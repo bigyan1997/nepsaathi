@@ -5,6 +5,7 @@ import { register } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
 import NepSaathiLogo from "../../components/ui/NepSaathiLogo";
+import { EyeIcon, EyeSlashIcon, HandshakeIcon, EnvelopeIcon } from "@phosphor-icons/react";
 
 export default function RegisterPage() {
   usePageTitle("Create Account");
@@ -125,7 +126,7 @@ export default function RegisterPage() {
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "48px", marginBottom: "16px" }}>📧</div>
+          <div style={{ marginBottom: "16px" }}><EnvelopeIcon size={48} weight="duotone" color="#534AB7" /></div>
           <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#26215C", marginBottom: "8px" }}>
             Check your email
           </h1>
@@ -216,7 +217,8 @@ export default function RegisterPage() {
         {/* Referral banner */}
         {refCode && (
           <div style={{ background: "#E1F5EE", border: "0.5px solid #6EE7B7", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#085041", marginBottom: "14px", textAlign: "center" }}>
-            🤝 You were invited! Sign up to help your friend earn points.
+            <HandshakeIcon size={16} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "6px" }} />
+            You were invited! Sign up to help your friend earn points.
           </div>
         )}
 
@@ -327,11 +329,12 @@ export default function RegisterPage() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  fontSize: "16px",
+                  display: "flex",
+                  alignItems: "center",
                   color: "#888",
                 }}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? <EyeSlashIcon size={17} color="#888" weight="regular" /> : <EyeIcon size={17} color="#888" weight="regular" />}
               </button>
             </div>
             {/* Password strength indicator */}
@@ -414,11 +417,12 @@ export default function RegisterPage() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  fontSize: "16px",
+                  display: "flex",
+                  alignItems: "center",
                   color: "#888",
                 }}
               >
-                {showConfirm ? "🙈" : "👁️"}
+                {showConfirm ? <EyeSlashIcon size={17} color="#888" weight="regular" /> : <EyeIcon size={17} color="#888" weight="regular" />}
               </button>
             </div>
             {/* Match indicator */}

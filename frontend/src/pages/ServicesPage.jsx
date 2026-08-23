@@ -6,18 +6,19 @@ import { useToast } from "../components/ui/Toast";
 import useAuthStore from "../store/authStore";
 import usePageMeta from "../hooks/usePageMeta";
 import useT from "../hooks/useT";
+import { BookOpenIcon, ChatTeardropTextIcon, MonitorIcon, CameraIcon, ForkKnifeIcon, ChartBarIcon, CarIcon, BroomIcon, WrenchIcon, MapPinIcon, CurrencyDollarIcon } from "@phosphor-icons/react";
 
 const CATEGORIES = [
   { value: "", label: "All Categories" },
-  { value: "tutoring",    label: "Tutoring / Teaching",           emoji: "📚" },
-  { value: "translation", label: "Translation / Interpretation",  emoji: "🗣️" },
-  { value: "it",          label: "IT & Tech",                     emoji: "💻" },
-  { value: "photography", label: "Photography / Video",           emoji: "📷" },
-  { value: "cooking",     label: "Cooking / Events",              emoji: "🍽️" },
-  { value: "accounting",  label: "Accounting / Tax",              emoji: "📊" },
-  { value: "transport",   label: "Transport / Delivery",          emoji: "🚗" },
-  { value: "cleaning",    label: "Cleaning",                      emoji: "🧹" },
-  { value: "other",       label: "Other",                         emoji: "🔧" },
+  { value: "tutoring",    label: "Tutoring / Teaching",           emoji: "📚", Icon: BookOpenIcon },
+  { value: "translation", label: "Translation / Interpretation",  emoji: "🗣️", Icon: ChatTeardropTextIcon },
+  { value: "it",          label: "IT & Tech",                     emoji: "💻", Icon: MonitorIcon },
+  { value: "photography", label: "Photography / Video",           emoji: "📷", Icon: CameraIcon },
+  { value: "cooking",     label: "Cooking / Events",              emoji: "🍽️", Icon: ForkKnifeIcon },
+  { value: "accounting",  label: "Accounting / Tax",              emoji: "📊", Icon: ChartBarIcon },
+  { value: "transport",   label: "Transport / Delivery",          emoji: "🚗", Icon: CarIcon },
+  { value: "cleaning",    label: "Cleaning",                      emoji: "🧹", Icon: BroomIcon },
+  { value: "other",       label: "Other",                         emoji: "🔧", Icon: WrenchIcon },
 ];
 
 const RATE_TYPES = [
@@ -178,7 +179,7 @@ export default function ServicesPage() {
 
       {!isLoading && services.length === 0 && (
         <div style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "14px", padding: "40px", textAlign: "center" }}>
-          <div style={{ fontSize: "36px", marginBottom: "10px" }}>🛠️</div>
+          <WrenchIcon size={36} weight="duotone" color="#534AB7" style={{ marginBottom: "10px", opacity: 0.6 }} />
           <p style={{ fontSize: "14px", color: "#888", margin: 0 }}>No services listed yet. Be the first to offer yours!</p>
         </div>
       )}
@@ -193,10 +194,10 @@ export default function ServicesPage() {
             <div key={svc.id} style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "14px", padding: "18px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginBottom: "10px", flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
-                  <span style={{ background: cat.bg, color: cat.color, fontSize: "11px", fontWeight: 600, padding: "2px 9px", borderRadius: "8px" }}>
-                    {catLabel?.emoji} {catLabel?.label}
+                  <span style={{ background: cat.bg, color: cat.color, fontSize: "11px", fontWeight: 600, padding: "2px 9px", borderRadius: "8px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    {catLabel?.Icon && <catLabel.Icon size={11} weight="regular" color={cat.color} />} {catLabel?.label}
                   </span>
-                  {svc.state && <span style={{ fontSize: "12px", color: "#888" }}>📍 {svc.location ? `${svc.location}, ` : ""}{svc.state}</span>}
+                  {svc.state && <span style={{ fontSize: "12px", color: "#888", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={12} weight="fill" color="#E87722" />{svc.location ? `${svc.location}, ` : ""}{svc.state}</span>}
                 </div>
                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                   <span style={{ fontSize: "11px", color: "#aaa" }}>{timeAgo(svc.created_at)}</span>
@@ -212,8 +213,8 @@ export default function ServicesPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
                 <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
                   {svc.rate && (
-                    <span style={{ fontSize: "13px", color: "#1D9E75", fontWeight: 700 }}>
-                      💰 {svc.rate} <span style={{ fontWeight: 400, color: "#888" }}>({rateLabel})</span>
+                    <span style={{ fontSize: "13px", color: "#1D9E75", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      <CurrencyDollarIcon size={14} weight="fill" color="#1D9E75" />{svc.rate} <span style={{ fontWeight: 400, color: "#888" }}>({rateLabel})</span>
                     </span>
                   )}
                 </div>

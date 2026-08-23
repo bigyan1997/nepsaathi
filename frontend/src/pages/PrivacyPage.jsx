@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { LockIcon, EnvelopeIcon } from "@phosphor-icons/react";
 import usePageMeta from "../hooks/usePageMeta";
 
 const SECTIONS = [
@@ -108,12 +109,12 @@ export default function PrivacyPage() {
             <p style={{ fontSize: "13px", color: "#AFA9EC", margin: "0 0 20px" }}>Last updated: April 2026</p>
             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
               {[
-                { icon: "🔒", text: "8 sections" },
+                { Icon: LockIcon, text: "8 sections" },
                 { icon: "🇦🇺", text: "Governed by Australian law" },
-                { icon: "📧", text: "legal@nepsaathi.com" },
-              ].map(({ icon, text }) => (
+                { Icon: EnvelopeIcon, text: "legal@nepsaathi.com" },
+              ].map(({ Icon, icon, text }) => (
                 <div key={text} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#AFA9EC", fontWeight: 500 }}>
-                  <span>{icon}</span> {text}
+                  {Icon ? <Icon size={13} weight="regular" color="#AFA9EC" /> : <span>{icon}</span>} {text}
                 </div>
               ))}
             </div>

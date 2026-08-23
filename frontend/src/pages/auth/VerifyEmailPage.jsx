@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 import api from "../../utils/axios";
 import usePageTitle from "../../hooks/usePageTitle";
 
@@ -52,7 +53,7 @@ export default function VerifyEmailPage() {
 
         {status === "success" && (
           <>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>✅</div>
+            <div style={{ marginBottom: "16px" }}><CheckCircleIcon size={48} weight="duotone" color="#1D9E75" /></div>
             <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#26215C", marginBottom: "8px" }}>
               Email verified!
             </h1>

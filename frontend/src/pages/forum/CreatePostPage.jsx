@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createForumPost, aiImproveForumPost } from "../../api/forum";
 import { useToast } from "../../components/ui/Toast";
 import usePageTitle from "../../hooks/usePageTitle";
+import { SparkleIcon, ChartBarIcon } from "@phosphor-icons/react";
 
 const CATEGORIES = [
   { value: "visa", label: "Visa & Immigration", emoji: "🛂" },
@@ -117,7 +118,7 @@ export default function CreatePostPage() {
                   fontSize: "12px", fontWeight: 600, cursor: form.body.trim() && !aiState.loading ? "pointer" : "not-allowed",
                 }}
               >
-                {aiState.loading ? "Improving…" : "✨ Improve with AI"}
+                {aiState.loading ? "Improving…" : <><SparkleIcon size={13} weight="fill" style={{ verticalAlign: "middle", marginRight: "4px" }} />Improve with AI</>}
               </button>
             </div>
             <textarea
@@ -137,7 +138,7 @@ export default function CreatePostPage() {
             )}
             {aiState.preview && (
               <div style={{ marginTop: "10px", background: "#F5F3FF", border: "1.5px solid #C4B5FD", borderRadius: "12px", padding: "14px 16px" }}>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#7C3AED", marginBottom: "8px", letterSpacing: "0.04em" }}>✨ AI SUGGESTION</div>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "#7C3AED", marginBottom: "8px", letterSpacing: "0.04em", display: "flex", alignItems: "center", gap: "4px" }}><SparkleIcon size={11} weight="fill" color="#7C3AED" /> AI SUGGESTION</div>
                 <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{aiState.preview}</div>
                 <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
                   <button
@@ -166,7 +167,7 @@ export default function CreatePostPage() {
               onClick={() => setIsPoll((v) => !v)}
               style={{ display: "flex", alignItems: "center", gap: "8px", background: isPoll ? "#EEEDFE" : "#f8f8f8", border: `1.5px solid ${isPoll ? "#AFA9EC" : "#e5e5e5"}`, borderRadius: "10px", padding: "9px 16px", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: isPoll ? "#534AB7" : "#666" }}
             >
-              <span style={{ fontSize: "16px" }}>📊</span>
+              <ChartBarIcon size={16} weight="regular" color="#534AB7" />
               {isPoll ? "Remove poll" : "Add a poll"}
             </button>
 

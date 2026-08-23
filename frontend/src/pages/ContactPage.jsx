@@ -2,6 +2,7 @@ import { useState } from "react";
 import usePageMeta from "../hooks/usePageMeta";
 import { useToast } from "../components/ui/Toast";
 import { sendContactForm } from "../api/auth";
+import { EnvelopeIcon, WrenchIcon, LockIcon, TimerIcon, ChatDotsIcon, CheckCircleIcon } from "@phosphor-icons/react";
 
 const FAQ = [
   {
@@ -74,9 +75,9 @@ export default function ContactPage() {
   };
 
   const contactCards = [
-    { emoji: "✉️", label: "General enquiries", value: "hello@nepsaathi.com", href: "mailto:hello@nepsaathi.com", bg: "#EEEDFE", border: "#AFA9EC", color: "#3C3489" },
-    { emoji: "🛠️", label: "Technical support", value: "support@nepsaathi.com", href: "mailto:support@nepsaathi.com", bg: "#E1F5EE", border: "#9FE1CB", color: "#085041" },
-    { emoji: "🔒", label: "Privacy concerns", value: "privacy@nepsaathi.com", href: "mailto:privacy@nepsaathi.com", bg: "#FFF1E0", border: "#EFD9C0", color: "#633806" },
+    { Icon: EnvelopeIcon, label: "General enquiries", value: "hello@nepsaathi.com", href: "mailto:hello@nepsaathi.com", bg: "#EEEDFE", border: "#AFA9EC", color: "#3C3489" },
+    { Icon: WrenchIcon,   label: "Technical support", value: "support@nepsaathi.com", href: "mailto:support@nepsaathi.com", bg: "#E1F5EE", border: "#9FE1CB", color: "#085041" },
+    { Icon: LockIcon,     label: "Privacy concerns", value: "privacy@nepsaathi.com", href: "mailto:privacy@nepsaathi.com", bg: "#FFF1E0", border: "#EFD9C0", color: "#633806" },
   ];
 
   return (
@@ -119,12 +120,13 @@ export default function ContactPage() {
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: "24px", flexWrap: "wrap" }}>
               {[
-                { icon: "⏱", text: "24h response time" },
-                { icon: "🇦🇺", text: "Based in Australia" },
-                { icon: "💬", text: "Friendly support" },
-              ].map(({ icon, text }) => (
+                { Icon: TimerIcon,    text: "24h response time" },
+                { emoji: "🇦🇺",       text: "Based in Australia" },
+                { Icon: ChatDotsIcon, text: "Friendly support" },
+              ].map(({ Icon: StatIcon, emoji, text }) => (
                 <div key={text} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#AFA9EC", fontWeight: 500 }}>
-                  <span>{icon}</span> {text}
+                  {StatIcon ? <StatIcon size={14} weight="regular" color="#AFA9EC" /> : <span>{emoji}</span>}
+                  {text}
                 </div>
               ))}
             </div>
@@ -143,7 +145,7 @@ export default function ContactPage() {
                 <h2 style={{ fontSize: "13px", fontWeight: 700, color: "#fff", margin: 0 }}>Contact channels</h2>
               </div>
               <div style={{ padding: "14px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                {contactCards.map(({ emoji, label, value, href, bg, border, color }) => (
+                {contactCards.map(({ Icon, label, value, href, bg, border, color }) => (
                   <a
                     key={label}
                     href={href}
@@ -151,7 +153,7 @@ export default function ContactPage() {
                     onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px)")}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
                   >
-                    <span style={{ fontSize: "20px", flexShrink: 0 }}>{emoji}</span>
+                    <Icon size={22} weight="duotone" color={color} style={{ flexShrink: 0 }} />
                     <div>
                       <div style={{ fontSize: "10px", color: "#aaa", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600, marginBottom: "2px" }}>{label}</div>
                       <div style={{ fontSize: "12px", color, fontWeight: 600 }}>{value}</div>
@@ -218,7 +220,7 @@ export default function ContactPage() {
                   <h2 style={{ fontSize: "14px", fontWeight: 700, color: "#fff", margin: 0 }}>Message sent!</h2>
                 </div>
                 <div style={{ padding: "56px 28px", textAlign: "center" }}>
-                  <div style={{ fontSize: "48px", marginBottom: "16px" }}>✅</div>
+                  <CheckCircleIcon size={56} weight="duotone" color="#085041" style={{ marginBottom: "16px" }} />
                   <p style={{ fontSize: "14px", color: "#555", lineHeight: 1.7, marginBottom: "24px", maxWidth: "380px", margin: "0 auto 24px" }}>
                     Thanks for reaching out! We'll get back to you within 24 hours at your email address.
                   </p>

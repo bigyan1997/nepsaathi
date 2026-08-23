@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { CameraIcon, SealCheckIcon, MapPinIcon, PhoneIcon, EnvelopeIcon, GlobeIcon, CalendarCheckIcon, StorefrontIcon, ForkKnifeIcon, ShoppingCartIcon, AirplaneIcon, ScissorsIcon, FirstAidKitIcon, ScalesIcon, BookOpenIcon, SunIcon, HammerIcon, CarIcon, CurrencyDollarIcon, LaptopIcon, PushPinIcon } from "@phosphor-icons/react";
 import { mapsUrl } from "../../utils/constants";
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,21 +23,21 @@ import WhatsAppButton from "../../components/ui/WhatsAppButton";
 import JsonLd from "../../components/ui/JsonLd";
 import ImageGallery from "../../components/ui/ImageGallery";
 
-const CATEGORY_EMOJIS = {
-  restaurant: "🍛",
-  grocery: "🛒",
-  travel: "✈️",
-  beauty: "💇",
-  health: "🏥",
-  legal: "⚖️",
-  education: "📚",
-  religious: "🙏",
-  construction: "🔨",
-  transport: "🚗",
-  finance: "💸",
-  freelancer: "🧑‍💻",
-  retail: "🏪",
-  other: "🏪",
+const CATEGORY_ICONS = {
+  restaurant: ForkKnifeIcon,
+  grocery: ShoppingCartIcon,
+  travel: AirplaneIcon,
+  beauty: ScissorsIcon,
+  health: FirstAidKitIcon,
+  legal: ScalesIcon,
+  education: BookOpenIcon,
+  religious: SunIcon,
+  construction: HammerIcon,
+  transport: CarIcon,
+  finance: CurrencyDollarIcon,
+  freelancer: LaptopIcon,
+  retail: StorefrontIcon,
+  other: PushPinIcon,
 };
 
 const CATEGORY_COLORS = {
@@ -240,7 +241,7 @@ export default function BusinessDetailPage() {
     );
 
   const catColor = CATEGORY_COLORS[business?.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[business?.category] || "🏪";
+  const BizCatIcon = CATEGORY_ICONS[business?.category] || PushPinIcon;
   const footerBg = "#8B5E00";
   const hasReviewed = reviews.some((r) => r.is_own_review);
 
@@ -343,7 +344,7 @@ export default function BusinessDetailPage() {
             }}
           >
             <span style={{ fontSize: "12px", fontWeight: 600, color: "#555", flexShrink: 0 }}>
-              📷 Photos ({business.images?.length || 0}/5)
+              <CameraIcon size={12} weight="fill" color="#555" style={{ verticalAlign: "middle", marginRight: "4px" }} />Photos ({business.images?.length || 0}/5)
             </span>
             {business.images?.map((img) => (
               <div key={img.id} style={{ position: "relative" }}>
@@ -417,12 +418,11 @@ export default function BusinessDetailPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: isMobile ? "26px" : "36px",
               flexShrink: 0,
               boxShadow: `0 2px 0 ${catColor.border}`,
             }}
           >
-            {catEmoji}
+            <BizCatIcon size={isMobile ? 26 : 36} weight="duotone" color={catColor.color} />
           </div>
 
           {/* Title block */}
@@ -446,7 +446,7 @@ export default function BusinessDetailPage() {
                   borderRadius: "20px",
                 }}
               >
-                {catEmoji} {business.category?.replace(/_/g, " ")}
+                <BizCatIcon size={11} weight="fill" color={catColor.color} style={{ marginRight: "4px", verticalAlign: "middle" }} />{business.category?.replace(/_/g, " ")}
               </span>
               {business.is_verified && (
                 <span
@@ -459,7 +459,7 @@ export default function BusinessDetailPage() {
                     borderRadius: "20px",
                   }}
                 >
-                  ✓ Verified
+                  <SealCheckIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Verified
                 </span>
               )}
               {business.is_nepalese_owned && (
@@ -523,7 +523,7 @@ export default function BusinessDetailPage() {
                 rel="noopener noreferrer"
                 style={{ color: "inherit", textDecoration: "none" }}
               >
-                📍 {business.suburb}, {business.state}
+                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />{business.suburb}, {business.state}
               </a>
             </span>
           </div>
@@ -932,8 +932,8 @@ export default function BusinessDetailPage() {
                 padding: "18px",
               }}
             >
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>
-                {catEmoji}
+              <div style={{ marginBottom: "8px" }}>
+                <BizCatIcon size={32} weight="duotone" color={catColor.color} />
               </div>
               <div
                 style={{
@@ -1120,7 +1120,7 @@ export default function BusinessDetailPage() {
                           fontWeight: 600,
                         }}
                       >
-                        📞 Call {business.phone}
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Call {business.phone}
                       </a>
                     )}
                     {business.whatsapp && (
@@ -1142,7 +1142,7 @@ export default function BusinessDetailPage() {
                           border: "0.5px solid #EFD9C0",
                         }}
                       >
-                        ✉️ Email
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
                       </a>
                     )}
                     {business.website && (
@@ -1162,7 +1162,7 @@ export default function BusinessDetailPage() {
                           fontWeight: 600,
                         }}
                       >
-                        🌐 Visit website
+                        <GlobeIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Visit website
                       </a>
                     )}
                     {business.booking_link && (
@@ -1183,7 +1183,7 @@ export default function BusinessDetailPage() {
                           fontWeight: 700,
                         }}
                       >
-                        📅 Book / Make Appointment
+                        <CalendarCheckIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Book / Make Appointment
                       </a>
                     )}
                   </div>
@@ -1294,11 +1294,10 @@ export default function BusinessDetailPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "18px",
                       flexShrink: 0,
                     }}
                   >
-                    🏪
+                    <StorefrontIcon size={20} weight="duotone" color="#E87722" />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
@@ -1315,7 +1314,7 @@ export default function BusinessDetailPage() {
                       {listing.title}
                     </div>
                     <div style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {listing.location}, {listing.state}
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
                     </div>
                   </div>
                   <span style={{ color: "#534AB7", flexShrink: 0 }}>

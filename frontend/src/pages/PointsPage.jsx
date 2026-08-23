@@ -4,18 +4,19 @@ import { getMyPoints } from "../api/auth";
 import usePageTitle from "../hooks/usePageTitle";
 import useAuthStore from "../store/authStore";
 import { Link } from "react-router-dom";
+import { ConfettiIcon, ClipboardTextIcon, HandshakeIcon, CheckCircleIcon, StarIcon } from "@phosphor-icons/react";
 
 const EVENT_ICONS = {
-  signup:           "🎉",
-  post_ad:          "📋",
-  referral:         "🤝",
-  profile_complete: "✅",
+  signup:           ConfettiIcon,
+  post_ad:          ClipboardTextIcon,
+  referral:         HandshakeIcon,
+  profile_complete: CheckCircleIcon,
 };
 
 const HOW_TO_EARN = [
-  { icon: "🎉", label: "Join NepSaathi", points: 10, desc: "Awarded automatically when you create your account." },
-  { icon: "📋", label: "Post a listing", points: 5,  desc: "Each job, room, event or notice you post earns you 5 pts." },
-  { icon: "🤝", label: "Refer a friend", points: 25, desc: "Share your referral link. You earn 25 pts when they sign up." },
+  { Icon: ConfettiIcon,    label: "Join NepSaathi", points: 10, desc: "Awarded automatically when you create your account." },
+  { Icon: ClipboardTextIcon, label: "Post a listing", points: 5,  desc: "Each job, room, event or notice you post earns you 5 pts." },
+  { Icon: HandshakeIcon,   label: "Refer a friend", points: 25, desc: "Share your referral link. You earn 25 pts when they sign up." },
 ];
 
 function timeAgo(dateStr) {
@@ -42,7 +43,7 @@ export default function PointsPage() {
   if (!isAuthenticated) {
     return (
       <div style={{ maxWidth: "500px", margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
-        <div style={{ fontSize: "48px", marginBottom: "14px" }}>⭐</div>
+        <div style={{ marginBottom: "14px" }}><StarIcon size={48} weight="duotone" color="#534AB7" /></div>
         <h1 style={{ fontSize: "20px", fontWeight: 800, color: "#26215C", marginBottom: "8px" }}>Points & Referrals</h1>
         <p style={{ fontSize: "14px", color: "#666", marginBottom: "20px" }}>Sign in to see your points and referral link.</p>
         <Link to="/login" style={{ background: "#26215C", color: "#fff", borderRadius: "10px", padding: "11px 24px", fontSize: "14px", fontWeight: 700, textDecoration: "none" }}>
@@ -108,7 +109,7 @@ export default function PointsPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {HOW_TO_EARN.map((item) => (
             <div key={item.label} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-              <div style={{ fontSize: "22px", lineHeight: 1, flexShrink: 0 }}>{item.icon}</div>
+              <item.Icon size={22} weight="duotone" color="#534AB7" style={{ flexShrink: 0, marginTop: "1px" }} />
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                   <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>{item.label}</span>
@@ -142,7 +143,7 @@ export default function PointsPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {(data?.events || []).map((ev, i) => (
             <div key={i} style={{ display: "flex", gap: "10px", alignItems: "center", padding: "10px 12px", background: "#f9f9f9", borderRadius: "10px" }}>
-              <span style={{ fontSize: "18px", lineHeight: 1 }}>{EVENT_ICONS[ev.event_type] || "⭐"}</span>
+              {(() => { const EvIcon = EVENT_ICONS[ev.event_type] || StarIcon; return <EvIcon size={18} weight="fill" color="#534AB7" style={{ flexShrink: 0 }} />; })()}
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: "13px", color: "#333" }}>{ev.description}</div>
                 <div style={{ fontSize: "11px", color: "#aaa", marginTop: "1px" }}>{timeAgo(ev.created_at)}</div>

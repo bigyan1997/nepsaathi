@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getConversations } from "../api/messages";
 import useAuthStore from "../store/authStore";
 import { registerPushSubscription } from "../hooks/usePushNotifications";
+import { BellIcon, ChatDotsIcon } from "@phosphor-icons/react";
 
 function NotificationBanner() {
   const [permission, setPermission] = useState(
@@ -32,7 +33,7 @@ function NotificationBanner() {
       padding: "10px 14px", marginBottom: 20,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ fontSize: 18 }}>🔔</span>
+        <BellIcon size={20} weight="duotone" color="#534AB7" />
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#26215C" }}>Enable message notifications</div>
           <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>
@@ -106,7 +107,7 @@ export default function InboxPage() {
         </div>
       ) : conversations.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>💬</div>
+          <ChatDotsIcon size={52} weight="duotone" color="#534AB7" style={{ marginBottom: 12, opacity: 0.6 }} />
           <div style={{ fontSize: 15, fontWeight: 600, color: "#26215C", marginBottom: 6 }}>No messages yet</div>
           <div style={{ fontSize: 13 }}>When you message someone about a listing, it'll appear here.</div>
         </div>

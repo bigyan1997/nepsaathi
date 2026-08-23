@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { MapPinIcon, CalendarBlankIcon, MaskHappyIcon, FootballIcon, ForkKnifeIcon, MusicNotesIcon, SunIcon, UsersIcon, BookOpenIcon, PushPinIcon } from "@phosphor-icons/react";
 import { getEvents } from "../../api/events";
 import { SkeletonEventCard } from "../../components/ui/Skeleton";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
@@ -31,15 +32,15 @@ const CATEGORY_COLORS = {
   other: { bg: "#F1EFE8", color: "#444441" },
 };
 
-const CATEGORY_EMOJIS = {
-  cultural: "🎭",
-  sports: "⚽",
-  food: "🍛",
-  music: "🎵",
-  religious: "🙏",
-  community: "👥",
-  education: "📚",
-  other: "📌",
+const CATEGORY_ICONS = {
+  cultural: MaskHappyIcon,
+  sports: FootballIcon,
+  food: ForkKnifeIcon,
+  music: MusicNotesIcon,
+  religious: SunIcon,
+  community: UsersIcon,
+  education: BookOpenIcon,
+  other: PushPinIcon,
 };
 
 const SORT_OPTIONS = [
@@ -243,8 +244,8 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
             <div style={lbl}>Show</div>
             <div style={{ display: "flex", gap: "8px" }}>
               {[
-                { v: "true", label: "🔜 Upcoming" },
-                { v: "", label: "📅 All events" },
+                { v: "true", label: "Upcoming" },
+                { v: "", label: "All events" },
               ].map(({ v, label }) => (
                 <button
                   key={v}
@@ -271,7 +272,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
             {[
               {
                 key: "is_free",
-                label: "🎟️ Free events only",
+                label: "Free events only",
                 sub: "No ticket price",
                 color: "#1D9E75",
                 bg: "#E1F5EE",
@@ -279,7 +280,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               },
               {
                 key: "is_online",
-                label: "💻 Online events only",
+                label: "Online events only",
                 sub: "Virtual / remote events",
                 color: "#0C447C",
                 bg: "#E6F1FB",
@@ -366,7 +367,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 /* ── Mobile card — Option B ───────────────────────── */
 function EventMobileCard({ event }) {
   const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
+  const CatIcon = CATEGORY_ICONS[event.category] || PushPinIcon;
   const footerColor = event.is_free ? "#1D9E75" : "#534AB7";
   const d = new Date(event.event_date);
 
@@ -551,7 +552,7 @@ function EventMobileCard({ event }) {
             alignSelf: "flex-start",
           }}
         >
-          {catEmoji} {event.category?.replace("_", " ")}
+          <CatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{event.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -580,7 +581,7 @@ function EventMobileCard({ event }) {
               whiteSpace: "nowrap",
             }}
           >
-            📍 {event.venue}
+            <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{event.venue}
           </div>
         )}
         {event.poster_is_verified && (
@@ -597,7 +598,7 @@ function EventMobileCard({ event }) {
 function EventCard({ event }) {
   const [hovered, setHovered] = useState(false);
   const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
+  const CatIcon = CATEGORY_ICONS[event.category] || PushPinIcon;
   const footerBg = event.is_free ? "#1D9E75" : "#534AB7";
   return (
     <Link
@@ -678,7 +679,7 @@ function EventCard({ event }) {
               borderRadius: "6px",
             }}
           >
-            {catEmoji} {event.category?.replace("_", " ")}
+            <CatIcon size={9} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{event.category?.replace("_", " ")}
           </span>
           {event.is_featured && (
             <span
@@ -750,7 +751,7 @@ function EventCard({ event }) {
         </div>
         {event.venue && (
           <div style={{ fontSize: "12px", color: "#777" }}>
-            📍 {event.venue}
+            <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{event.venue}
           </div>
         )}
         {event.poster_is_verified && (
@@ -1007,8 +1008,8 @@ export default function EventsPage() {
         {/* Upcoming toggle */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
           {[
-            { v: "true", label: "🔜 Upcoming" },
-            { v: "", label: "📅 All events" },
+            { v: "true", label: "Upcoming" },
+            { v: "", label: "All events" },
           ].map(({ v, label }) => (
             <button
               key={v}
@@ -1035,7 +1036,7 @@ export default function EventsPage() {
         <div className="ev-fmob" style={{ gap: "8px", marginBottom: "10px" }}>
           <input
             type="text"
-            placeholder="🔍  Search events..."
+            placeholder="Search events..."
             value={filters.search}
             onChange={(e) => updateFilters({ search: e.target.value })}
             style={{
@@ -1068,7 +1069,7 @@ export default function EventsPage() {
               minWidth: "90px",
             }}
           >
-            ⚙️ Filters
+            Filters
             {activeFilterCount > 0 && (
               <span
                 style={{
@@ -1286,8 +1287,8 @@ export default function EventsPage() {
             }}
           >
             {[
-              { key: "is_free", label: "🎟️ Free events only" },
-              { key: "is_online", label: "💻 Online events only" },
+              { key: "is_free", label: "Free events only" },
+              { key: "is_online", label: "Online events only" },
             ].map(({ key, label }) => (
               <label key={key} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#444", cursor: "pointer" }}>
                 <input
@@ -1333,7 +1334,7 @@ export default function EventsPage() {
         )}
         {!isLoading && !isFetching && allResults.length === 0 && (
           <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-            <div style={{ fontSize: "36px", marginBottom: "12px" }}>🎉</div>
+            <div style={{ marginBottom: "12px" }}><CalendarBlankIcon size={36} weight="duotone" color="#1D9E75" /></div>
             <p
               style={{
                 fontSize: "15px",

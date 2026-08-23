@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { EyeIcon, WarningIcon, FlagIcon, MapPinIcon, ClockIcon, PhoneIcon, EnvelopeIcon, NewspaperIcon, TagIcon, WrenchIcon, MagnifyingGlassIcon, GraduationCapIcon, MegaphoneIcon, PushPinIcon } from "@phosphor-icons/react";
 import { mapsUrl } from "../../utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { getNoticeByListing } from "../../api/notices";
@@ -45,13 +46,13 @@ const CATEGORY_COLORS = {
   general: { bg: "#F1EFE8", color: "#444441", border: "#D3D1C7" },
 };
 
-const CATEGORY_EMOJIS = {
-  news: "📰",
-  sale: "🏷️",
-  service: "🛠️",
-  lost_found: "🔎",
-  education: "📚",
-  general: "📢",
+const CATEGORY_ICONS = {
+  news: NewspaperIcon,
+  sale: TagIcon,
+  service: WrenchIcon,
+  lost_found: MagnifyingGlassIcon,
+  education: GraduationCapIcon,
+  general: MegaphoneIcon,
 };
 
 function daysUntil(dateStr) {
@@ -160,7 +161,7 @@ export default function NoticeDetailPage() {
 
   const catColor =
     CATEGORY_COLORS[notice.category] || CATEGORY_COLORS.general;
-  const catEmoji = CATEGORY_EMOJIS[notice.category] || "📢";
+  const CatIcon = CATEGORY_ICONS[notice.category] || MegaphoneIcon;
   const initial = notice.posted_by?.[0]?.toUpperCase() || "?";
   const footerBg = "#0C447C";
 
@@ -227,7 +228,7 @@ export default function NoticeDetailPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {notice?.view_count > 0 && (
               <span style={{ fontSize: "12px", color: "#aaa" }}>
-                👁️ {notice.view_count}
+                <EyeIcon size={12} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.view_count}
               </span>
             )}
             <MessageButton
@@ -262,7 +263,7 @@ export default function NoticeDetailPage() {
               gap: "10px",
             }}
           >
-            <span>⚠️</span>
+            <WarningIcon size={20} weight="fill" color="#633806" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#633806" }}
@@ -295,7 +296,7 @@ export default function NoticeDetailPage() {
               gap: "10px",
             }}
           >
-            <span>🚩</span>
+            <FlagIcon size={20} weight="fill" color="#A32D2D" />
             <div>
               <div
                 style={{ fontSize: "13px", fontWeight: 600, color: "#A32D2D" }}
@@ -342,12 +343,11 @@ export default function NoticeDetailPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: isMobile ? "26px" : "36px",
               flexShrink: 0,
               boxShadow: `0 2px 0 ${catColor.border}`,
             }}
           >
-            {catEmoji}
+            <CatIcon size={isMobile ? 26 : 36} weight="duotone" color={catColor.color} />
           </div>
 
           {/* Title block */}
@@ -371,7 +371,7 @@ export default function NoticeDetailPage() {
                   borderRadius: "20px",
                 }}
               >
-                {catEmoji} {notice.category?.replace("_", " ")}
+                <CatIcon size={11} weight="fill" color={catColor.color} style={{ marginRight: "4px", verticalAlign: "middle" }} />{notice.category?.replace("_", " ")}
               </span>
               {notice.is_urgent && (
                 <span
@@ -384,7 +384,7 @@ export default function NoticeDetailPage() {
                     borderRadius: "20px",
                   }}
                 >
-                  🔴 Urgent
+                  <WarningIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Urgent
                 </span>
               )}
               {notice.is_free && (
@@ -440,12 +440,12 @@ export default function NoticeDetailPage() {
                 rel="noopener noreferrer"
                 style={{ color: "inherit", textDecoration: "none" }}
               >
-                📍 {notice.listing_location}, {notice.listing_state}
+                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />{notice.listing_location}, {notice.listing_state}
               </a>
             </span>
             {notice.created_at && (
               <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
-                🕐 Posted {timeAgo(notice.created_at)}
+                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(notice.created_at)}
               </div>
             )}
           </div>
@@ -829,7 +829,7 @@ export default function NoticeDetailPage() {
                   <>
                     {notice.contact_phone && (
                       <a href={`tel:${notice.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#f0f6ff", color: footerBg, padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        📞 {notice.contact_phone}
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{notice.contact_phone}
                       </a>
                     )}
                     {notice.contact_whatsapp && (
@@ -837,7 +837,7 @@ export default function NoticeDetailPage() {
                     )}
                     {notice.contact_email && (
                       <a href={`mailto:${notice.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        ✉️ Email
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
                       </a>
                     )}
                   </>
@@ -926,11 +926,10 @@ export default function NoticeDetailPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "18px",
                       flexShrink: 0,
                     }}
                   >
-                    📢
+                    <MegaphoneIcon size={18} weight="duotone" color="#0C447C" />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
@@ -947,7 +946,7 @@ export default function NoticeDetailPage() {
                       {listing.title}
                     </div>
                     <div style={{ fontSize: "12px", color: "#888" }}>
-                      📍 {listing.location}, {listing.state}
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
                     </div>
                   </div>
                   <span style={{ color: "#534AB7", flexShrink: 0 }}>

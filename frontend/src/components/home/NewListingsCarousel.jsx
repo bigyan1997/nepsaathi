@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { timeAgo } from "./homeUtils";
+import { MapPinIcon, BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, PushPinIcon } from "@phosphor-icons/react";
 
 const TYPE_META = {
-  job:    { emoji: "💼", bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
-  room:   { emoji: "🏠", bg: "#FFF1E0", color: "#633806", path: "rooms" },
-  event:  { emoji: "🎉", bg: "#E1F5EE", color: "#085041", path: "events" },
-  notice: { emoji: "📢", bg: "#E6F1FB", color: "#0C447C", path: "notices" },
+  job:    { Icon: BriefcaseIcon, bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
+  room:   { Icon: HouseIcon,     bg: "#FFF1E0", color: "#633806", path: "rooms" },
+  event:  { Icon: ConfettiIcon,  bg: "#E1F5EE", color: "#085041", path: "events" },
+  notice: { Icon: MegaphoneIcon, bg: "#E6F1FB", color: "#0C447C", path: "notices" },
 };
 
-function NewDesktopCard({ to, emoji, typeBg, typeColor, typeLabel, timeStr, title, subtitle, description, scrollCard }) {
+function NewDesktopCard({ to, Icon, typeBg, typeColor, typeLabel, timeStr, title, subtitle, description, scrollCard }) {
   const [hovered, setHovered] = useState(false);
   return (
     <Link
@@ -32,8 +33,8 @@ function NewDesktopCard({ to, emoji, typeBg, typeColor, typeLabel, timeStr, titl
       }}
     >
       {/* Top image strip */}
-      <div style={{ background: typeBg, height: "110px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "48px", position: "relative", flexShrink: 0 }}>
-        {emoji}
+      <div style={{ background: typeBg, height: "110px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+        {Icon && <Icon size={48} weight="duotone" color={typeColor} />}
         <div style={{ position: "absolute", top: "10px", left: "10px", background: "rgba(22,163,74,0.92)", backdropFilter: "blur(4px)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 9px", borderRadius: "20px", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: "5px" }}>
           <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#bbf7d0", display: "inline-block", flexShrink: 0 }} />
           NEW
@@ -152,18 +153,18 @@ export default function NewListingsCarousel({ listings }) {
         }}
       >
         {listings.map((listing) => {
-          const meta = TYPE_META[listing.listing_type] || { emoji: "📌", bg: "#F5F4F0", color: "#444", path: "jobs" };
+          const meta = TYPE_META[listing.listing_type] || { Icon: PushPinIcon, bg: "#F5F4F0", color: "#444", path: "jobs" };
           return (
             <NewDesktopCard
               key={listing.id}
               to={`/${meta.path}/${listing.slug}`}
-              emoji={meta.emoji}
+              Icon={meta.Icon}
               typeBg={meta.bg}
               typeColor={meta.color}
               typeLabel={listing.listing_type?.toUpperCase()}
               timeStr={timeAgo(listing.created_at)}
               title={listing.title}
-              subtitle={`📍 ${listing.location}, ${listing.state}`}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}</>}
               description={listing.description}
               scrollCard
             />

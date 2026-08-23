@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { CameraIcon, WarningIcon, LightbulbIcon } from "@phosphor-icons/react";
 import { createBusiness, uploadBusinessImages } from "../../api/businesses";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
@@ -229,7 +230,7 @@ export default function RegisterBusinessPage() {
                 textAlign: "center", cursor: "pointer", background: "#EEEDFE",
               }}
             >
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>📷</div>
+              <div style={{ marginBottom: "8px" }}><CameraIcon size={32} weight="duotone" color="#534AB7" /></div>
               <div style={{ fontSize: "14px", fontWeight: 500, color: "#534AB7", marginBottom: "4px" }}>
                 Click to upload or drag and drop
               </div>
@@ -356,7 +357,7 @@ export default function RegisterBusinessPage() {
               gap: "8px",
             }}
           >
-            ⚠️ {error}
+            <WarningIcon size={14} weight="fill" color="#A32D2D" style={{ flexShrink: 0 }} /> {error}
           </div>
         )}
 
@@ -552,7 +553,7 @@ export default function RegisterBusinessPage() {
                 lineHeight: 1.5,
               }}
             >
-              💡 Contact details are only shown to logged-in NepSaathi members —
+              <LightbulbIcon size={12} weight="fill" color="#B47D00" style={{ verticalAlign: "middle", marginRight: "4px" }} />Contact details are only shown to logged-in NepSaathi members —
               not to the public.
             </div>
           </Section>

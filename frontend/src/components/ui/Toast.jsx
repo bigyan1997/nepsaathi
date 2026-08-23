@@ -5,6 +5,7 @@ import {
   useContext,
   useCallback,
 } from "react";
+import { CheckCircleIcon, XCircleIcon, InfoIcon, WarningIcon } from "@phosphor-icons/react";
 
 const ToastContext = createContext(null);
 
@@ -28,10 +29,10 @@ export function ToastProvider({ children }) {
   };
 
   const COLORS = {
-    success: { bg: "#E1F5EE", border: "#9FE1CB", color: "#085041", icon: "✅" },
-    error: { bg: "#FCEBEB", border: "#F09595", color: "#A32D2D", icon: "❌" },
-    info: { bg: "#EEEDFE", border: "#AFA9EC", color: "#3C3489", icon: "ℹ️" },
-    warning: { bg: "#FFF1E0", border: "#EFD9C0", color: "#633806", icon: "⚠️" },
+    success: { bg: "#E1F5EE", border: "#9FE1CB", color: "#085041", Icon: CheckCircleIcon },
+    error:   { bg: "#FCEBEB", border: "#F09595", color: "#A32D2D", Icon: XCircleIcon },
+    info:    { bg: "#EEEDFE", border: "#AFA9EC", color: "#3C3489", Icon: InfoIcon },
+    warning: { bg: "#FFF1E0", border: "#EFD9C0", color: "#633806", Icon: WarningIcon },
   };
 
   return (
@@ -68,9 +69,7 @@ export function ToastProvider({ children }) {
                 animation: "slideIn 0.2s ease-out",
               }}
             >
-              <span style={{ fontSize: "16px", flexShrink: 0 }}>
-                {style.icon}
-              </span>
+              <style.Icon size={18} weight="fill" color={style.color} style={{ flexShrink: 0 }} />
               <span
                 style={{
                   fontSize: "13px",

@@ -3,6 +3,7 @@ import { useToast } from "./Toast";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axios";
+import { CheckCircleIcon, FlagIcon } from "@phosphor-icons/react";
 
 const REASONS = [
   { value: "spam", label: "Spam or duplicate" },
@@ -73,7 +74,7 @@ export default function ReportButton({ listingId, endpoint, backPath }) {
         onMouseEnter={(e) => (e.currentTarget.style.color = "#A32D2D")}
         onMouseLeave={(e) => (e.currentTarget.style.color = "#aaa")}
       >
-        🚩 Report
+        <FlagIcon size={13} weight="fill" color="currentColor" style={{ marginRight: "3px" }} /> Report
       </button>
 
       {/* Modal */}
@@ -108,7 +109,7 @@ export default function ReportButton({ listingId, endpoint, backPath }) {
           >
             {submitted ? (
               <div style={{ textAlign: "center", padding: "20px 0" }}>
-                <div style={{ fontSize: "48px", marginBottom: "12px" }}>🙏</div>
+                <CheckCircleIcon size={48} weight="duotone" color="#1D9E75" style={{ marginBottom: "12px" }} />
                 <h3
                   style={{
                     fontSize: "18px",
@@ -134,7 +135,7 @@ export default function ReportButton({ listingId, endpoint, backPath }) {
                     marginBottom: "6px",
                   }}
                 >
-                  🚩 Report this listing
+                  <FlagIcon size={16} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "6px" }} />Report this listing
                 </h3>
                 <p
                   style={{

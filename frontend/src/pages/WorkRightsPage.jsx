@@ -1,11 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import usePageMeta from "../hooks/usePageMeta";
+import {
+  ClipboardTextIcon,
+  CurrencyDollarIcon,
+  ScalesIcon,
+  WarningIcon,
+  ShieldCheckIcon,
+  BriefcaseIcon,
+  MegaphoneIcon,
+  LightbulbIcon,
+  HandshakeIcon,
+} from "@phosphor-icons/react";
 
 const sections = [
   {
     id: "visa-conditions",
-    icon: "📋",
+    Icon: ClipboardTextIcon,
     title: "Your Visa Work Conditions",
     summary: "Your visa determines how many hours you can work — breaching conditions can cost you your visa.",
     steps: [
@@ -21,7 +32,7 @@ const sections = [
   },
   {
     id: "minimum-wage",
-    icon: "💰",
+    Icon: CurrencyDollarIcon,
     title: "Minimum Wage and Pay Rates",
     summary: "The national minimum wage applies to every worker in Australia — regardless of visa or nationality.",
     steps: [
@@ -37,7 +48,7 @@ const sections = [
   },
   {
     id: "fair-work",
-    icon: "⚖️",
+    Icon: ScalesIcon,
     title: "Fair Work Act — Your Rights",
     summary: "The Fair Work Act protects all workers in Australia, regardless of visa status.",
     steps: [
@@ -53,7 +64,7 @@ const sections = [
   },
   {
     id: "exploitation",
-    icon: "🚨",
+    Icon: WarningIcon,
     title: "Underpayment and Workplace Exploitation",
     summary: "Exploitation of migrant workers is a serious and prosecuted crime in Australia — report it.",
     steps: [
@@ -69,7 +80,7 @@ const sections = [
   },
   {
     id: "safety",
-    icon: "🦺",
+    Icon: ShieldCheckIcon,
     title: "Workplace Health and Safety",
     summary: "Every worker has the right to a safe workplace. This is enforceable by law.",
     steps: [
@@ -85,7 +96,7 @@ const sections = [
   },
   {
     id: "super-rights",
-    icon: "💼",
+    Icon: BriefcaseIcon,
     title: "Superannuation Entitlements",
     summary: "Super is part of your wages — your employer stealing super is a criminal offence.",
     steps: [
@@ -101,7 +112,7 @@ const sections = [
   },
   {
     id: "dismissal",
-    icon: "📢",
+    Icon: MegaphoneIcon,
     title: "Unfair Dismissal and Grievances",
     summary: "Australia has strong protections against unfair dismissal — act quickly if you're terminated unjustly.",
     steps: [
@@ -167,7 +178,10 @@ export default function WorkRightsPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ background: "linear-gradient(135deg, #4C1D95 0%, #6D28D9 60%, #7C3AED 100%)", padding: "56px 24px 48px", textAlign: "center", color: "#fff" }}>
-        <div style={{ fontSize: "40px", marginBottom: "16px" }}>⚖️🛡️</div>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
+          <ScalesIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+          <ShieldCheckIcon size={40} weight="duotone" color="#fff" style={{ opacity: 0.9 }} />
+        </div>
         <h1 style={{ fontSize: "clamp(24px,5vw,36px)", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
           Work Rights &amp; Legal in Australia
         </h1>
@@ -190,8 +204,8 @@ export default function WorkRightsPage() {
           {sections.map((s) => {
             const isActive = activeSection === s.id;
             return (
-              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s" }}>
-                {s.icon} {s.title.split(" ")[0]}
+              <button key={s.id} data-id={s.id} onClick={() => scrollToSection(s.id)} style={{ background: "none", border: "none", boxShadow: isActive ? `inset 0 -2px 0 0 ${accent}` : "none", padding: "13px 12px", fontSize: "12px", fontWeight: 600, color: isActive ? accent : "#64748b", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "color 0.15s, border-color 0.15s", display: "flex", alignItems: "center", gap: "5px" }}>
+                {s.Icon && <s.Icon size={15} weight="duotone" color={isActive ? accent : "#64748b"} />} {s.title.split(" ")[0]}
               </button>
             );
           })}
@@ -205,7 +219,7 @@ export default function WorkRightsPage() {
             return (
               <div key={s.id} id={s.id} style={{ background: "#fff", border: `1.5px solid ${isOpen ? accent : "#e8eaf0"}`, borderRadius: "12px", overflow: "hidden", transition: "border-color 0.2s" }}>
                 <button onClick={() => toggle(s.id)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "14px", padding: "18px 20px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
-                  <span style={{ fontSize: "24px", flexShrink: 0 }}>{s.icon}</span>
+                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{s.Icon && <s.Icon size={28} weight="duotone" color={accent} />}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e293b", marginBottom: "2px" }}>{s.title}</div>
                     <div style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.4 }}>{s.summary}</div>
@@ -219,7 +233,7 @@ export default function WorkRightsPage() {
                         {s.steps.map((step, i) => <li key={i} style={{ fontSize: "14px", color: "#334155", lineHeight: 1.6 }}>{step}</li>)}
                       </ol>
                       <div style={{ marginTop: "16px", background: accentLight, border: `1px solid ${accentBorder}`, borderRadius: "8px", padding: "12px 14px", display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                        <span style={{ fontSize: "16px", flexShrink: 0 }}>💡</span>
+                        <LightbulbIcon size={18} weight="fill" color={accent} style={{ flexShrink: 0, marginTop: "1px" }} />
                         <span style={{ fontSize: "13px", color: accent, lineHeight: 1.55 }}>{s.tip}</span>
                       </div>
                       {s.link.url.startsWith("/") ? (
@@ -241,7 +255,7 @@ export default function WorkRightsPage() {
           })}
         </div>
         <div style={{ marginTop: "40px", background: "linear-gradient(135deg, #4C1D95, #6D28D9)", borderRadius: "16px", padding: "32px 24px", textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "28px", marginBottom: "12px" }}>🤝</div>
+          <HandshakeIcon size={40} weight="duotone" color="#fff" style={{ marginBottom: "12px", opacity: 0.85 }} />
           <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "8px" }}>Work rights question for the community?</h2>
           <p style={{ fontSize: "14px", opacity: 0.85, marginBottom: "20px", lineHeight: 1.6 }}>Nepali lawyers, migration agents, and HR professionals in Australia are active on the NepSaathi forum — get advice from the community.</p>
           <Link to="/forum" style={{ display: "inline-block", background: "#fff", color: accent, borderRadius: "8px", padding: "12px 24px", textDecoration: "none", fontWeight: 700, fontSize: "14px" }}>Ask on the Forum</Link>

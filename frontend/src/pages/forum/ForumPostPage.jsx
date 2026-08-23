@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PushPinIcon, LockIcon, ChartBarIcon, ChatDotsIcon } from "@phosphor-icons/react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getForumPost, voteForumPost, createForumReply, deleteForumPost, deleteForumReply, voteForumReply, castPollVote } from "../../api/forum";
@@ -180,9 +181,9 @@ export default function ForumPostPage() {
       {/* Post */}
       <div style={{ background: "#fff", borderRadius: "16px", border: "0.5px solid #e8e8e8", padding: "20px 22px", marginBottom: "16px" }}>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "12px" }}>
-          {post.is_pinned && <span style={{ fontSize: "11px", background: "#26215C", color: "#fff", borderRadius: "6px", padding: "2px 7px", fontWeight: 700 }}>📌 Pinned</span>}
+          {post.is_pinned && <span style={{ fontSize: "11px", background: "#26215C", color: "#fff", borderRadius: "6px", padding: "2px 7px", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "4px" }}><PushPinIcon size={10} weight="fill" color="#fff" /> Pinned</span>}
           <span style={{ fontSize: "11px", background: cat.bg, color: cat.color, borderRadius: "6px", padding: "2px 8px", fontWeight: 600 }}>{post.category_display}</span>
-          {post.is_closed && <span style={{ fontSize: "11px", background: "#f5f5f5", color: "#888", borderRadius: "6px", padding: "2px 7px" }}>🔒 Closed</span>}
+          {post.is_closed && <span style={{ fontSize: "11px", background: "#f5f5f5", color: "#888", borderRadius: "6px", padding: "2px 7px", display: "inline-flex", alignItems: "center", gap: "4px" }}><LockIcon size={10} weight="regular" color="#888" /> Closed</span>}
         </div>
 
         <h1 style={{ fontSize: "20px", fontWeight: 800, color: "#1a1a1a", margin: "0 0 14px", lineHeight: 1.3 }}>{post.title}</h1>
@@ -208,7 +209,7 @@ export default function ForumPostPage() {
           return (
             <div style={{ background: "#f8f7ff", border: "1.5px solid #ddd8fb", borderRadius: "12px", padding: "16px", marginBottom: "18px" }}>
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#534AB7", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" }}>
-                📊 Community Poll · {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+                <ChartBarIcon size={14} weight="bold" color="#534AB7" style={{ verticalAlign: "middle", marginRight: "5px" }} />Community Poll · {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {post.poll_options.map((opt) => {
@@ -259,7 +260,7 @@ export default function ForumPostPage() {
           >
             ▲ {post.upvote_count}
           </button>
-          <span style={{ fontSize: "13px", color: "#888" }}>💬 {(post.replies || []).length} replies</span>
+          <span style={{ fontSize: "13px", color: "#888", display: "inline-flex", alignItems: "center", gap: "4px" }}><ChatDotsIcon size={13} weight="regular" color="#aaa" /> {(post.replies || []).length} replies</span>
           {isOwner && (
             <button
               onClick={() => { if (window.confirm("Delete this post?")) deletePostMutation.mutate(); }}
@@ -340,7 +341,7 @@ export default function ForumPostPage() {
         )
       ) : (
         <div style={{ textAlign: "center", padding: "16px", background: "#f9f9f9", borderRadius: "12px", fontSize: "13px", color: "#888" }}>
-          🔒 This post is closed for new replies.
+          <LockIcon size={13} weight="regular" color="#888" style={{ verticalAlign: "middle", marginRight: "5px" }} />This post is closed for new replies.
         </div>
       )}
     </div>

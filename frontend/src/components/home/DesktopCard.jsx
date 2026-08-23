@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { StarIcon } from "@phosphor-icons/react";
 import { CARD_ACCENT } from "./homeUtils";
 
 export default function DesktopCard({
   to,
   accentType,
-  emoji,
+  Icon,
   timeStr,
   title,
   subtitle,
@@ -42,12 +43,11 @@ export default function DesktopCard({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "48px",
           position: "relative",
           flexShrink: 0,
         }}
       >
-        {emoji}
+        {Icon && <Icon size={48} weight="duotone" color={accent.icon || accent.time} />}
         {isFeatured && (
           <div
             style={{
@@ -61,9 +61,12 @@ export default function DesktopCard({
               padding: "3px 8px",
               borderRadius: "6px",
               letterSpacing: "0.04em",
+              display: "flex",
+              alignItems: "center",
+              gap: "3px",
             }}
           >
-            ⭐ FEATURED
+            <StarIcon size={9} weight="fill" color="#fff" />FEATURED
           </div>
         )}
         <div

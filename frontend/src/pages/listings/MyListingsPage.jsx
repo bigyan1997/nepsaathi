@@ -13,6 +13,15 @@ import {
 } from "../../api/listings";
 import { createCheckoutSession, downloadInvoice } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
+import {
+  StorefrontIcon, BriefcaseIcon, HouseIcon, CalendarBlankIcon, MegaphoneIcon,
+  WarningIcon, FlagIcon, ClockIcon, MapPinIcon, EyeIcon, ProhibitIcon,
+  ArrowsClockwiseIcon, PencilSimpleIcon, ReceiptIcon, CheckCircleIcon,
+  TrashIcon, SealCheckIcon, HeartIcon, ChartBarIcon, LightbulbIcon,
+  ChatDotsIcon, ArchiveIcon, PushPinIcon,
+  ForkKnifeIcon, ShoppingCartIcon, AirplaneIcon, ScissorsIcon, FirstAidKitIcon,
+  ScalesIcon, BookOpenIcon, SunIcon, HammerIcon, CarIcon, CurrencyDollarIcon, LaptopIcon,
+} from "@phosphor-icons/react";
 import { SkeletonCard } from "../../components/ui/Skeleton";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
@@ -32,23 +41,23 @@ const TYPE_COLORS = {
   notice: { bg: "#E6F1FB", color: "#0C447C", border: "#1D9E75" },
 };
 
-const TYPE_EMOJIS = { job: "💼", room: "🏠", event: "🎉", notice: "📢" };
+const TYPE_ICONS = { job: BriefcaseIcon, room: HouseIcon, event: CalendarBlankIcon, notice: MegaphoneIcon };
 
-const CATEGORY_EMOJIS = {
-  restaurant: "🍛",
-  grocery: "🛒",
-  travel: "✈️",
-  beauty: "💇",
-  health: "🏥",
-  legal: "⚖️",
-  education: "📚",
-  religious: "🙏",
-  construction: "🔨",
-  transport: "🚗",
-  finance: "💸",
-  freelancer: "🧑‍💻",
-  retail: "🏪",
-  other: "🏪",
+const CATEGORY_ICONS = {
+  restaurant: ForkKnifeIcon,
+  grocery: ShoppingCartIcon,
+  travel: AirplaneIcon,
+  beauty: ScissorsIcon,
+  health: FirstAidKitIcon,
+  legal: ScalesIcon,
+  education: BookOpenIcon,
+  religious: SunIcon,
+  construction: HammerIcon,
+  transport: CarIcon,
+  finance: CurrencyDollarIcon,
+  freelancer: LaptopIcon,
+  retail: StorefrontIcon,
+  other: PushPinIcon,
 };
 
 const CATEGORY_COLORS = {
@@ -120,7 +129,7 @@ function ConfirmModal({ message, onConfirm, onCancel, confirmLabel = "Yes, Delet
           margin: "0 16px",
         }}
       >
-        <div style={{ fontSize: "32px", marginBottom: "12px" }}>⚠️</div>
+        <div style={{ marginBottom: "12px" }}><WarningIcon size={32} weight="fill" color="#E87722" /></div>
         <h3
           style={{
             fontSize: "16px",
@@ -255,6 +264,7 @@ function ActionMenu({ items, open, onToggle }) {
                       borderTop: i > 0 ? "0.5px solid #f5f5f5" : "none",
                     }}
                   >
+                    {item.icon && <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{item.icon}</span>}
                     {item.label}
                   </button>
                 ),
@@ -622,7 +632,7 @@ export default function MyListingsPage() {
   const renderListingCard = (listing) => {
     const typeColor = TYPE_COLORS[listing.listing_type] || TYPE_COLORS.job;
     const statusColor = STATUS_COLORS[listing.status] || STATUS_COLORS.active;
-    const typeEmoji = TYPE_EMOJIS[listing.listing_type] || "📌";
+    const ListingTypeIcon = TYPE_ICONS[listing.listing_type] || StorefrontIcon;
     const expiring = isExpiringSoon(listing.expires_at) && listing.status === "active";
     const isExpired = listing.status === "expired";
     const isArchive = listing.status === "filled" || isExpired;
@@ -687,8 +697,8 @@ export default function MyListingsPage() {
         )}
 
         {/* Type icon */}
-        <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: typeColor.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
-          {typeEmoji}
+        <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: typeColor.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <ListingTypeIcon size={20} weight="duotone" color={typeColor.color} />
         </div>
 
         {/* Content */}
@@ -708,17 +718,17 @@ export default function MyListingsPage() {
             )}
             {listing.is_under_review && (
               <span style={{ background: "#FFF8E0", color: "#8B6914", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #E8D5A0" }}>
-                🔍 Under Review
+                <ClockIcon size={10} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Under Review
               </span>
             )}
             {listing.is_reported && !listing.is_under_review && (
               <span title="A user has reported this listing. Our team will review it." style={{ background: "#FEECEC", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #F09595" }}>
-                ⚑ Reported
+                <FlagIcon size={10} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Reported
               </span>
             )}
             {expiring && (
               <span style={{ background: "#FFF1E0", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap" }}>
-                ⚠️ Expires soon
+                <WarningIcon size={10} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Expires soon
               </span>
             )}
           </div>
@@ -728,9 +738,9 @@ export default function MyListingsPage() {
             <span style={{ background: typeColor.bg, color: typeColor.color, fontSize: "10px", fontWeight: 500, padding: "1px 7px", borderRadius: "8px", marginRight: "6px" }}>
               {listing.listing_type}
             </span>
-            📍 {listing.location}, {listing.state}
+            <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
             {listing.view_count > 0 && (
-              <span style={{ marginLeft: "8px" }}>· 👁️ {listing.view_count} views</span>
+              <span style={{ marginLeft: "8px" }}>· <EyeIcon size={11} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "2px" }} />{listing.view_count} views</span>
             )}
           </div>
 
@@ -748,11 +758,11 @@ export default function MyListingsPage() {
           {(expiring || isExpired) && (
             listing.is_under_review || listing.renewal_blocked ? (
               <span title={listing.is_under_review ? "Under review — cannot renew" : "Renewal restricted"} style={{ marginTop: "8px", display: "inline-block", background: "#FFF1E0", color: "#E87722", border: "0.5px solid #EFD9C0", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600 }}>
-                🚫 Renewal blocked
+                <ProhibitIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Renewal blocked
               </span>
             ) : (
               <button onClick={() => renewMutation.mutate(listing.id)} disabled={renewMutation.isPending} style={{ marginTop: "8px", background: "#EEEDFE", color: "#534AB7", border: "none", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600, cursor: "pointer", opacity: renewMutation.isPending ? 0.6 : 1 }}>
-                🔄 Renew for 30 days
+                <ArrowsClockwiseIcon size={11} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Renew for 30 days
               </button>
             )
           )}
@@ -763,10 +773,10 @@ export default function MyListingsPage() {
           open={openMenu === listing.id}
           onToggle={() => setOpenMenu(openMenu === listing.id ? null : listing.id)}
           items={[
-            { label: "👁️ View listing", onClick: () => { setOpenMenu(null); navigate(getDetailPath(listing)); } },
-            { label: "✏️ Edit listing", onClick: () => { setOpenMenu(null); navigate(`/edit-listing/${listing.slug}`); } },
+            { icon: <EyeIcon size={14} weight="regular" />, label: "View listing", onClick: () => { setOpenMenu(null); navigate(getDetailPath(listing)); } },
+            { icon: <PencilSimpleIcon size={14} weight="regular" />, label: "Edit listing", onClick: () => { setOpenMenu(null); navigate(`/edit-listing/${listing.slug}`); } },
             (listing.status === "active" || listing.status === "expired") && !listing.is_under_review && !listing.is_reported && !listing.renewal_blocked && {
-              label: "🔄 Renew 30 days", highlight: true,
+              icon: <ArrowsClockwiseIcon size={14} weight="regular" />, label: "Renew 30 days", highlight: true,
               onClick: () => { setOpenMenu(null); renewMutation.mutate(listing.id); },
             },
             listing.status === "active" && !listing.is_featured && !listing.is_under_review && !listing.is_reported && {
@@ -774,11 +784,11 @@ export default function MyListingsPage() {
               onClick: () => { setOpenMenu(null); featureMutation.mutate(listing.id); },
             },
             listing.is_featured && {
-              label: "🧾 Download invoice",
+              icon: <ReceiptIcon size={14} weight="regular" />, label: "Download invoice",
               onClick: () => { setOpenMenu(null); downloadInvoice(listing.id, `NepSaathi-Invoice-${listing.id}.pdf`); },
             },
             listing.status === "active" && {
-              label: "✓ Mark as filled",
+              icon: <CheckCircleIcon size={14} weight="regular" />, label: "Mark as filled",
               onClick: () => {
                 setOpenMenu(null);
                 confirmDelete(`Mark "${listing.title}" as filled/taken?`, () => markStatusMutation.mutate({ id: listing.id, status: "filled" }), "Yes, Mark filled", "#534AB7");
@@ -789,7 +799,7 @@ export default function MyListingsPage() {
               onClick: () => { setOpenMenu(null); markStatusMutation.mutate({ id: listing.id, status: "active" }); },
             },
             {
-              label: "🗑️ Delete listing", danger: true,
+              icon: <TrashIcon size={14} weight="regular" />, label: "Delete listing", danger: true,
               onClick: () => {
                 setOpenMenu(null);
                 confirmDelete("This listing will be permanently deleted.", () => { setDeletingId(listing.id); deleteListingMutation.mutate(listing.slug); });
@@ -1032,8 +1042,8 @@ export default function MyListingsPage() {
               <div style={{ position: "fixed", top: "80px", left: "50%", transform: "translateX(-50%)", background: "#fff", borderRadius: "16px", padding: "10px 16px", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 4px 24px rgba(0,0,0,0.14)", border: "0.5px solid #e5e5e5", zIndex: 1000, animation: "slideDown 0.2s ease", whiteSpace: "nowrap", maxWidth: "calc(100vw - 32px)", overflowX: "auto" }}>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "#26215C" }}>{selectedIds.size} selected</span>
                 <div style={{ width: "1px", height: "20px", background: "#e5e5e5" }} />
-                <button onClick={bulkMarkFilled} style={{ background: "#F0EFF9", color: "#534AB7", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>✓ Mark filled</button>
-                <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>🗑️ Delete</button>
+                <button onClick={bulkMarkFilled} style={{ background: "#F0EFF9", color: "#534AB7", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}><CheckCircleIcon size={13} weight="regular" color="currentColor" /> Mark filled</button>
+                <button onClick={bulkDelete} style={{ background: "#FCEBEB", color: "#A32D2D", border: "none", borderRadius: "9px", padding: "7px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}><TrashIcon size={13} weight="regular" color="currentColor" /> Delete</button>
                 <button onClick={clearSelection} style={{ background: "none", border: "none", color: "#aaa", fontSize: "20px", cursor: "pointer", lineHeight: 1, padding: "0 2px" }}>×</button>
               </div>
             )}
@@ -1043,7 +1053,7 @@ export default function MyListingsPage() {
             {/* Empty state */}
             {!listingsLoading && allListings.length === 0 && (
               <div style={{ textAlign: "center", padding: "48px", background: "#fff", borderRadius: "16px", border: "0.5px solid #e5e5e5" }}>
-                <div style={{ fontSize: "36px", marginBottom: "14px" }}>📭</div>
+                <div style={{ marginBottom: "14px" }}><MegaphoneIcon size={36} weight="duotone" color="#534AB7" style={{ opacity: 0.4 }} /></div>
                 <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", marginBottom: "6px" }}>No listings yet</h3>
                 <p style={{ fontSize: "14px", color: "#888", marginBottom: "20px" }}>Post a job, room, event or notice for free</p>
                 <button onClick={() => navigate("/post-ad")} style={{ background: "#534AB7", color: "#fff", border: "none", borderRadius: "9px", padding: "11px 24px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
@@ -1055,7 +1065,7 @@ export default function MyListingsPage() {
             {/* ── Group: Needs Attention ── */}
             {!listingsLoading && needsAttention.length > 0 && (
               <>
-                <SectionHeader icon="⚠️" label="Needs attention" count={needsAttention.length} accent="#8B4800" bg="#FFF1E0" line="#EFD9C0" />
+                <SectionHeader icon={<WarningIcon size={11} weight="fill" color="#8B4800" />} label="Needs attention" count={needsAttention.length} accent="#8B4800" bg="#FFF1E0" line="#EFD9C0" />
                 {needsAttention.map((listing) => renderListingCard(listing))}
               </>
             )}
@@ -1064,7 +1074,7 @@ export default function MyListingsPage() {
             {!listingsLoading && activeListings.length > 0 && (
               <>
                 {needsAttention.length > 0 && (
-                  <SectionHeader icon="✓" label="Active" count={activeListings.length} accent="#085041" bg="#E1F5EE" line="#B6DCC7" />
+                  <SectionHeader icon={<CheckCircleIcon size={11} weight="fill" color="#085041" />} label="Active" count={activeListings.length} accent="#085041" bg="#E1F5EE" line="#B6DCC7" />
                 )}
                 {activeListings.map((listing) => renderListingCard(listing))}
               </>
@@ -1074,7 +1084,7 @@ export default function MyListingsPage() {
             {!listingsLoading && archiveListings.length > 0 && (
               <>
                 <SectionHeader
-                  icon="📦" label="Archive" count={archiveListings.length}
+                  icon={<ArchiveIcon size={11} weight="fill" color="#666" />} label="Archive" count={archiveListings.length}
                   accent="#666" bg="#F1EFE8" line="#e5e5e5"
                   collapsible open={archiveOpen} onToggle={() => setArchiveOpen((v) => !v)}
                 />
@@ -1100,7 +1110,7 @@ export default function MyListingsPage() {
                   border: "0.5px solid #e5e5e5",
                 }}
               >
-                <div style={{ fontSize: "36px", marginBottom: "14px" }}>🏪</div>
+                <StorefrontIcon size={36} weight="duotone" color="#534AB7" style={{ marginBottom: "14px", opacity: 0.6 }} />
                 <h3
                   style={{
                     fontSize: "16px",
@@ -1139,9 +1149,8 @@ export default function MyListingsPage() {
             )}
 
             {businesses.map((business) => {
-              const catColor =
-                CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
-              const catEmoji = CATEGORY_EMOJIS[business.category] || "🏪";
+              const catColor = CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
+              const BizCatIcon = CATEGORY_ICONS[business.category] || PushPinIcon;
               return (
                 <div
                   key={business.id}
@@ -1185,11 +1194,10 @@ export default function MyListingsPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "20px",
                       flexShrink: 0,
                     }}
                   >
-                    {catEmoji}
+                    <BizCatIcon size={22} weight="duotone" color={catColor.color} />
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -1216,8 +1224,8 @@ export default function MyListingsPage() {
                         {business.business_name}
                       </h3>
                       {business.is_verified ? (
-                        <span style={{ background: "#E1F5EE", color: "#085041", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px" }}>
-                          ✓ Verified
+                        <span style={{ background: "#E1F5EE", color: "#085041", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                          <SealCheckIcon size={10} weight="fill" color="#085041" /> Verified
                         </span>
                       ) : (
                         <span style={{ background: "#FAEEDA", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px" }}>
@@ -1237,9 +1245,9 @@ export default function MyListingsPage() {
                           marginRight: "6px",
                         }}
                       >
-                        {catEmoji} {business.category?.replace("_", " ")}
+                        <BizCatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{business.category?.replace("_", " ")}
                       </span>
-                      📍 {business.suburb}, {business.state}
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{business.suburb}, {business.state}
                     </div>
                     {/* Rating if available */}
                     {business.avg_rating > 0 && (
@@ -1292,14 +1300,14 @@ export default function MyListingsPage() {
                     }
                     items={[
                       {
-                        label: "👁️ View business",
+                        icon: <EyeIcon size={14} weight="regular" />, label: "View business",
                         onClick: () => {
                           setOpenMenu(null);
                           navigate(`/businesses/${business.slug}`);
                         },
                       },
                       {
-                        label: "🗑️ Remove business",
+                        icon: <TrashIcon size={14} weight="regular" />, label: "Remove business",
                         danger: true,
                         onClick: () => {
                           setOpenMenu(null);
@@ -1346,7 +1354,7 @@ export default function MyListingsPage() {
                   border: "0.5px solid #e5e5e5",
                 }}
               >
-                <div style={{ fontSize: "36px", marginBottom: "14px" }}>🤍</div>
+                <div style={{ marginBottom: "14px" }}><HeartIcon size={36} weight="duotone" color="#534AB7" style={{ opacity: 0.4 }} /></div>
                 <h3
                   style={{
                     fontSize: "16px",
@@ -1366,7 +1374,7 @@ export default function MyListingsPage() {
             {saved.map((item) => {
               const typeColor =
                 TYPE_COLORS[item.listing_type] || TYPE_COLORS.job;
-              const typeEmoji = TYPE_EMOJIS[item.listing_type] || "📌";
+              const SavedTypeIcon = TYPE_ICONS[item.listing_type] || StorefrontIcon;
               const isExpiredSaved = item.listing_status === "expired";
 
               return (
@@ -1393,11 +1401,10 @@ export default function MyListingsPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "20px",
                       flexShrink: 0,
                     }}
                   >
-                    {typeEmoji}
+                    <SavedTypeIcon size={20} weight="duotone" color={typeColor.color} />
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -1450,8 +1457,8 @@ export default function MyListingsPage() {
                     >
                       {item.listing_title}
                     </h3>
-                    <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>
-                      📍 {item.listing_location}, {item.listing_state}
+                    <p style={{ fontSize: "12px", color: "#888", margin: 0, display: "flex", alignItems: "center", gap: "3px" }}>
+                      <MapPinIcon size={11} weight="fill" color="#E87722" />{item.listing_location}, {item.listing_state}
                     </p>
                   </div>
 
@@ -1512,7 +1519,7 @@ export default function MyListingsPage() {
 
             {!analyticsLoading && (!analyticsData || analyticsData.length === 0) && (
               <div style={{ textAlign: "center", padding: "48px", background: "#fff", borderRadius: "16px", border: "0.5px solid #e5e5e5" }}>
-                <div style={{ fontSize: "36px", marginBottom: "14px" }}>📊</div>
+                <div style={{ marginBottom: "14px" }}><ChartBarIcon size={36} weight="duotone" color="#534AB7" /></div>
                 <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#26215C", marginBottom: "6px" }}>No listings yet</h3>
                 <p style={{ fontSize: "14px", color: "#888" }}>Post a listing to start seeing views, saves, and messages.</p>
               </div>
@@ -1523,13 +1530,13 @@ export default function MyListingsPage() {
                 {/* Summary totals */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "10px", marginBottom: "4px" }}>
                   {[
-                    { label: "Total Views", value: analyticsData.reduce((s, l) => s + l.views, 0), icon: "👁️", color: "#6C3FD6" },
-                    { label: "Total Saves", value: analyticsData.reduce((s, l) => s + l.saves, 0), icon: "🤍", color: "#e11d48" },
-                    { label: "Total Messages", value: analyticsData.reduce((s, l) => s + l.messages, 0), icon: "💬", color: "#0284c7" },
-                    { label: "Active Listings", value: analyticsData.filter(l => l.status === "active").length, icon: "✅", color: "#16a34a" },
-                  ].map(({ label, value, icon, color }) => (
+                    { label: "Total Views", value: analyticsData.reduce((s, l) => s + l.views, 0), Icon: EyeIcon, color: "#6C3FD6" },
+                    { label: "Total Saves", value: analyticsData.reduce((s, l) => s + l.saves, 0), Icon: HeartIcon, color: "#e11d48" },
+                    { label: "Total Messages", value: analyticsData.reduce((s, l) => s + l.messages, 0), Icon: ChatDotsIcon, color: "#0284c7" },
+                    { label: "Active Listings", value: analyticsData.filter(l => l.status === "active").length, Icon: CheckCircleIcon, color: "#16a34a" },
+                  ].map(({ label, value, Icon: StatIcon, color }) => (
                     <div key={label} style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "14px 16px", textAlign: "center" }}>
-                      <div style={{ fontSize: "22px", marginBottom: "4px" }}>{icon}</div>
+                      <div style={{ marginBottom: "4px", display: "flex", justifyContent: "center" }}><StatIcon size={22} weight="duotone" color={color} /></div>
                       <div style={{ fontSize: "22px", fontWeight: 800, color }}>{value}</div>
                       <div style={{ fontSize: "11px", color: "#888", marginTop: "2px", fontWeight: 500 }}>{label}</div>
                     </div>
@@ -1539,7 +1546,7 @@ export default function MyListingsPage() {
                 {/* Per-listing rows */}
                 {analyticsData.map((l) => {
                   const typeColor = TYPE_COLORS[l.listing_type] || TYPE_COLORS.job;
-                  const typeEmoji = TYPE_EMOJIS[l.listing_type] || "📌";
+                  const ListingTypeIcon = TYPE_ICONS[l.listing_type] || PushPinIcon;
                   const totalEngagement = l.views + l.saves * 3 + l.messages * 5;
                   const tip =
                     l.views === 0 ? "No views yet — try adding more photos or a clearer title." :
@@ -1550,7 +1557,7 @@ export default function MyListingsPage() {
                   return (
                     <div key={l.id} style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: "12px", padding: "16px", borderLeft: `3px solid ${typeColor.dot || "#534AB7"}` }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "12px" }}>
-                        <span style={{ fontSize: "18px", flexShrink: 0 }}>{typeEmoji}</span>
+                        <ListingTypeIcon size={18} weight="duotone" color={typeColor.color} style={{ flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: "14px", fontWeight: 700, color: "#1e1e2e", marginBottom: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{l.title}</div>
                           <div style={{ fontSize: "12px", color: "#888" }}>{l.location} · {l.status}</div>
@@ -1563,12 +1570,12 @@ export default function MyListingsPage() {
                       {/* Stats row */}
                       <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
                         {[
-                          { icon: "👁️", label: "Views", value: l.views, color: "#6C3FD6" },
-                          { icon: "🤍", label: "Saves", value: l.saves, color: "#e11d48" },
-                          { icon: "💬", label: "Messages", value: l.messages, color: "#0284c7" },
-                        ].map(({ icon, label, value, color }) => (
+                          { Icon: EyeIcon, label: "Views", value: l.views, color: "#6C3FD6" },
+                          { Icon: HeartIcon, label: "Saves", value: l.saves, color: "#e11d48" },
+                          { Icon: ChatDotsIcon, label: "Messages", value: l.messages, color: "#0284c7" },
+                        ].map(({ Icon: StatIcon, label, value, color }) => (
                           <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                            <span style={{ fontSize: "14px" }}>{icon}</span>
+                            <StatIcon size={14} weight="duotone" color={color} />
                             <span style={{ fontSize: "18px", fontWeight: 700, color }}>{value}</span>
                             <span style={{ fontSize: "11px", color: "#aaa", fontWeight: 500 }}>{label}</span>
                           </div>
@@ -1587,7 +1594,7 @@ export default function MyListingsPage() {
                       {/* Tip */}
                       {tip && (
                         <div style={{ marginTop: "10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", color: "#9a3412", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                          <span style={{ flexShrink: 0 }}>💡</span>
+                          <LightbulbIcon size={12} weight="fill" color="#c2410c" style={{ flexShrink: 0, marginTop: "1px" }} />
                           <span>{tip}</span>
                         </div>
                       )}

@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getSavedSearches, deleteSavedSearch, updateSavedSearch } from "../api/listings";
 import { useToast } from "../components/ui/Toast";
+import { BellIcon, BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, StorefrontIcon, ClipboardTextIcon } from "@phosphor-icons/react";
 
 const TYPE_LABELS = {
-  job: { label: "Jobs", emoji: "💼", color: "#EEEDFE" },
-  room: { label: "Rooms", emoji: "🏠", color: "#FFF1E0" },
-  event: { label: "Events", emoji: "🎉", color: "#E1F5EE" },
-  notice: { label: "Notices", emoji: "📢", color: "#F5F4F0" },
-  business: { label: "Businesses", emoji: "🏪", color: "#FFF1E0" },
+  job:      { label: "Jobs",       Icon: BriefcaseIcon, iconColor: "#3C3489", color: "#EEEDFE" },
+  room:     { label: "Rooms",      Icon: HouseIcon,     iconColor: "#633806", color: "#FFF1E0" },
+  event:    { label: "Events",     Icon: ConfettiIcon,  iconColor: "#085041", color: "#E1F5EE" },
+  notice:   { label: "Notices",    Icon: MegaphoneIcon, iconColor: "#0C447C", color: "#F5F4F0" },
+  business: { label: "Businesses", Icon: StorefrontIcon,iconColor: "#8B5E00", color: "#FFF1E0" },
 };
 
 export default function SavedSearchesPage() {
@@ -56,7 +57,7 @@ export default function SavedSearchesPage() {
         </div>
       ) : searches.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🔔</div>
+          <BellIcon size={52} weight="duotone" color="#534AB7" style={{ opacity: 0.5, marginBottom: 12 }} />
           <div style={{ fontSize: 15, fontWeight: 600, color: "#26215C", marginBottom: 6 }}>No saved searches yet</div>
           <div style={{ fontSize: 13 }}>
             Browse listings and click <strong>"Save this search"</strong> to get email alerts for new matches.
@@ -65,7 +66,7 @@ export default function SavedSearchesPage() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {searches.map((s) => {
-            const type = TYPE_LABELS[s.listing_type] || { label: s.listing_type, emoji: "📋", color: "#F5F4F0" };
+            const type = TYPE_LABELS[s.listing_type] || { label: s.listing_type, Icon: ClipboardTextIcon, iconColor: "#534AB7", color: "#F5F4F0" };
             const filters = s.filters || {};
             const filterParts = [];
             if (filters.search) filterParts.push(`"${filters.search}"`);
@@ -85,9 +86,9 @@ export default function SavedSearchesPage() {
                   <div style={{
                     width: 40, height: 40, borderRadius: 10, background: type.color,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 18, flexShrink: 0,
+                    flexShrink: 0,
                   }}>
-                    {type.emoji}
+                    {type.Icon && <type.Icon size={20} weight="duotone" color={type.iconColor} />}
                   </div>
 
                   {/* Info */}

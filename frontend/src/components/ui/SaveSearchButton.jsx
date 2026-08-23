@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckCircleIcon, BellIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSavedSearch } from "../../api/listings";
 import useAuthStore from "../../store/authStore";
@@ -65,7 +66,9 @@ export default function SaveSearchButton({ listingType, filters = {} }) {
       onMouseEnter={(e) => { if (!saved && !mutation.isPending) e.currentTarget.style.background = "#EEEDFE"; }}
       onMouseLeave={(e) => { if (!saved) e.currentTarget.style.background = "#F5F4F0"; }}
     >
-      <span style={{ fontSize: "13px" }}>{saved ? "✅" : "🔔"}</span>
+      {saved
+        ? <CheckCircleIcon size={14} weight="fill" color="#085041" />
+        : <BellIcon size={14} weight="regular" color="#555" />}
       {saved ? "Alert saved" : mutation.isPending ? "Saving..." : "Save this search"}
     </button>
   );

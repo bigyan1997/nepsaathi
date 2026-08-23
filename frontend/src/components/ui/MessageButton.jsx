@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { startConversation } from "../../api/messages";
 import useAuthStore from "../../store/authStore";
 import { useToast } from "./Toast";
+import { ChatDotsIcon } from "@phosphor-icons/react";
 
 export default function MessageButton({ recipientId, listingId, listingTitle, listingType, compact = false, fullWidth = false }) {
   const { isAuthenticated, user } = useAuthStore();
@@ -75,7 +76,7 @@ export default function MessageButton({ recipientId, listingId, listingTitle, li
         onMouseEnter={(e) => (e.currentTarget.style.background = fullWidth ? "#157a50" : "#DDD9FC")}
         onMouseLeave={(e) => (e.currentTarget.style.background = fullWidth ? "#1B8F5E" : "#EEEDFE")}
       >
-        <span style={{ fontSize: "15px" }}>💬</span>
+        <ChatDotsIcon size={15} weight="fill" color={fullWidth ? "#fff" : "#534AB7"} />
         {!compact && "Message"}
       </button>
 

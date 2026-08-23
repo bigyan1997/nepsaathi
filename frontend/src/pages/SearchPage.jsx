@@ -3,10 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { globalSearch } from "../api/listings";
 import { SkeletonCard } from "../components/ui/Skeleton";
 import usePageMeta from "../hooks/usePageMeta";
+import { MagnifyingGlassIcon, SmileyMehIcon, BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, StorefrontIcon, MapPinIcon } from "@phosphor-icons/react";
 
 const TYPE_CONFIG = {
   jobs: {
-    emoji: "💼",
+    Icon: BriefcaseIcon,
     label: "Jobs",
     color: "#EEEDFE",
     textColor: "#3C3489",
@@ -14,7 +15,7 @@ const TYPE_CONFIG = {
     path: "jobs",
   },
   rooms: {
-    emoji: "🏠",
+    Icon: HouseIcon,
     label: "Rooms",
     color: "#FFF1E0",
     textColor: "#633806",
@@ -22,7 +23,7 @@ const TYPE_CONFIG = {
     path: "rooms",
   },
   events: {
-    emoji: "🎉",
+    Icon: ConfettiIcon,
     label: "Events",
     color: "#E1F5EE",
     textColor: "#085041",
@@ -30,7 +31,7 @@ const TYPE_CONFIG = {
     path: "events",
   },
   notices: {
-    emoji: "📢",
+    Icon: MegaphoneIcon,
     label: "Notices",
     color: "#E6F1FB",
     textColor: "#0C447C",
@@ -38,7 +39,7 @@ const TYPE_CONFIG = {
     path: "notices",
   },
   businesses: {
-    emoji: "🏪",
+    Icon: StorefrontIcon,
     label: "Businesses",
     color: "#FFF1E0",
     textColor: "#7A3B00",
@@ -119,7 +120,7 @@ export default function SearchPage() {
             border: "0.5px solid #e5e5e5",
           }}
         >
-          <div style={{ fontSize: "40px", marginBottom: "14px" }}>🔍</div>
+          <MagnifyingGlassIcon size={52} weight="duotone" color="#534AB7" style={{ opacity: 0.5, marginBottom: "14px" }} />
           <h2
             style={{
               fontSize: "16px",
@@ -156,7 +157,7 @@ export default function SearchPage() {
             border: "0.5px solid #e5e5e5",
           }}
         >
-          <div style={{ fontSize: "40px", marginBottom: "14px" }}>😕</div>
+          <SmileyMehIcon size={52} weight="duotone" color="#534AB7" style={{ opacity: 0.5, marginBottom: "14px" }} />
           <h2
             style={{
               fontSize: "16px",
@@ -309,11 +310,10 @@ export default function SearchPage() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontSize: "18px",
                           flexShrink: 0,
                         }}
                       >
-                        {config.emoji}
+                        {config.Icon && <config.Icon size={18} weight="duotone" color={config.textColor} />}
                       </div>
                       <div>
                         <div
@@ -326,8 +326,8 @@ export default function SearchPage() {
                         >
                           {item.listing_title}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#888" }}>
-                          📍 {item.listing_location}, {item.listing_state}
+                        <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px", flexWrap: "wrap" }}>
+                          <MapPinIcon size={11} weight="fill" color="#E87722" />{item.listing_location}, {item.listing_state}
                           {item.posted_by && ` · ${item.posted_by}`}
                         </div>
                       </div>

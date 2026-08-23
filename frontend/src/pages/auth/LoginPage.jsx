@@ -6,6 +6,7 @@ import { login } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import usePageTitle from "../../hooks/usePageTitle";
 import SEO from "../../components/ui/SEO";
+import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 
 export default function LoginPage() {
   usePageTitle("Sign In");
@@ -267,7 +268,10 @@ export default function LoginPage() {
                   color: "#888",
                 }}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword
+                  ? <EyeSlashIcon size={17} color="#888" weight="regular" />
+                  : <EyeIcon size={17} color="#888" weight="regular" />
+                }
               </button>
             </div>
           </div>

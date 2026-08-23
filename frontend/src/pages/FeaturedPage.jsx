@@ -4,11 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getFeaturedListings } from "../api/listings";
 import { SkeletonRoomCard } from "../components/ui/Skeleton";
 import usePageMeta from "../hooks/usePageMeta";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, StarIcon, MapPinIcon } from "@phosphor-icons/react";
 
 /* ── constants ── */
 const TYPE_CONFIG = {
   job: {
-    emoji: "💼",
+    Icon: BriefcaseIcon,
     label: "Jobs",
     bg: "#EEEDFE",
     border: "#AFA9EC",
@@ -16,7 +17,7 @@ const TYPE_CONFIG = {
     path: "jobs",
   },
   room: {
-    emoji: "🏠",
+    Icon: HouseIcon,
     label: "Rooms",
     bg: "#FFF1E0",
     border: "#EFD9C0",
@@ -24,7 +25,7 @@ const TYPE_CONFIG = {
     path: "rooms",
   },
   event: {
-    emoji: "🎉",
+    Icon: ConfettiIcon,
     label: "Events",
     bg: "#E1F5EE",
     border: "#9FE1CB",
@@ -32,7 +33,7 @@ const TYPE_CONFIG = {
     path: "events",
   },
   notice: {
-    emoji: "📢",
+    Icon: MegaphoneIcon,
     label: "Notices",
     bg: "#E6F1FB",
     border: "#B5D4F4",
@@ -112,12 +113,11 @@ function FeaturedCard({ listing }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "44px",
           position: "relative",
           flexShrink: 0,
         }}
       >
-        {cfg.emoji}
+        <cfg.Icon size={44} weight="duotone" color={cfg.color} />
         {/* ⭐ FEATURED badge */}
         <div
           style={{
@@ -133,7 +133,7 @@ function FeaturedCard({ listing }) {
             letterSpacing: "0.04em",
           }}
         >
-          ⭐ FEATURED
+          <StarIcon size={9} weight="fill" color="#fff" style={{ verticalAlign: "middle", marginRight: "3px" }} />FEATURED
         </div>
         {/* Type badge */}
         <div
@@ -195,8 +195,8 @@ function FeaturedCard({ listing }) {
         >
           {listing.title}
         </div>
-        <div style={{ fontSize: "12px", color: "#888" }}>
-          📍 {listing.location}, {listing.state}
+        <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}>
+          <MapPinIcon size={11} weight="fill" color="#E87722" />{listing.location}, {listing.state}
         </div>
         {listing.description && (
           <div
@@ -434,9 +434,12 @@ export default function FeaturedPage() {
                   fontWeight: 700,
                   color: "#fff",
                   margin: "0 0 6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
                 }}
               >
-                ⭐ Featured listings
+                <StarIcon size={22} weight="fill" color="#E87722" />Featured listings
               </h1>
               <p style={{ fontSize: "13px", color: "#AFA9EC", margin: 0 }}>
                 {isLoading
@@ -514,7 +517,7 @@ export default function FeaturedPage() {
                   flexShrink: 0,
                 }}
               >
-                <span style={{ fontSize: "14px" }}>{cfg.emoji}</span>
+                <cfg.Icon size={14} weight="regular" color={filterType === key ? cfg.color : "#555"} />
                 {cfg.label}
               </button>
             ))}
@@ -581,7 +584,7 @@ export default function FeaturedPage() {
               border: "0.5px solid #e5e5e5",
             }}
           >
-            <div style={{ fontSize: "40px", marginBottom: "14px" }}>⭐</div>
+            <StarIcon size={40} weight="duotone" color="#E87722" style={{ marginBottom: "14px" }} />
             <h2
               style={{
                 fontSize: "16px",

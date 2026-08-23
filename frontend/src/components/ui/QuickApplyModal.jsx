@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SparkleIcon } from "@phosphor-icons/react";
 import { applyToJob, aiImproveCoverLetter } from "../../api/jobs";
 import { useToast } from "./Toast";
 
@@ -177,7 +178,7 @@ export default function QuickApplyModal({ job, onClose, onApplied }) {
                   coverLetter.trim() && !ai.loading ? "pointer" : "not-allowed",
               }}
             >
-              {ai.loading ? "Improving…" : "✨ Improve with AI"}
+              {ai.loading ? "Improving…" : <><SparkleIcon size={12} weight="fill" color="#fff" style={{ verticalAlign: "middle", marginRight: "4px" }} />Improve with AI</>}
             </button>
           </div>
           <textarea
@@ -234,7 +235,7 @@ export default function QuickApplyModal({ job, onClose, onApplied }) {
                   marginBottom: "8px",
                 }}
               >
-                ✨ AI suggestion
+                <SparkleIcon size={11} weight="fill" color="#7C3AED" style={{ verticalAlign: "middle", marginRight: "4px" }} />AI suggestion
               </div>
               <div
                 style={{

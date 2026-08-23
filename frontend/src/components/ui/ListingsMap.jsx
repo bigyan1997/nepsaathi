@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { GlobeHemisphereEastIcon } from "@phosphor-icons/react";
 
 // Leaflet must be imported with its CSS. We load CSS lazily via a <link> tag
 // to avoid bundling it in the main chunk when the map is never opened.
@@ -102,7 +103,7 @@ export default function ListingsMap({ listings, type, onMarkerClick }) {
   if (withCoords.length === 0) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "420px", background: "#f5f4f0", borderRadius: "16px", color: "#aaa", flexDirection: "column", gap: "10px" }}>
-        <div style={{ fontSize: "32px" }}>🗺️</div>
+        <GlobeHemisphereEastIcon size={32} weight="duotone" color="#9CA3AF" />
         <div style={{ fontSize: "14px" }}>No listings with location data yet</div>
         <div style={{ fontSize: "12px" }}>New listings are geocoded automatically</div>
       </div>

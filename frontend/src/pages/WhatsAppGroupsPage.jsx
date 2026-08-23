@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import usePageMeta from "../hooks/usePageMeta";
 import { getWhatsAppGroups } from "../api/visa";
+import { UsersIcon, GraduationCapIcon, BriefcaseIcon, HouseIcon, StorefrontIcon, SunIcon, FootballIcon, UserIcon, ChatDotsIcon, MapPinIcon, MegaphoneIcon } from "@phosphor-icons/react";
 
 const AU_STATES = [
   { value: "", label: "All states" },
@@ -29,15 +30,15 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_ICONS = {
-  general: "🇳🇵",
-  students: "🎓",
-  jobs: "💼",
-  accommodation: "🏠",
-  business: "🏪",
-  religion: "🙏",
-  sports: "⚽",
-  women: "👩",
-  other: "💬",
+  general:       UsersIcon,
+  students:      GraduationCapIcon,
+  jobs:          BriefcaseIcon,
+  accommodation: HouseIcon,
+  business:      StorefrontIcon,
+  religion:      SunIcon,
+  sports:        FootballIcon,
+  women:         UserIcon,
+  other:         ChatDotsIcon,
 };
 
 function SelectInput({ value, onChange, options }) {
@@ -65,6 +66,7 @@ function SelectInput({ value, onChange, options }) {
 }
 
 function GroupCard({ group }) {
+  const CatIcon = CATEGORY_ICONS[group.category] || ChatDotsIcon;
   return (
     <div style={{
       background: "#fff",
@@ -81,9 +83,9 @@ function GroupCard({ group }) {
           <div style={{
             width: "44px", height: "44px", borderRadius: "12px",
             background: "#EEEDFE", display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: "20px", flexShrink: 0,
+            justifyContent: "center", flexShrink: 0,
           }}>
-            {CATEGORY_ICONS[group.category] || "💬"}
+            <CatIcon size={22} weight="duotone" color="#534AB7" />
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
@@ -95,12 +97,12 @@ function GroupCard({ group }) {
               )}
             </div>
             <div style={{ display: "flex", gap: "8px", marginTop: "5px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "12px", color: "#666" }}>📍 {group.city}, {group.state}</span>
-              <span style={{ fontSize: "12px", color: "#666" }}>
-                {CATEGORY_ICONS[group.category]} {CATEGORIES.find((c) => c.value === group.category)?.label || group.category}
+              <span style={{ fontSize: "12px", color: "#666", display: "inline-flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={12} weight="fill" color="#E87722" />{group.city}, {group.state}</span>
+              <span style={{ fontSize: "12px", color: "#666", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                <CatIcon size={12} weight="regular" color="#666" /> {CATEGORIES.find((c) => c.value === group.category)?.label || group.category}
               </span>
               {group.member_count && (
-                <span style={{ fontSize: "12px", color: "#666" }}>👥 {group.member_count} members</span>
+                <span style={{ fontSize: "12px", color: "#666", display: "inline-flex", alignItems: "center", gap: "3px" }}><UsersIcon size={12} weight="regular" color="#666" />{group.member_count} members</span>
               )}
             </div>
           </div>
@@ -182,7 +184,7 @@ export default function WhatsAppGroupsPage() {
         padding: "14px 18px", marginBottom: "24px",
         display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap",
       }}>
-        <span style={{ fontSize: "20px" }}>📢</span>
+        <MegaphoneIcon size={20} weight="duotone" color="#15803d" />
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 600, fontSize: "13.5px", color: "#15803d" }}>Know a group that should be listed?</div>
           <div style={{ fontSize: "12.5px", color: "#166534", marginTop: "2px" }}>
@@ -196,7 +198,7 @@ export default function WhatsAppGroupsPage() {
         <div style={{ color: "#888", fontSize: "14px", padding: "20px 0" }}>Loading groups…</div>
       ) : groups.length === 0 ? (
         <div style={{ background: "#fff", border: "1.5px solid #e8e6f8", borderRadius: "14px", padding: "48px", textAlign: "center" }}>
-          <div style={{ fontSize: "36px", marginBottom: "12px" }}>💬</div>
+          <ChatDotsIcon size={36} weight="duotone" color="#534AB7" style={{ marginBottom: "12px", opacity: 0.6 }} />
           <div style={{ fontWeight: 700, fontSize: "15px", color: "#26215C", marginBottom: "6px" }}>No groups listed yet</div>
           <div style={{ fontSize: "13px", color: "#888" }}>
             Groups are added by the NepSaathi team. Use the <a href="/contact" style={{ color: "#534AB7" }}>contact page</a> to suggest one.

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import usePageTitle from "../hooks/usePageTitle";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, StorefrontIcon } from "@phosphor-icons/react";
 
 export default function NotFoundPage() {
   usePageTitle("Page Not Found");
@@ -123,39 +124,11 @@ export default function NotFoundPage() {
           }}
         >
           {[
-            {
-              to: "/jobs",
-              emoji: "💼",
-              label: "Browse jobs",
-              bg: "#EEEDFE",
-              border: "#AFA9EC",
-              color: "#3C3489",
-            },
-            {
-              to: "/rooms",
-              emoji: "🏠",
-              label: "Find rooms",
-              bg: "#FFF1E0",
-              border: "#EFD9C0",
-              color: "#633806",
-            },
-            {
-              to: "/events",
-              emoji: "🎉",
-              label: "See events",
-              bg: "#E1F5EE",
-              border: "#9FE1CB",
-              color: "#085041",
-            },
-            {
-              to: "/businesses",
-              emoji: "🏪",
-              label: "Businesses",
-              bg: "#FAEEDA",
-              border: "#FAC775",
-              color: "#633806",
-            },
-          ].map(({ to, emoji, label, bg, border, color }) => (
+            { to: "/jobs",       Icon: BriefcaseIcon,  label: "Browse jobs",  bg: "#EEEDFE", border: "#AFA9EC", color: "#3C3489" },
+            { to: "/rooms",      Icon: HouseIcon,       label: "Find rooms",   bg: "#FFF1E0", border: "#EFD9C0", color: "#633806" },
+            { to: "/events",     Icon: ConfettiIcon,    label: "See events",   bg: "#E1F5EE", border: "#9FE1CB", color: "#085041" },
+            { to: "/businesses", Icon: StorefrontIcon,  label: "Businesses",   bg: "#FAEEDA", border: "#FAC775", color: "#633806" },
+          ].map(({ to, Icon, label, bg, border, color }) => (
             <Link
               key={to}
               to={to}
@@ -177,7 +150,7 @@ export default function NotFoundPage() {
                 (e.currentTarget.style.transform = "translateY(0)")
               }
             >
-              <span style={{ fontSize: "20px" }}>{emoji}</span>
+              <Icon size={20} weight="duotone" color={color} />
               <span style={{ fontSize: "13px", fontWeight: 600, color }}>
                 {label}
               </span>

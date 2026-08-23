@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { CARD_ACCENT, timeAgo } from "./homeUtils";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, PushPinIcon, StarIcon, MapPinIcon } from "@phosphor-icons/react";
 
 function FeaturedDesktopCard({
   to,
-  emoji,
+  Icon,
+  iconColor,
   accentBg,
   accentFooter,
   accentTime,
@@ -45,12 +47,11 @@ function FeaturedDesktopCard({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "48px",
           position: "relative",
           flexShrink: 0,
         }}
       >
-        {emoji}
+        <Icon size={48} weight="duotone" color={iconColor} />
         <div
           style={{
             position: "absolute",
@@ -65,7 +66,7 @@ function FeaturedDesktopCard({
             letterSpacing: "0.04em",
           }}
         >
-          ⭐ FEATURED
+          <StarIcon size={9} weight="fill" color="#fff" style={{ verticalAlign: "middle", marginRight: "3px" }} />FEATURED
         </div>
         <div
           style={{
@@ -154,10 +155,10 @@ function FeaturedDesktopCard({
 }
 
 const TYPE_META = {
-  job:    { emoji: "💼", bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
-  room:   { emoji: "🏠", bg: "#FFF1E0", color: "#633806", path: "rooms" },
-  event:  { emoji: "🎉", bg: "#E1F5EE", color: "#085041", path: "events" },
-  notice: { emoji: "📢", bg: "#E6F1FB", color: "#0C447C", path: "notices" },
+  job:    { Icon: BriefcaseIcon, bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
+  room:   { Icon: HouseIcon,     bg: "#FFF1E0", color: "#633806", path: "rooms" },
+  event:  { Icon: ConfettiIcon,  bg: "#E1F5EE", color: "#085041", path: "events" },
+  notice: { Icon: MegaphoneIcon, bg: "#E6F1FB", color: "#0C447C", path: "notices" },
 };
 
 export default function FeaturedCarousel({ listings }) {
@@ -192,7 +193,7 @@ export default function FeaturedCarousel({ listings }) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "20px" }}>⭐</span>
+          <StarIcon size={20} weight="fill" color="#E87722" />
           <h2 style={{ fontSize: "20px", fontWeight: 600, color: "#26215C", margin: 0 }}>
             Featured posts
           </h2>
@@ -252,13 +253,14 @@ export default function FeaturedCarousel({ listings }) {
         }}
       >
         {listings.map((listing) => {
-          const meta = TYPE_META[listing.listing_type] || { emoji: "📌", bg: "#F5F4F0", color: "#444", path: "listings" };
+          const meta = TYPE_META[listing.listing_type] || { Icon: PushPinIcon, bg: "#F5F4F0", color: "#444", path: "listings" };
           const accent = CARD_ACCENT[listing.listing_type] || CARD_ACCENT.default;
           return (
             <FeaturedDesktopCard
               key={listing.id}
               to={`/${meta.path}/${listing.slug}`}
-              emoji={meta.emoji}
+              Icon={meta.Icon}
+              iconColor={meta.color}
               accentBg={meta.bg}
               accentFooter={accent.footer}
               accentTime={accent.time}
@@ -267,7 +269,7 @@ export default function FeaturedCarousel({ listings }) {
               typeLabel={listing.listing_type?.toUpperCase()}
               timeStr={timeAgo(listing.created_at || listing.date_posted)}
               title={listing.title}
-              subtitle={`📍 ${listing.location}, ${listing.state}`}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}</>}
               description={listing.description || listing.listing_description}
               scrollCard
             />
@@ -306,7 +308,7 @@ export default function FeaturedCarousel({ listings }) {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
-          ⭐ View all featured listings
+          <StarIcon size={14} weight="fill" color="#fff" style={{ marginRight: "6px", verticalAlign: "middle" }} />View all featured listings
         </Link>
       </div>
     </div>

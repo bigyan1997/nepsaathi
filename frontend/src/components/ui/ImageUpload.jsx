@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { CameraIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import { uploadImages } from "../../api/listings";
 
 export default function ImageUpload({ listingId, onComplete }) {
@@ -112,7 +113,7 @@ export default function ImageUpload({ listingId, onComplete }) {
           validateAndAddFiles(files);
         }}
       >
-        <div style={{ fontSize: "32px", marginBottom: "8px" }}>📷</div>
+        <div style={{ marginBottom: "8px" }}><CameraIcon size={32} weight="duotone" color="#534AB7" /></div>
         <div
           style={{
             fontSize: "14px",
@@ -232,7 +233,7 @@ export default function ImageUpload({ listingId, onComplete }) {
             textAlign: "center",
           }}
         >
-          ✅ Images uploaded successfully! Redirecting...
+          <CheckCircleIcon size={14} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "5px" }} />Images uploaded successfully! Redirecting...
         </div>
       )}
 
