@@ -1,6 +1,9 @@
+import logging
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from decouple import config
+
+logger = logging.getLogger(__name__)
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
@@ -20,7 +23,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
                 send_password_reset_email(user, reset_url)
                 return
             except Exception as e:
-                print(f'Password reset email failed: {e}', flush=True)
+                logger.error('Password reset email (send_mail) failed: %s', e)
         elif template_prefix in (
             'account/email/email_confirmation_signup',
             'account/email/email_confirmation',
@@ -32,7 +35,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
                 send_email_verification_email(user, email, confirm_url)
                 return
             except Exception as e:
-                print(f'Verification email failed: {e}', flush=True)
+                logger.error('Verification email failed: %s', e)
         super().send_mail(template_prefix, email, context)
 
     def send_password_reset_mail(self, user, email, context):
@@ -41,7 +44,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             from core.emails import send_password_reset_email
             send_password_reset_email(user, reset_url)
         except Exception as e:
-            print(f'Password reset email failed: {e}', flush=True)
+            logger.error('Password reset email (send_password_reset_mail) failed: %s', e)
             super().send_password_reset_mail(user, email, context)
 
 
@@ -53,6 +56,14 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         # users who registered with email/password can still log in either way.
         if not (sociallogin.user and sociallogin.user.pk):
             return
+
+        # Block banned users before tokens are issued
+        if getattr(sociallogin.user, 'is_banned', False):
+            from allauth.exceptions import ImmediateHttpResponse
+            from django.http import JsonResponse
+            raise ImmediateHttpResponse(
+                JsonResponse({'detail': 'Your account has been suspended. Contact support@nepsaathi.com'}, status=403)
+            )
         from allauth.account.models import EmailAddress
         for addr in sociallogin.email_addresses:
             if not addr.verified:

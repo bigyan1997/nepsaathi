@@ -27,6 +27,13 @@ class ForumPostListView(generics.ListCreateAPIView):
     Filters: ?category=visa&search=pr+visa
     """
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    throttle_scope = 'forum_post'
+
+    def get_throttles(self):
+        if self.request.method == 'POST':
+            from rest_framework.throttling import ScopedRateThrottle
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ('category',)
     search_fields = ('title', 'body')
@@ -125,6 +132,13 @@ class ForumReplyListView(generics.ListCreateAPIView):
     """
     serializer_class = ForumReplySerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    throttle_scope = 'forum_reply'
+
+    def get_throttles(self):
+        if self.request.method == 'POST':
+            from rest_framework.throttling import ScopedRateThrottle
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
 
     def get_queryset(self):
         return ForumReply.objects.filter(
@@ -190,6 +204,9 @@ class ForumPollVoteView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, slug):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
+
         try:
             post = ForumPost.objects.get(slug=slug)
         except ForumPost.DoesNotExist:
@@ -234,6 +251,16 @@ class AIImproveForumPostView(APIView):
 
         if not body or len(body) < 10:
             return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(body) > 5000:
+            return Response({'error': 'Post body is too long (max 5000 characters).'}, status=status.HTTP_400_BAD_REQUEST)
+
+        import re as _re_fi
+        def _sanitize_fi(text, max_len):
+            return _re_fi.sub(r'<[^>]{0,200}>', '', text)[:max_len]
+
+        title = _sanitize_fi(title, 200)
+        category = _sanitize_fi(category, 50)
+        body = _sanitize_fi(body, 5000)
 
         from decouple import config
         api_key = config('GROQ_API_KEY', default='')

@@ -138,6 +138,9 @@ class EventRSVPToggleView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, pk):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
+
         try:
             event = Event.objects.get(pk=pk, listing__status='active')
         except Event.DoesNotExist:

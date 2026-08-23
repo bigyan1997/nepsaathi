@@ -1,8 +1,11 @@
+import logging
 from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Avg, Count, Q
+
+logger = logging.getLogger(__name__)
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.throttles import BusinessCreateThrottle
 from .models import Business, BusinessImage, BusinessReport, BusinessReview
@@ -130,7 +133,7 @@ def _trigger_business_saved_search_alerts(business, send_fn):
                 saved.last_notified = tz.now()
                 saved.save(update_fields=['last_notified'])
             except Exception as e:
-                print(f'[BIZ SEARCH ALERT] Search #{saved.id} failed: {e}', flush=True)
+                logger.error('[BIZ SEARCH ALERT] Search #%s failed: %s', saved.id, e)
 
     threading.Thread(target=_run, daemon=True).start()
 
@@ -205,6 +208,9 @@ class BusinessReviewListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request, slug):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
+
         try:
             business = Business.objects.get(slug=slug, is_active=True)
         except Business.DoesNotExist:
@@ -350,5 +356,5 @@ class ReportBusinessView(APIView):
             from core.emails import send_business_report_emails
             send_business_report_emails(report)
         except Exception as e:
-            print(f'Business report email failed: {e}', flush=True)
+            logger.error('Business report email failed: %s', e)
         return Response({'detail': 'Report submitted. Thank you for keeping NepSaathi safe!'}, status=status.HTTP_201_CREATED)

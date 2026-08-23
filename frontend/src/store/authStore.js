@@ -31,10 +31,17 @@ const useAuthStore = create(
     {
       name: "nepsaathi-auth",
       partialize: (state) => ({
-        // Strip privilege flags — these are re-fetched from the server on every
-        // page load and must not be readable/writable from localStorage.
+        // Persist minimal display fields only. Privilege flags and sensitive PII
+        // are stripped — both are re-fetched from the server on every page load.
         user: state.user
-          ? { ...state.user, is_staff: undefined, is_superuser: undefined }
+          ? {
+              ...state.user,
+              is_staff: undefined,
+              is_superuser: undefined,
+              phone: undefined,
+              bio: undefined,
+              referral_code: undefined,
+            }
           : null,
         isAuthenticated: state.isAuthenticated,
       }),

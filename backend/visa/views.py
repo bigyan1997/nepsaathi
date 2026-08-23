@@ -31,6 +31,9 @@ class VisaTimelineListCreateView(generics.ListCreateAPIView):
         return qs
 
     def perform_create(self, serializer):
+        if getattr(self.request.user, 'is_banned', False):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Your account has been suspended.')
         serializer.save(user=self.request.user)
 
 

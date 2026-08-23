@@ -17,8 +17,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Where were they trying to go before login?
-  const from = location.state?.from?.pathname || "/";
+  // Where were they trying to go before login? Validate it's a relative path to prevent open-redirect.
+  const rawFrom = location.state?.from?.pathname || "/";
+  const from = rawFrom.startsWith("/") ? rawFrom : "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

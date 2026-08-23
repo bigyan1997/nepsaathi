@@ -9,5 +9,5 @@ class RemittanceRateListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        rates = RemittanceRate.objects.all().order_by('provider')
+        rates = RemittanceRate.objects.all().order_by('provider')[:100]
         return Response(RemittanceRateSerializer(rates, many=True).data)

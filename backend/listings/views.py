@@ -20,13 +20,16 @@ from django.db.models import Count, Case, When, IntegerField, Value
 from core.emails import send_spam_detected_email
 
 
-_N8N_WEBHOOK = "https://n8n-production-d0c4.up.railway.app/webhook/nepsaathi-listing"
+from decouple import config as _env_config
+_N8N_WEBHOOK = _env_config('N8N_WEBHOOK_URL', default='')
 _LISTING_TYPE_PATH = {
     'job': 'jobs', 'room': 'rooms', 'event': 'events',
     'notice': 'notices', 'business': 'businesses',
 }
 
 def _notify_n8n(listing):
+    if not _N8N_WEBHOOK:
+        return
     import json, time, urllib.request
     try:
         time.sleep(60)  # wait for images to finish uploading
@@ -346,6 +349,8 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
+        if request.user.is_banned:
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
         listing = self.get_object()
         # Soft delete first so listing is gone even if image cleanup fails
         listing.status = 'deleted'
@@ -1053,6 +1058,19 @@ class AIImproveDescriptionView(APIView):
 
         if not description or len(description) < 10:
             return Response({'error': 'Please write at least a few words first.'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(description) > 5000:
+            return Response({'error': 'Description is too long (max 5000 characters).'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Truncate context fields and strip XML tags to prevent prompt injection
+        import re as _re_ai
+        def _sanitize(text, max_len):
+            return _re_ai.sub(r'<[^>]{0,200}>', '', text)[:max_len]
+
+        title = _sanitize(title, 200)
+        description = _sanitize(description, 5000)
+        listing_type = _sanitize(listing_type, 50)
+        location = _sanitize(location, 100)
+        state = _sanitize(state, 50)
 
         api_key = env_config('GROQ_API_KEY', default='')
         if not api_key:
@@ -1125,6 +1143,14 @@ class AITagSuggestView(APIView):
         api_key = env_config('GROQ_API_KEY', default='')
         if not api_key:
             return Response({'error': 'AI service not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        # Sanitize inputs to prevent prompt injection, then truncate
+        import re as _re_tags
+        def _sanitize_tag(t, n):
+            return _re_tags.sub(r'<[^>]{0,200}>', '', t)[:n]
+        title = _sanitize_tag(title, 200)
+        description = _sanitize_tag(description, 5000)
+        listing_type = _sanitize_tag(listing_type, 50)
 
         # Keep input short so the model has room to output
         desc_snippet = description[:150] if description else ""

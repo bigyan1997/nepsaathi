@@ -31,6 +31,9 @@ class CreateCheckoutSessionView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, listing_id):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
+
         try:
             listing = Listing.objects.get(pk=listing_id, user=request.user, status='active')
         except Listing.DoesNotExist:

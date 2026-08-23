@@ -38,8 +38,6 @@ class ReverseRequestDeleteView(generics.DestroyAPIView):
         return ReverseRequest.objects.filter(user=self.request.user)
 
     def perform_destroy(self, instance):
-        if instance.user != self.request.user:
-            raise PermissionDenied
         instance.is_active = False
         instance.save()
 
@@ -78,7 +76,5 @@ class ServiceListingDeleteView(generics.DestroyAPIView):
         return ServiceListing.objects.filter(user=self.request.user)
 
     def perform_destroy(self, instance):
-        if instance.user != self.request.user:
-            raise PermissionDenied
         instance.is_active = False
         instance.save()

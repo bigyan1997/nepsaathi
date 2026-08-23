@@ -25,10 +25,7 @@ class ConversationListView(APIView):
         convos = Conversation.objects.filter(
             participants=request.user
         ).prefetch_related('participants', 'messages').order_by('-updated_at')
-        try:
-            convos = convos.exclude(hidden_by=request.user)
-        except Exception:
-            pass
+        convos = convos.exclude(hidden_by=request.user)
         serializer = ConversationSerializer(convos, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -186,10 +183,7 @@ class MessageSendView(APIView):
         )
         convo.save(update_fields=['updated_at'])
         # Sending a message unhides the conversation for both parties
-        try:
-            convo.hidden_by.clear()
-        except Exception:
-            pass
+        convo.hidden_by.clear()
 
         # Broadcast via channel layer (async_to_sync is the documented way from sync views)
         try:

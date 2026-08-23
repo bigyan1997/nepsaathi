@@ -34,6 +34,12 @@ class GoogleLoginView(SocialLoginView):
     client_class = OAuth2Client
 
     def get_response(self):
+        # Block banned users before tokens are issued
+        if getattr(self.user, 'is_banned', False):
+            return Response(
+                {'detail': 'Your account has been suspended. Contact support@nepsaathi.com'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         response = super().get_response()
         try:
             user = self.user
@@ -247,6 +253,18 @@ class ThrottledLoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Check ban before delegating to LoginView (which issues tokens)
+        if email:
+            try:
+                _login_user = User.objects.get(email__iexact=email)
+                if getattr(_login_user, 'is_banned', False):
+                    return Response(
+                        {'detail': 'Your account has been suspended. Contact support@nepsaathi.com'},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+            except User.DoesNotExist:
+                pass
+
         response = LoginView.as_view()(request._request, *args, **kwargs)
 
         if response.status_code != 200:
@@ -409,13 +427,13 @@ class PushTestView(APIView):
                 )
                 results.append({'endpoint': sub.endpoint[:60], 'ok': True})
             except WebPushException as e:
-                status = e.response.status_code if e.response is not None else None
+                push_status_code = e.response.status_code if e.response is not None else None
                 body = ''
                 try:
                     body = e.response.text if e.response is not None else ''
                 except Exception:
                     pass
-                results.append({'endpoint': sub.endpoint[:60], 'ok': False, 'status': status, 'error': body or str(e)})
+                results.append({'endpoint': sub.endpoint[:60], 'ok': False, 'status': push_status_code, 'error': body or str(e)})
             except Exception as e:
                 results.append({'endpoint': sub.endpoint[:60], 'ok': False, 'error': str(e)})
 
@@ -472,7 +490,14 @@ class UserReviewListCreateView(APIView):
         from .models import UserReview
         from django.db.models import Avg, Count as DbCount
         agg = UserReview.objects.filter(reviewed_user_id=id).aggregate(avg=Avg('rating'), count=DbCount('id'))
-        reviews = UserReview.objects.filter(reviewed_user_id=id).select_related('reviewer').order_by('-created_at')[:100]
+        try:
+            page = max(1, int(request.query_params.get('page', 1)))
+        except (TypeError, ValueError):
+            page = 1
+        page_size = 20
+        reviews = UserReview.objects.filter(reviewed_user_id=id).select_related('reviewer').order_by('-created_at')[
+            (page - 1) * page_size: page * page_size
+        ]
         data = [
             {
                 'id': r.id,
@@ -486,11 +511,14 @@ class UserReviewListCreateView(APIView):
             for r in reviews
         ]
         avg = round(agg['avg'], 1) if agg['avg'] else 0
-        return Response({'reviews': data, 'avg_rating': avg, 'count': agg['count']})
+        return Response({'reviews': data, 'avg_rating': avg, 'count': agg['count'], 'page': page, 'page_size': page_size})
 
     def post(self, request, id):
         from .models import UserReview
         from messaging.models import Conversation
+
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
 
         if request.user.id == id:
             return Response({'detail': 'You cannot review yourself.'}, status=400)
