@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import axios from "axios";
+import api from "./utils/axios";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -156,13 +157,21 @@ function App() {
     return () => clearTimeout(t);
   }, []);
 
-  // Silent refresh for new tabs: sessionStorage is tab-scoped so a new tab
-  // has no access token even if the user is marked as authenticated in localStorage.
-  // The httpOnly refresh cookie is sent automatically via withCredentials.
+  // On mount: ensure a valid access token exists, then re-fetch the full user
+  // object to restore is_staff / is_superuser (stripped from localStorage persistence).
   useEffect(() => {
-    const { isAuthenticated, logout } = useAuthStore.getState();
+    const { isAuthenticated, logout, updateUser } = useAuthStore.getState();
     if (!isAuthenticated) return;
-    if (sessionStorage.getItem("nepsaathi_access_token")) return;
+
+    const fetchUser = () =>
+      api.get("/api/auth/user/").then((res) => updateUser(res.data)).catch(() => {});
+
+    if (sessionStorage.getItem("nepsaathi_access_token")) {
+      fetchUser();
+      return;
+    }
+
+    // New tab: no sessionStorage token — refresh first, then fetch user
     axios
       .post(
         `${import.meta.env.VITE_API_URL}/api/auth/token/refresh/`,
@@ -171,6 +180,7 @@ function App() {
       )
       .then((res) => {
         sessionStorage.setItem("nepsaathi_access_token", res.data.access);
+        fetchUser();
       })
       .catch(() => logout());
   }, []);
