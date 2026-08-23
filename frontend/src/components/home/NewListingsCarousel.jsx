@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { timeAgo } from "./homeUtils";
 
@@ -34,8 +34,9 @@ function NewDesktopCard({ to, emoji, typeBg, typeColor, typeLabel, timeStr, titl
       {/* Top image strip */}
       <div style={{ background: typeBg, height: "110px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "48px", position: "relative", flexShrink: 0 }}>
         {emoji}
-        <div style={{ position: "absolute", top: "10px", left: "10px", background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 8px", borderRadius: "6px", letterSpacing: "0.04em" }}>
-          🆕 NEW
+        <div style={{ position: "absolute", top: "10px", left: "10px", background: "rgba(22,163,74,0.92)", backdropFilter: "blur(4px)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 9px", borderRadius: "20px", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: "5px" }}>
+          <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#bbf7d0", display: "inline-block", flexShrink: 0 }} />
+          NEW
         </div>
         <div style={{ position: "absolute", top: "10px", right: "10px", background: typeBg, color: typeColor, fontSize: "9px", fontWeight: 600, padding: "3px 8px", borderRadius: "6px" }}>
           {typeLabel}
@@ -65,6 +66,14 @@ function NewDesktopCard({ to, emoji, typeBg, typeColor, typeLabel, timeStr, titl
 }
 
 export default function NewListingsCarousel({ listings }) {
+  useEffect(() => {
+    if (document.getElementById("ns-ping-style")) return;
+    const s = document.createElement("style");
+    s.id = "ns-ping-style";
+    s.textContent = `@keyframes ns-ping { 0%,100%{transform:scale(1);opacity:.35} 50%{transform:scale(2.2);opacity:0} }`;
+    document.head.appendChild(s);
+  }, []);
+
   const scrollRef = useRef(null);
   const [scrollPct, setScrollPct] = useState(0);
   const [canLeft, setCanLeft] = useState(false);
@@ -88,10 +97,14 @@ export default function NewListingsCarousel({ listings }) {
     <div className="home-section" style={{ padding: "24px 0 32px", maxWidth: "1000px", margin: "0 auto" }}>
       {/* Header row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", padding: "0 28px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "20px" }}>🆕</span>
-          <h2 style={{ fontSize: "20px", fontWeight: 600, color: "#26215C", margin: 0 }}>New today</h2>
-          <span style={{ background: "#dcfce7", color: "#15803d", fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {/* Pulsing live dot */}
+          <span style={{ position: "relative", display: "inline-flex", width: "10px", height: "10px", flexShrink: 0 }}>
+            <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#16a34a", opacity: 0.35, animation: "ns-ping 1.6s ease-in-out infinite" }} />
+            <span style={{ position: "relative", width: "10px", height: "10px", borderRadius: "50%", background: "#16a34a", display: "inline-block" }} />
+          </span>
+          <h2 style={{ fontSize: "19px", fontWeight: 700, color: "#1a1833", margin: 0, letterSpacing: "-0.01em" }}>New today</h2>
+          <span style={{ background: "#16a34a", color: "#fff", fontSize: "10px", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", letterSpacing: "0.02em" }}>
             {listings.length}
           </span>
         </div>
@@ -178,7 +191,7 @@ export default function NewListingsCarousel({ listings }) {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
-          🆕 View all new listings
+          View all new listings →
         </Link>
       </div>
     </div>
