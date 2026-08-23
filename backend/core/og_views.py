@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from decouple import config
 
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
-BACKEND_URL = config("BACKEND_URL", default="https://nepsaathi-production.up.railway.app")
-DEFAULT_IMAGE = f"{FRONTEND_URL}/og-image.png"
+# Always use www to avoid the Vercel nepsaathi.com→www.nepsaathi.com 301 loop
+CANONICAL_BASE = "https://www.nepsaathi.com"
+DEFAULT_IMAGE = f"{CANONICAL_BASE}/og-image.png"
 DEFAULT_TITLE = "NepSaathi — Your Nepali friend, wherever you are"
 DEFAULT_DESC = "Find jobs, rooms, events and businesses for Nepalese Australians. Free to use."
 
@@ -57,11 +58,11 @@ def og_listing(request, listing_type, slug):
     from listings.models import Listing, ListingImage
 
     path = _TYPE_TO_PATH.get(listing_type, f"{listing_type}s")
-    canonical = f"{FRONTEND_URL}/{path}/{slug}"
+    canonical = f"{CANONICAL_BASE}/{path}/{slug}"
     title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
 
     try:
-        listing = Listing.objects.get(slug=slug, listing_type=listing_type, is_active=True)
+        listing = Listing.objects.get(slug=slug, listing_type=listing_type, status='active')
         title = f"{listing.title} — NepSaathi"
         if listing.description:
             description = listing.description[:200]
@@ -80,11 +81,11 @@ def og_business(request, slug):
     """OG prerender for business detail pages."""
     from businesses.models import Business, BusinessImage
 
-    canonical = f"{FRONTEND_URL}/businesses/{slug}"
+    canonical = f"{CANONICAL_BASE}/businesses/{slug}"
     title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
 
     try:
-        business = Business.objects.get(slug=slug, is_active=True)
+        business = Business.objects.get(slug=slug, is_active=True)  # Business uses is_active
         title = f"{business.business_name} — NepSaathi"
         if business.description:
             description = business.description[:200]
