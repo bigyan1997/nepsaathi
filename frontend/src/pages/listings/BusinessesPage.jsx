@@ -8,22 +8,29 @@ import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
 
+const CATEGORY_EMOJIS = {
+  restaurant: "🍛", grocery: "🛒", travel: "✈️", beauty: "💇",
+  health: "🏥", legal: "⚖️", education: "📚", religious: "🙏",
+  construction: "🔨", transport: "🚗", finance: "💸", freelancer: "🧑‍💻",
+  retail: "🏪", other: "🏪",
+};
+
 const CATEGORIES = [
   { value: "", label: "All categories" },
-  { value: "restaurant", label: "Restaurant & Cafe" },
-  { value: "grocery", label: "Grocery & Food Store" },
-  { value: "travel", label: "Travel & Tourism" },
-  { value: "beauty", label: "Beauty & Salon" },
-  { value: "health", label: "Health & Medical" },
-  { value: "legal", label: "Legal & Accounting" },
-  { value: "education", label: "Education & Tutoring" },
-  { value: "religious", label: "Religious Services" },
-  { value: "construction", label: "Construction & Trade" },
-  { value: "transport", label: "Transport & Logistics" },
-  { value: "finance", label: "Finance & Money Transfer" },
-  { value: "freelancer", label: "Freelancer & Pujari" },
-  { value: "retail", label: "Retail & Shopping" },
-  { value: "other", label: "Other" },
+  { value: "restaurant", label: "🍛 Restaurant & Cafe" },
+  { value: "grocery", label: "🛒 Grocery & Food Store" },
+  { value: "travel", label: "✈️ Travel & Tourism" },
+  { value: "beauty", label: "💇 Beauty & Salon" },
+  { value: "health", label: "🏥 Health & Medical" },
+  { value: "legal", label: "⚖️ Legal & Accounting" },
+  { value: "education", label: "📚 Education & Tutoring" },
+  { value: "religious", label: "🙏 Religious Services" },
+  { value: "construction", label: "🔨 Construction & Trade" },
+  { value: "transport", label: "🚗 Transport & Logistics" },
+  { value: "finance", label: "💸 Finance & Money Transfer" },
+  { value: "freelancer", label: "🧑‍💻 Freelancer & Pujari" },
+  { value: "retail", label: "🏪 Retail & Shopping" },
+  { value: "other", label: "🏪 Other" },
 ];
 
 const CATEGORY_ICONS = {
@@ -316,7 +323,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 /* ── Mobile card — Option B ───────────────────────── */
 function BusinessMobileCard({ biz }) {
   const catColor = CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
-  const CatIcon = CATEGORY_ICONS[biz.category] || PushPinIcon;
+  const catEmoji = CATEGORY_EMOJIS[biz.category] || "🏪";
 
   return (
     <Link
@@ -369,7 +376,7 @@ function BusinessMobileCard({ biz }) {
             }}
           />
         ) : (
-          <CatIcon size={36} weight="duotone" color={catColor.color} />
+          <span style={{ fontSize: "36px" }}>{catEmoji}</span>
         )}
 
         {/* Verified — top right */}
@@ -521,7 +528,7 @@ function BusinessMobileCard({ biz }) {
             alignSelf: "flex-start",
           }}
         >
-          <CatIcon size={11} weight="fill" color={catColor.color} style={{ verticalAlign: "middle", marginRight: "3px" }} />{biz.category?.replace("_", " ")}
+          {catEmoji} {biz.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -547,7 +554,7 @@ function BusinessMobileCard({ biz }) {
 /* ── Desktop card ─────────────────────────────────── */
 function BusinessCard({ business }) {
   const catColor = CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
-  const CatIcon = CATEGORY_ICONS[business.category] || PushPinIcon;
+  const catEmoji = CATEGORY_EMOJIS[business.category] || "🏪";
   return (
     <Link
       to={`/businesses/${business.slug}`}
@@ -591,7 +598,7 @@ function BusinessCard({ business }) {
             }}
           />
         ) : (
-          <CatIcon size={44} weight="duotone" color={catColor.color} />
+          <span style={{ fontSize: "44px" }}>{catEmoji}</span>
         )}
         {business.is_verified && (
           <div style={{ position: "absolute", top: "10px", right: "10px" }}>
@@ -667,7 +674,7 @@ function BusinessCard({ business }) {
             alignSelf: "flex-start",
           }}
         >
-          <CatIcon size={11} weight="fill" color={catColor.color} style={{ verticalAlign: "middle", marginRight: "3px" }} />{business.category?.replace("_", " ")}
+          {catEmoji} {business.category?.replace("_", " ")}
         </span>
         <div
           style={{

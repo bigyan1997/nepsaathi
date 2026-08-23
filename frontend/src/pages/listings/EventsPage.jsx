@@ -43,6 +43,11 @@ const CATEGORY_ICONS = {
   other: PushPinIcon,
 };
 
+const CATEGORY_EMOJIS = {
+  cultural: "🎭", sports: "⚽", food: "🍛", music: "🎵",
+  religious: "🙏", community: "👥", education: "📚", other: "📌",
+};
+
 const SORT_OPTIONS = [
   {
     value: "-listing__is_featured,-listing__created_at",
@@ -367,7 +372,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 /* ── Mobile card — Option B ───────────────────────── */
 function EventMobileCard({ event }) {
   const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
-  const CatIcon = CATEGORY_ICONS[event.category] || PushPinIcon;
+  const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
   const footerColor = event.is_free ? "#1D9E75" : "#534AB7";
   const d = new Date(event.event_date);
 
@@ -552,7 +557,7 @@ function EventMobileCard({ event }) {
             alignSelf: "flex-start",
           }}
         >
-          <CatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{event.category?.replace("_", " ")}
+          {catEmoji} {event.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -598,7 +603,7 @@ function EventMobileCard({ event }) {
 function EventCard({ event }) {
   const [hovered, setHovered] = useState(false);
   const catColor = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.other;
-  const CatIcon = CATEGORY_ICONS[event.category] || PushPinIcon;
+  const catEmoji = CATEGORY_EMOJIS[event.category] || "📌";
   const footerBg = event.is_free ? "#1D9E75" : "#534AB7";
   return (
     <Link
@@ -679,7 +684,7 @@ function EventCard({ event }) {
               borderRadius: "6px",
             }}
           >
-            <CatIcon size={9} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{event.category?.replace("_", " ")}
+            {catEmoji} {event.category?.replace("_", " ")}
           </span>
           {event.is_featured && (
             <span

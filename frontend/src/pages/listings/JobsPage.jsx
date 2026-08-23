@@ -313,7 +313,7 @@ function JobMobileCard({ job }) {
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: "36px" }}>{isWanted ? <MagnifyingGlassIcon size={40} weight="bold" color="#534AB7" /> : <BriefcaseIcon size={40} weight="duotone" color="#534AB7" />}</span>
+        <span style={{ fontSize: "36px" }}>{isWanted ? "🔍" : "💼"}</span>
 
         {/* Salary — top right */}
         {job.salary_display && (
@@ -556,7 +556,7 @@ function JobCard({ job }) {
           flexShrink: 0,
         }}
       >
-        {isWanted ? <MagnifyingGlassIcon size={44} weight="bold" color="#534AB7" /> : <BriefcaseIcon size={44} weight="duotone" color="#534AB7" />}
+        {isWanted ? "🔍" : "💼"}
         <div
           style={{
             position: "absolute",
@@ -1278,7 +1278,7 @@ export default function JobsPage() {
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
           >
             <div style={{ marginBottom: "12px" }}>
-              {activeTab === "true" ? <MagnifyingGlassIcon size={36} weight="bold" color="#534AB7" /> : <BriefcaseIcon size={36} weight="duotone" color="#534AB7" />}
+              {activeTab === "true" ? "🔍" : "💼"}
             </div>
             <p
               style={{
