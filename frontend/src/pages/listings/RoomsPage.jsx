@@ -1103,23 +1103,25 @@ export default function RoomsPage() {
           </div>
           {/* Grid / Map toggle */}
           <div style={{ display: "flex", gap: "4px", flexShrink: 0, background: "#f0f0f0", borderRadius: "10px", padding: "3px" }}>
-            {["grid", "map"].map((mode) => (
+            {["grid", "map"].map((m) => (
               <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
+                key={m}
+                onClick={() => setViewMode(m)}
                 style={{
-                  background: viewMode === mode ? "#fff" : "transparent",
+                  background: viewMode === m ? "#fff" : "transparent",
                   border: "none", borderRadius: "8px",
-                  padding: "6px 12px", fontSize: "13px", cursor: "pointer",
-                  fontWeight: viewMode === mode ? 700 : 400,
-                  color: viewMode === mode ? "#26215C" : "#888",
-                  boxShadow: viewMode === mode ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+                  padding: "8px 16px", cursor: "pointer",
+                  fontWeight: viewMode === m ? 700 : 400,
+                  color: viewMode === m ? "#26215C" : "#888",
+                  boxShadow: viewMode === m ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
                   transition: "all 0.15s",
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: "3px",
+                  fontSize: "11px",
                 }}
               >
-                {mode === "grid"
-                  ? <><SquaresFourIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Grid</>
-                  : <><GlobeHemisphereEastIcon size={13} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />Map</>}
+                {m === "grid"
+                  ? <><SquaresFourIcon size={18} weight={viewMode === m ? "fill" : "regular"} /><span>Grid</span></>
+                  : <><GlobeHemisphereEastIcon size={18} weight={viewMode === m ? "fill" : "regular"} /><span>Map</span></>}
               </button>
             ))}
           </div>
