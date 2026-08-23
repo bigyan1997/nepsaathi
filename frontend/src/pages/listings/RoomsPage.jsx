@@ -413,7 +413,7 @@ function RoomMobileCard({ room }) {
             }}
           />
         ) : (
-          <HouseIcon size={36} weight={isWanted ? "regular" : "duotone"} color="#534AB7" />
+          <HouseIcon size={36} weight={isWanted ? "regular" : "duotone"} color="#633806" />
         )}
 
         {/* Price pill — top right */}
@@ -654,7 +654,7 @@ function RoomCard({ room }) {
             }}
           />
         ) : (
-          <HouseIcon size={44} weight={isWanted ? "regular" : "duotone"} color="#534AB7" />
+          <HouseIcon size={44} weight={isWanted ? "regular" : "duotone"} color="#633806" />
         )}
         <div
           style={{
@@ -1485,7 +1485,7 @@ export default function RoomsPage() {
             style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
           >
             <div style={{ marginBottom: "12px" }}>
-              <HouseIcon size={36} weight={activeTab === "true" ? "regular" : "duotone"} color="#534AB7" />
+              <HouseIcon size={36} weight={activeTab === "true" ? "regular" : "duotone"} color="#633806" />
             </div>
             <p
               style={{
