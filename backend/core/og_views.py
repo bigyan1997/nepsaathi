@@ -21,6 +21,8 @@ def _render(title, description, image, canonical_url):
     d = escape(description[:200])
     img = escape(image)
     u = escape(canonical_url)
+    # No redirect — crawlers read meta tags from this response and stop.
+    # A meta-refresh back to the same URL causes a redirect loop via Vercel's bot routing.
     return HttpResponse(
         f"""<!DOCTYPE html>
 <html lang="en">
@@ -41,11 +43,9 @@ def _render(title, description, image, canonical_url):
 <meta name="twitter:title" content="{t}">
 <meta name="twitter:description" content="{d}">
 <meta name="twitter:image" content="{img}">
-<meta http-equiv="refresh" content="0; url={u}">
 </head>
 <body>
 <p><a href="{u}">{t}</a></p>
-<script>window.location.replace("{u}");</script>
 </body>
 </html>""",
         content_type="text/html; charset=utf-8",
