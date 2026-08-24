@@ -521,9 +521,9 @@ export default function BusinessDetailPage() {
                 href={mapsUrl([business.suburb, business.state, "Australia"].filter(Boolean).join(", "))}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: "inherit", textDecoration: "none" }}
+                style={{ color: "inherit", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
               >
-                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />{business.suburb}, {business.state}
+                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{business.suburb}, {business.state}
               </a>
             </span>
           </div>
@@ -1313,8 +1313,8 @@ export default function BusinessDetailPage() {
                     >
                       {listing.title}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>
-                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
+                    <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}>
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}
                     </div>
                   </div>
                   <span style={{ color: "#534AB7", flexShrink: 0 }}>

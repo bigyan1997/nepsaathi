@@ -38,7 +38,7 @@ export default function DesktopCard({
     >
       <div
         style={{
-          background: accent.bg,
+          background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${accent.bg} 65%)`,
           height: "110px",
           display: "flex",
           alignItems: "center",
@@ -107,7 +107,7 @@ export default function DesktopCard({
           {title}
         </div>
         {subtitle && (
-          <div style={{ fontSize: "12px", color: "#888", marginTop: "1px" }}>
+          <div style={{ fontSize: "12px", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "3px", flexWrap: "wrap" }}>
             {subtitle}
           </div>
         )}

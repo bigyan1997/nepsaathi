@@ -387,7 +387,7 @@ function RoomMobileCard({ room }) {
       {/* ── Image / colour strip ── */}
       <div
         style={{
-          background: "#FFF1E0",
+          background: "radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, #FFF1E0 65%)",
           height: "130px",
           position: "relative",
           overflow: "hidden",
@@ -530,12 +530,13 @@ function RoomMobileCard({ room }) {
           style={{
             fontSize: "11px",
             color: "#777",
+            display: "flex",
+            alignItems: "center",
+            gap: "3px",
             overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
           }}
         >
-          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.listing_location}, {room.listing_state}
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{room.listing_location}, {room.listing_state}</span>
         </div>
         {room.poster_is_verified && (
           <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "10px", color: "#1A8CD8", fontWeight: 600 }}>
@@ -627,7 +628,7 @@ function RoomCard({ room }) {
     >
       <div
         style={{
-          background: "#FFF1E0",
+          background: "radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, #FFF1E0 65%)",
           height: "100px",
           display: "flex",
           alignItems: "center",
@@ -755,8 +756,8 @@ function RoomCard({ room }) {
         >
           {room.listing_title}
         </div>
-        <div style={{ fontSize: "12px", color: "#777" }}>
-          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.listing_location}, {room.listing_state}
+        <div style={{ fontSize: "12px", color: "#777", display: "flex", alignItems: "center", gap: "3px", overflow: "hidden" }}>
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{room.listing_location}, {room.listing_state}</span>
         </div>
         {room.poster_is_verified && (
           <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px", color: "#1A8CD8", fontWeight: 600 }}>

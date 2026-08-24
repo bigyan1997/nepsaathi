@@ -114,7 +114,7 @@ function FeaturedDesktopCard({
           {title}
         </div>
         {subtitle && (
-          <div style={{ fontSize: "12px", color: "#888", marginTop: "1px" }}>{subtitle}</div>
+          <div style={{ fontSize: "12px", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "3px", flexWrap: "wrap" }}>{subtitle}</div>
         )}
         {description && (
           <div
@@ -269,7 +269,7 @@ export default function FeaturedCarousel({ listings }) {
               typeLabel={listing.listing_type?.toUpperCase()}
               timeStr={timeAgo(listing.created_at || listing.date_posted)}
               title={listing.title}
-              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}</>}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}</>}
               description={listing.description || listing.listing_description}
               scrollCard
             />

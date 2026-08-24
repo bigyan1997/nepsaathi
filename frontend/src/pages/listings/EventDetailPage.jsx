@@ -1254,8 +1254,8 @@ export default function EventDetailPage() {
                       >
                         {listing.title}
                       </div>
-                      <div style={{ fontSize: "12px", color: "#888" }}>
-                        <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
+                      <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}>
+                        <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}
                       </div>
                     </div>
                     <span style={{ color: "#534AB7", flexShrink: 0 }}>

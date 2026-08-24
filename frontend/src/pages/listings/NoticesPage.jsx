@@ -331,7 +331,7 @@ function NoticeMobileCard({ notice }) {
       {/* Strip */}
       <div
         style={{
-          background: catColor.bg,
+          background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${catColor.bg} 65%)`,
           height: "130px",
           position: "relative",
           display: "flex",
@@ -487,12 +487,13 @@ function NoticeMobileCard({ notice }) {
           style={{
             fontSize: "11px",
             color: "#777",
+            display: "flex",
+            alignItems: "center",
+            gap: "3px",
             overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
           }}
         >
-          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.listing_location}, {notice.listing_state}
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{notice.listing_location}, {notice.listing_state}</span>
         </div>
         <div style={{ fontSize: "10px", color: "#aaa", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
           {notice.posted_by}
@@ -526,7 +527,7 @@ function NoticeCard({ notice }) {
     >
       <div
         style={{
-          background: catColor.bg,
+          background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${catColor.bg} 65%)`,
           height: "100px",
           display: "flex",
           alignItems: "center",
@@ -657,8 +658,8 @@ function NoticeCard({ notice }) {
         >
           {notice.listing_title}
         </div>
-        <div style={{ fontSize: "12px", color: "#777" }}>
-          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.listing_location}, {notice.listing_state}
+        <div style={{ fontSize: "12px", color: "#777", display: "flex", alignItems: "center", gap: "3px", overflow: "hidden" }}>
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{notice.listing_location}, {notice.listing_state}</span>
         </div>
         {notice.description && (
           <div

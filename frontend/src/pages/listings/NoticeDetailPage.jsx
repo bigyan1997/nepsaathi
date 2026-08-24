@@ -438,9 +438,9 @@ export default function NoticeDetailPage() {
                 href={mapsUrl([notice.listing_location, notice.listing_state, "Australia"].filter(Boolean).join(", "))}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: "inherit", textDecoration: "none" }}
+                style={{ color: "inherit", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
               >
-                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />{notice.listing_location}, {notice.listing_state}
+                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{notice.listing_location}, {notice.listing_state}
               </a>
             </span>
             {notice.created_at && (
@@ -945,8 +945,8 @@ export default function NoticeDetailPage() {
                     >
                       {listing.title}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>
-                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
+                    <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}>
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}
                     </div>
                   </div>
                   <span style={{ color: "#534AB7", flexShrink: 0 }}>

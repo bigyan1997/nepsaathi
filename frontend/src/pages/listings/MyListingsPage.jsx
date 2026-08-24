@@ -734,11 +734,11 @@ export default function MyListingsPage() {
           </div>
 
           {/* Meta */}
-          <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>
-            <span style={{ background: typeColor.bg, color: typeColor.color, fontSize: "10px", fontWeight: 500, padding: "1px 7px", borderRadius: "8px", marginRight: "6px" }}>
+          <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px" }}>
+            <span style={{ background: typeColor.bg, color: typeColor.color, fontSize: "10px", fontWeight: 500, padding: "1px 7px", borderRadius: "8px" }}>
               {listing.listing_type}
             </span>
-            <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
+            <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}
             {listing.view_count > 0 && (
               <span style={{ marginLeft: "8px" }}>· <EyeIcon size={11} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "2px" }} />{listing.view_count} views</span>
             )}
@@ -1233,7 +1233,7 @@ export default function MyListingsPage() {
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#888" }}>
+                    <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
                       <span
                         style={{
                           background: catColor.bg,
@@ -1242,12 +1242,14 @@ export default function MyListingsPage() {
                           fontWeight: 500,
                           padding: "1px 7px",
                           borderRadius: "8px",
-                          marginRight: "6px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "3px",
                         }}
                       >
-                        <BizCatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{business.category?.replace("_", " ")}
+                        <BizCatIcon size={10} weight="fill" color={catColor.color} style={{ flexShrink: 0 }} />{business.category?.replace("_", " ")}
                       </span>
-                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{business.suburb}, {business.state}
+                      <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{business.suburb}, {business.state}
                     </div>
                     {/* Rating if available */}
                     {business.avg_rating > 0 && (

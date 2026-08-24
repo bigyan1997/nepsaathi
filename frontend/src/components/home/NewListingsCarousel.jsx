@@ -33,7 +33,7 @@ function NewDesktopCard({ to, emoji, typeBg, typeColor, typeLabel, timeStr, titl
       }}
     >
       {/* Top image strip */}
-      <div style={{ background: typeBg, height: "110px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+      <div style={{ background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${typeBg} 65%)`, height: "110px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
         {emoji && <span style={{ fontSize: "48px" }}>{emoji}</span>}
         <div style={{ position: "absolute", top: "10px", left: "10px", background: "rgba(22,163,74,0.92)", backdropFilter: "blur(4px)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 9px", borderRadius: "20px", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: "5px" }}>
           <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#bbf7d0", display: "inline-block", flexShrink: 0 }} />
@@ -49,7 +49,7 @@ function NewDesktopCard({ to, emoji, typeBg, typeColor, typeLabel, timeStr, titl
       <div style={{ padding: "16px 18px", flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
         {timeStr && <div style={{ fontSize: "12px", fontWeight: 600, color: "#16a34a" }}>{timeStr}</div>}
         <div style={{ fontSize: "17px", fontWeight: 700, color: "#26215C", lineHeight: 1.25 }}>{title}</div>
-        {subtitle && <div style={{ fontSize: "12px", color: "#888", marginTop: "1px" }}>{subtitle}</div>}
+        {subtitle && <div style={{ fontSize: "12px", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "3px", flexWrap: "wrap" }}>{subtitle}</div>}
         {description && (
           <div style={{ fontSize: "13px", color: "#555", lineHeight: 1.55, marginTop: "4px", flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
             {description}
@@ -164,7 +164,7 @@ export default function NewListingsCarousel({ listings }) {
               typeLabel={listing.listing_type?.toUpperCase()}
               timeStr={timeAgo(listing.created_at)}
               title={listing.title}
-              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}</>}
+              subtitle={<span style={{ display: "flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}</span>}
               description={listing.description}
               scrollCard
             />

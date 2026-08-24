@@ -497,9 +497,9 @@ export default function JobDetailPage() {
                 href={mapsUrl([job.listing_location, job.listing_state, "Australia"].filter(Boolean).join(", "))}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ fontSize: "14px", color: "#534AB7", fontWeight: 600, textDecoration: "none" }}
+                style={{ fontSize: "14px", color: "#534AB7", fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
               >
-                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "4px" }} />{job.listing_location}, {job.listing_state}
+                <MapPinIcon size={14} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{job.listing_location}, {job.listing_state}
               </a>
             </div>
             {job.created_at && (
@@ -1094,8 +1094,8 @@ export default function JobDetailPage() {
                       >
                         {listing.title}
                       </div>
-                      <div style={{ fontSize: "12px", color: "#888" }}>
-                        <MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{listing.location}, {listing.state}
+                      <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}>
+                        <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}
                       </div>
                     </div>
                     <span style={{ color: "#534AB7", flexShrink: 0 }}>

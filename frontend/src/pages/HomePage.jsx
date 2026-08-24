@@ -329,7 +329,7 @@ export default function HomePage() {
           renderCard={(job) => (
             <DesktopCard key={job.id} to={`/jobs/${job.listing_slug}`} accentType="job" emoji="💼" isFeatured={!!job.is_featured}
               timeStr={timeAgo(job.created_at || job.date_posted)} title={job.listing_title}
-              subtitle={`${job.company_name} · ${job.listing_location}, ${job.listing_state}`}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{job.company_name ? `${job.company_name} · ` : ""}{job.listing_location}, {job.listing_state}</>}
               description={job.description || job.listing_description}
               stats={[{ value: job.salary_display || "—", label: "Salary" }, { value: job.job_type || "—", label: "Type" }, { value: job.listing_state || "—", label: "State" }]} />
           )}
@@ -365,7 +365,7 @@ export default function HomePage() {
           renderCard={(room) => (
             <DesktopCard key={room.id} to={`/rooms/${room.listing_slug}`} accentType="room" emoji="🏠" isFeatured={!!room.is_featured}
               timeStr={timeAgo(room.created_at || room.date_posted)} title={room.listing_title}
-              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{room.listing_location}, {room.listing_state}</>}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{room.listing_location}, {room.listing_state}</>}
               description={room.description || room.listing_description}
               stats={[{ value: room.price_display || "—", label: "Price" }, { value: room.room_type?.replace("_", " ") || "—", label: "Type" }, { value: room.nepalese_household ? "🇳🇵 Yes" : "No", label: "Nepali home" }]} />
           )}
@@ -398,7 +398,7 @@ export default function HomePage() {
           renderCard={(event) => (
             <DesktopCard key={event.id} to={`/events/${event.listing_slug}`} accentType="event" emoji="🎉" isFeatured={!!event.is_featured}
               timeStr={event.event_date ? new Date(event.event_date).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : ""}
-              title={event.listing_title} subtitle={event.venue || `${event.listing_location}, ${event.listing_state}`}
+              title={event.listing_title} subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{event.venue || `${event.listing_location}, ${event.listing_state}`}</>}
               description={event.description || event.listing_description}
               stats={[{ value: event.ticket_display || "—", label: "Tickets" }, { value: event.is_free ? "Free" : "Paid", label: "Entry" }, { value: event.listing_state || "—", label: "State" }]} />
           )}
@@ -432,7 +432,7 @@ export default function HomePage() {
           renderCard={(notice) => (
             <DesktopCard key={notice.id} to={`/notices/${notice.listing_slug}`} accentType="notice" emoji="📢" isFeatured={!!notice.is_featured}
               timeStr={timeAgo(notice.created_at || notice.date_posted)} title={notice.listing_title}
-              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{notice.listing_location}, {notice.listing_state}</>}
+              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{notice.listing_location}, {notice.listing_state}</>}
               description={notice.description || notice.listing_description}
               stats={[{ value: notice.category?.replace("_", " ") || "General", label: "Category" }, { value: notice.listing_state || "—", label: "State" }, { value: notice.posted_by || "—", label: "Posted by" }]} />
           )}

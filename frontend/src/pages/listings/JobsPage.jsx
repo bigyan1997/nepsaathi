@@ -304,7 +304,7 @@ function JobMobileCard({ job }) {
       {/* Strip */}
       <div
         style={{
-          background: headerBg,
+          background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${headerBg} 65%)`,
           height: "130px",
           position: "relative",
           display: "flex",
@@ -468,12 +468,13 @@ function JobMobileCard({ job }) {
           style={{
             fontSize: "11px",
             color: "#777",
+            display: "flex",
+            alignItems: "center",
+            gap: "3px",
             overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
           }}
         >
-          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{job.listing_location}, {job.listing_state}
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.listing_location}, {job.listing_state}</span>
         </div>
         <div
           style={{
@@ -546,7 +547,7 @@ function JobCard({ job }) {
     >
       <div
         style={{
-          background: isWanted ? "#EEEDFE" : "#F0EFF9",
+          background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${isWanted ? "#EEEDFE" : "#F0EFF9"} 65%)`,
           height: "100px",
           display: "flex",
           alignItems: "center",
@@ -677,8 +678,8 @@ function JobCard({ job }) {
             {job.poster_is_verified && <VerifiedBadge size={12} />}
           </div>
         )}
-        <div style={{ fontSize: "12px", color: "#777", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ verticalAlign: "middle", marginRight: "3px" }} />{job.listing_location}, {job.listing_state}
+        <div style={{ fontSize: "12px", color: "#777", display: "flex", alignItems: "center", gap: "3px", overflow: "hidden" }}>
+          <MapPinIcon size={12} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.listing_location}, {job.listing_state}</span>
         </div>
         {job.description && (
           <div
