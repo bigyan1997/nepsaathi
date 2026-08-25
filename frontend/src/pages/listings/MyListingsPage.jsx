@@ -717,18 +717,18 @@ export default function MyListingsPage() {
               </span>
             )}
             {listing.is_under_review && (
-              <span style={{ background: "#FFF8E0", color: "#8B6914", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #E8D5A0" }}>
-                <ClockIcon size={10} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Under Review
+              <span style={{ background: "#FFF8E0", color: "#8B6914", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #E8D5A0", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                <ClockIcon size={10} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Under Review
               </span>
             )}
             {listing.is_reported && !listing.is_under_review && (
-              <span title="A user has reported this listing. Our team will review it." style={{ background: "#FEECEC", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #F09595" }}>
-                <FlagIcon size={10} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Reported
+              <span title="A user has reported this listing. Our team will review it." style={{ background: "#FEECEC", color: "#A32D2D", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #F09595", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                <FlagIcon size={10} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Reported
               </span>
             )}
             {expiring && (
-              <span style={{ background: "#FFF1E0", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap" }}>
-                <WarningIcon size={10} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Expires soon
+              <span style={{ background: "#FFF1E0", color: "#633806", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                <WarningIcon size={10} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Expires soon
               </span>
             )}
           </div>
@@ -740,7 +740,7 @@ export default function MyListingsPage() {
             </span>
             <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{listing.location}, {listing.state}
             {listing.view_count > 0 && (
-              <span style={{ marginLeft: "8px" }}>· <EyeIcon size={11} weight="regular" color="#aaa" style={{ verticalAlign: "middle", marginRight: "2px" }} />{listing.view_count} views</span>
+              <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center", gap: "2px" }}>· <EyeIcon size={11} weight="regular" color="#aaa" style={{ flexShrink: 0 }} />{listing.view_count} views</span>
             )}
           </div>
 
@@ -757,12 +757,12 @@ export default function MyListingsPage() {
           {/* Renew pill — for expiring/expired */}
           {(expiring || isExpired) && (
             listing.is_under_review || listing.renewal_blocked ? (
-              <span title={listing.is_under_review ? "Under review — cannot renew" : "Renewal restricted"} style={{ marginTop: "8px", display: "inline-block", background: "#FFF1E0", color: "#E87722", border: "0.5px solid #EFD9C0", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600 }}>
-                <ProhibitIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Renewal blocked
+              <span title={listing.is_under_review ? "Under review — cannot renew" : "Renewal restricted"} style={{ marginTop: "8px", display: "inline-flex", alignItems: "center", gap: "3px", background: "#FFF1E0", color: "#E87722", border: "0.5px solid #EFD9C0", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600 }}>
+                <ProhibitIcon size={11} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Renewal blocked
               </span>
             ) : (
-              <button onClick={() => renewMutation.mutate(listing.id)} disabled={renewMutation.isPending} style={{ marginTop: "8px", background: "#EEEDFE", color: "#534AB7", border: "none", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600, cursor: "pointer", opacity: renewMutation.isPending ? 0.6 : 1 }}>
-                <ArrowsClockwiseIcon size={11} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} />Renew for 30 days
+              <button onClick={() => renewMutation.mutate(listing.id)} disabled={renewMutation.isPending} style={{ marginTop: "8px", background: "#EEEDFE", color: "#534AB7", border: "none", borderRadius: "20px", padding: "4px 12px", fontSize: "11px", fontWeight: 600, cursor: "pointer", opacity: renewMutation.isPending ? 0.6 : 1, display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                <ArrowsClockwiseIcon size={11} weight="regular" color="currentColor" style={{ flexShrink: 0 }} />Renew for 30 days
               </button>
             )
           )}

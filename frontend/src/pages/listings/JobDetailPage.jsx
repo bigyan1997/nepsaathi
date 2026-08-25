@@ -987,16 +987,16 @@ export default function JobDetailPage() {
                 {isAuthenticated && (
                   <>
                     {job.contact_phone && (
-                      <a href={`tel:${job.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#EEEDFE", color: "#534AB7", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #AFA9EC" }}>
-                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{job.contact_phone}
+                      <a href={`tel:${job.contact_phone}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", background: "#EEEDFE", color: "#534AB7", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #AFA9EC" }}>
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />{job.contact_phone}
                       </a>
                     )}
                     {job.contact_whatsapp && (
                       <WhatsAppButton phone={job.contact_whatsapp} listingTitle={job.listing_title} size="small" />
                     )}
                     {job.contact_email && (
-                      <a href={`mailto:${job.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
+                      <a href={`mailto:${job.contact_email}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ flexShrink: 0 }} />Email
                       </a>
                     )}
                   </>

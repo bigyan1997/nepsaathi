@@ -64,9 +64,12 @@ function FeaturedDesktopCard({
             padding: "3px 8px",
             borderRadius: "6px",
             letterSpacing: "0.04em",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "3px",
           }}
         >
-          <StarIcon size={9} weight="fill" color="#fff" style={{ verticalAlign: "middle", marginRight: "3px" }} />FEATURED
+          <StarIcon size={9} weight="fill" color="#fff" style={{ flexShrink: 0 }} />FEATURED
         </div>
         <div
           style={{
@@ -308,7 +311,7 @@ export default function FeaturedCarousel({ listings }) {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
-          <StarIcon size={14} weight="fill" color="#fff" style={{ marginRight: "6px", verticalAlign: "middle" }} />View all featured listings
+          <StarIcon size={14} weight="fill" color="#fff" style={{ flexShrink: 0 }} />View all featured listings
         </Link>
       </div>
     </div>

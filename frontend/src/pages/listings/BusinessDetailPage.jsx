@@ -1115,8 +1115,10 @@ export default function BusinessDetailPage() {
                       <a
                         href={`tel:${business.phone}`}
                         style={{
-                          display: "block",
-                          textAlign: "center",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
                           background: "#534AB7",
                           color: "#fff",
                           padding: "10px",
@@ -1126,7 +1128,7 @@ export default function BusinessDetailPage() {
                           fontWeight: 600,
                         }}
                       >
-                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Call {business.phone}
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Call {business.phone}
                       </a>
                     )}
                     {business.whatsapp && (
@@ -1136,8 +1138,10 @@ export default function BusinessDetailPage() {
                       <a
                         href={`mailto:${business.email}`}
                         style={{
-                          display: "block",
-                          textAlign: "center",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
                           background: "#FFF1E0",
                           color: "#E87722",
                           padding: "10px",
@@ -1148,7 +1152,7 @@ export default function BusinessDetailPage() {
                           border: "0.5px solid #EFD9C0",
                         }}
                       >
-                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ flexShrink: 0 }} />Email
                       </a>
                     )}
                     {business.website && (
@@ -1157,8 +1161,10 @@ export default function BusinessDetailPage() {
                         target="_blank"
                         rel="noreferrer"
                         style={{
-                          display: "block",
-                          textAlign: "center",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
                           background: "#EEEDFE",
                           color: "#534AB7",
                           padding: "10px",
@@ -1168,7 +1174,7 @@ export default function BusinessDetailPage() {
                           fontWeight: 600,
                         }}
                       >
-                        <GlobeIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Visit website
+                        <GlobeIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Visit website
                       </a>
                     )}
                     {business.booking_link && (
@@ -1177,8 +1183,10 @@ export default function BusinessDetailPage() {
                         target="_blank"
                         rel="noreferrer"
                         style={{
-                          display: "block",
-                          textAlign: "center",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
                           background: "#f0fdf4",
                           color: "#15803d",
                           border: "1.5px solid #bbf7d0",
@@ -1189,7 +1197,7 @@ export default function BusinessDetailPage() {
                           fontWeight: 700,
                         }}
                       >
-                        <CalendarCheckIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Book / Make Appointment
+                        <CalendarCheckIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Book / Make Appointment
                       </a>
                     )}
                   </div>

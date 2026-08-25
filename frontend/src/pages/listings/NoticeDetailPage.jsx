@@ -835,16 +835,16 @@ export default function NoticeDetailPage() {
                 {isAuthenticated && (
                   <>
                     {notice.contact_phone && (
-                      <a href={`tel:${notice.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#f0f6ff", color: footerBg, padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{notice.contact_phone}
+                      <a href={`tel:${notice.contact_phone}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", background: "#f0f6ff", color: footerBg, padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />{notice.contact_phone}
                       </a>
                     )}
                     {notice.contact_whatsapp && (
                       <WhatsAppButton phone={notice.contact_whatsapp} listingTitle={notice.listing_title} size="small" />
                     )}
                     {notice.contact_email && (
-                      <a href={`mailto:${notice.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
+                      <a href={`mailto:${notice.contact_email}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ flexShrink: 0 }} />Email
                       </a>
                     )}
                   </>

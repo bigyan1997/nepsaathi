@@ -997,16 +997,16 @@ export default function RoomDetailPage() {
                 {isAuthenticated && (
                   <>
                     {room.contact_phone && (
-                      <a href={`tel:${room.contact_phone}`} style={{ display: "block", textAlign: "center", background: "#FFF1E0", color: "#E87722", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #EFD9C0" }}>
-                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />{room.contact_phone}
+                      <a href={`tel:${room.contact_phone}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", background: "#FFF1E0", color: "#E87722", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600, border: "0.5px solid #EFD9C0" }}>
+                        <PhoneIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />{room.contact_phone}
                       </a>
                     )}
                     {room.contact_whatsapp && (
                       <WhatsAppButton phone={room.contact_whatsapp} listingTitle={room.listing_title} size="small" />
                     )}
                     {room.contact_email && (
-                      <a href={`mailto:${room.contact_email}`} style={{ display: "block", textAlign: "center", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Email
+                      <a href={`mailto:${room.contact_email}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", background: "#f5f5f5", color: "#555", padding: "10px", borderRadius: "9px", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
+                        <EnvelopeIcon size={13} weight="regular" color="currentColor" style={{ flexShrink: 0 }} />Email
                       </a>
                     )}
                   </>
