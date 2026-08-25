@@ -444,9 +444,12 @@ export default function BusinessDetailPage() {
                   fontWeight: 600,
                   padding: "3px 12px",
                   borderRadius: "20px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
               >
-                <BizCatIcon size={11} weight="fill" color={catColor.color} style={{ marginRight: "4px", verticalAlign: "middle" }} />{business.category?.replace(/_/g, " ")}
+                <BizCatIcon size={11} weight="fill" color={catColor.color} style={{ flexShrink: 0 }} />{business.category?.replace(/_/g, " ")}
               </span>
               {business.is_verified && (
                 <span
@@ -457,9 +460,12 @@ export default function BusinessDetailPage() {
                     fontWeight: 600,
                     padding: "3px 12px",
                     borderRadius: "20px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <SealCheckIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Verified
+                  <SealCheckIcon size={11} weight="fill" color="currentColor" style={{ flexShrink: 0 }} /> Verified
                 </span>
               )}
               {business.is_nepalese_owned && (

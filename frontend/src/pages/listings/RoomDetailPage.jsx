@@ -393,9 +393,12 @@ export default function RoomDetailPage() {
                     fontWeight: 600,
                     padding: "3px 12px",
                     borderRadius: "20px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <HouseIcon size={11} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Looking for room
+                  <HouseIcon size={11} weight="regular" color="currentColor" style={{ flexShrink: 0 }} /> Looking for room
                 </span>
               )}
               {room.is_featured && (
@@ -421,9 +424,12 @@ export default function RoomDetailPage() {
                   fontWeight: 600,
                   padding: "3px 12px",
                   borderRadius: "20px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
               >
-                <HouseIcon size={11} weight="duotone" color="#633806" style={{ verticalAlign: "middle", marginRight: "4px" }} /> {room.room_type?.replace("_", " ")}
+                <HouseIcon size={11} weight="duotone" color="#633806" style={{ flexShrink: 0 }} /> {room.room_type?.replace("_", " ")}
               </span>
               {room.bills_included && (
                 <span
@@ -478,8 +484,8 @@ export default function RoomDetailPage() {
               {room.listing_state}
             </a>
             {room.created_at && (
-              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
-                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(room.created_at)}
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <ClockIcon size={12} weight="regular" color="#999" style={{ flexShrink: 0 }} />Posted {timeAgo(room.created_at)}
               </div>
             )}
           </div>

@@ -496,9 +496,12 @@ export default function EventDetailPage() {
                   fontWeight: 600,
                   padding: "3px 12px",
                   borderRadius: "20px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
               >
-                <CatIcon size={11} weight="fill" color={catColor.color} style={{ verticalAlign: "middle", marginRight: "4px" }} />{event.category?.replace("_", " ")}
+                <CatIcon size={11} weight="fill" color={catColor.color} style={{ flexShrink: 0 }} />{event.category?.replace("_", " ")}
               </span>
               {event.is_free && (
                 <span
@@ -585,8 +588,8 @@ export default function EventDetailPage() {
               </span>
             </div>
             {event.created_at && (
-              <div style={{ fontSize: "12px", color: "#999", marginTop: "6px" }}>
-                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(event.created_at)}
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "6px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <ClockIcon size={12} weight="regular" color="#999" style={{ flexShrink: 0 }} />Posted {timeAgo(event.created_at)}
               </div>
             )}
           </div>

@@ -411,9 +411,12 @@ export default function JobDetailPage() {
                     fontWeight: 600,
                     padding: "3px 12px",
                     borderRadius: "20px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <MagnifyingGlassIcon size={11} weight="bold" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Looking for work
+                  <MagnifyingGlassIcon size={11} weight="bold" color="currentColor" style={{ flexShrink: 0 }} /> Looking for work
                 </span>
               )}
               {job.is_featured && (
@@ -439,9 +442,12 @@ export default function JobDetailPage() {
                     fontWeight: 600,
                     padding: "3px 12px",
                     borderRadius: "20px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <WarningIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Urgent
+                  <WarningIcon size={11} weight="fill" color="currentColor" style={{ flexShrink: 0 }} /> Urgent
                 </span>
               )}
               <span
@@ -453,9 +459,12 @@ export default function JobDetailPage() {
                   fontWeight: 600,
                   padding: "3px 12px",
                   borderRadius: "20px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
               >
-                <BriefcaseIcon size={11} weight="duotone" color="#534AB7" style={{ verticalAlign: "middle", marginRight: "4px" }} /> {job.job_type?.replace("_", " ")}
+                <BriefcaseIcon size={11} weight="duotone" color="#534AB7" style={{ flexShrink: 0 }} /> {job.job_type?.replace("_", " ")}
               </span>
             </div>
 
@@ -504,8 +513,8 @@ export default function JobDetailPage() {
               </a>
             </div>
             {job.created_at && (
-              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
-                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(job.created_at)}
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <ClockIcon size={12} weight="regular" color="#999" style={{ flexShrink: 0 }} />Posted {timeAgo(job.created_at)}
               </div>
             )}
           </div>

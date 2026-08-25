@@ -370,9 +370,12 @@ export default function NoticeDetailPage() {
                   fontWeight: 600,
                   padding: "3px 12px",
                   borderRadius: "20px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
               >
-                <CatIcon size={11} weight="fill" color={catColor.color} style={{ marginRight: "4px", verticalAlign: "middle" }} />{notice.category?.replace("_", " ")}
+                <CatIcon size={11} weight="fill" color={catColor.color} style={{ flexShrink: 0 }} />{notice.category?.replace("_", " ")}
               </span>
               {notice.is_urgent && (
                 <span
@@ -383,9 +386,12 @@ export default function NoticeDetailPage() {
                     fontWeight: 600,
                     padding: "3px 12px",
                     borderRadius: "20px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  <WarningIcon size={11} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Urgent
+                  <WarningIcon size={11} weight="fill" color="currentColor" style={{ flexShrink: 0 }} /> Urgent
                 </span>
               )}
               {notice.is_free && (
@@ -445,8 +451,8 @@ export default function NoticeDetailPage() {
               </a>
             </span>
             {notice.created_at && (
-              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
-                <ClockIcon size={12} weight="regular" color="#999" style={{ verticalAlign: "middle", marginRight: "3px" }} />Posted {timeAgo(notice.created_at)}
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <ClockIcon size={12} weight="regular" color="#999" style={{ flexShrink: 0 }} />Posted {timeAgo(notice.created_at)}
               </div>
             )}
           </div>
