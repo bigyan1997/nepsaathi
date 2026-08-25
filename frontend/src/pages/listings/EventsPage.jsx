@@ -5,6 +5,7 @@ import { MapPinIcon, CalendarBlankIcon, MaskHappyIcon, FootballIcon, ForkKnifeIc
 import { getEvents } from "../../api/events";
 import { SkeletonEventCard } from "../../components/ui/Skeleton";
 import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
+import EmptyState from "../../components/ui/EmptyState";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1340,20 +1341,17 @@ export default function EventsPage() {
           </div>
         )}
         {!isLoading && !isFetching && allResults.length === 0 && (
-          <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-            <div style={{ marginBottom: "12px" }}><CalendarBlankIcon size={36} weight="duotone" color="#1D9E75" /></div>
-            <p
-              style={{
-                fontSize: "15px",
-                fontWeight: 500,
-                color: "#555",
-                marginBottom: "6px",
-              }}
-            >
-              No events found
-            </p>
-            <p style={{ fontSize: "13px" }}>Try a different search or filter</p>
-          </div>
+          <EmptyState
+            emoji="🎉"
+            title="No events found"
+            subtitle="Try adjusting your filters or search terms"
+            accentColor="#1D9E75"
+            accentBg="#E1F5EE"
+            onClear={() => {
+              setFilters({ category: "", search: "", state: "", is_free: "", is_online: "", upcoming: "true", ordering: "-listing__is_featured,-listing__created_at" });
+              setPage(1);
+            }}
+          />
         )}
 
         {/* Mobile: 2-col card grid */}

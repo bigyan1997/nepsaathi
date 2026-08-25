@@ -5,6 +5,7 @@ import { MapPinIcon, WarningIcon, MegaphoneIcon, NewspaperIcon, TagIcon, WrenchI
 import { getNotices } from "../../api/notices";
 import { SkeletonNoticeCard } from "../../components/ui/Skeleton";
 import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
+import EmptyState from "../../components/ui/EmptyState";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1176,20 +1177,17 @@ export default function NoticesPage() {
           </div>
         )}
         {!isLoading && !isFetching && allResults.length === 0 && (
-          <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-            <div style={{ marginBottom: "12px" }}><MegaphoneIcon size={36} weight="duotone" color="#534AB7" /></div>
-            <p
-              style={{
-                fontSize: "15px",
-                fontWeight: 500,
-                color: "#555",
-                marginBottom: "6px",
-              }}
-            >
-              No notices found
-            </p>
-            <p style={{ fontSize: "13px" }}>Try a different search or filter</p>
-          </div>
+          <EmptyState
+            emoji="📢"
+            title="No notices found"
+            subtitle="Try adjusting your filters or search terms"
+            accentColor="#0C447C"
+            accentBg="#E6F1FB"
+            onClear={() => {
+              setFilters({ category: "", search: "", state: "", is_free: "", is_urgent: "", ordering: "-listing__is_featured,-listing__created_at" });
+              setPage(1);
+            }}
+          />
         )}
 
         {/* Mobile: 2-col card grid */}

@@ -359,7 +359,7 @@ export default function JobDetailPage() {
         {/* ── Hero banner ── */}
         <div
           style={{
-            background: "#EEEDFE",
+            background: "radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.55) 0%, #EEEDFE 70%)",
             border: isWanted ? "1.5px solid #534AB7" : "1.5px solid #AFA9EC",
             borderRadius: "20px",
             padding: isMobile ? "20px 16px" : "32px 28px",

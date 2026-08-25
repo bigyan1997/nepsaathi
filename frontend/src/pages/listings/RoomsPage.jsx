@@ -5,6 +5,7 @@ import { MapPinIcon, HouseIcon, LightbulbIcon, PawPrintIcon, CarIcon, SquaresFou
 import { getRooms } from "../../api/rooms";
 import { SkeletonRoomCard } from "../../components/ui/Skeleton";
 import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
+import EmptyState from "../../components/ui/EmptyState";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1485,24 +1486,17 @@ export default function RoomsPage() {
         )}
 
         {!isLoading && !isFetching && filteredResults.length === 0 && (
-          <div
-            style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
-          >
-            <div style={{ marginBottom: "12px" }}>
-              <span style={{ fontSize: "36px" }}>🏠</span>
-            </div>
-            <p
-              style={{
-                fontSize: "15px",
-                fontWeight: 500,
-                color: "#555",
-                marginBottom: "6px",
-              }}
-            >
-              No rooms found
-            </p>
-            <p style={{ fontSize: "13px" }}>Try a different search or filter</p>
-          </div>
+          <EmptyState
+            emoji="🏠"
+            title="No rooms found"
+            subtitle="Try adjusting your filters or search terms"
+            accentColor="#85510A"
+            accentBg="#FFF1E0"
+            onClear={() => {
+              setFilters({ room_type: "", search: "", bills_included: "", nepalese_household: "", pets_allowed: "", parking_available: "", state: "", min_price: "", max_price: "", min_bedrooms: "", ordering: "-listing__is_featured,-listing__created_at" });
+              setPage(1);
+            }}
+          />
         )}
 
         {viewMode === "map" ? (

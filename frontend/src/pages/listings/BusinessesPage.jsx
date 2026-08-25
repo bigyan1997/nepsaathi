@@ -5,6 +5,7 @@ import { MapPinIcon, SealCheckIcon, StorefrontIcon, ForkKnifeIcon, ShoppingCartI
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonBusinessCard } from "../../components/ui/Skeleton";
 import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
+import EmptyState from "../../components/ui/EmptyState";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -1270,20 +1271,17 @@ export default function BusinessesPage() {
           </div>
         )}
         {!isLoading && !isFetching && allResults.length === 0 && (
-          <div style={{ textAlign: "center", padding: "48px", color: "#888" }}>
-            <div style={{ marginBottom: "12px" }}><StorefrontIcon size={36} weight="duotone" color="#534AB7" /></div>
-            <p
-              style={{
-                fontSize: "15px",
-                fontWeight: 500,
-                color: "#555",
-                marginBottom: "6px",
-              }}
-            >
-              No businesses found
-            </p>
-            <p style={{ fontSize: "13px" }}>Try a different search or filter</p>
-          </div>
+          <EmptyState
+            emoji="🏪"
+            title="No businesses found"
+            subtitle="Try adjusting your filters or search terms"
+            accentColor="#633806"
+            accentBg="#FAEEDA"
+            onClear={() => {
+              setFilters({ category: "", state: "", search: "", is_nepalese_owned: "", is_verified: "" });
+              setPage(1);
+            }}
+          />
         )}
 
         {/* Mobile: 2-col card grid */}

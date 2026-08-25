@@ -397,7 +397,7 @@ export default function BusinessDetailPage() {
         {/* ── Hero banner ── */}
         <div
           style={{
-            background: catColor.bg,
+            background: `radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.55) 0%, ${catColor.bg} 70%)`,
             border: `1.5px solid ${catColor.border}`,
             borderRadius: "20px",
             padding: isMobile ? "20px 16px" : "32px 28px",

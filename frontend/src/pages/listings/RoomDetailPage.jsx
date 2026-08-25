@@ -342,7 +342,7 @@ export default function RoomDetailPage() {
         {/* ── Hero banner ── */}
         <div
           style={{
-            background: "#FFF1E0",
+            background: "radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.55) 0%, #FFF1E0 70%)",
             border: isWanted ? "1.5px solid #E87722" : "1.5px solid #EFD9C0",
             borderRadius: "20px",
             padding: isMobile ? "20px 16px" : "32px 28px",

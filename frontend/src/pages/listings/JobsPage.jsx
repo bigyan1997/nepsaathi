@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
 import { SkeletonJobCard } from "../../components/ui/Skeleton";
 import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
+import EmptyState from "../../components/ui/EmptyState";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1276,24 +1277,17 @@ export default function JobsPage() {
           </div>
         )}
         {!isLoading && !isFetching && filteredResults.length === 0 && (
-          <div
-            style={{ textAlign: "center", padding: "48px 20px", color: "#888" }}
-          >
-            <div style={{ marginBottom: "12px" }}>
-              {activeTab === "true" ? "🔍" : "💼"}
-            </div>
-            <p
-              style={{
-                fontSize: "15px",
-                fontWeight: 500,
-                color: "#555",
-                marginBottom: "6px",
-              }}
-            >
-              No jobs found
-            </p>
-            <p style={{ fontSize: "13px" }}>Try a different search or filter</p>
-          </div>
+          <EmptyState
+            emoji={activeTab === "true" ? "🔍" : "💼"}
+            title="No jobs found"
+            subtitle="Try adjusting your filters or search terms"
+            accentColor="#534AB7"
+            accentBg="#EEEDFE"
+            onClear={() => {
+              setFilters({ job_type: "", search: "", state: "", ordering: "-listing__is_featured,-listing__created_at", min_salary: "", max_salary: "", is_urgent: "" });
+              setPage(1);
+            }}
+          />
         )}
 
         {viewMode === "map" ? (
