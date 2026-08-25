@@ -128,7 +128,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
           position: "fixed",
           inset: 0,
           background: "rgba(0,0,0,0.45)",
-          zIndex: 100,
+          zIndex: 200,
         }}
       />
       <div
@@ -139,7 +139,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
           right: 0,
           background: "#fff",
           borderRadius: "20px 20px 0 0",
-          zIndex: 101,
+          zIndex: 201,
           maxHeight: "88vh",
           overflowY: "auto",
           overflowX: "hidden",
@@ -170,6 +170,10 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
             borderBottom: "0.5px solid #f0f0f0",
           }}
         >
+          <button
+            onClick={onClose}
+            style={{ background: "none", border: "none", fontSize: "22px", color: "#aaa", cursor: "pointer", lineHeight: 1, padding: "0 8px 0 0" }}
+          >×</button>
           <div style={{ fontSize: "16px", fontWeight: 700, color: "#26215C" }}>
             Filters
           </div>
@@ -360,7 +364,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
               fontSize: "14px",
               fontWeight: 700,
               cursor: "pointer",
-              marginBottom: "8px",
+              marginBottom: "calc(env(safe-area-inset-bottom) + 12px)",
             }}
           >
             Apply filters
