@@ -208,8 +208,8 @@ export default function ForumPostPage() {
           const hasVoted = !!userVotedId;
           return (
             <div style={{ background: "#f8f7ff", border: "1.5px solid #ddd8fb", borderRadius: "12px", padding: "16px", marginBottom: "18px" }}>
-              <div style={{ fontSize: "12px", fontWeight: 700, color: "#534AB7", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" }}>
-                <ChartBarIcon size={14} weight="bold" color="#534AB7" style={{ verticalAlign: "middle", marginRight: "5px" }} />Community Poll · {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
+              <div style={{ fontSize: "12px", fontWeight: 700, color: "#534AB7", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "5px" }}>
+                <ChartBarIcon size={14} weight="bold" color="#534AB7" style={{ flexShrink: 0 }} />Community Poll · {totalVotes} vote{totalVotes !== 1 ? "s" : ""}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {post.poll_options.map((opt) => {

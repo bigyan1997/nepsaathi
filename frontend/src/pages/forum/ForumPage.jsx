@@ -245,7 +245,7 @@ export default function ForumPage() {
             ))
           : posts.length === 0
             ? (
-              <div className="forum-post-enter" style={{ textAlign: "center", padding: "48px 0", color: "#888" }}>
+              <div className="forum-post-enter" style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 0", color: "#888" }}>
                 <ChatDotsIcon size={48} weight="duotone" color="#534AB7" style={{ marginBottom: "12px", opacity: 0.6 }} />
                 <div style={{ fontWeight: 600, marginBottom: "6px" }}>No posts yet</div>
                 <div style={{ fontSize: "13px" }}>Be the first to start the conversation</div>

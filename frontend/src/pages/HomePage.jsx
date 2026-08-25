@@ -420,12 +420,12 @@ export default function HomePage() {
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     {notice.listing_title}{notice.is_featured && FEATURED_BADGE}{isNew(notice.created_at) && NEW_BADGE}
                   </div>
-                  <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" />{notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
+                  <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
                   {notice.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(notice.created_at)}</div>}
                 </div>
               </div>
-              <div style={{ background: "#E6F1FB", color: "#0C447C", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "20px", whiteSpace: "nowrap" }}>
-                {notice.is_urgent ? <><span style={{ display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", background: "#DC2626", marginRight: "5px", verticalAlign: "middle" }} />Urgent</> : timeAgo(notice.created_at || notice.date_posted)}
+              <div style={{ background: "#E6F1FB", color: "#0C447C", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "20px", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "5px" }}>
+                {notice.is_urgent ? <><span style={{ display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", background: "#DC2626", flexShrink: 0 }} />Urgent</> : timeAgo(notice.created_at || notice.date_posted)}
               </div>
             </Link>
           )}
