@@ -1,12 +1,11 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { CARD_ACCENT, timeAgo } from "./homeUtils";
-import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, PushPinIcon, StarIcon, MapPinIcon } from "@phosphor-icons/react";
+import { StarIcon, MapPinIcon } from "@phosphor-icons/react";
 
 function FeaturedDesktopCard({
   to,
-  Icon,
-  iconColor,
+  emoji,
   accentBg,
   accentFooter,
   accentTime,
@@ -51,7 +50,7 @@ function FeaturedDesktopCard({
           flexShrink: 0,
         }}
       >
-        <Icon size={48} weight="duotone" color={iconColor} />
+        {emoji && <span style={{ fontSize: "48px", lineHeight: 1 }}>{emoji}</span>}
         <div
           style={{
             position: "absolute",
@@ -158,10 +157,10 @@ function FeaturedDesktopCard({
 }
 
 const TYPE_META = {
-  job:    { Icon: BriefcaseIcon, bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
-  room:   { Icon: HouseIcon,     bg: "#FFF1E0", color: "#633806", path: "rooms" },
-  event:  { Icon: ConfettiIcon,  bg: "#E1F5EE", color: "#085041", path: "events" },
-  notice: { Icon: MegaphoneIcon, bg: "#E6F1FB", color: "#0C447C", path: "notices" },
+  job:    { emoji: "💼", bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
+  room:   { emoji: "🏠", bg: "#FFF1E0", color: "#633806", path: "rooms" },
+  event:  { emoji: "🎉", bg: "#E1F5EE", color: "#085041", path: "events" },
+  notice: { emoji: "📢", bg: "#E6F1FB", color: "#0C447C", path: "notices" },
 };
 
 export default function FeaturedCarousel({ listings }) {
@@ -256,14 +255,13 @@ export default function FeaturedCarousel({ listings }) {
         }}
       >
         {listings.map((listing) => {
-          const meta = TYPE_META[listing.listing_type] || { Icon: PushPinIcon, bg: "#F5F4F0", color: "#444", path: "listings" };
+          const meta = TYPE_META[listing.listing_type] || { emoji: "📌", bg: "#F5F4F0", color: "#444", path: "listings" };
           const accent = CARD_ACCENT[listing.listing_type] || CARD_ACCENT.default;
           return (
             <FeaturedDesktopCard
               key={listing.id}
               to={`/${meta.path}/${listing.slug}`}
-              Icon={meta.Icon}
-              iconColor={meta.color}
+              emoji={meta.emoji}
               accentBg={meta.bg}
               accentFooter={accent.footer}
               accentTime={accent.time}

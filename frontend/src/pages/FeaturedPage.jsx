@@ -10,6 +10,7 @@ import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, StarIcon, MapPin
 const TYPE_CONFIG = {
   job: {
     Icon: BriefcaseIcon,
+    emoji: "💼",
     label: "Jobs",
     bg: "#EEEDFE",
     border: "#AFA9EC",
@@ -18,6 +19,7 @@ const TYPE_CONFIG = {
   },
   room: {
     Icon: HouseIcon,
+    emoji: "🏠",
     label: "Rooms",
     bg: "#FFF1E0",
     border: "#EFD9C0",
@@ -26,6 +28,7 @@ const TYPE_CONFIG = {
   },
   event: {
     Icon: ConfettiIcon,
+    emoji: "🎉",
     label: "Events",
     bg: "#E1F5EE",
     border: "#9FE1CB",
@@ -34,6 +37,7 @@ const TYPE_CONFIG = {
   },
   notice: {
     Icon: MegaphoneIcon,
+    emoji: "📢",
     label: "Notices",
     bg: "#E6F1FB",
     border: "#B5D4F4",
@@ -117,7 +121,7 @@ function FeaturedCard({ listing }) {
           flexShrink: 0,
         }}
       >
-        <cfg.Icon size={44} weight="duotone" color={cfg.color} />
+        <span style={{ fontSize: "44px", lineHeight: 1 }}>{cfg.emoji}</span>
         {/* ⭐ FEATURED badge */}
         <div
           style={{
@@ -131,9 +135,12 @@ function FeaturedCard({ listing }) {
             padding: "3px 8px",
             borderRadius: "6px",
             letterSpacing: "0.04em",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "3px",
           }}
         >
-          <StarIcon size={9} weight="fill" color="#fff" style={{ verticalAlign: "middle", marginRight: "3px" }} />FEATURED
+          <StarIcon size={9} weight="fill" color="#fff" style={{ flexShrink: 0 }} />FEATURED
         </div>
         {/* Type badge */}
         <div
