@@ -805,9 +805,12 @@ export default function RoomDetailPage() {
                         padding: "3px 10px",
                         borderRadius: "20px",
                         whiteSpace: "nowrap",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "4px",
                       }}
                     >
-                      <HouseIcon size={11} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} /> Room Seeker
+                      <HouseIcon size={11} weight="regular" color="currentColor" style={{ flexShrink: 0 }} /> Room Seeker
                     </span>
                   )}
                 </div>

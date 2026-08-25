@@ -785,9 +785,12 @@ export default function JobDetailPage() {
                         padding: "3px 10px",
                         borderRadius: "20px",
                         whiteSpace: "nowrap",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "4px",
                       }}
                     >
-                      <MagnifyingGlassIcon size={11} weight="bold" color="currentColor" style={{ verticalAlign: "middle", marginRight: "3px" }} /> Job Seeker
+                      <MagnifyingGlassIcon size={11} weight="bold" color="currentColor" style={{ flexShrink: 0 }} /> Job Seeker
                     </span>
                   )}
                 </div>

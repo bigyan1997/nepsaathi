@@ -1344,8 +1344,8 @@ export default function JobsPage() {
 
         {/* Browse by city */}
         <div style={{ marginTop: "40px", background: "#F8F7FF", borderRadius: "14px", padding: "20px 24px" }}>
-          <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px" }}>
-            <BriefcaseIcon size={13} weight="duotone" color="#26215C" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Browse jobs by city
+          <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px", display: "flex", alignItems: "center", gap: "5px" }}>
+            <BriefcaseIcon size={13} weight="duotone" color="#26215C" style={{ flexShrink: 0 }} /> Browse jobs by city
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {FEATURED_LOCATIONS.map((slug) => {

@@ -484,9 +484,12 @@ function RoomMobileCard({ room }) {
                 padding: "2px 8px",
                 borderRadius: "5px",
                 alignSelf: "flex-start",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              <HouseIcon size={9} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "2px" }} /> Seeker
+              <HouseIcon size={9} weight="regular" color="currentColor" style={{ flexShrink: 0 }} /> Seeker
             </span>
           )}
         </div>
@@ -701,9 +704,12 @@ function RoomCard({ room }) {
                 fontWeight: 700,
                 padding: "2px 7px",
                 borderRadius: "6px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              <HouseIcon size={9} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "2px" }} /> SEEKING
+              <HouseIcon size={9} weight="regular" color="currentColor" style={{ flexShrink: 0 }} /> SEEKING
             </span>
           )}
         </div>
@@ -1553,8 +1559,8 @@ export default function RoomsPage() {
 
         {/* Browse by city */}
         <div style={{ marginTop: "40px", background: "#FFF8F3", borderRadius: "14px", padding: "20px 24px" }}>
-          <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px" }}>
-            <HouseIcon size={13} weight="duotone" color="#26215C" style={{ verticalAlign: "middle", marginRight: "4px" }} /> Browse rooms by city
+          <div style={{ fontSize: "13px", fontWeight: 700, color: "#26215C", marginBottom: "12px", display: "flex", alignItems: "center", gap: "5px" }}>
+            <HouseIcon size={13} weight="duotone" color="#26215C" style={{ flexShrink: 0 }} /> Browse rooms by city
           </div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {FEATURED_LOCATIONS.map((slug) => {
