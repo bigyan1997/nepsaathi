@@ -15,4 +15,5 @@ Disallow: /saved-searches
 Disallow: /payment/
 
 Sitemap: https://www.nepsaathi.com/sitemap.xml
+Sitemap: https://www.nepsaathi.com/sitemap-listings.xml
 Sitemap: https://www.nepsaathi.com/sitemap-forum.xml

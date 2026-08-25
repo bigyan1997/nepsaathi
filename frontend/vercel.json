@@ -13,6 +13,10 @@
       "destination": "https://nepsaathi-production.up.railway.app/api/sitemap-forum.xml"
     },
     {
+      "source": "/sitemap-listings.xml",
+      "destination": "https://nepsaathi-production.up.railway.app/api/sitemap-listings.xml"
+    },
+    {
       "source": "/jobs/:slug",
       "has": [
         {

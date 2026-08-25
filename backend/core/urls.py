@@ -26,11 +26,18 @@ from django.conf.urls.static import static
 from decouple import config
 from users import views as users_views
 from forum.sitemaps import ForumPostSitemap
+from listings.sitemaps import ListingSitemap
+from businesses.sitemaps import BusinessSitemap
 from feedback.views import NewsletterSubscribeView
 from core.og_views import OGListingView, OGBusinessView
 
 sitemaps = {
     "forum": ForumPostSitemap,
+}
+
+listing_sitemaps = {
+    "listings": ListingSitemap,
+    "businesses": BusinessSitemap,
 }
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
@@ -106,6 +113,9 @@ urlpatterns = [
 
     # Dynamic sitemap for forum posts (always fresh — submitted to GSC separately)
     path('api/sitemap-forum.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap-forum'),
+
+    # Dynamic sitemap for all active listings + businesses
+    path('api/sitemap-listings.xml', sitemap, {'sitemaps': listing_sitemaps}, name='sitemap-listings'),
 
     # Internal admin panel — superuser only
     path('api/panel/', include('panel.urls')),
