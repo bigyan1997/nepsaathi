@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MapPinIcon, CalendarBlankIcon, MaskHappyIcon, FootballIcon, ForkKnifeIcon, MusicNotesIcon, SunIcon, UsersIcon, BookOpenIcon, PushPinIcon } from "@phosphor-icons/react";
 import { getEvents } from "../../api/events";
 import { SkeletonEventCard } from "../../components/ui/Skeleton";
+import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1381,28 +1382,15 @@ export default function EventsPage() {
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "24px" }}>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={isFetching}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #9FE1CB",
-                borderRadius: "8px",
-                padding: "10px 28px",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#1D9E75",
-                cursor: isFetching ? "not-allowed" : "pointer",
-                opacity: isFetching ? 0.6 : 1,
-              }}
-            >
-              {isFetching ? "Loading…" : "Load more events"}
-            </button>
-            <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
-              Showing {allResults.length} of {data.count}
-            </p>
-          </div>
+          <LoadMoreFooter
+            count={allResults.length}
+            total={data.count}
+            onLoadMore={() => setPage((p) => p + 1)}
+            isFetching={isFetching}
+            label="events"
+            accentColor="#1D9E75"
+            accentBg="#E1F5EE"
+          />
         )}
       </div>
     </>

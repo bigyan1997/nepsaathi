@@ -72,3 +72,12 @@ body {
     flex-direction: column !important;
   }
 }
+
+/* Bottom nav — mobile only */
+.bottom-nav { display: none !important; }
+
+@media (max-width: 767px) {
+  .bottom-nav { display: flex !important; }
+  /* Push page content up so it's not hidden behind the nav */
+  body { padding-bottom: calc(58px + env(safe-area-inset-bottom)); }
+}

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MapPinIcon, SealCheckIcon, StorefrontIcon, ForkKnifeIcon, ShoppingCartIcon, AirplaneIcon, ScissorsIcon, FirstAidKitIcon, ScalesIcon, BookOpenIcon, SunIcon, HammerIcon, CarIcon, CurrencyDollarIcon, LaptopIcon, PushPinIcon } from "@phosphor-icons/react";
 import { getBusinesses } from "../../api/businesses";
 import { SkeletonBusinessCard } from "../../components/ui/Skeleton";
+import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
 import SaveSearchButton from "../../components/ui/SaveSearchButton";
@@ -1311,28 +1312,15 @@ export default function BusinessesPage() {
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "24px" }}>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={isFetching}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #FAC775",
-                borderRadius: "8px",
-                padding: "10px 28px",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#633806",
-                cursor: isFetching ? "not-allowed" : "pointer",
-                opacity: isFetching ? 0.6 : 1,
-              }}
-            >
-              {isFetching ? "Loading…" : "Load more businesses"}
-            </button>
-            <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
-              Showing {allResults.length} of {data.count}
-            </p>
-          </div>
+          <LoadMoreFooter
+            count={allResults.length}
+            total={data.count}
+            onLoadMore={() => setPage((p) => p + 1)}
+            isFetching={isFetching}
+            label="businesses"
+            accentColor="#633806"
+            accentBg="#FAEEDA"
+          />
         )}
       </div>
     </>

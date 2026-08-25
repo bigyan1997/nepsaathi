@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobs } from "../../api/jobs";
 import { SkeletonJobCard } from "../../components/ui/Skeleton";
+import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1332,28 +1333,15 @@ export default function JobsPage() {
         )}
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "24px" }}>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={isFetching}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #AFA9EC",
-                borderRadius: "8px",
-                padding: "10px 28px",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#534AB7",
-                cursor: isFetching ? "not-allowed" : "pointer",
-                opacity: isFetching ? 0.6 : 1,
-              }}
-            >
-              {isFetching ? "Loading…" : "Load more jobs"}
-            </button>
-            <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
-              Showing {allResults.length} of {data.count}
-            </p>
-          </div>
+          <LoadMoreFooter
+            count={allResults.length}
+            total={data.count}
+            onLoadMore={() => setPage((p) => p + 1)}
+            isFetching={isFetching}
+            label="jobs"
+            accentColor="#534AB7"
+            accentBg="#EEEDFE"
+          />
         )}
 
         {/* Browse by city */}

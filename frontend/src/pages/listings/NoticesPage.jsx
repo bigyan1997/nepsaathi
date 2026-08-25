@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MapPinIcon, WarningIcon, MegaphoneIcon, NewspaperIcon, TagIcon, WrenchIcon, MagnifyingGlassIcon, GraduationCapIcon, PushPinIcon } from "@phosphor-icons/react";
 import { getNotices } from "../../api/notices";
 import { SkeletonNoticeCard } from "../../components/ui/Skeleton";
+import LoadMoreFooter from "../../components/ui/LoadMoreFooter";
 import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import usePageMeta from "../../hooks/usePageMeta";
 import { STATES } from "../../utils/constants";
@@ -1217,28 +1218,15 @@ export default function NoticesPage() {
         </div>
 
         {data?.next && (
-          <div style={{ textAlign: "center", paddingTop: "24px" }}>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={isFetching}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #B5D4F4",
-                borderRadius: "8px",
-                padding: "10px 28px",
-                fontSize: "13px",
-                fontWeight: 500,
-                color: "#0C447C",
-                cursor: isFetching ? "not-allowed" : "pointer",
-                opacity: isFetching ? 0.6 : 1,
-              }}
-            >
-              {isFetching ? "Loading…" : "Load more notices"}
-            </button>
-            <p style={{ fontSize: "11px", color: "#aaa", marginTop: "8px" }}>
-              Showing {allResults.length} of {data.count}
-            </p>
-          </div>
+          <LoadMoreFooter
+            count={allResults.length}
+            total={data.count}
+            onLoadMore={() => setPage((p) => p + 1)}
+            isFetching={isFetching}
+            label="notices"
+            accentColor="#0C447C"
+            accentBg="#E6F1FB"
+          />
         )}
       </div>
     </>
