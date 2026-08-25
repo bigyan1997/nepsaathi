@@ -141,6 +141,7 @@ export default function NoticeDetailPage() {
     notice?.listing_title ? `${notice.listing_title} — Notice` : null,
     notice?.description,
     notice?.images?.[0]?.url,
+    !!error,
   );
 
   useEffect(() => {
@@ -151,12 +152,9 @@ export default function NoticeDetailPage() {
   if (isLoading) return <SkeletonDetailPage />;
   if (error)
     return (
-      <>
-        <meta name="robots" content="noindex, nofollow" />
-        <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
-          Notice not found or has been removed.
-        </div>
-      </>
+      <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
+        Notice not found or has been removed.
+      </div>
     );
 
   const catColor =

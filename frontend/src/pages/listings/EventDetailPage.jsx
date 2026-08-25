@@ -220,6 +220,7 @@ export default function EventDetailPage() {
     event?.listing_title ? `${event.listing_title} — Event` : null,
     event?.description,
     event?.images?.[0]?.url,
+    !!error,
   );
 
   useEffect(() => {
@@ -233,12 +234,9 @@ export default function EventDetailPage() {
   if (isLoading) return <SkeletonDetailPage />;
   if (error)
     return (
-      <>
-        <meta name="robots" content="noindex, nofollow" />
-        <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
-          Event not found or has been removed.
-        </div>
-      </>
+      <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
+        Event not found or has been removed.
+      </div>
     );
 
   const catColor = CATEGORY_COLORS[event?.category] || CATEGORY_COLORS.other;

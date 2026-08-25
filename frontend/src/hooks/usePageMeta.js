@@ -23,7 +23,21 @@ function setCanonical(href) {
 
 const DEFAULT_IMAGE = "https://www.nepsaathi.com/og-image.png";
 
-export default function usePageMeta(title, description, image) {
+function setRobots(noindex) {
+  let el = document.querySelector('meta[name="robots"]');
+  if (noindex) {
+    if (!el) {
+      el = document.createElement("meta");
+      el.name = "robots";
+      document.head.appendChild(el);
+    }
+    el.setAttribute("content", "noindex,nofollow");
+  } else if (el) {
+    el.setAttribute("content", "index,follow");
+  }
+}
+
+export default function usePageMeta(title, description, image, noindex = false) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${SITE_NAME}` : DEFAULT_TITLE;
     const metaDesc = description
@@ -55,6 +69,7 @@ export default function usePageMeta(title, description, image) {
     setMeta('meta[name="twitter:description"]', "content", metaDesc);
     setMeta('meta[name="twitter:image"]', "content", metaImage);
     setCanonical(canonicalUrl);
+    setRobots(noindex);
 
     return () => {
       document.title = prevTitle;
@@ -67,6 +82,7 @@ export default function usePageMeta(title, description, image) {
       setMeta('meta[name="twitter:description"]', "content", prevTwDesc);
       setMeta('meta[name="twitter:image"]', "content", prevTwImage);
       setCanonical(prevCanonical);
+      setRobots(false);
     };
-  }, [title, description, image]);
+  }, [title, description, image, noindex]);
 }

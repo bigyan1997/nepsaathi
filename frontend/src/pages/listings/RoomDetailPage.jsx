@@ -138,6 +138,7 @@ export default function RoomDetailPage() {
     room?.listing_title ? `${room.listing_title} — Room` : null,
     room?.description,
     room?.images?.[0]?.url,
+    !!error,
   );
 
   useEffect(() => {
@@ -147,12 +148,9 @@ export default function RoomDetailPage() {
   if (isLoading) return <SkeletonDetailPage />;
   if (error)
     return (
-      <>
-        <meta name="robots" content="noindex, nofollow" />
-        <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
-          Room not found or has been removed.
-        </div>
-      </>
+      <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
+        Room not found or has been removed.
+      </div>
     );
 
   const isWanted = room?.is_wanted;

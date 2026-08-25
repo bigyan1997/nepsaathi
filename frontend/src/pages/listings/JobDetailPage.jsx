@@ -132,6 +132,7 @@ export default function JobDetailPage() {
     job?.listing_title ? `${job.listing_title} — Job` : null,
     job?.description,
     job?.images?.[0]?.url,
+    !!error,
   );
 
   const { data: similarListings } = useQuery({
@@ -157,12 +158,9 @@ export default function JobDetailPage() {
   if (isLoading) return <SkeletonDetailPage />;
   if (error)
     return (
-      <>
-        <meta name="robots" content="noindex, nofollow" />
-        <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
-          Job not found or has been removed.
-        </div>
-      </>
+      <div style={{ textAlign: "center", padding: "60px", color: "#A32D2D" }}>
+        Job not found or has been removed.
+      </div>
     );
 
   const isWanted = job?.is_wanted;
