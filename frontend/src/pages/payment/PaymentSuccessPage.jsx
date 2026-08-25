@@ -92,8 +92,11 @@ export default function PaymentSuccessPage() {
         fontSize: 13,
         color: "#085041",
         textAlign: "left",
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
       }}>
-        <CheckCircleIcon size={14} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: 6 }} />Payment confirmed · Featured for 7 days · Visible at the top of search results
+        <CheckCircleIcon size={14} weight="fill" color="#085041" style={{ flexShrink: 0 }} />Payment confirmed · Featured for 7 days · Visible at the top of search results
       </div>
       <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
         <Link

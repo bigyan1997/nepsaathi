@@ -313,6 +313,9 @@ function TabBtn({ label, active, onClick }) {
         transition: "all .15s",
         flexShrink: 0,
         whiteSpace: "nowrap",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "5px",
       }}
     >
       {label}
@@ -455,14 +458,14 @@ function PRCalculator() {
         <div>
           <div style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em", color: "#534AB7", marginBottom: "4px" }}>Your total score</div>
           <div style={{ fontSize: "52px", fontWeight: 800, color: getScoreColor(finalTotal), lineHeight: 1 }}>{finalTotal}</div>
-          <div style={{ fontSize: "13px", color: "#666", marginTop: "6px" }}>
+          <div style={{ fontSize: "13px", color: "#666", marginTop: "6px", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
             {finalTotal >= 65
-              ? <><CheckCircleIcon size={13} weight="fill" color="#16a34a" style={{ verticalAlign: "middle", marginRight: "4px" }} />Meets minimum threshold (65 pts)</>
+              ? <><CheckCircleIcon size={13} weight="fill" color="#16a34a" style={{ flexShrink: 0 }} />Meets minimum threshold (65 pts)</>
               : `Need ${65 - finalTotal} more pts to reach minimum (65)`}
           </div>
           {nextThreshold && finalTotal >= 65 && (
-            <div style={{ fontSize: "13px", color: "#534AB7", marginTop: "4px" }}>
-              <TrendUpIcon size={13} weight="fill" color="#534AB7" style={{ verticalAlign: "middle", marginRight: "4px" }} />{gap} more pts to reach {nextThreshold}
+            <div style={{ fontSize: "13px", color: "#534AB7", marginTop: "4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+              <TrendUpIcon size={13} weight="fill" color="#534AB7" style={{ flexShrink: 0 }} />{gap} more pts to reach {nextThreshold}
             </div>
           )}
         </div>
@@ -1378,8 +1381,8 @@ function TaxReturnEstimator() {
       {ready && (
         <>
           <div style={{ background: isRefund ? '#f0fdf4' : '#fff5f5', border: `2px solid ${isRefund ? '#86efac' : '#fca5a5'}`, borderRadius: '16px', padding: '28px', textAlign: 'center', marginBottom: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: isRefund ? '#15803d' : '#dc2626', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px' }}>
-              {isRefund ? <><ConfettiIcon size={14} weight="fill" color="#15803d" style={{ verticalAlign: "middle", marginRight: "4px" }} />Estimated tax refund</> : <><WarningIcon size={14} weight="fill" color="#dc2626" style={{ verticalAlign: "middle", marginRight: "4px" }} />Estimated tax owing</>}
+            <div style={{ fontSize: '13px', fontWeight: 700, color: isRefund ? '#15803d' : '#dc2626', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+              {isRefund ? <><ConfettiIcon size={14} weight="fill" color="#15803d" style={{ flexShrink: 0 }} />Estimated tax refund</> : <><WarningIcon size={14} weight="fill" color="#dc2626" style={{ flexShrink: 0 }} />Estimated tax owing</>}
             </div>
             <div style={{ fontSize: '52px', fontWeight: 800, color: isRefund ? '#15803d' : '#dc2626', letterSpacing: '-.02em', lineHeight: 1 }}>
               {fmtAUD(diff)}
@@ -1481,8 +1484,8 @@ function TakeHomeCalculator() {
       {ready && (
         <>
           <div style={{ background: '#f0fdf4', border: '2px solid #86efac', borderRadius: '16px', padding: '28px', textAlign: 'center', marginBottom: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px' }}>
-              <CurrencyDollarIcon size={13} weight="fill" color="#15803d" style={{ verticalAlign: "middle", marginRight: "4px" }} />{periodLabel} take-home
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+              <CurrencyDollarIcon size={13} weight="fill" color="#15803d" style={{ flexShrink: 0 }} />{periodLabel} take-home
             </div>
             <div style={{ fontSize: '52px', fontWeight: 800, color: '#15803d', letterSpacing: '-.02em', lineHeight: 1 }}>
               {fmtAUD(pp(annualNet))}
@@ -1551,6 +1554,7 @@ function TaxCalculatorTab() {
             color: mode === id ? '#534AB7' : '#666',
             fontWeight: mode === id ? 700 : 500,
             fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit',
+            display: 'inline-flex', alignItems: 'center', gap: '5px',
           }}>
             {label}
           </button>

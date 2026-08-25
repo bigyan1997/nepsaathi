@@ -835,7 +835,7 @@ export default function ProfilePage() {
                     fontWeight: 600,
                   }}
                 >
-                  <WarningIcon size={14} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "5px" }} />Are you absolutely sure? This cannot be undone!
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}><WarningIcon size={14} weight="fill" color="#A32D2D" style={{ flexShrink: 0 }} />Are you absolutely sure? This cannot be undone!</span>
                 </p>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button

@@ -582,13 +582,15 @@ export default function RoomDetailPage() {
                       fontWeight: 500,
                     }}
                   >
-                    <CalendarBlankIcon size={13} weight="regular" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />
-                    {isWanted ? "Looking to move in from " : "Available from "}
-                    {new Date(room.available_from).toLocaleDateString("en-AU", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                      <CalendarBlankIcon size={13} weight="regular" color="currentColor" style={{ flexShrink: 0 }} />
+                      {isWanted ? "Looking to move in from " : "Available from "}
+                      {new Date(room.available_from).toLocaleDateString("en-AU", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
                   </div>
                 )}
 
@@ -605,8 +607,7 @@ export default function RoomDetailPage() {
                       color: "#633806",
                     }}
                   >
-                    <LightbulbIcon size={14} weight="fill" color="#633806" style={{ verticalAlign: "middle", marginRight: "4px" }} />This person is looking for a room — reach out if you have
-                    one available!
+                    <span style={{ display: "flex", alignItems: "center", gap: "5px" }}><LightbulbIcon size={14} weight="fill" color="#633806" style={{ flexShrink: 0 }} />This person is looking for a room — reach out if you have one available!</span>
                   </div>
                 )}
 

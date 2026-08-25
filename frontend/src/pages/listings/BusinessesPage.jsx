@@ -282,6 +282,9 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
                         fontSize: "13px",
                         fontWeight: 600,
                         color: "#26215C",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
                       }}
                     >
                       {label}

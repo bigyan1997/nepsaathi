@@ -417,9 +417,12 @@ function NoticeMobileCard({ notice }) {
                 padding: "2px 8px",
                 borderRadius: "5px",
                 alignSelf: "flex-start",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              <WarningIcon size={9} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "2px" }} /> Urgent
+              <WarningIcon size={9} weight="fill" color="#A32D2D" style={{ flexShrink: 0 }} /> Urgent
             </span>
           )}
           {notice.is_free && (
@@ -471,9 +474,12 @@ function NoticeMobileCard({ notice }) {
             padding: "2px 7px",
             borderRadius: "6px",
             alignSelf: "flex-start",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "3px",
           }}
         >
-          <CatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{notice.category?.replace("_", " ")}
+          <CatIcon size={10} weight="fill" color={catColor.color} style={{ flexShrink: 0 }} />{notice.category?.replace("_", " ")}
         </span>
         <div
           style={{
@@ -580,9 +586,12 @@ function NoticeCard({ notice }) {
                 fontWeight: 700,
                 padding: "2px 7px",
                 borderRadius: "6px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "3px",
               }}
             >
-              <WarningIcon size={9} weight="fill" color="#A32D2D" style={{ verticalAlign: "middle", marginRight: "2px" }} /> URGENT
+              <WarningIcon size={9} weight="fill" color="#A32D2D" style={{ flexShrink: 0 }} /> URGENT
             </span>
           )}
         </div>
@@ -635,9 +644,12 @@ function NoticeCard({ notice }) {
               fontWeight: 500,
               padding: "2px 8px",
               borderRadius: "8px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "3px",
             }}
           >
-            <CatIcon size={10} weight="fill" color={catColor.color} style={{ marginRight: "3px", verticalAlign: "middle" }} />{notice.category?.replace("_", " ")}
+            <CatIcon size={10} weight="fill" color={catColor.color} style={{ flexShrink: 0 }} />{notice.category?.replace("_", " ")}
           </span>
           {notice.is_free && (
             <span

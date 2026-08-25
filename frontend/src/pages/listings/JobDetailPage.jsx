@@ -613,8 +613,7 @@ export default function JobDetailPage() {
                       color: "#3C3489",
                     }}
                   >
-                    <LightbulbIcon size={14} weight="fill" color="#3C3489" style={{ verticalAlign: "middle", marginRight: "4px" }} />This person is looking for work — reach out if you have
-                    an opportunity for them!
+                    <span style={{ display: "flex", alignItems: "center", gap: "5px" }}><LightbulbIcon size={14} weight="fill" color="#3C3489" style={{ flexShrink: 0 }} />This person is looking for work — reach out if you have an opportunity for them!</span>
                   </div>
                 )}
 
@@ -971,13 +970,14 @@ export default function JobDetailPage() {
                     onClick={() => setShowApply(true)}
                     disabled={applied}
                     style={{
-                      display: "block", width: "100%", padding: "10px",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "5px",
+                      width: "100%", padding: "10px",
                       borderRadius: "9px", border: "none", cursor: applied ? "default" : "pointer",
                       background: applied ? "#e8f5e9" : "#534AB7", color: applied ? "#388e3c" : "#fff",
                       fontSize: "13px", fontWeight: 700, textAlign: "center",
                     }}
                   >
-                    {applied ? <><span style={{ marginRight: "4px" }}>✓</span>Applied</> : <><LightningIcon size={13} weight="fill" color="currentColor" style={{ verticalAlign: "middle", marginRight: "4px" }} />Quick Apply</>}
+                    {applied ? <><span>✓</span>Applied</> : <><LightningIcon size={13} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Quick Apply</>}
                   </button>
                 )}
                 <MessageButton

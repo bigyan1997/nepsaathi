@@ -269,11 +269,14 @@ export default function NewToAustraliaPage() {
                   whiteSpace: "nowrap",
                   flexShrink: 0,
                   transition: "color 0.15s, border-color 0.15s",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
                 onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.color = "#4F46E5"; e.currentTarget.style.borderBottomColor = "#4F46E5"; } }}
                 onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.color = "#64748b"; e.currentTarget.style.borderBottomColor = "transparent"; } }}
               >
-                {s.Icon && <s.Icon size={14} weight="regular" style={{ verticalAlign: "middle", marginRight: "4px" }} />}{s.title.split(" ")[0]}
+                {s.Icon && <s.Icon size={14} weight="regular" style={{ flexShrink: 0 }} />}{s.title.split(" ")[0]}
               </button>
             );
           })}

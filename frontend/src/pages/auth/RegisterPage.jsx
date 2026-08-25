@@ -216,8 +216,8 @@ export default function RegisterPage() {
 
         {/* Referral banner */}
         {refCode && (
-          <div style={{ background: "#E1F5EE", border: "0.5px solid #6EE7B7", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#085041", marginBottom: "14px", textAlign: "center" }}>
-            <HandshakeIcon size={16} weight="fill" color="#085041" style={{ verticalAlign: "middle", marginRight: "6px" }} />
+          <div style={{ background: "#E1F5EE", border: "0.5px solid #6EE7B7", borderRadius: "8px", padding: "10px 14px", fontSize: "13px", color: "#085041", marginBottom: "14px", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+            <HandshakeIcon size={16} weight="fill" color="#085041" style={{ flexShrink: 0 }} />
             You were invited! Sign up to help your friend earn points.
           </div>
         )}

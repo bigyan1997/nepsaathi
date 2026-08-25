@@ -343,8 +343,8 @@ export default function BusinessDetailPage() {
               flexWrap: "wrap",
             }}
           >
-            <span style={{ fontSize: "12px", fontWeight: 600, color: "#555", flexShrink: 0 }}>
-              <CameraIcon size={12} weight="fill" color="#555" style={{ verticalAlign: "middle", marginRight: "4px" }} />Photos ({business.images?.length || 0}/5)
+            <span style={{ fontSize: "12px", fontWeight: 600, color: "#555", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "4px" }}>
+              <CameraIcon size={12} weight="fill" color="#555" style={{ flexShrink: 0 }} />Photos ({business.images?.length || 0}/5)
             </span>
             {business.images?.map((img) => (
               <div key={img.id} style={{ position: "relative" }}>
