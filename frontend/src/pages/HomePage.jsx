@@ -20,7 +20,7 @@ import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
 import { timeAgo, isNew, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
 import useT from "../hooks/useT";
-import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, MapPinIcon, StorefrontIcon, MagnifyingGlassIcon, StarIcon } from "@phosphor-icons/react";
+import { BriefcaseIcon, HouseIcon, MegaphoneIcon, MapPinIcon, StarIcon } from "@phosphor-icons/react";
 
 const STATES = [
   { value: "", label: "All states" },
@@ -34,7 +34,7 @@ const STATES = [
   { value: "NT", label: "NT" },
 ];
 
-const TYPE_ICONS_MAP = { job: BriefcaseIcon, room: HouseIcon, event: ConfettiIcon, notice: MegaphoneIcon, business: StorefrontIcon };
+const TYPE_EMOJI_MAP = { job: "💼", room: "🏠", event: "🎉", notice: "📢", business: "🏪" };
 const SEARCH_TYPES = HOME_SEARCH_TYPES;
 
 const FEATURED_BADGE = (
@@ -251,7 +251,7 @@ export default function HomePage() {
                         <div key={index} className="sugg-item"
                           onClick={() => { setShowSuggestions(false); setSearch(suggestion.label); const p = new URLSearchParams(); p.set("search", suggestion.label); navigate(`/${suggestion.listing_type}s?${p}`); }}
                           style={{ padding: "10px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", borderBottom: index < suggestions.length - 1 ? "0.5px solid #f5f5f5" : "none" }}>
-                          {(() => { const SuggIcon = TYPE_ICONS_MAP[suggestion.listing_type] || MagnifyingGlassIcon; return <SuggIcon size={16} weight="duotone" color="#534AB7" />; })()}
+                          <span style={{ fontSize: "18px", lineHeight: 1, flexShrink: 0 }}>{TYPE_EMOJI_MAP[suggestion.listing_type] || "🔍"}</span>
                           <div>
                             <div style={{ fontSize: "13px", fontWeight: 500, color: "#26215C" }}>{highlightMatch(suggestion.label, search)}</div>
                             <div style={{ fontSize: "11px", color: "#888" }}>{suggestion.sublabel}</div>
