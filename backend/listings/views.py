@@ -1101,7 +1101,7 @@ Rewrite the description to be polished, professional, and compelling for an Aust
 - Organise content into short, readable paragraphs (no bullet points)
 - Highlight key details and benefits naturally within the prose
 - Keep every factual detail the user provided — do not invent anything
-- Under 150 words
+- Under 200 words
 - No markdown formatting (no **, no ##, no lists)
 
 Return only the improved description text — no preamble, no explanation."""
@@ -1110,7 +1110,7 @@ Return only the improved description text — no preamble, no explanation."""
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
-                max_tokens=300,
+                max_tokens=380,
                 messages=[{"role": "user", "content": prompt}],
             )
             import re as _re
