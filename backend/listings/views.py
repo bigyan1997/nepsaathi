@@ -1116,7 +1116,7 @@ Return only the improved description text — no preamble, no explanation."""
         try:
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 max_tokens=380,
                 messages=[{"role": "user", "content": prompt}],
             )
@@ -1166,7 +1166,7 @@ class AITagSuggestView(APIView):
         try:
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 max_tokens=300,
                 messages=[
                     {"role": "system", "content": "You output only JSON arrays of strings. No explanation, no markdown, no extra text."},
