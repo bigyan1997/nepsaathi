@@ -1,23 +1,24 @@
 from datetime import timedelta
+from pathlib import Path
 from fpdf import FPDF, XPos, YPos
 
-
-BRAND_DARK   = (38, 33, 92)
-BRAND_MID    = (83, 74, 183)
-ORANGE       = (232, 119, 34)
+BRAND_DARK   = (38,  33,  92)
+BRAND_MID    = (83,  74, 183)
+ORANGE       = (232, 119,  34)
 WHITE        = (255, 255, 255)
-LIGHT_BG     = (248, 248, 250)
-GREY_LINE    = (220, 220, 225)
-GREY_TEXT    = (140, 140, 150)
-BLACK_TEXT   = (40, 40, 50)
-GREEN        = (27, 158, 117)
-GREEN_BG     = (225, 245, 238)
-HEADER_MUTED = (170, 165, 210)
+LIGHT_BG     = (248, 248, 251)
+BILL_BG      = (246, 244, 255)
+GREY_LINE    = (222, 222, 228)
+GREY_TEXT    = (128, 128, 142)
+BLACK_TEXT   = (28,  28,  42)
+GREEN        = (22,  163,  74)
+GREEN_BG     = (220, 252, 231)
+HEADER_MUTED = (162, 156, 208)
 
-# Page content width = 210 - 15 (left) - 15 (right) = 180
-W        = 180
-LM       = 15
-HEADER_H = 58   # height of the full-width dark header band
+W        = 180   # content width (210 - 15*2)
+LM       = 15    # left margin
+HEADER_H = 60    # header band height
+FONT_DIR = Path(__file__).parent / "fonts"
 
 
 class InvoicePDF(FPDF):
@@ -30,233 +31,237 @@ class InvoicePDF(FPDF):
         self.set_line_width(0.25)
         self.line(LM, self.get_y(), LM + W, self.get_y())
         self.set_y(-11)
-        self.set_font('Helvetica', '', 7.5)
+        self.set_font("Inter", "", 7.5)
         self.set_text_color(*GREY_TEXT)
         self.cell(0, 5,
-            'hello@nepsaathi.com   |   nepsaathi.com   |   Australia',
-            align='C')
+            "hello@nepsaathi.com   ·   nepsaathi.com   ·   Australia",
+            align="C")
 
 
 def generate_invoice_pdf(payment) -> bytes:
     listing        = payment.listing
     invoice_num    = f"INV-{payment.id:05d}"
-    date_paid      = payment.completed_at.strftime('%d/%m/%Y')
+    date_paid      = payment.completed_at.strftime("%d %b %Y")
     amount_aud     = payment.amount_paid / 100
-    gst_amount     = round(amount_aud / 11, 2)   # AU GST is 1/11 of GST-inclusive total (10% of pre-tax)
+    gst_amount     = round(amount_aud / 11, 2)
     excl_gst       = round(amount_aud - gst_amount, 2)
-    featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime('%d %B %Y')
+    featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime("%d %B %Y")
     user           = payment.user
     full_name      = f"{user.first_name} {user.last_name}".strip() or user.email
-    listing_title  = listing.title[:50] + ('...' if len(listing.title) > 50 else '')
+    listing_title  = listing.title[:52] + ("…" if len(listing.title) > 52 else "")
 
     pdf = InvoicePDF()
+    pdf.add_font("Inter",  "",  str(FONT_DIR / "Inter-Regular.ttf"))
+    pdf.add_font("Inter",  "B", str(FONT_DIR / "Inter-Bold.ttf"))
     pdf.set_auto_page_break(auto=True, margin=20)
     pdf.add_page()
     pdf.set_margins(LM, LM, LM)
 
-    # ── Full-width dark header band ───────────────────────────
+    # ── Header band ──────────────────────────────────────────────────────────
     pdf.set_fill_color(*BRAND_DARK)
-    pdf.rect(0, 0, 210, HEADER_H, style='F')
+    pdf.rect(0, 0, 210, HEADER_H, style="F")
 
-    # Logo circles (left side of header)
-    r   = 5
-    cy  = 18
-    cx1 = LM + r           # center x of orange circle  = 20
-    cx2 = LM + r * 2.7     # center x of purple circle  = 28.5
-
+    # Orange top accent stripe
     pdf.set_fill_color(*ORANGE)
-    pdf.ellipse(cx1 - r, cy - r, r * 2, r * 2, style='F')
-    pdf.set_fill_color(*BRAND_MID)
-    pdf.ellipse(cx2 - r, cy - r, r * 2, r * 2, style='F')
+    pdf.rect(0, 0, 210, 3, style="F")
 
-    # Wordmark
-    pdf.set_font('Helvetica', 'B', 20)
-    nep_w  = pdf.get_string_width('Nep')
-    saat_w = pdf.get_string_width('Saathi')
-    wm_x = cx2 + r + 3    # start of wordmark text
+    # Logo circles
+    r   = 5.5
+    cy  = 23
+    cx1 = LM + r
+    cx2 = LM + r * 2.6
+    pdf.set_fill_color(*ORANGE)
+    pdf.ellipse(cx1 - r, cy - r, r * 2, r * 2, style="F")
+    pdf.set_fill_color(*BRAND_MID)
+    pdf.ellipse(cx2 - r, cy - r, r * 2, r * 2, style="F")
+
+    # Wordmark — "Nep" orange, "Saathi" white
+    pdf.set_font("Inter", "B", 21)
+    wm_x = cx2 + r + 4
     pdf.set_xy(wm_x, cy - 6)
     pdf.set_text_color(*ORANGE)
-    pdf.cell(nep_w, 9, 'Nep', new_x=XPos.RIGHT, new_y=YPos.TOP)
+    nep_w = pdf.get_string_width("Nep")
+    pdf.cell(nep_w, 9, "Nep", new_x=XPos.RIGHT, new_y=YPos.TOP)
     pdf.set_text_color(*WHITE)
-    pdf.cell(saat_w, 9, 'Saathi', new_x=XPos.RIGHT, new_y=YPos.TOP)
+    pdf.cell(pdf.get_string_width("Saathi"), 9, "Saathi", new_x=XPos.RIGHT, new_y=YPos.TOP)
 
-    # Tagline
-    pdf.set_xy(LM, cy + 6)
-    pdf.set_font('Helvetica', '', 7.5)
+    # Tagline + contact
+    pdf.set_font("Inter", "", 7.5)
     pdf.set_text_color(*HEADER_MUTED)
-    pdf.cell(90, 4.5, 'your Nepali friend, wherever you are')
+    pdf.set_xy(LM, cy + 7)
+    pdf.cell(90, 4.5, "your Nepali friend, wherever you are")
+    pdf.set_xy(LM, cy + 13.5)
+    pdf.cell(90, 4.5, "hello@nepsaathi.com  ·  nepsaathi.com  ·  Australia")
 
-    # Contact info
-    pdf.set_xy(LM, cy + 13)
-    pdf.set_font('Helvetica', '', 8)
-    pdf.set_text_color(*HEADER_MUTED)
-    pdf.cell(90, 5, 'hello@nepsaathi.com  |  nepsaathi.com')
-    pdf.set_xy(LM, cy + 20)
-    pdf.cell(90, 5, 'Australia')
-
-    # "INVOICE" label (right side of header)
-    pdf.set_xy(105, 8)
-    pdf.set_font('Helvetica', 'B', 30)
+    # INVOICE title (right)
+    pdf.set_xy(105, 10)
+    pdf.set_font("Inter", "B", 27)
     pdf.set_text_color(*WHITE)
-    pdf.cell(90, 14, 'INVOICE', align='R')
+    pdf.cell(90, 12, "INVOICE", align="R")
 
-    # Invoice details rows (right side)
-    # label: x=105 width=42  |  value: x=147 width=48  (total=90, ends at 195)
-    def hdr_detail(label, value, y):
+    # Header detail rows
+    def hdr_row(label, value, y):
         pdf.set_xy(105, y)
-        pdf.set_font('Helvetica', '', 8)
+        pdf.set_font("Inter", "", 7.5)
         pdf.set_text_color(*HEADER_MUTED)
-        pdf.cell(42, 5.5, label, align='R')
-        pdf.set_font('Helvetica', 'B', 8)
+        pdf.cell(38, 5, label, align="R")
+        pdf.set_font("Inter", "B", 7.5)
         pdf.set_text_color(*WHITE)
-        pdf.cell(48, 5.5, value, align='R')
+        pdf.cell(52, 5, value, align="R")
 
-    hdr_detail('Invoice No :', invoice_num, 28)
-    hdr_detail('Date :', date_paid, 35)
-    hdr_detail('Amount Due :', f'AUD ${amount_aud:.2f}', 42)
+    hdr_row("Invoice No", invoice_num, 33)
+    hdr_row("Date", date_paid, 39.5)
+    hdr_row("Amount", f"AUD ${amount_aud:.2f}", 46)
 
-    # ── Bill To section ───────────────────────────────────────
-    bill_y = HEADER_H + 9
+    # ── Orange left accent stripe (body) ─────────────────────────────────────
+    pdf.set_fill_color(*ORANGE)
+    pdf.rect(0, HEADER_H, 3.5, 220, style="F")
 
-    pdf.set_xy(LM, bill_y)
-    pdf.set_font('Helvetica', 'B', 8)
-    pdf.set_text_color(*ORANGE)
-    pdf.cell(90, 5, 'BILL TO')
+    # ── Bill To ───────────────────────────────────────────────────────────────
+    bill_y = HEADER_H + 12
 
-    pdf.set_xy(LM, bill_y + 7)
-    pdf.set_font('Helvetica', 'B', 12)
+    # Light tint box
+    pdf.set_fill_color(*BILL_BG)
+    pdf.rect(LM, bill_y - 4, 88, 31, style="F")
+
+    pdf.set_xy(LM + 4, bill_y)
+    pdf.set_font("Inter", "B", 7)
+    pdf.set_text_color(*BRAND_MID)
+    pdf.cell(80, 4.5, "BILL TO")
+
+    pdf.set_xy(LM + 4, bill_y + 8)
+    pdf.set_font("Inter", "B", 12)
     pdf.set_text_color(*BRAND_DARK)
-    pdf.cell(90, 7, full_name)
+    pdf.cell(80, 7, full_name)
 
-    pdf.set_xy(LM, bill_y + 15.5)
-    pdf.set_font('Helvetica', '', 9)
+    pdf.set_xy(LM + 4, bill_y + 17)
+    pdf.set_font("Inter", "", 9)
     pdf.set_text_color(*GREY_TEXT)
-    pdf.cell(90, 5, user.email)
+    pdf.cell(80, 5, user.email)
 
-    # Divider
-    div_y = bill_y + 25
+    # Thin divider
+    div_y = bill_y + 36
     pdf.set_draw_color(*GREY_LINE)
     pdf.set_line_width(0.3)
     pdf.line(LM, div_y, LM + W, div_y)
 
-    # ── Table ─────────────────────────────────────────────────
-    # Columns: Description=90, Price=30, Qty=20, Total=40 => 180 total
+    # ── Line items table ──────────────────────────────────────────────────────
     COLS  = [90, 30, 20, 40]
-    HEADS = ['DESCRIPTION', 'PRICE', 'QTY', 'TOTAL']
-    table_y = div_y + 7
+    HEADS = ["DESCRIPTION", "PRICE", "QTY", "TOTAL"]
+    table_y = div_y + 8
 
+    # Table header row
     pdf.set_xy(LM, table_y)
     pdf.set_fill_color(*BRAND_DARK)
     pdf.set_text_color(*WHITE)
-    pdf.set_font('Helvetica', 'B', 8.5)
+    pdf.set_font("Inter", "B", 8)
     for i, (cw, label) in enumerate(zip(COLS, HEADS)):
-        align = 'L' if i == 0 else 'R'
-        txt   = ('  ' + label) if i == 0 else label
-        pdf.cell(cw, 9, txt, fill=True, border=0, align=align,
+        pad = "   " if i == 0 else ""
+        pdf.cell(cw, 9.5, pad + label, fill=True, border=0,
+                 align="L" if i == 0 else "R",
                  new_x=XPos.RIGHT, new_y=YPos.TOP)
-    pdf.ln(9)
+    pdf.ln(9.5)
 
-    # Item row
+    # Item main row
     row_y = pdf.get_y()
     pdf.set_fill_color(*LIGHT_BG)
     pdf.set_xy(LM, row_y)
-    vals = [f'  Featured Listing - {payment.duration_days} days',
-            f'${excl_gst:.2f}', '1', f'${excl_gst:.2f}']
+    vals = [
+        f"   Featured Listing · {payment.duration_days} days",
+        f"${excl_gst:.2f}", "1", f"${excl_gst:.2f}",
+    ]
     for i, (cw, val) in enumerate(zip(COLS, vals)):
-        pdf.set_font('Helvetica', 'B' if i == 0 else '', 9)
+        pdf.set_font("Inter", "B" if i == 0 else "", 9)
         pdf.set_text_color(*BLACK_TEXT)
-        pdf.cell(cw, 8.5, val, fill=True, border=0,
-                 align='L' if i == 0 else 'R',
+        pdf.cell(cw, 9, val, fill=True, border=0,
+                 align="L" if i == 0 else "R",
                  new_x=XPos.RIGHT, new_y=YPos.TOP)
-    pdf.ln(8.5)
+    pdf.ln(9)
 
-    # Sub-row: listing title
+    # Item sub-row (listing title)
     pdf.set_xy(LM, pdf.get_y())
     pdf.set_fill_color(*LIGHT_BG)
-    pdf.set_font('Helvetica', 'I', 8)
+    pdf.set_font("Inter", "", 8)
     pdf.set_text_color(*GREY_TEXT)
-    pdf.cell(COLS[0], 6, f'  {listing_title}', fill=True, border=0,
+    pdf.cell(COLS[0], 6.5, f"   {listing_title}", fill=True, border=0,
              new_x=XPos.RIGHT, new_y=YPos.TOP)
     for cw in COLS[1:]:
-        pdf.cell(cw, 6, '', fill=True, border=0,
+        pdf.cell(cw, 6.5, "", fill=True, border=0,
                  new_x=XPos.RIGHT, new_y=YPos.TOP)
-    pdf.ln(6)
+    pdf.ln(6.5)
 
-    # Table bottom line
+    # Bottom border of table
     pdf.set_draw_color(*GREY_LINE)
     pdf.set_line_width(0.25)
     pdf.line(LM, pdf.get_y(), LM + W, pdf.get_y())
-    pdf.ln(5)
+    pdf.ln(7)
 
-    # ── Subtotals ─────────────────────────────────────────────
+    # ── Subtotals ─────────────────────────────────────────────────────────────
     def amount_row(label, value, bold=False):
         pdf.set_x(LM)
-        pdf.set_font('Helvetica', 'B' if bold else '', 9)
-        clr = BLACK_TEXT if bold else GREY_TEXT
-        pdf.set_text_color(*clr)
-        pdf.cell(W - 45, 6, label, align='R')
+        pdf.set_font("Inter", "B" if bold else "", 9)
+        pdf.set_text_color(*(BLACK_TEXT if bold else GREY_TEXT))
+        pdf.cell(W - 52, 6.5, label, align="R")
         pdf.set_text_color(*BLACK_TEXT)
-        pdf.cell(45, 6, value, align='R')
-        pdf.ln(6)
+        pdf.cell(52, 6.5, value, align="R")
+        pdf.ln(6.5)
 
-    amount_row('Subtotal (excl. GST)', f'AUD ${excl_gst:.2f}')
-    amount_row('GST (10%)', f'AUD ${gst_amount:.2f}')
-    pdf.ln(2)
+    amount_row("Subtotal (excl. GST)", f"AUD  ${excl_gst:.2f}")
+    amount_row("GST (10%)", f"AUD  ${gst_amount:.2f}")
+    pdf.ln(3)
 
-    # Grand total banner
+    # Grand total banner — right-aligned dark block
     pdf.set_x(LM)
     pdf.set_fill_color(*BRAND_DARK)
     pdf.set_text_color(*WHITE)
-    pdf.set_font('Helvetica', 'B', 10)
-    pdf.cell(W - 70, 10, '', fill=True, border=0)
-    pdf.cell(70, 10, f'  GRAND TOTAL    AUD ${amount_aud:.2f}  ',
-             fill=True, border=0, align='R')
-    pdf.ln(16)
+    pdf.set_font("Inter", "B", 10)
+    pdf.cell(W - 82, 11.5, "", fill=True, border=0)
+    pdf.cell(82, 11.5,
+             f"GRAND TOTAL   AUD ${amount_aud:.2f}   ",
+             fill=True, border=0, align="R")
+    pdf.ln(20)
 
-    # ── Bottom: Payment method (left) + Thank you (right) ─────
+    # ── Payment method + Thank You ────────────────────────────────────────────
     bot_y = pdf.get_y()
 
-    # Left — Payment method
+    # Payment method (left column)
     pdf.set_xy(LM, bot_y)
-    pdf.set_font('Helvetica', 'B', 9)
+    pdf.set_font("Inter", "B", 8)
     pdf.set_text_color(*BRAND_DARK)
-    pdf.cell(90, 6, 'PAYMENT METHOD')
+    pdf.cell(90, 5.5, "PAYMENT METHOD")
 
-    pdf.set_xy(LM, bot_y + 8)
-    pdf.set_font('Helvetica', '', 8.5)
-    pdf.set_text_color(*GREY_TEXT)
-    pdf.cell(22, 5, 'Provider :')
-    pdf.set_text_color(*BLACK_TEXT)
-    pdf.cell(68, 5, 'Stripe (Credit / Debit Card)')
+    def pay_row(label, value, y_off):
+        pdf.set_xy(LM, bot_y + y_off)
+        pdf.set_font("Inter", "", 8.5)
+        pdf.set_text_color(*GREY_TEXT)
+        pdf.cell(26, 5, label)
+        pdf.set_text_color(*BLACK_TEXT)
+        pdf.cell(64, 5, value)
 
-    pdf.set_xy(LM, bot_y + 14)
-    pdf.set_font('Helvetica', '', 8.5)
-    pdf.set_text_color(*GREY_TEXT)
-    pdf.cell(22, 5, 'Reference :')
-    pdf.set_text_color(*BLACK_TEXT)
-    ref = payment.stripe_session_id[:26] + '...'
-    pdf.cell(68, 5, ref)
+    pay_row("Provider", "Stripe (Credit / Debit Card)", 9)
+    pay_row("Reference", payment.stripe_session_id[:26] + "…", 16)
 
     # PAID badge
-    pdf.set_xy(LM, bot_y + 22)
+    pdf.set_xy(LM, bot_y + 27)
     pdf.set_fill_color(*GREEN_BG)
     pdf.set_draw_color(*GREEN)
-    pdf.set_line_width(0.4)
-    pdf.set_font('Helvetica', 'B', 9)
+    pdf.set_line_width(0.5)
+    pdf.set_font("Inter", "B", 8.5)
     pdf.set_text_color(*GREEN)
-    pdf.cell(24, 8, 'PAID', border=1, fill=True, align='C')
+    pdf.cell(30, 9, "PAID", border=1, fill=True, align="C")
 
-    # Right — THANK YOU
-    pdf.set_xy(LM + 95, bot_y)
-    pdf.set_font('Helvetica', 'B', 28)
+    # Thank You (right column)
+    pdf.set_xy(LM + 88, bot_y)
+    pdf.set_font("Inter", "B", 26)
     pdf.set_text_color(*BRAND_DARK)
-    pdf.cell(85, 14, 'THANK', align='R')
-    pdf.set_xy(LM + 95, bot_y + 14)
-    pdf.cell(85, 14, 'YOU.', align='R')
+    pdf.cell(92, 13, "THANK", align="R")
+    pdf.set_xy(LM + 88, bot_y + 13)
+    pdf.set_text_color(*ORANGE)
+    pdf.cell(92, 13, "YOU.", align="R")
 
-    pdf.set_xy(LM + 95, bot_y + 30)
-    pdf.set_font('Helvetica', '', 8)
+    pdf.set_xy(LM + 88, bot_y + 28)
+    pdf.set_font("Inter", "", 8)
     pdf.set_text_color(*GREY_TEXT)
-    pdf.cell(85, 5, f'Featured until {featured_until}', align='R')
+    pdf.cell(92, 5, f"Featured until {featured_until}", align="R")
 
     return bytes(pdf.output())
