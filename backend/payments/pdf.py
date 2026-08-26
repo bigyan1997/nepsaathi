@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+import unicodedata
 from fpdf import FPDF, XPos, YPos
 
 BRAND_DARK   = (38,  33,  92)
@@ -19,6 +20,11 @@ W        = 180   # content width (210 - 15*2)
 LM       = 15    # left margin
 HEADER_H = 60    # header band height
 FONT_DIR = Path(__file__).parent / "fonts"
+
+
+def _safe(text: str) -> str:
+    """Normalize Unicode so exotic whitespace/punctuation renders cleanly."""
+    return unicodedata.normalize("NFKC", str(text))
 
 
 class InvoicePDF(FPDF):
@@ -47,8 +53,8 @@ def generate_invoice_pdf(payment) -> bytes:
     excl_gst       = round(amount_aud - gst_amount, 2)
     featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime("%d %B %Y")
     user           = payment.user
-    full_name      = f"{user.first_name} {user.last_name}".strip() or user.email
-    listing_title  = listing.title[:52] + ("…" if len(listing.title) > 52 else "")
+    full_name      = _safe(f"{user.first_name} {user.last_name}".strip() or user.email)
+    listing_title  = _safe(listing.title[:52] + ("…" if len(listing.title) > 52 else ""))
 
     pdf = InvoicePDF()
     pdf.add_font("Inter",  "",  str(FONT_DIR / "Inter-Regular.ttf"))
