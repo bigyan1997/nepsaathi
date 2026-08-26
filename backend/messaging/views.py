@@ -182,8 +182,8 @@ class MessageSendView(APIView):
             content=content,
         )
         convo.save(update_fields=['updated_at'])
-        # Sending a message unhides the conversation for both parties
-        convo.hidden_by.clear()
+        # Sending a message only unhides the conversation for the sender
+        convo.hidden_by.remove(request.user)
 
         # Broadcast via channel layer (async_to_sync is the documented way from sync views)
         try:

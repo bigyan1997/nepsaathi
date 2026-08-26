@@ -313,7 +313,7 @@ class ListingCreateView(generics.CreateAPIView):
             pass
 
         # Notify n8n to post to Facebook (fire-and-forget)
-        threading.Thread(target=_notify_n8n, args=(listing,), daemon=True).start()
+        threading.Thread(target=_notify_n8n, args=(listing,), daemon=False).start()
 
         # Ping IndexNow so Bing/Yandex index the new listing quickly
         from core.indexnow import ping_indexnow
@@ -471,6 +471,8 @@ class ListingImageUploadView(APIView):
             )
             uploaded.append(ListingImageSerializer(listing_image).data)
 
+        if not uploaded:
+            return Response({'error': 'No valid images uploaded. Check file size and format.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(uploaded, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):
@@ -724,6 +726,10 @@ class TrackListingViewView(APIView):
 
         user = request.user if request.user.is_authenticated else None
 
+        if user and listing.user_id == user.id:
+            view_count = ListingView.objects.filter(listing=listing).count()
+            return Response({'views': view_count})
+
         if user:
             # Logged in — count once ever per user per listing
             already_viewed = ListingView.objects.filter(
@@ -932,9 +938,9 @@ class RenewListingView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        if listing.status == 'deleted':
+        if listing.status in ('deleted', 'filled'):
             return Response(
-                {'detail': 'Cannot renew a deleted listing.'},
+                {'detail': 'Cannot renew a deleted or filled listing.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -960,6 +966,7 @@ class RenewListingView(APIView):
 
         listing.expires_at = timezone.now() + timedelta(days=30)
         listing.status = 'active'
+        listing.expiry_warning_sent = False
         listing.save()
 
         try:

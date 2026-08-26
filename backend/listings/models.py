@@ -5,6 +5,7 @@ from cloudinary.models import CloudinaryField
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 import cloudinary.uploader
+from uuid import uuid4
 
 class Listing(models.Model):
     """
@@ -125,11 +126,10 @@ class Listing(models.Model):
         return f'{self.listing_type.upper()} — {self.title} ({self.location})'
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         if not self.slug:
             base = slugify(self.title) or 'listing'
-            self.slug = f"{base}-{self.id}"
-            super().save(update_fields=['slug'])
+            self.slug = f"{base}-{uuid4().hex[:8]}"
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """

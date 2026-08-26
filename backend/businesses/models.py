@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
 import cloudinary.uploader
+from uuid import uuid4
 
 
 class Business(models.Model):
@@ -145,10 +146,9 @@ class Business(models.Model):
         return f'{self.business_name} ({self.get_category_display()}) — {self.suburb}'
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         if not self.slug:
-            self.slug = f"{slugify(self.business_name)}-{self.id}"
-            super().save(update_fields=['slug'])
+            self.slug = f"{slugify(self.business_name) or 'business'}-{uuid4().hex[:8]}"
+        super().save(*args, **kwargs)
 
 
 class BusinessImage(models.Model):

@@ -301,6 +301,8 @@ class BusinessImageUploadView(APIView):
             )
             uploaded.append(BusinessImageSerializer(biz_image).data)
 
+        if not uploaded:
+            return Response({'error': 'No valid images uploaded. Check file size and format.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(uploaded, status=status.HTTP_201_CREATED)
 
     def delete(self, request, slug):

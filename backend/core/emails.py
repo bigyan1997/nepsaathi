@@ -12,6 +12,18 @@ from decouple import config
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 ADMIN_URL    = config('ADMIN_URL', default='http://localhost:8000/admin')
 
+_LISTING_TYPE_PATH = {
+    'job':      'jobs',
+    'room':     'rooms',
+    'event':    'events',
+    'notice':   'notices',
+    'business': 'businesses',
+}
+
+def _listing_url(listing):
+    path = _LISTING_TYPE_PATH.get(listing.listing_type, listing.listing_type + 's')
+    return f"{FRONTEND_URL}/{path}/{listing.slug}"
+
 # ─────────────────────────────────────────────────────────────
 # SHARED BASE COMPONENTS
 # ─────────────────────────────────────────────────────────────
@@ -360,7 +372,7 @@ def send_password_reset_email(user, reset_url):
 
 def send_report_emails(report):
     listing = report.listing
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+    listing_url = _listing_url(listing)
     admin_review_url = f"{ADMIN_URL}/listings/listingreport/{report.id}/change/"
 
     try:
@@ -433,7 +445,7 @@ def send_report_emails(report):
 
 def send_listing_cleared_email(report):
     listing = report.listing
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+    listing_url = _listing_url(listing)
     try:
         first_name = _h(listing.user.first_name or 'there')
         body = f"""
@@ -518,7 +530,7 @@ def send_listing_removed_email(report, reason):
 # ─────────────────────────────────────────────────────────────
 
 def send_expiry_warning_email(listing):
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+    listing_url = _listing_url(listing)
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
         first_name = _h(listing.user.first_name or 'there')
@@ -901,7 +913,7 @@ def send_user_banned_email(user):
 # ─────────────────────────────────────────────────────────────
 
 def send_listing_renewed_email(listing):
-    listing_url = f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
+    listing_url = _listing_url(listing)
     my_listings_url = f"{FRONTEND_URL}/my-listings"
     try:
         first_name = _h(listing.user.first_name or 'there')
@@ -949,7 +961,7 @@ def send_listing_renewed_email(listing):
 
 def send_saved_search_alert_email(user, listing, saved_search_id):
     listing_type = listing.listing_type
-    listing_url = f"{FRONTEND_URL}/{listing_type}s/{listing.slug}"
+    listing_url = _listing_url(listing)
     manage_url = f"{FRONTEND_URL}/saved-searches"
     type_labels = {
         'job': ('Job', '&#128188;', '#EEEDFE'),
@@ -1031,11 +1043,15 @@ def send_business_saved_search_alert_email(user, business, saved_search_id):
 
 def send_payment_invoice_email(payment):
     from payments.pdf import generate_invoice_pdf
+    import logging as _logging
     listing = payment.listing
-    listing_url = (
-        f"{FRONTEND_URL}/{listing.listing_type}s/{listing.slug}"
-        if listing else FRONTEND_URL
-    )
+    if not listing:
+        _logging.getLogger(__name__).warning(
+            'send_payment_invoice_email: payment %s has no listing (deleted?), skipping invoice email',
+            payment.id,
+        )
+        return
+    listing_url = _listing_url(listing)
     try:
         first_name = _h(payment.user.first_name or 'there')
         invoice_number = f"INV-{payment.id:05d}"
