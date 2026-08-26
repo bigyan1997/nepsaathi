@@ -421,7 +421,9 @@ class TestSecurityConfiguration(BaseAPITest):
         self.assertIn(r.status_code, [400, 403])
 
     def test_admin_url_requires_auth(self):
-        r = self.client.get('/nepsaathi-admin/')
+        from decouple import config as env_config
+        admin_url = env_config('ADMIN_URL', default='nepsaathi-admin/')
+        r = self.client.get(f'/{admin_url}')
         self.assertIn(r.status_code, [302, 403])
 
 
