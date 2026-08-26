@@ -200,8 +200,8 @@ REST_AUTH = {
     'JWT_AUTH_REFRESH_COOKIE': 'nepsaathi-refresh',
     'JWT_AUTH_RETURN_EXPIRATION': True,
     'JWT_AUTH_HTTPONLY': True,   # Refresh cookie is httpOnly; access token still returned in body for in-memory use
-    'JWT_AUTH_SAMESITE': 'Lax',
-    'JWT_AUTH_SECURE': not DEBUG,
+    'JWT_AUTH_SAMESITE': 'None',   # cross-domain: frontend (Vercel) → backend (Railway)
+    'JWT_AUTH_SECURE': True,       # SameSite=None requires Secure=True
     'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
