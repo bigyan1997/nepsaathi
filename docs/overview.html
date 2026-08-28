@@ -276,13 +276,13 @@ p:last-child{margin-bottom:0;}
       <div class="nav-label">Community</div>
       <a class="nav-link" href="#businesses"  onclick="cm()"><span class="ni">🏪</span>Business Directory</a>
       <a class="nav-link" href="#forum"        onclick="cm()"><span class="ni">💬</span>Community</a>
-      <a class="nav-link" href="#looking-for"  onclick="cm()"><span class="ni">🔍</span>Looking For</a>
+      <a class="nav-link" href="#looking-for"  onclick="cm()"><span class="ni">🔍</span>Looking For (→ Forum)</a>
       <a class="nav-link" href="#services-mkt" onclick="cm()"><span class="ni">🛠</span>Services Marketplace</a>
       <a class="nav-link" href="#messages"     onclick="cm()"><span class="ni">✉️</span>Messages</a>
     </div>
     <div class="nav-group">
       <div class="nav-label">Tools</div>
-      <a class="nav-link" href="#points"         onclick="cm()"><span class="ni">⭐</span>Points &amp; Referrals</a>
+      <a class="nav-link" href="#points"         onclick="cm()"><span class="ni">⭐</span>Referrals</a>
       <a class="nav-link" href="#send-money"     onclick="cm()"><span class="ni">💸</span>Send Money</a>
       <a class="nav-link" href="#visa-hub"       onclick="cm()"><span class="ni">🛂</span>Visa Hub</a>
       <a class="nav-link" href="#saved-searches" onclick="cm()"><span class="ni">🔔</span>Saved Searches</a>
@@ -503,8 +503,8 @@ p:last-child{margin-bottom:0;}
   <!-- Looking For -->
   <section class="section" id="looking-for">
     <div class="section-header"><div class="section-icon">🔍</div><h2 class="section-title">Looking For</h2></div>
-    <p>The primary place to post "I'm looking for..." requests is now the <strong>Community feed</strong> at <span class="url-chip">/forum</span> — select the <span class="pill">Looking For</span> tag when creating a post. The dedicated board at <span class="url-chip">/looking-for</span> remains accessible for existing posts but is no longer featured in the main navigation.</p>
-    <div class="callout green"><div class="callout-icon">✓</div><div>Use the Community feed with the <strong>Looking For</strong> tag for new requests — your post sits alongside relevant discussions, announcements, and replies from the whole community.</div></div>
+    <p>The dedicated <span class="url-chip">/looking-for</span> page has been removed. It now redirects automatically to <span class="url-chip">/forum?category=looking_for</span>.</p>
+    <div class="callout green"><div class="callout-icon">✓</div><div>Post "I'm looking for..." requests in the <strong>Community feed</strong> at <span class="url-chip">/forum</span> — choose the <span class="pill">Looking For</span> intent tag when creating a post.</div></div>
   </section>
 
   <!-- Services -->
@@ -525,23 +525,12 @@ p:last-child{margin-bottom:0;}
     <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Inbox page and conversation thread with real-time messages</span></div>
   </section>
 
-  <!-- Points -->
+  <!-- Referrals -->
   <section class="section" id="points">
-    <div class="section-header"><div class="section-icon">⭐</div><h2 class="section-title">Points &amp; Referrals</h2></div>
-    <p>NepSaathi rewards activity with points. Check your balance and history at <span class="url-chip">/points</span>.</p>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Action</th><th>Points</th></tr></thead>
-        <tbody>
-          <tr><td>Sign up</td><td>10 pts</td></tr>
-          <tr><td>Post a listing</td><td>5 pts</td></tr>
-          <tr><td>Refer a friend who registers</td><td>25 pts</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="section-header"><div class="section-icon">⭐</div><h2 class="section-title">Referrals</h2></div>
+    <p>NepSaathi tracks points for activity (sign up: 10 pts, post a listing: 5 pts, successful referral: 25 pts). The points page has been removed — points are recorded on the backend but there is no public-facing redemption page.</p>
     <h3>Share your referral link</h3>
-    <p>Visit <span class="url-chip">/points</span> and copy your unique link. When a friend registers through it, both of you earn bonus points. Your referral code can also be appended to the register URL: <code>/register?ref=YOUR_CODE</code>.</p>
-    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Points page — balance card, copy referral link, earn guide, event history</span></div>
+    <p>Ask an existing member for their referral code and append it to the register URL: <code>/register?ref=THEIR_CODE</code>. Both of you earn bonus points on successful signup.</p>
   </section>
 
   <!-- Visa Hub -->
@@ -656,11 +645,11 @@ p:last-child{margin-bottom:0;}
           <tr><td><strong>Notices</strong></td><td>Anyone (post: auth)</td><td>Classifieds — sale, services, lost &amp; found, announcements</td></tr>
           <tr><td><strong>Businesses</strong></td><td>Anyone (register: auth)</td><td>Directory with reviews, images, booking link, verified badge</td></tr>
           <tr><td><strong>Community</strong></td><td>Anyone (post: auth)</td><td>Unified feed at /forum — 11 tags (5 intent: Discussion, Looking For, Announcement, Buy/Sell, Warning; 6 topic: Visa, Accommodation, Jobs, Events, Business, General); upvotes, polls, AI improve, IndexNow pings</td></tr>
-          <tr><td><strong>Looking For</strong></td><td>Anyone (post: auth)</td><td>Now handled via Community feed (Looking For tag); legacy board at /looking-for still accessible</td></tr>
+          <tr><td><strong>Looking For</strong></td><td>Anyone (post: auth)</td><td>Merged into Community feed — <code>/looking-for</code> redirects to <code>/forum?category=looking_for</code></td></tr>
           <tr><td><strong>Services</strong></td><td>Anyone (post: auth)</td><td>Skills &amp; services marketplace with rate and category filters</td></tr>
           <tr><td><strong>Messaging</strong></td><td>Auth only</td><td>1-to-1 conversations, real-time WebSocket, push notifications</td></tr>
           <tr><td><strong>Send Money</strong></td><td>Anyone</td><td>Live AUD→NPR comparison across 4 providers</td></tr>
-          <tr><td><strong>Points &amp; Referrals</strong></td><td>Auth</td><td>Points on signup/post/referral; unique referral codes; history</td></tr>
+          <tr><td><strong>Referrals</strong></td><td>Auth</td><td>Points on signup/post/referral (backend only); unique referral codes; <code>/points</code> page removed</td></tr>
           <tr><td><strong>Saved Searches</strong></td><td>Auth</td><td>Save filters, get email on new matches — instant, background thread</td></tr>
           <tr><td><strong>Featured listings</strong></td><td>Auth (owners)</td><td>Stripe Checkout; 7-day featured period; PDF invoice on payment</td></tr>
           <tr><td><strong>AI Improve</strong></td><td>Auth</td><td>Groq Llama 3.1 8B; 5 uses/day shared across listing + forum + cover letter</td></tr>
@@ -1111,6 +1100,7 @@ VITE_VAPID_PUBLIC_KEY</code></pre>
   <section class="section" id="build-log">
     <div class="section-header"><div class="section-icon">📋</div><h2 class="section-title">Build Log</h2></div>
     <div class="card">
+      <div class="info-row"><div class="info-key">2026-08-29 · <code>22e77d8</code></div><div class="info-val"><strong>Site declutter</strong> — 5 guide pages consolidated into <code>/guides/:topic</code> (GuidesPage with tabbed UI + sticky section nav). <code>/looking-for</code> now redirects to <code>/forum?category=looking_for</code>. <code>/points</code> route removed (points still tracked on backend). BottomNav Events tab → Community (<code>/forum</code>). Footer trimmed: Explore column down to 5 links; Guides column down to 5 links (Settlement Guides entry). Homepage Notices section removed.</div></div>
       <div class="info-row"><div class="info-key">2026-08-29 · <code>ef52976</code></div><div class="info-val"><strong>Community restructure</strong> — merged Forum, Notices, and Looking For into a single unified Community feed at <code>/forum</code>. Added 5 intent-based category tags (Discussion, Looking For, Announcement, Buy/Sell, Warning) alongside the existing 6 topic tags. Navbar Community link is now a direct link to <code>/forum</code> (no dropdown). <code>/community</code> redirects to <code>/forum</code>. Old category values kept for backwards compatibility; new default is <code>discussion</code>.</div></div>
       <div class="info-row"><div class="info-key">2026-08-21</div><div class="info-val"><strong>Security audit</strong> — fixed 13 bugs including user_email exposure, JWT SameSite cross-domain cookie, push subscription auth guard, Unicode in PDF, and Groq model correction. Added SilentJWTAuthentication for public endpoints.</div></div>
       <div class="info-row"><div class="info-key">2026-07-03</div><div class="info-val"><strong>Forum launched</strong> — ForumPost + ForumReply + upvotes + polls, AI improve, IndexNow integration, sitemap proxied through Vercel.</div></div>

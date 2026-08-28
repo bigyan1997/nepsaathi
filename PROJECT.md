@@ -314,9 +314,8 @@ GET  /api/remittance/rates/              # live AUD→NPR rates per provider (pu
 | `/community` | Redirects → `/forum` (Navigate replace) |
 | `/forum` | ForumPage — renamed "Community"; unified feed with 11 category tags |
 | `/forum/:slug` | ForumPostPage |
-| `/looking-for` | LookingForPage — legacy board; no longer in main nav; use Community feed (Looking For tag) |
+| `/looking-for` | Redirects → `/forum?category=looking_for` (Navigate replace) |
 | `/services` | ServicesPage — skills & services marketplace; category + state filters |
-| `/points` | PointsPage — points balance, referral link (copy), earn guide, event history |
 | `/search` | SearchPage |
 | `/send-money` | RemittancePage |
 | `/users/:id` | UserProfilePage — public profile + listings by that user + star reviews |
@@ -327,11 +326,13 @@ GET  /api/remittance/rates/              # live AUD→NPR rates per provider (pu
 | `/businesses/in/:location` | LocationPage (listingType=business) |
 | `/visa` | VisaHubPage — PR points calculator, visa timelines, WhatsApp groups |
 | `/new-to-australia` | NewToAustraliaPage — accordion guide, sticky scrollspy nav |
-| `/banking` | BankingPage — banking & finance guide (green accent) |
-| `/health` | HealthPage — health & insurance guide (blue accent) |
-| `/tax` | TaxPage — tax & accounting guide (amber accent) |
-| `/work-rights` | WorkRightsPage — work rights & legal guide (purple accent) |
-| `/childcare` | ChildcarePage — childcare & family guide (pink accent) |
+| `/guides` | Redirects → `/guides/banking` (Navigate replace) |
+| `/guides/:topic` | GuidesPage — 5 settlement guides (banking, health, tax, work-rights, childcare) in a single tabbed page; sticky tab bar + sticky section nav; IntersectionObserver scrollspy |
+| `/banking` | Redirects → `/guides/banking` (backward-compat) |
+| `/health` | Redirects → `/guides/health` (backward-compat) |
+| `/tax` | Redirects → `/guides/tax` (backward-compat) |
+| `/work-rights` | Redirects → `/guides/work-rights` (backward-compat) |
+| `/childcare` | Redirects → `/guides/childcare` (backward-compat) |
 | `/privacy` | PrivacyPage |
 | `/terms` | TermsPage |
 | `/contact` | ContactPage |
@@ -392,7 +393,8 @@ Notable additions:
 
 ### Key components
 - **Navbar** — sticky, 6 main links (Jobs, Rooms, Events, Businesses, Community→/forum, Send Money), auth-conditional user menu, unread message badge with toast on new message. Community is a direct link (no dropdown). Includes `LangToggle` (🇳🇵/🇬🇧 flag pill) for Nepali/English switching in both desktop nav and mobile menu bottom.
-- **Footer** — Newsletter strip (email subscribe → `POST /api/newsletter/subscribe/`) + 5-column link grid (Brand, Explore, Guides, Account, About) with inline SVG column headers and `›` chevron links. Two bottom bars: legal links + contact emails; darker copyright bar. Responsive: 3-col ≤900px, 2-col ≤560px. All labels via `useT()`.
+- **BottomNav** — 5-button fixed mobile nav: Jobs, Rooms, [centre Post button], Businesses, Community (→/forum). Events tab removed; replaced with Community (ChatCircleDotsIcon, purple).
+- **Footer** — Newsletter strip (email subscribe → `POST /api/newsletter/subscribe/`) + 5-column link grid (Brand, Explore, Guides, Account, About). Explore: Jobs, Rooms, Events, Businesses, Forum (5 links). Guides: Send Money, Visa Hub, New to Australia, WhatsApp Groups, Settlement Guides (→/guides/banking). Account column no longer includes Points. Two bottom bars: legal links + contact emails; darker copyright bar. Responsive: 3-col ≤900px, 2-col ≤560px. All labels via `useT()`.
 - **Toast** — `useToast()` exposes `addToast(content, type, duration)` — NOT `showToast`
 - **ProgressBar** — route-change loading indicator
 - **FeedbackModal** — exit-intent form (satisfaction 1–5 + reason) → Google Sheets
@@ -708,5 +710,15 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Filter pill divider** — thin vertical separator on ForumPage separates intent tags from topic tags visually.
 - **i18n** — `nav.community` key added: English "Community", Nepali "समुदाय".
 
+### Site declutter (2026-08-29) — commit 22e77d8
+- **Settlement guides consolidated** — 5 separate guide pages (BankingPage, HealthPage, TaxPage, WorkRightsPage, ChildcarePage) merged into a single `GuidesPage` at `/guides/:topic`. Tab bar switches topic; `GuideContent` remounts via `key={activeKey}` to reset IntersectionObserver state. Old URLs redirect to their `/guides/<topic>` equivalent for backwards compat.
+- **`/looking-for` removed** — route redirects to `/forum?category=looking_for`. LookingForPage no longer linked anywhere.
+- **`/points` removed** — PointsPage and route removed entirely; points are still tracked on the backend but there is no redemption mechanism, so the page had no value.
+- **BottomNav** — Events tab replaced with Community (`/forum`); icon changed to `ChatCircleDotsIcon`.
+- **Footer trimmed** — Explore column: removed Notices, Looking For Board, Services (now 5 links). Guides column: 9 individual guide links collapsed to 5 (kept Send Money, Visa Hub, New to Australia, WhatsApp Groups; added "Settlement Guides" → `/guides/banking`). Account column: removed Points.
+- **Homepage** — Notices section and its `useQuery` call removed; notices page still accessible directly at `/notices` but no longer shown on homepage or main nav.
+
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
+- **Looking For Board** (`/looking-for`, removed 2026-08-29) — standalone reverse-request board merged into Community Forum (`/forum?category=looking_for`). Backend `community` app and API endpoints untouched.
+- **PointsPage** (`/points`, removed 2026-08-29) — points balance and referral UI removed from frontend. Points are still accrued on the backend (`PointEvent` history table intact) but no public-facing redemption mechanism exists.

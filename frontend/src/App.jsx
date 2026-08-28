@@ -22,6 +22,7 @@ import ErrorBoundary from "./components/ui/ErrorBoundary";
 import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
 import FeedbackModal from "./components/ui/FeedbackModal";
 import CookieConsent from "./components/ui/CookieConsent";
+import SignupNudge from "./components/ui/SignupNudge";
 import IdleTimeoutModal from "./components/ui/IdleTimeoutModal";
 import useIdleTimeout from "./hooks/useIdleTimeout";
 import UserProfilePage from "./pages/UserProfilePage";
@@ -288,6 +289,7 @@ function App() {
               <IdleGuard />
               <CookieConsent />
               <BottomNav />
+              <SignupNudge />
             </ToastProvider>
           </ProgressProvider>
         </BrowserRouter>
