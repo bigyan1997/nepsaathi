@@ -498,11 +498,8 @@ export default function Footer() {
                 { to: "/jobs", label: t("footer.jobs") },
                 { to: "/rooms", label: t("footer.rooms") },
                 { to: "/events", label: t("footer.events") },
-                { to: "/notices", label: t("footer.notices") },
                 { to: "/businesses", label: t("footer.businesses") },
                 { to: "/forum", label: t("footer.forum") },
-                { to: "/looking-for", label: t("footer.lookingFor") },
-                { to: "/services", label: t("footer.services") },
               ].map(({ to, label }) => (
                 <FooterLink key={to} to={to}>
                   {label}
@@ -520,11 +517,7 @@ export default function Footer() {
                 { to: "/visa", label: t("footer.visaHub") },
                 { to: "/new-to-australia", label: t("footer.newToAustralia") },
                 { to: "/whatsapp-groups", label: t("footer.whatsappGroups") },
-                { to: "/banking", label: t("footer.banking") },
-                { to: "/health", label: t("footer.health") },
-                { to: "/tax", label: t("footer.tax") },
-                { to: "/work-rights", label: t("footer.workRights") },
-                { to: "/childcare", label: t("footer.childcare") },
+                { to: "/guides/banking", label: "Settlement Guides" },
               ].map(({ to, label }) => (
                 <FooterLink key={to} to={to}>
                   {label}
@@ -547,7 +540,6 @@ export default function Footer() {
                 },
                 { to: "/my-listings", label: t("footer.myListings") },
                 { to: "/profile", label: t("footer.profileSettings") },
-                { to: "/points", label: t("footer.points") },
               ].map(({ to, label }) => (
                 <FooterLink key={to} to={to}>
                   {label}

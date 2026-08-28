@@ -62,16 +62,10 @@ import RemittancePage        from "./pages/RemittancePage";
 import NewListingsPage       from "./pages/NewListingsPage";
 import NewToAustraliaPage   from "./pages/NewToAustraliaPage";
 import LocationPage          from "./pages/listings/LocationPage";
-import LookingForPage        from "./pages/LookingForPage";
 import ServicesPage          from "./pages/ServicesPage";
-import PointsPage            from "./pages/PointsPage";
 import VisaHubPage           from "./pages/VisaHubPage";
 import WhatsAppGroupsPage    from "./pages/WhatsAppGroupsPage";
-import BankingPage           from "./pages/BankingPage";
-import HealthPage            from "./pages/HealthPage";
-import TaxPage               from "./pages/TaxPage";
-import WorkRightsPage        from "./pages/WorkRightsPage";
-import ChildcarePage         from "./pages/ChildcarePage";
+import GuidesPage            from "./pages/GuidesPage";
 import LoginPage             from "./pages/auth/LoginPage";
 import RegisterPage          from "./pages/auth/RegisterPage";
 import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
@@ -242,17 +236,19 @@ function App() {
                         {/* Send Money */}
                         <Route path="/send-money" element={<RemittancePage />} />
                         <Route path="/new-to-australia" element={<NewToAustraliaPage />} />
-                        <Route path="/looking-for" element={<LookingForPage />} />
+                        <Route path="/looking-for" element={<Navigate to="/forum?category=looking_for" replace />} />
                         <Route path="/services" element={<ServicesPage />} />
-                        <Route path="/points" element={<PointsPage />} />
                         <Route path="/visa" element={<VisaHubPage />} />
                         <Route path="/whatsapp-groups" element={<WhatsAppGroupsPage />} />
-                        {/* Info pages */}
-                        <Route path="/banking" element={<BankingPage />} />
-                        <Route path="/health" element={<HealthPage />} />
-                        <Route path="/tax" element={<TaxPage />} />
-                        <Route path="/work-rights" element={<WorkRightsPage />} />
-                        <Route path="/childcare" element={<ChildcarePage />} />
+                        {/* Settlement guides — consolidated */}
+                        <Route path="/guides" element={<Navigate to="/guides/banking" replace />} />
+                        <Route path="/guides/:topic" element={<GuidesPage />} />
+                        {/* Old individual guide URLs → redirect */}
+                        <Route path="/banking" element={<Navigate to="/guides/banking" replace />} />
+                        <Route path="/health" element={<Navigate to="/guides/health" replace />} />
+                        <Route path="/tax" element={<Navigate to="/guides/tax" replace />} />
+                        <Route path="/work-rights" element={<Navigate to="/guides/work-rights" replace />} />
+                        <Route path="/childcare" element={<Navigate to="/guides/childcare" replace />} />
                         {/* Other public */}
                         <Route path="/edit-listing/:slug" element={<ProtectedRoute><EditListingPage /></ProtectedRoute>} />
                         <Route path="/users/:id" element={<UserProfilePage />} />

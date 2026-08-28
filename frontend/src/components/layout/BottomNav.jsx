@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   BriefcaseIcon,
   HouseIcon,
-  ConfettiIcon,
+  ChatCircleDotsIcon,
   StorefrontIcon,
   PlusCircleIcon,
 } from "@phosphor-icons/react";
@@ -12,7 +12,7 @@ const TABS = [
   { to: "/jobs",       Icon: BriefcaseIcon, label: "Jobs",       color: "#534AB7", bg: "#EEEDFE" },
   { to: "/rooms",      Icon: HouseIcon,     label: "Rooms",      color: "#85510A", bg: "#FFF1E0" },
   { to: "/businesses", Icon: StorefrontIcon,label: "Businesses", color: "#633806", bg: "#FAEEDA" },
-  { to: "/events",     Icon: ConfettiIcon,  label: "Events",     color: "#1D9E75", bg: "#E1F5EE" },
+  { to: "/forum",      Icon: ChatCircleDotsIcon, label: "Community", color: "#534AB7", bg: "#EEEDFE" },
 ];
 
 export default function BottomNav() {

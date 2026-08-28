@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { getJobs } from "../api/jobs";
 import { getRooms } from "../api/rooms";
 import { getEvents } from "../api/events";
-import { getNotices } from "../api/notices";
 import ExchangeRates from "../components/ui/ExchangeRates";
 import useAuthStore from "../store/authStore";
 import usePageMeta from "../hooks/usePageMeta";
@@ -20,7 +19,7 @@ import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
 import { timeAgo, isNew, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
 import useT from "../hooks/useT";
-import { BriefcaseIcon, HouseIcon, MegaphoneIcon, MapPinIcon, StarIcon } from "@phosphor-icons/react";
+import { BriefcaseIcon, HouseIcon, MapPinIcon, StarIcon } from "@phosphor-icons/react";
 
 const STATES = [
   { value: "", label: "All states" },
@@ -69,7 +68,6 @@ export default function HomePage() {
   const { data: jobsData,    isLoading: jobsLoading    } = useQuery({ queryKey: ["home-jobs"],     queryFn: () => getJobs({ page_size: 6 }),                    staleTime: 1000 * 60 * 5 });
   const { data: roomsData,   isLoading: roomsLoading   } = useQuery({ queryKey: ["home-rooms"],    queryFn: () => getRooms({ page_size: 6 }),                    staleTime: 1000 * 60 * 5 });
   const { data: eventsData,  isLoading: eventsLoading  } = useQuery({ queryKey: ["home-events"],   queryFn: () => getEvents({ upcoming: "true", page_size: 6 }), staleTime: 1000 * 60 * 5 });
-  const { data: noticesData, isLoading: noticesLoading } = useQuery({ queryKey: ["home-notices"],  queryFn: () => getNotices({ page_size: 6 }),                  staleTime: 1000 * 60 * 5 });
   const { data: statsData }                        = useQuery({ queryKey: ["stats"],         queryFn: getStats,                                            staleTime: 1000 * 60 * 10 });
 
   useEffect(() => {
@@ -401,40 +399,6 @@ export default function HomePage() {
               title={event.listing_title} subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{event.venue || `${event.listing_location}, ${event.listing_state}`}</>}
               description={event.description || event.listing_description}
               stats={[{ value: event.ticket_display || "—", label: "Tickets" }, { value: event.is_free ? "Free" : "Paid", label: "Entry" }, { value: event.listing_state || "—", label: "State" }]} />
-          )}
-        />
-
-        {/* ── LATEST NOTICES ── */}
-        <ListingSection
-          title={t("home.sections.notices")}
-          viewAllTo="/notices"
-          viewAllColor="#0C447C"
-          isLoading={noticesLoading}
-          items={noticesData?.results?.slice(0, 6)}
-          renderRow={(notice) => (
-            <Link key={notice.id} to={`/notices/${notice.listing_slug}`} className="lc lc-notice"
-              style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#E6F1FB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><MegaphoneIcon size={18} weight="duotone" color="#0C447C" /></div>
-                <div>
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                    {notice.listing_title}{notice.is_featured && FEATURED_BADGE}{isNew(notice.created_at) && NEW_BADGE}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#888", display: "flex", alignItems: "center", gap: "3px" }}><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{notice.listing_location}, {notice.listing_state}{notice.category && ` · ${notice.category.replace("_", " ")}`}</div>
-                  {notice.created_at && <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>{timeAgo(notice.created_at)}</div>}
-                </div>
-              </div>
-              <div style={{ background: "#E6F1FB", color: "#0C447C", fontSize: "12px", fontWeight: 500, padding: "4px 10px", borderRadius: "20px", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "5px" }}>
-                {notice.is_urgent ? <><span style={{ display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", background: "#DC2626", flexShrink: 0 }} />Urgent</> : timeAgo(notice.created_at || notice.date_posted)}
-              </div>
-            </Link>
-          )}
-          renderCard={(notice) => (
-            <DesktopCard key={notice.id} to={`/notices/${notice.listing_slug}`} accentType="notice" emoji="📢" isFeatured={!!notice.is_featured}
-              timeStr={timeAgo(notice.created_at || notice.date_posted)} title={notice.listing_title}
-              subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{notice.listing_location}, {notice.listing_state}</>}
-              description={notice.description || notice.listing_description}
-              stats={[{ value: notice.category?.replace("_", " ") || "General", label: "Category" }, { value: notice.listing_state || "—", label: "State" }, { value: notice.posted_by || "—", label: "Posted by" }]} />
           )}
         />
 
