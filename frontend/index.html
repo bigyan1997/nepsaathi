@@ -72,6 +72,45 @@
 
     <link rel="canonical" href="https://www.nepsaathi.com/" />
 
+    <!-- Preferred Sources (Google) — lets users add NepSaathi as a preferred news/community source -->
+    <script async src="https://news.google.com/swg/js/v1/publisher.js"></script>
+
+    <!-- Structured data — Organisation -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "NepSaathi",
+      "url": "https://www.nepsaathi.com",
+      "logo": "https://www.nepsaathi.com/icon-192.png",
+      "description": "NepSaathi is the community platform for Nepalese Australians. Find jobs, rooms, events and businesses — all in one place.",
+      "email": "hello@nepsaathi.com",
+      "areaServed": "AU",
+      "sameAs": [
+        "https://www.facebook.com/nepsaathi/",
+        "https://www.instagram.com/nepsaathi/"
+      ]
+    }
+    </script>
+
+    <!-- Structured data — WebSite with Sitelinks Searchbox -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "NepSaathi",
+      "url": "https://www.nepsaathi.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.nepsaathi.com/jobs?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Google Analytics -->
     <script
       async

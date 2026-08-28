@@ -270,6 +270,15 @@ export default function BusinessDetailPage() {
           },
         }),
       }} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.nepsaathi.com" },
+          { "@type": "ListItem", "position": 2, "name": "Businesses", "item": "https://www.nepsaathi.com/businesses" },
+          { "@type": "ListItem", "position": 3, "name": business.business_name },
+        ],
+      }} />
       <style>{`
         .biz-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) { .biz-grid { grid-template-columns: 1fr !important; } }

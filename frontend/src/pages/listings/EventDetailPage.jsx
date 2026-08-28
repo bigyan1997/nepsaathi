@@ -283,6 +283,15 @@ export default function EventDetailPage() {
           },
         }),
       }} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.nepsaathi.com" },
+          { "@type": "ListItem", "position": 2, "name": "Events", "item": "https://www.nepsaathi.com/events" },
+          { "@type": "ListItem", "position": 3, "name": event.listing_title },
+        ],
+      }} />
       <style>{`
         .evt-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) {

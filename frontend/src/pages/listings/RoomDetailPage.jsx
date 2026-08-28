@@ -201,6 +201,15 @@ export default function RoomDetailPage() {
           },
         }),
       }} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.nepsaathi.com" },
+          { "@type": "ListItem", "position": 2, "name": "Rooms", "item": "https://www.nepsaathi.com/rooms" },
+          { "@type": "ListItem", "position": 3, "name": room.listing_title },
+        ],
+      }} />
       <style>{`
         .room-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
         @media (max-width: 767px) { .room-grid { grid-template-columns: 1fr !important; } }

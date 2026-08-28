@@ -217,6 +217,16 @@ export default function JobDetailPage() {
           },
         }),
         "employmentType": jobTypeMap[job.job_type] || "OTHER",
+        "url": `https://www.nepsaathi.com/jobs/${slug}`,
+      }} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.nepsaathi.com" },
+          { "@type": "ListItem", "position": 2, "name": "Jobs", "item": "https://www.nepsaathi.com/jobs" },
+          { "@type": "ListItem", "position": 3, "name": job.listing_title },
+        ],
       }} />
       <style>{`
         .job-grid { display: grid; grid-template-columns: 1fr 230px; gap: 14px; }
