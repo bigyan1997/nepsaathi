@@ -585,16 +585,21 @@ export default function MyListingsPage() {
     confirmDelete(
       `Delete ${selectedIds.size} selected listing${selectedIds.size > 1 ? "s" : ""}? This cannot be undone.`,
       async () => {
-        await Promise.all([...selectedIds].map((id) => {
-          const listing = allListings.find((l) => l.id === id);
-          return deleteListing(listing?.slug ?? id);
-        }));
-        ["my-listings","jobs","rooms","events","notices","home-jobs","home-rooms","home-events"].forEach(
-          (k) => queryClient.invalidateQueries({ queryKey: [k] })
-        );
-        queryClient.invalidateQueries({ queryKey: ["stats"] });
-        clearSelection();
-        addToast(`${selectedIds.size} listing${selectedIds.size > 1 ? "s" : ""} deleted.`, "success");
+        const count = selectedIds.size;
+        try {
+          await Promise.all([...selectedIds].map((id) => {
+            const listing = allListings.find((l) => l.id === id);
+            return deleteListing(listing?.slug ?? id);
+          }));
+          ["my-listings","jobs","rooms","events","notices","home-jobs","home-rooms","home-events"].forEach(
+            (k) => queryClient.invalidateQueries({ queryKey: [k] })
+          );
+          queryClient.invalidateQueries({ queryKey: ["stats"] });
+          clearSelection();
+          addToast(`${count} listing${count > 1 ? "s" : ""} deleted.`, "success");
+        } catch {
+          addToast("Failed to delete some listings. Please try again.", "error");
+        }
       }
     );
   };
@@ -603,12 +608,16 @@ export default function MyListingsPage() {
     confirmDelete(
       `Mark ${selectedIds.size} listing${selectedIds.size > 1 ? "s" : ""} as filled?`,
       async () => {
-        await Promise.all([...selectedIds].map((id) => markListingStatus(id, "filled")));
-        ["my-listings", "jobs", "rooms", "events", "notices", "home-jobs", "home-rooms", "home-events", "home-notices", "home-featured", "listings"].forEach(
-          (k) => queryClient.invalidateQueries({ queryKey: [k] })
-        );
-        clearSelection();
-        addToast("Listings marked as filled.", "success");
+        try {
+          await Promise.all([...selectedIds].map((id) => markListingStatus(id, "filled")));
+          ["my-listings", "jobs", "rooms", "events", "notices", "home-jobs", "home-rooms", "home-events", "home-notices", "home-featured", "listings"].forEach(
+            (k) => queryClient.invalidateQueries({ queryKey: [k] })
+          );
+          clearSelection();
+          addToast("Listings marked as filled.", "success");
+        } catch {
+          addToast("Failed to update some listings. Please try again.", "error");
+        }
       },
       "Yes, Mark filled",
       "#534AB7"
