@@ -1,35 +1,37 @@
 <title>NepSaathi Docs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
 :root {
   --brand-deep: #26215C;
   --brand-mid: #534AB7;
   --brand-light: #EEEDFE;
-  --brand-orange: #E87722;
-  --brand-orange-bg: #FFF1E0;
+  --saffron: #E8981E;
+  --saffron-soft: #FFF3DC;
+  --saffron-dim: #F5C16A;
   --green: #16a34a; --green-bg: #dcfce7;
   --red: #A32D2D;   --red-bg: #FCEBEB;
   --amber: #B45309; --amber-bg: #FEF3C7;
-  --bg: #F7F6F2; --surface: #FFFFFF; --surface-2: #F0EFF9;
-  --border: #E4E2F5; --text: #1A1630; --text-2: #4A4468; --text-3: #8A86A8;
+  --bg: #F5F3EE; --surface: #FFFFFF; --surface-2: #EDEAE5;
+  --border: #DDD9D2; --text: #1C1917; --text-2: #4A4542; --text-3: #9A9390;
   --pill-bg: #EEEDFE;
-  --header-h: 54px; --sidebar-w: 224px; --radius: 12px;
+  --header-h: 54px; --sidebar-w: 228px; --radius: 10px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0E0C1E; --surface: #17132E; --surface-2: #221D3E;
-    --border: #352F5A; --text: #F0EEF9; --text-2: #CCC8E8; --text-3: #8E89B0;
-    --pill-bg: #221D3E;
+    --bg: #141210; --surface: #1F1D1A; --surface-2: #2A2723;
+    --border: #3A3632; --text: #F0EBE3; --text-2: #B5AFA8; --text-3: #6A6460;
+    --pill-bg: #252235; --saffron-soft: #2A1D08;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0E0C1E; --surface: #17132E; --surface-2: #1F1A3A;
-  --border: #2E2850; --text: #EAE8F8; --text-2: #ADA8D0; --text-3: #6A6490;
-  --pill-bg: #1F1A3A;
+  --bg: #141210; --surface: #1F1D1A; --surface-2: #2A2723;
+  --border: #3A3632; --text: #F0EBE3; --text-2: #B5AFA8; --text-3: #6A6460;
+  --pill-bg: #252235; --saffron-soft: #2A1D08;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14.5px;line-height:1.7;color:var(--text);background:var(--bg);}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14.5px;line-height:1.7;color:var(--text);background:var(--bg);}
 a{color:var(--brand-mid);text-decoration:none;}
 a:hover{text-decoration:underline;}
 code{font-family:'SF Mono','Fira Code',Consolas,monospace;font-size:12.5px;background:var(--surface-2);color:var(--brand-mid);padding:1px 5px;border-radius:4px;border:1px solid var(--border);}
@@ -50,7 +52,6 @@ li{margin-bottom:4px;color:var(--text-2);font-size:13.5px;}
   background:var(--surface);
   border-bottom:1px solid var(--border);
   display:flex;align-items:center;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 .header-logo{
   display:flex;align-items:center;gap:10px;
@@ -58,22 +59,22 @@ li{margin-bottom:4px;color:var(--text-2);font-size:13.5px;}
   border-right:1px solid var(--border);height:100%;flex-shrink:0;
 }
 .logo-mark{
-  width:30px;height:30px;border-radius:8px;
-  background:linear-gradient(135deg,var(--brand-deep),var(--brand-mid));
+  width:28px;height:28px;border-radius:6px;
+  background:var(--saffron);
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;font-size:14px;
+  color:#fff;font-weight:800;font-size:14px;letter-spacing:-.02em;
 }
 .logo-text{font-weight:800;font-size:14px;color:var(--text);letter-spacing:-.02em;}
-.logo-text span{color:var(--brand-orange);}
-.header-tabs{display:flex;align-items:center;gap:4px;padding:0 22px;}
+.logo-text span{color:var(--saffron);}
+.header-tabs{display:flex;align-items:center;gap:0;padding:0 22px;height:100%;}
 .tab-btn{
-  padding:6px 14px;border-radius:7px;border:1px solid transparent;
+  padding:0 16px;height:100%;border:none;border-bottom:2px solid transparent;
   font-size:13px;font-weight:500;cursor:pointer;
-  background:transparent;color:var(--text-2);transition:all .15s;
-  font-family:inherit;
+  background:transparent;color:var(--text-3);transition:all .15s;
+  font-family:inherit;display:flex;align-items:center;
 }
-.tab-btn:hover{background:var(--surface-2);color:var(--text);}
-.tab-btn.active{background:var(--brand-light);border-color:var(--brand-mid);color:var(--brand-mid);font-weight:600;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--brand-deep);border-bottom-color:var(--saffron);font-weight:700;}
 .header-right{margin-left:auto;padding-right:22px;color:var(--text-3);font-size:12px;}
 
 /* ── Layout ── */
@@ -85,10 +86,10 @@ li{margin-bottom:4px;color:var(--text-2);font-size:13.5px;}
   position:fixed;top:var(--header-h);bottom:0;left:0;
   overflow-y:auto;background:var(--surface);
   border-right:1px solid var(--border);
-  padding:18px 0 48px;
+  padding:16px 0 48px;
 }
 .sidebar nav{display:flex;flex-direction:column;}
-.nav-group{margin-top:18px;}
+.nav-group{margin-top:20px;}
 .nav-group:first-child{margin-top:0;}
 .nav-label{padding:0 18px 5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);}
 .nav-link{
@@ -97,37 +98,38 @@ li{margin-bottom:4px;color:var(--text-2);font-size:13.5px;}
   border-left:2px solid transparent;transition:all .12s;cursor:pointer;
   text-decoration:none;
 }
-.nav-link:hover{background:var(--surface-2);color:var(--brand-mid);text-decoration:none;}
-.nav-link.active{color:var(--brand-mid);border-left-color:var(--brand-mid);background:var(--brand-light);font-weight:600;}
-.nav-link .ni{opacity:.55;font-size:13px;width:16px;text-align:center;}
+.nav-link:hover{background:var(--surface-2);color:var(--brand-deep);text-decoration:none;}
+.nav-link.active{color:var(--brand-deep);border-left-color:var(--saffron);background:var(--saffron-soft);font-weight:700;}
+.nav-link .ni{opacity:.5;font-size:13px;width:16px;text-align:center;}
 
 /* ── Main ── */
 .main{flex:1;margin-left:var(--sidebar-w);padding:40px 52px 80px;max-width:920px;}
 .pane{display:none;}
 .pane.active{display:block;}
 
-/* ── Doc header (gradient card) ── */
+/* ── Doc header ── */
 .doc-header{
-  background:linear-gradient(135deg,var(--brand-deep) 0%,var(--brand-mid) 100%);
-  border-radius:18px;padding:38px 40px 34px;margin-bottom:40px;
-  position:relative;overflow:hidden;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:4px solid var(--saffron);
+  border-radius:0 var(--radius) var(--radius) 0;
+  padding:32px 36px 28px;margin-bottom:40px;
 }
-.doc-header::before{content:'';position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.05);}
-.doc-header::after{content:'';position:absolute;right:60px;bottom:-80px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.04);}
-.doc-eyebrow{display:inline-block;background:rgba(255,255,255,.15);color:#C9C4F5;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;border-radius:20px;margin-bottom:12px;position:relative;}
-.doc-header h1{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em;text-wrap:balance;margin-bottom:8px;position:relative;line-height:1.2;}
-.doc-header p{color:#C9C4F5;font-size:14px;line-height:1.6;max-width:520px;position:relative;}
-.doc-meta{display:flex;gap:24px;margin-top:20px;position:relative;flex-wrap:wrap;}
-.doc-meta-item{display:flex;flex-direction:column;gap:2px;}
-.doc-meta-item .label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);}
-.doc-meta-item .val{font-size:13px;font-weight:600;color:rgba(255,255,255,.9);}
+.doc-eyebrow{display:inline-block;background:var(--saffron-soft);color:var(--saffron);font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:14px;}
+.doc-header h1{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.03em;text-wrap:balance;margin-bottom:8px;line-height:1.2;}
+.doc-header p{color:var(--text-2);font-size:14px;line-height:1.6;max-width:520px;}
+.doc-meta{display:flex;gap:0;margin-top:22px;flex-wrap:wrap;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.doc-meta-item{display:flex;flex-direction:column;gap:3px;padding:12px 20px;border-right:1px solid var(--border);}
+.doc-meta-item:last-child{border-right:none;}
+.doc-meta-item .label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);}
+.doc-meta-item .val{font-size:13px;font-weight:600;color:var(--text);}
 
 /* ── Section ── */
 .section{margin-bottom:48px;scroll-margin-top:20px;}
 .section+.section{border-top:1px solid var(--border);padding-top:44px;}
 .section-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:1.5px solid var(--border);}
-.section-icon{width:34px;height:34px;border-radius:9px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.section-title{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
+.section-icon{width:32px;height:32px;border-radius:8px;background:var(--saffron-soft);border:1px solid var(--saffron-dim);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.section-title{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.02em;}
 h3{font-size:14px;font-weight:700;color:var(--text);margin:22px 0 9px;letter-spacing:-.01em;}
 h3:first-child{margin-top:0;}
 p{color:var(--text-2);margin-bottom:10px;font-size:13.5px;}
@@ -138,7 +140,7 @@ p:last-child{margin-bottom:0;}
 .step{display:flex;gap:14px;position:relative;}
 .step::before{content:'';position:absolute;left:13px;top:30px;bottom:0;width:1.5px;background:var(--border);}
 .step:last-child::before{display:none;}
-.step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--brand-mid);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+.step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--brand-deep);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;}
 .step-body{padding-bottom:22px;flex:1;}
 .step:last-child .step-body{padding-bottom:0;}
 .step-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px;}
@@ -167,18 +169,20 @@ p:last-child{margin-bottom:0;}
 .type-card.notices .type-label{color:#0C447C;}
 
 /* ── Callout ── */
-.callout{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--brand-mid);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;color:var(--text-2);margin:14px 0;line-height:1.6;display:flex;gap:10px;}
+.callout{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--saffron);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;color:var(--text-2);margin:14px 0;line-height:1.6;display:flex;gap:10px;}
 .callout strong{color:var(--text);}
 .callout-icon{flex-shrink:0;font-size:15px;}
-.callout.orange{border-left-color:var(--brand-orange);}
+.callout.orange{border-left-color:var(--saffron);}
 .callout.green{border-left-color:var(--green);}
 .callout.red{border-left-color:var(--red);}
+.callout.purple{border-left-color:var(--brand-mid);}
 
 /* ── Pill ── */
 .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;background:var(--pill-bg);color:var(--brand-mid);letter-spacing:.02em;vertical-align:middle;}
-.pill.orange{background:var(--brand-orange-bg);color:var(--brand-orange);}
+.pill.orange{background:var(--saffron-soft);color:var(--saffron);}
 .pill.green{background:var(--green-bg);color:var(--green);}
 .pill.red{background:var(--red-bg);color:var(--red);}
+.pill.saffron{background:var(--saffron-soft);color:var(--saffron);}
 
 /* ── Info row ── */
 .info-row{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
@@ -233,7 +237,7 @@ p:last-child{margin-bottom:0;}
   .header-right{display:none;}
   .mob-toggle{display:flex!important;}
 }
-.mob-toggle{display:none;position:fixed;bottom:20px;right:20px;z-index:300;background:var(--brand-mid);color:#fff;border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.mob-toggle{display:none;position:fixed;bottom:20px;right:20px;z-index:300;background:var(--saffron);color:#fff;border:none;border-radius:50%;width:46px;height:46px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(232,152,30,.35);}
 </style>
 
 <!-- ── Header ── -->
@@ -246,7 +250,7 @@ p:last-child{margin-bottom:0;}
     <button class="tab-btn active" onclick="switchTab('user')">User Guide</button>
     <button class="tab-btn"        onclick="switchTab('dev')">Developer Reference</button>
   </div>
-  <div class="header-right">Last updated 21 Aug 2026</div>
+  <div class="header-right">Last updated 29 Aug 2026</div>
 </header>
 
 <div class="shell">
@@ -271,8 +275,8 @@ p:last-child{margin-bottom:0;}
     <div class="nav-group">
       <div class="nav-label">Community</div>
       <a class="nav-link" href="#businesses"  onclick="cm()"><span class="ni">🏪</span>Business Directory</a>
-      <a class="nav-link" href="#forum"        onclick="cm()"><span class="ni">💬</span>Forum</a>
-      <a class="nav-link" href="#looking-for"  onclick="cm()"><span class="ni">🔍</span>Looking For Board</a>
+      <a class="nav-link" href="#forum"        onclick="cm()"><span class="ni">💬</span>Community</a>
+      <a class="nav-link" href="#looking-for"  onclick="cm()"><span class="ni">🔍</span>Looking For</a>
       <a class="nav-link" href="#services-mkt" onclick="cm()"><span class="ni">🛠</span>Services Marketplace</a>
       <a class="nav-link" href="#messages"     onclick="cm()"><span class="ni">✉️</span>Messages</a>
     </div>
@@ -316,9 +320,10 @@ p:last-child{margin-bottom:0;}
     </div>
     <div class="nav-group">
       <div class="nav-label">Operations</div>
-      <a class="nav-link" href="#security" onclick="cm()"><span class="ni">🔒</span>Security</a>
-      <a class="nav-link" href="#deploy"   onclick="cm()"><span class="ni">🚀</span>Deployment</a>
-      <a class="nav-link" href="#envvars"  onclick="cm()"><span class="ni">🗝</span>Env Vars</a>
+      <a class="nav-link" href="#security"  onclick="cm()"><span class="ni">🔒</span>Security</a>
+      <a class="nav-link" href="#deploy"    onclick="cm()"><span class="ni">🚀</span>Deployment</a>
+      <a class="nav-link" href="#envvars"   onclick="cm()"><span class="ni">🗝</span>Env Vars</a>
+      <a class="nav-link" href="#build-log" onclick="cm()"><span class="ni">📋</span>Build Log</a>
     </div>
   </nav>
 
@@ -350,7 +355,7 @@ p:last-child{margin-bottom:0;}
       <div class="card-mini"><div class="cm-icon">🏠</div><div class="cm-title">Rooms</div><div class="cm-desc">Browse room rentals or list your spare room across all AU states.</div></div>
       <div class="card-mini"><div class="cm-icon">🎉</div><div class="cm-title">Events</div><div class="cm-desc">Discover cultural, sports, music and community events with RSVP.</div></div>
       <div class="card-mini"><div class="cm-icon">🏪</div><div class="cm-title">Businesses</div><div class="cm-desc">Find Nepalese-owned businesses with reviews and booking links.</div></div>
-      <div class="card-mini"><div class="cm-icon">💬</div><div class="cm-title">Forum</div><div class="cm-desc">Ask questions, share tips, and vote in community discussions.</div></div>
+      <div class="card-mini"><div class="cm-icon">💬</div><div class="cm-title">Community</div><div class="cm-desc">One feed for discussions, notices, looking-for posts, buy/sell, and warnings — tagged by intent.</div></div>
       <div class="card-mini"><div class="cm-icon">💸</div><div class="cm-title">Send Money</div><div class="cm-desc">Compare live AUD→NPR rates from Wise, Remitly, WorldRemit, WU.</div></div>
       <div class="card-mini"><div class="cm-icon">🛂</div><div class="cm-title">Visa Hub</div><div class="cm-desc">PR points calculator, community processing times, and WhatsApp groups.</div></div>
     </div>
@@ -466,30 +471,40 @@ p:last-child{margin-bottom:0;}
 
   <!-- Forum -->
   <section class="section" id="forum">
-    <div class="section-header"><div class="section-icon">💬</div><h2 class="section-title">Forum</h2></div>
-    <p>Community discussion board at <span class="url-chip">/forum</span>. Read without an account; post and reply with one.</p>
+    <div class="section-header"><div class="section-icon">💬</div><h2 class="section-title">Community</h2></div>
+    <p>The unified community feed at <span class="url-chip">/forum</span> (also <span class="url-chip">/community</span>). Read without an account; post and reply with one. It replaces the old separate Forum, Notices, and Looking For sections — everything flows through one feed, sorted by tag.</p>
+
+    <h3>Intent tags</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+      <span class="pill">Discussion</span>
+      <span class="pill">Looking For</span>
+      <span class="pill">Announcement</span>
+      <span class="pill">Buy / Sell</span>
+      <span class="pill">Warning</span>
+    </div>
+
+    <h3>Topic tags</h3>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
       <span class="pill">Visa &amp; Immigration</span><span class="pill">Accommodation</span><span class="pill">Jobs &amp; Work</span>
       <span class="pill">Events</span><span class="pill">Business</span><span class="pill">General</span>
     </div>
+
+    <div class="callout purple"><div class="callout-icon">💡</div><div>When creating a post, a <strong>hint text</strong> appears below the category selector to guide your choice — e.g., "Looking for a room, job, service, or anything else" under Looking For.</div></div>
+
     <ul>
       <li><strong>Upvote</strong> posts and replies you find helpful</li>
       <li><strong>Polls:</strong> post creators can add a multiple-choice poll — one vote per user, changeable</li>
       <li><strong>AI body improve:</strong> click ✨ Improve with AI when writing a post to refine your text</li>
       <li>New posts are indexed by Bing via IndexNow within minutes</li>
     </ul>
-    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Forum post — upvote buttons, poll percentage bars, reply thread</span></div>
+    <div class="screenshot"><span class="sc-icon">📸</span><span class="sc-label">Screenshot: Community feed — intent tag pills, Discussion/Looking For/Warning posts mixed in one feed</span></div>
   </section>
 
   <!-- Looking For -->
   <section class="section" id="looking-for">
-    <div class="section-header"><div class="section-icon">🔍</div><h2 class="section-title">Looking For Board</h2></div>
-    <p>Visit <span class="url-chip">/looking-for</span> to post what you need — a job, a room, a service, or something else. It's a reverse marketplace: you post the request, and the community offers help.</p>
-    <ul>
-      <li>Filter by category (job / room / services / other) and AU state</li>
-      <li>Post using the inline form — no separate page needed</li>
-      <li>Delete your own request at any time</li>
-    </ul>
+    <div class="section-header"><div class="section-icon">🔍</div><h2 class="section-title">Looking For</h2></div>
+    <p>The primary place to post "I'm looking for..." requests is now the <strong>Community feed</strong> at <span class="url-chip">/forum</span> — select the <span class="pill">Looking For</span> tag when creating a post. The dedicated board at <span class="url-chip">/looking-for</span> remains accessible for existing posts but is no longer featured in the main navigation.</p>
+    <div class="callout green"><div class="callout-icon">✓</div><div>Use the Community feed with the <strong>Looking For</strong> tag for new requests — your post sits alongside relevant discussions, announcements, and replies from the whole community.</div></div>
   </section>
 
   <!-- Services -->
@@ -620,7 +635,7 @@ p:last-child{margin-bottom:0;}
           <tr><td><code>payments</code></td><td>Stripe Checkout for featured listings, PDF invoices (fpdf2)</td></tr>
           <tr><td><code>feedback</code></td><td>Exit-intent survey → Google Sheets async sync; newsletter subscriber list with CSV export</td></tr>
           <tr><td><code>panel</code></td><td>Superuser-only stats aggregation API</td></tr>
-          <tr><td><code>forum</code></td><td>ForumPost + ForumReply + upvotes + polls (PollOption, PollVote)</td></tr>
+          <tr><td><code>forum</code></td><td>ForumPost (11 category choices: discussion/looking_for/announcement/buy_sell/warning + visa/accommodation/jobs/events/business/general) + ForumReply + upvotes + polls (PollOption, PollVote)</td></tr>
           <tr><td><code>remittance</code></td><td>AUD→NPR rate comparator — Wise, Remitly, WorldRemit, Western Union</td></tr>
           <tr><td><code>community</code></td><td>Reverse Request Board (ReverseRequest) + Skills &amp; Services Marketplace (ServiceListing)</td></tr>
         </tbody>
@@ -640,8 +655,8 @@ p:last-child{margin-bottom:0;}
           <tr><td><strong>Events</strong></td><td>Anyone (RSVP: auth)</td><td>Events with RSVP, attendee limit, free/paid; 24-hr email reminder</td></tr>
           <tr><td><strong>Notices</strong></td><td>Anyone (post: auth)</td><td>Classifieds — sale, services, lost &amp; found, announcements</td></tr>
           <tr><td><strong>Businesses</strong></td><td>Anyone (register: auth)</td><td>Directory with reviews, images, booking link, verified badge</td></tr>
-          <tr><td><strong>Forum</strong></td><td>Anyone (post: auth)</td><td>6 categories, upvotes, polls, AI improve, IndexNow pings</td></tr>
-          <tr><td><strong>Looking For</strong></td><td>Anyone (post: auth)</td><td>Reverse request board — post what you need</td></tr>
+          <tr><td><strong>Community</strong></td><td>Anyone (post: auth)</td><td>Unified feed at /forum — 11 tags (5 intent: Discussion, Looking For, Announcement, Buy/Sell, Warning; 6 topic: Visa, Accommodation, Jobs, Events, Business, General); upvotes, polls, AI improve, IndexNow pings</td></tr>
+          <tr><td><strong>Looking For</strong></td><td>Anyone (post: auth)</td><td>Now handled via Community feed (Looking For tag); legacy board at /looking-for still accessible</td></tr>
           <tr><td><strong>Services</strong></td><td>Anyone (post: auth)</td><td>Skills &amp; services marketplace with rate and category filters</td></tr>
           <tr><td><strong>Messaging</strong></td><td>Auth only</td><td>1-to-1 conversations, real-time WebSocket, push notifications</td></tr>
           <tr><td><strong>Send Money</strong></td><td>Anyone</td><td>Live AUD→NPR comparison across 4 providers</td></tr>
@@ -873,6 +888,7 @@ python manage.py fetch_remittance_rates</code></pre>
       <div class="endpoint"><span class="method method-get">GET</span><span class="ep-path">/api/sitemap-forum.xml</span><span class="ep-note">live forum sitemap; proxied via Vercel</span></div>
     </div>
     <p>New posts trigger an IndexNow ping to Bing. Vercel <code>vercel.json</code> proxies <code>/sitemap-forum.xml</code> → Railway so Google Search Console can crawl it.</p>
+    <p><strong>Valid category values</strong> — intent tags: <code>discussion</code>, <code>looking_for</code>, <code>announcement</code>, <code>buy_sell</code>, <code>warning</code>; topic tags: <code>visa</code>, <code>accommodation</code>, <code>jobs</code>, <code>events</code>, <code>business</code>, <code>general</code>. Default on creation: <code>discussion</code>.</p>
   </section>
 
   <!-- API: Community -->
@@ -1089,6 +1105,17 @@ ADMIN_URL                              # obscured path (set on Railway, never co
     <pre><code>VITE_API_URL
 VITE_GOOGLE_CLIENT_ID
 VITE_VAPID_PUBLIC_KEY</code></pre>
+  </section>
+
+  <!-- Build Log -->
+  <section class="section" id="build-log">
+    <div class="section-header"><div class="section-icon">📋</div><h2 class="section-title">Build Log</h2></div>
+    <div class="card">
+      <div class="info-row"><div class="info-key">2026-08-29 · <code>ef52976</code></div><div class="info-val"><strong>Community restructure</strong> — merged Forum, Notices, and Looking For into a single unified Community feed at <code>/forum</code>. Added 5 intent-based category tags (Discussion, Looking For, Announcement, Buy/Sell, Warning) alongside the existing 6 topic tags. Navbar Community link is now a direct link to <code>/forum</code> (no dropdown). <code>/community</code> redirects to <code>/forum</code>. Old category values kept for backwards compatibility; new default is <code>discussion</code>.</div></div>
+      <div class="info-row"><div class="info-key">2026-08-21</div><div class="info-val"><strong>Security audit</strong> — fixed 13 bugs including user_email exposure, JWT SameSite cross-domain cookie, push subscription auth guard, Unicode in PDF, and Groq model correction. Added SilentJWTAuthentication for public endpoints.</div></div>
+      <div class="info-row"><div class="info-key">2026-07-03</div><div class="info-val"><strong>Forum launched</strong> — ForumPost + ForumReply + upvotes + polls, AI improve, IndexNow integration, sitemap proxied through Vercel.</div></div>
+      <div class="info-row"><div class="info-key">2026-06-22</div><div class="info-val"><strong>Feedback + Sheets</strong> — exit-intent modal, Google Sheets async sync for feedback responses.</div></div>
+    </div>
   </section>
 
 </div><!-- /dev-pane -->

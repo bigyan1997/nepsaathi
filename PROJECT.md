@@ -150,7 +150,7 @@ Railway (Django ASGI)
 - **NewsletterSubscriber** — email(unique), subscribed_at(auto_now_add), is_active(default True). DB table: `newsletter_subscribers`. Admin includes CSV export action.
 
 #### `forum`
-- **ForumPost** — author(FK), category(visa/accommodation/jobs/events/business/general), title, body(5000), slug(unique), is_pinned, is_closed, upvotes(M2M User), view_count
+- **ForumPost** — author(FK), category(discussion/looking_for/announcement/buy_sell/warning/visa/accommodation/jobs/events/business/general — default: discussion), title, body(5000), slug(unique), is_pinned, is_closed, upvotes(M2M User), view_count
 - **ForumReply** — post(FK), author(FK), body(2000), upvotes(M2M User)
 - **PollOption** — post(FK), text(200 chars). Poll creation: pass `poll_options: ["option1", "option2", ...]` in the post create payload.
 - **PollVote** — poll_option(FK), user(FK). unique_together=(poll_option__post, user) enforced in view — one vote per user per post. Changing vote replaces the previous one.
@@ -311,9 +311,10 @@ GET  /api/remittance/rates/              # live AUD→NPR rates per provider (pu
 | `/notices/:slug` | NoticeDetailPage |
 | `/businesses` | BusinessesPage |
 | `/businesses/:slug` | BusinessDetailPage |
-| `/forum` | ForumPage |
+| `/community` | Redirects → `/forum` (Navigate replace) |
+| `/forum` | ForumPage — renamed "Community"; unified feed with 11 category tags |
 | `/forum/:slug` | ForumPostPage |
-| `/looking-for` | LookingForPage — reverse request board; filterable by category + AU state |
+| `/looking-for` | LookingForPage — legacy board; no longer in main nav; use Community feed (Looking For tag) |
 | `/services` | ServicesPage — skills & services marketplace; category + state filters |
 | `/points` | PointsPage — points balance, referral link (copy), earn guide, event history |
 | `/search` | SearchPage |
@@ -390,7 +391,7 @@ Notable additions:
 - `community.js` — `getRequests`, `createRequest`, `deleteRequest`, `getServices`, `createService`, `deleteService`
 
 ### Key components
-- **Navbar** — sticky, shows auth-conditional links, unread message badge with toast on new message. Includes `LangToggle` (🇳🇵/🇬🇧 flag pill) for Nepali/English switching in both desktop nav and mobile menu bottom.
+- **Navbar** — sticky, 6 main links (Jobs, Rooms, Events, Businesses, Community→/forum, Send Money), auth-conditional user menu, unread message badge with toast on new message. Community is a direct link (no dropdown). Includes `LangToggle` (🇳🇵/🇬🇧 flag pill) for Nepali/English switching in both desktop nav and mobile menu bottom.
 - **Footer** — Newsletter strip (email subscribe → `POST /api/newsletter/subscribe/`) + 5-column link grid (Brand, Explore, Guides, Account, About) with inline SVG column headers and `›` chevron links. Two bottom bars: legal links + contact emails; darker copyright bar. Responsive: 3-col ≤900px, 2-col ≤560px. All labels via `useT()`.
 - **Toast** — `useToast()` exposes `addToast(content, type, duration)` — NOT `showToast`
 - **ProgressBar** — route-change loading indicator
@@ -696,6 +697,16 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Newsletter backend** — `NewsletterSubscriber` model in `feedback` app (`email` unique, `subscribed_at`, `is_active`). `POST /api/newsletter/subscribe/` is idempotent: creates on first call, re-activates on re-subscribe, returns 200 with "already subscribed" on duplicates. Sends `send_newsletter_welcome_email` on successful new subscription. Django admin has CSV export action. Frontend shows distinct success / already-subscribed badge states.
 - **Bug sweep — 35 fixes across 4 audits** — highlights: `is_under_review=False` added to all listing detail view querysets so listings under review are hidden from non-owners; `daemon=True` on background threads (`_flag_if_duplicate`, `_trigger_saved_search_alerts`) for clean gunicorn shutdown; atomic view-count increment via `F('view_count') + 1`; boolean-as-int rating validation (`isinstance(rating, bool)` check); `is_active` in `BusinessSerializer.read_only_fields` prevents owner bypassing admin deactivation; `get_is_reported` returns `False` to non-owners (was leaking report status); `Avg`/`Count` DB aggregation for accurate review stats; N+1 fixed on EventListView with `prefetch_related('listing__images')`; deleted-listing `invoice_url` construction crash fixed; `business.name` → `business.business_name` in WhatsApp button.
 - **llms.txt** added at repo root — H1 title + site links for LLM crawlers.
+
+### Community restructure (2026-08-29) — commit ef52976
+- **Merged Forum + Notices + Looking For into one Community feed** at `/forum`. Fragmented sections caused user confusion; unified feed removes the decision burden.
+- **5 new intent-based ForumPost categories** — `discussion`, `looking_for`, `announcement`, `buy_sell`, `warning` — added alongside existing 6 topic tags. Migration: `0004_add_community_categories.py`.
+- **Default category changed** from `general` to `discussion`.
+- **Navbar simplified** — Community dropdown replaced with a direct `/forum` link. `/notices` removed from main nav (URLs still resolve). `NAV_LINK_DEFS` updated; `COMMUNITY_LINKS`, `communityOpen` state, and `communityRef` removed.
+- **`/community` redirect** — `<Navigate to="/forum" replace />` added in `App.jsx` for backwards compatibility.
+- **Hint text on create form** — intent tags show a descriptive hint below the category selector to guide post type choice.
+- **Filter pill divider** — thin vertical separator on ForumPage separates intent tags from topic tags visually.
+- **i18n** — `nav.community` key added: English "Community", Nepali "समुदाय".
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
