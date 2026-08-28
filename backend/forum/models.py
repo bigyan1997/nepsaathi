@@ -6,6 +6,13 @@ import uuid
 
 class ForumPost(models.Model):
     class Category(models.TextChoices):
+        # Community-intent tags (new)
+        DISCUSSION = 'discussion', 'Discussion'
+        LOOKING_FOR = 'looking_for', 'Looking For'
+        ANNOUNCEMENT = 'announcement', 'Announcement'
+        BUY_SELL = 'buy_sell', 'Buy / Sell'
+        WARNING = 'warning', 'Warning'
+        # Topic tags (existing — kept for backwards compat)
         VISA = 'visa', 'Visa & Immigration'
         ACCOMMODATION = 'accommodation', 'Accommodation'
         JOBS = 'jobs', 'Jobs & Work'
@@ -18,7 +25,7 @@ class ForumPost(models.Model):
         on_delete=models.CASCADE,
         related_name='forum_posts'
     )
-    category = models.CharField(max_length=20, choices=Category.choices, default=Category.GENERAL, db_index=True)
+    category = models.CharField(max_length=20, choices=Category.choices, default=Category.DISCUSSION, db_index=True)
     title = models.CharField(max_length=200)
     body = models.TextField(max_length=5000)
     slug = models.SlugField(max_length=250, unique=True, blank=True)

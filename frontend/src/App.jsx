@@ -232,7 +232,8 @@ function App() {
                         <Route path="/businesses" element={<BusinessesPage />} />
                         <Route path="/businesses/in/:location" element={<LocationPage listingType="business" />} />
                         <Route path="/businesses/:slug" element={<BusinessDetailPage />} />
-                        {/* Forum */}
+                        {/* Community (forum) — /community redirects to /forum */}
+                        <Route path="/community" element={<Navigate to="/forum" replace />} />
                         <Route path="/forum" element={<ForumPage />} />
                         <Route path="/forum/new" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
                         <Route path="/forum/:slug" element={<ForumPostPage />} />

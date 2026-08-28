@@ -15,19 +15,33 @@ import {
   PushPinIcon,
   LockIcon,
   EyeIcon,
+  MagnifyingGlassIcon,
+  MegaphoneIcon,
+  TagIcon,
+  WarningIcon,
 } from "@phosphor-icons/react";
 
 const CATEGORIES = [
   { value: "", label: "All", Icon: ChatsIcon },
+  { value: "discussion", label: "Discussion", Icon: ChatDotsIcon },
+  { value: "looking_for", label: "Looking For", Icon: MagnifyingGlassIcon },
+  { value: "announcement", label: "Announcement", Icon: MegaphoneIcon },
+  { value: "buy_sell", label: "Buy / Sell", Icon: TagIcon },
+  { value: "warning", label: "Warning", Icon: WarningIcon },
   { value: "visa", label: "Visa & Immigration", Icon: IdentificationCardIcon },
   { value: "accommodation", label: "Accommodation", Icon: HouseIcon },
   { value: "jobs", label: "Jobs & Work", Icon: BriefcaseIcon },
   { value: "events", label: "Events", Icon: ConfettiIcon },
   { value: "business", label: "Business", Icon: BuildingsIcon },
-  { value: "general", label: "General", Icon: ChatDotsIcon },
+  { value: "general", label: "General", Icon: ChatsIcon },
 ];
 
 const CAT_COLORS = {
+  discussion: { bg: "#EEEDFE", color: "#3C3489" },
+  looking_for: { bg: "#FFF1E0", color: "#7A4A0A" },
+  announcement: { bg: "#E3F3F5", color: "#1A6E7A" },
+  buy_sell: { bg: "#E6F4EC", color: "#2E7D52" },
+  warning: { bg: "#FDECEA", color: "#A32D2D" },
   visa: { bg: "#E6F1FB", color: "#0C447C" },
   accommodation: { bg: "#EEEDFE", color: "#3C3489" },
   jobs: { bg: "#E1F5EE", color: "#085041" },
@@ -148,8 +162,8 @@ export default function ForumPage() {
   return (
     <div style={{ maxWidth: "760px", margin: "0 auto", padding: "24px 16px" }}>
       <SEO
-        title="Community Forum"
-        description="Ask questions, share advice and connect with the Nepalese Australian community. Topics include visa, accommodation, jobs, events and more."
+        title="Community"
+        description="Ask questions, share advice and connect with the Nepalese Australian community. Post discussions, announcements, looking-for requests, buy/sell and more."
         url="/forum"
         type="website"
       />
@@ -157,8 +171,8 @@ export default function ForumPage() {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
         <div>
-          <h1 style={{ fontSize: "24px", fontWeight: 800, color: "#26215C", margin: 0 }}>Community Forum</h1>
-          <p style={{ fontSize: "13px", color: "#888", margin: "4px 0 0" }}>Ask questions, share advice, connect with Nepalese Australians</p>
+          <h1 style={{ fontSize: "24px", fontWeight: 800, color: "#26215C", margin: 0 }}>Community</h1>
+          <p style={{ fontSize: "13px", color: "#888", margin: "4px 0 0" }}>Ask questions, share advice, post announcements, buy/sell — all in one place</p>
         </div>
         <button
           onClick={() => isAuthenticated ? navigate("/forum/new") : navigate("/login")}
@@ -208,31 +222,38 @@ export default function ForumPage() {
         )}
       </form>
 
-      {/* Category pills */}
-      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
-        {CATEGORIES.map((c) => (
-          <button
-            key={c.value}
-            onClick={() => setCategory(c.value)}
-            style={{
-              border: "none",
-              borderRadius: "20px",
-              padding: "6px 14px",
-              fontSize: "12px",
-              fontWeight: 600,
-              cursor: "pointer",
-              background: category === c.value ? "#26215C" : "#f0eff8",
-              color: category === c.value ? "#fff" : "#26215C",
-              transition: "all 0.15s",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "5px",
-            }}
-          >
-            {c.Icon && <c.Icon size={13} weight="regular" color={category === c.value ? "#fff" : "#534AB7"} />}
-            {c.label}
-          </button>
-        ))}
+      {/* Category pills — intent tags first, then topic tags */}
+      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "20px", alignItems: "center" }}>
+        {CATEGORIES.map((c, i) => {
+          const isTopicDivider = i === 6; // before visa (index 6)
+          return (
+            <span key={c.value} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              {isTopicDivider && (
+                <span style={{ width: "1px", height: "18px", background: "#ddd", display: "inline-block", marginRight: "2px" }} />
+              )}
+              <button
+                onClick={() => setCategory(c.value)}
+                style={{
+                  border: "none",
+                  borderRadius: "20px",
+                  padding: "6px 14px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: category === c.value ? "#26215C" : "#f0eff8",
+                  color: category === c.value ? "#fff" : "#26215C",
+                  transition: "all 0.15s",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                }}
+              >
+                {c.Icon && <c.Icon size={13} weight="regular" color={category === c.value ? "#fff" : "#534AB7"} />}
+                {c.label}
+              </button>
+            </span>
+          );
+        })}
       </div>
 
       {/* Posts list */}

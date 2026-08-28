@@ -7,19 +7,24 @@ import usePageTitle from "../../hooks/usePageTitle";
 import { SparkleIcon, ChartBarIcon } from "@phosphor-icons/react";
 
 const CATEGORIES = [
-  { value: "visa", label: "Visa & Immigration", emoji: "🛂" },
-  { value: "accommodation", label: "Accommodation", emoji: "🏠" },
-  { value: "jobs", label: "Jobs & Work", emoji: "💼" },
-  { value: "events", label: "Events", emoji: "🎉" },
-  { value: "business", label: "Business", emoji: "🏢" },
-  { value: "general", label: "General", emoji: "💬" },
+  { value: "discussion", label: "Discussion", emoji: "💬", hint: "Question, debate, advice, or general chat" },
+  { value: "looking_for", label: "Looking For", emoji: "🔍", hint: "Looking for a room, job, service, or anything else" },
+  { value: "announcement", label: "Announcement", emoji: "📢", hint: "Event, news, or community update" },
+  { value: "buy_sell", label: "Buy / Sell", emoji: "🏷", hint: "Selling something or looking to buy" },
+  { value: "warning", label: "Warning", emoji: "⚠️", hint: "Scam alert, safety notice, or community warning" },
+  { value: "visa", label: "Visa & Immigration", emoji: "🛂", hint: "" },
+  { value: "accommodation", label: "Accommodation", emoji: "🏠", hint: "" },
+  { value: "jobs", label: "Jobs & Work", emoji: "💼", hint: "" },
+  { value: "events", label: "Events", emoji: "🎉", hint: "" },
+  { value: "business", label: "Business", emoji: "🏢", hint: "" },
+  { value: "general", label: "General", emoji: "💬", hint: "" },
 ];
 
 export default function CreatePostPage() {
   usePageTitle("New Forum Post");
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const [form, setForm] = useState({ title: "", category: "general", body: "" });
+  const [form, setForm] = useState({ title: "", category: "discussion", body: "" });
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
   const [isPoll, setIsPoll] = useState(false);
   const [pollOptions, setPollOptions] = useState(["", ""]);
@@ -70,7 +75,7 @@ export default function CreatePostPage() {
   return (
     <div style={{ maxWidth: "680px", margin: "0 auto", padding: "24px 16px" }}>
       <button onClick={() => navigate("/forum")} style={{ background: "none", border: "none", color: "#534AB7", fontSize: "13px", cursor: "pointer", padding: 0, marginBottom: "20px" }}>
-        ← Back to Forum
+        ← Community
       </button>
 
       <div style={{ background: "#fff", borderRadius: "16px", border: "0.5px solid #e8e8e8", padding: "24px" }}>
@@ -88,6 +93,11 @@ export default function CreatePostPage() {
                 <option key={c.value} value={c.value}>{c.emoji} {c.label}</option>
               ))}
             </select>
+            {CATEGORIES.find((c) => c.value === form.category)?.hint && (
+              <div style={{ fontSize: "12px", color: "#999", marginTop: "5px" }}>
+                {CATEGORIES.find((c) => c.value === form.category).hint}
+              </div>
+            )}
           </div>
 
           <div>
