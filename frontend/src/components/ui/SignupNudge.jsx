@@ -6,6 +6,7 @@ import useAuthStore from "../../store/authStore";
 import useIsMobile from "../../hooks/useIsMobile";
 
 const STORAGE_KEY = "nepsaathi_signup_nudge";
+const COOKIE_KEY = "nepsaathi_cookie_consent";
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 const AUTH_PATHS = ["/login", "/register", "/verify-email", "/forgot-password", "/reset-password"];
 
@@ -17,8 +18,15 @@ export default function SignupNudge() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Hide immediately if the user lands on or navigates to an auth page
+    if (AUTH_PATHS.some((p) => location.pathname.startsWith(p))) {
+      setVisible(false);
+      return;
+    }
     if (isAuthenticated) return;
-    if (AUTH_PATHS.some((p) => location.pathname.startsWith(p))) return;
+
+    // Don't compete with the CookieConsent bar — wait until it's been answered
+    if (!localStorage.getItem(COOKIE_KEY)) return;
 
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
