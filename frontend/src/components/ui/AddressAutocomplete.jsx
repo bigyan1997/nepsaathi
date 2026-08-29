@@ -1,20 +1,29 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
-const MAPBOX_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places";
+const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 
-function parseFeature(feature) {
-  const context = feature.context || [];
-  const regionCtx = context.find(c => c.id.startsWith("region"));
-  const postcodeCtx = context.find(c => c.id.startsWith("postcode"));
-  const placeCtx = context.find(c => c.id.startsWith("place") || c.id.startsWith("locality"));
-  const stateCode = regionCtx?.short_code?.replace("AU-", "") || "";
-  // if the feature itself is a postcode result, pull suburb from context
-  const isPostcode = feature.id?.startsWith("postcode");
-  const suburb = isPostcode ? (placeCtx?.text || feature.text || "") : (feature.text || "");
-  const postcode = isPostcode ? feature.text : (postcodeCtx?.text || "");
+const STATE_CODE = {
+  "New South Wales": "NSW",
+  "Victoria": "VIC",
+  "Queensland": "QLD",
+  "Western Australia": "WA",
+  "South Australia": "SA",
+  "Tasmania": "TAS",
+  "Australian Capital Territory": "ACT",
+  "Northern Territory": "NT",
+};
+
+function extractAddress(addr = {}) {
+  const suburb = addr.suburb || addr.town || addr.city_district || addr.city || addr.village || addr.locality || addr.municipality || "";
+  const stateCode = STATE_CODE[addr.state] || "";
+  const postcode = addr.postcode || "";
   return { suburb, stateCode, postcode };
+}
+
+function formatLabel(addr = {}) {
+  const { suburb, stateCode, postcode } = extractAddress(addr);
+  return [suburb, stateCode, postcode].filter(Boolean).join(", ");
 }
 
 export default function AddressAutocomplete({ value, onChange, onSelect, placeholder, inputStyle = {} }) {
@@ -61,17 +70,22 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        access_token: MAPBOX_TOKEN,
-        country: "AU",
-        types: "place,locality,neighborhood,district,postcode",
+        q,
+        format: "json",
+        addressdetails: "1",
+        countrycodes: "au",
         limit: "7",
-        language: "en",
       });
-      const res = await fetch(`${MAPBOX_URL}/${encodeURIComponent(q)}.json?${params}`);
+      const res = await fetch(`${NOMINATIM}?${params}`, {
+        headers: { "Accept-Language": "en" },
+      });
       const data = await res.json();
-      const features = data.features || [];
-      setSuggestions(features);
-      setOpen(features.length > 0);
+      const filtered = data.filter(item => {
+        const addr = item.address || {};
+        return addr.suburb || addr.town || addr.city || addr.village || addr.locality || addr.municipality;
+      });
+      setSuggestions(filtered);
+      setOpen(filtered.length > 0);
       setActiveIdx(-1);
     } catch {
       setSuggestions([]);
@@ -87,10 +101,10 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
     debounceRef.current = setTimeout(() => fetchSuggestions(val), 400);
   }
 
-  function handleSelect(feature) {
-    const { suburb, stateCode, postcode } = parseFeature(feature);
-    onChange(suburb);
-    onSelect?.({ suburb, state: stateCode, postcode });
+  function handleSelect(item) {
+    const { suburb, stateCode, postcode } = extractAddress(item.address || {});
+    onChange(suburb || item.name || "");
+    onSelect?.({ suburb: suburb || item.name || "", state: stateCode, postcode });
     setSuggestions([]);
     setOpen(false);
   }
@@ -128,13 +142,12 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
       maxHeight: 240,
       overflowY: "auto",
     }}>
-      {suggestions.map((feature, i) => {
-        const { suburb, stateCode, postcode } = parseFeature(feature);
-        const label = [suburb, stateCode, postcode].filter(Boolean).join(", ");
+      {suggestions.map((item, i) => {
+        const label = formatLabel(item.address || {});
         return (
           <li
-            key={feature.id}
-            onMouseDown={() => handleSelect(feature)}
+            key={item.place_id}
+            onMouseDown={() => handleSelect(item)}
             onMouseEnter={() => setActiveIdx(i)}
             style={{
               padding: "9px 14px",
@@ -146,7 +159,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
               lineHeight: 1.3,
             }}
           >
-            {label || feature.place_name}
+            {label || item.display_name}
           </li>
         );
       })}
@@ -158,7 +171,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
         borderTop: "1px solid #f0f0f0",
         listStyle: "none",
       }}>
-        © Mapbox © OpenStreetMap
+        © OpenStreetMap contributors
       </li>
     </ul>,
     document.body
