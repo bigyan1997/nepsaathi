@@ -1,45 +1,27 @@
 """
-Forum endpoint tests — create post, list, reply, upvote, auth guards.
+Forum endpoint tests — create post, list, vote, auth guards.
 """
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from rest_framework.test import APIClient
+from django.test import override_settings
 
-User = get_user_model()
-POSTS_URL = "/api/forum/posts/"
+from .base import BaseAPITest, TEST_SETTINGS
 
-
-def make_user(email="forumuser@example.com", password="Pass123!"):
-    return User.objects.create_user(
-        email=email, password=password,
-        first_name="Forum", last_name="User",
-    )
+FORUM_URL = "/api/forum/"
 
 
-class ForumPostCreateTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.user = make_user()
-
-    def _auth(self):
-        res = self.client.post("/api/auth/login/", {
-            "email": "forumuser@example.com",
-            "password": "Pass123!",
-        })
-        token = res.data.get("access")
-        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-
+@override_settings(**TEST_SETTINGS)
+class ForumPostCreateTests(BaseAPITest):
     def test_unauthenticated_cannot_create_post(self):
-        res = self.client.post(POSTS_URL, {
+        res = self.client.post(FORUM_URL, {
             "title": "Test post",
             "body": "Hello community!",
             "category": "discussion",
         })
-        self.assertEqual(res.status_code, 401)
+        self.assertIn(res.status_code, [401, 403])
 
     def test_authenticated_user_can_create_post(self):
-        self._auth()
-        res = self.client.post(POSTS_URL, {
+        user = self.create_user()
+        self.client.force_authenticate(user=user)
+        res = self.client.post(FORUM_URL, {
             "title": "Test post",
             "body": "Hello community!",
             "category": "discussion",
@@ -48,9 +30,10 @@ class ForumPostCreateTests(TestCase):
         self.assertIn("slug", res.data)
 
     def test_valid_intent_categories_accepted(self):
-        self._auth()
+        user = self.create_user()
+        self.client.force_authenticate(user=user)
         for category in ["discussion", "looking_for", "announcement", "buy_sell", "warning"]:
-            res = self.client.post(POSTS_URL, {
+            res = self.client.post(FORUM_URL, {
                 "title": f"Post in {category}",
                 "body": "Body text.",
                 "category": category,
@@ -59,8 +42,9 @@ class ForumPostCreateTests(TestCase):
                           msg=f"Category '{category}' should be accepted")
 
     def test_invalid_category_rejected(self):
-        self._auth()
-        res = self.client.post(POSTS_URL, {
+        user = self.create_user()
+        self.client.force_authenticate(user=user)
+        res = self.client.post(FORUM_URL, {
             "title": "Bad category",
             "body": "Body text.",
             "category": "random_nonexistent",
@@ -68,58 +52,47 @@ class ForumPostCreateTests(TestCase):
         self.assertEqual(res.status_code, 400)
 
     def test_title_required(self):
-        self._auth()
-        res = self.client.post(POSTS_URL, {
+        user = self.create_user()
+        self.client.force_authenticate(user=user)
+        res = self.client.post(FORUM_URL, {
             "body": "No title here.",
             "category": "discussion",
         })
         self.assertEqual(res.status_code, 400)
 
 
-class ForumPostListTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-
+@override_settings(**TEST_SETTINGS)
+class ForumPostListTests(BaseAPITest):
     def test_post_list_is_public(self):
-        res = self.client.get(POSTS_URL)
+        res = self.client.get(FORUM_URL)
         self.assertEqual(res.status_code, 200)
 
     def test_post_list_paginated(self):
-        res = self.client.get(POSTS_URL)
+        res = self.client.get(FORUM_URL)
         self.assertIn("results", res.data)
         self.assertIn("count", res.data)
 
 
-class ForumUpvoteTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.user = make_user()
-
-    def _auth(self):
-        res = self.client.post("/api/auth/login/", {
-            "email": "forumuser@example.com",
-            "password": "Pass123!",
-        })
-        self.client.credentials(
-            HTTP_AUTHORIZATION=f"Bearer {res.data.get('access')}"
-        )
-
-    def _create_post(self):
-        self._auth()
-        res = self.client.post(POSTS_URL, {
-            "title": "Post to upvote",
+@override_settings(**TEST_SETTINGS)
+class ForumVoteTests(BaseAPITest):
+    def _create_post(self, user):
+        self.client.force_authenticate(user=user)
+        res = self.client.post(FORUM_URL, {
+            "title": "Post to vote on",
             "body": "Body.",
             "category": "discussion",
         })
-        return res.data.get("id")
+        return res.data.get("slug")
 
-    def test_unauthenticated_cannot_upvote(self):
-        post_id = self._create_post()
-        self.client.credentials()  # clear auth
-        res = self.client.post(f"/api/forum/posts/{post_id}/upvote/")
-        self.assertEqual(res.status_code, 401)
+    def test_unauthenticated_cannot_vote(self):
+        user = self.create_user()
+        slug = self._create_post(user)
+        self.client.force_authenticate(user=None)
+        res = self.client.post(f"/api/forum/{slug}/vote/")
+        self.assertIn(res.status_code, [401, 403])
 
-    def test_authenticated_user_can_upvote(self):
-        post_id = self._create_post()
-        res = self.client.post(f"/api/forum/posts/{post_id}/upvote/")
+    def test_authenticated_user_can_vote(self):
+        user = self.create_user()
+        slug = self._create_post(user)
+        res = self.client.post(f"/api/forum/{slug}/vote/")
         self.assertIn(res.status_code, [200, 201])
