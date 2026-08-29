@@ -74,16 +74,21 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
         format: "json",
         addressdetails: "1",
         countrycodes: "au",
-        limit: "7",
+        limit: "20",
+        featuretype: "settlement",
       });
       const res = await fetch(`${NOMINATIM}?${params}`, {
         headers: { "Accept-Language": "en" },
       });
       const data = await res.json();
-      const filtered = data.filter(item => {
-        const addr = item.address || {};
-        return addr.suburb || addr.town || addr.city || addr.village || addr.locality || addr.municipality;
-      });
+      const filtered = data
+        .filter(item => {
+          const addr = item.address || {};
+          return addr.suburb || addr.town || addr.city || addr.village ||
+                 addr.locality || addr.municipality || addr.city_district ||
+                 addr.hamlet || addr.quarter;
+        })
+        .slice(0, 7);
       setSuggestions(filtered);
       setOpen(filtered.length > 0);
       setActiveIdx(-1);
