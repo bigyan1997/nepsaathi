@@ -81,12 +81,16 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
         headers: { "Accept-Language": "en" },
       });
       const data = await res.json();
+      const seen = new Set();
       const filtered = data
         .filter(item => {
           const addr = item.address || {};
-          return addr.suburb || addr.town || addr.city || addr.village ||
-                 addr.locality || addr.municipality || addr.city_district ||
-                 addr.hamlet || addr.quarter;
+          const { suburb, stateCode, postcode } = extractAddress(addr);
+          if (!suburb) return false;
+          const key = `${suburb}|${stateCode}|${postcode}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
         })
         .slice(0, 7);
       setSuggestions(filtered);
