@@ -5,13 +5,15 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAPBOX_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places";
 
 function parseFeature(feature) {
-  const suburb = feature.text || "";
   const context = feature.context || [];
   const regionCtx = context.find(c => c.id.startsWith("region"));
   const postcodeCtx = context.find(c => c.id.startsWith("postcode"));
-  // short_code is like "AU-VIC" → strip "AU-"
+  const placeCtx = context.find(c => c.id.startsWith("place") || c.id.startsWith("locality"));
   const stateCode = regionCtx?.short_code?.replace("AU-", "") || "";
-  const postcode = postcodeCtx?.text || "";
+  // if the feature itself is a postcode result, pull suburb from context
+  const isPostcode = feature.id?.startsWith("postcode");
+  const suburb = isPostcode ? (placeCtx?.text || feature.text || "") : (feature.text || "");
+  const postcode = isPostcode ? feature.text : (postcodeCtx?.text || "");
   return { suburb, stateCode, postcode };
 }
 
@@ -61,7 +63,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
       const params = new URLSearchParams({
         access_token: MAPBOX_TOKEN,
         country: "AU",
-        types: "place,locality,neighborhood,district",
+        types: "place,locality,neighborhood,district,postcode",
         limit: "7",
         language: "en",
       });
