@@ -1,29 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+const MAPBOX_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places";
 
-const STATE_CODE = {
-  "New South Wales": "NSW",
-  "Victoria": "VIC",
-  "Queensland": "QLD",
-  "Western Australia": "WA",
-  "South Australia": "SA",
-  "Tasmania": "TAS",
-  "Australian Capital Territory": "ACT",
-  "Northern Territory": "NT",
-};
-
-function extractAddress(addr = {}) {
-  const suburb = addr.suburb || addr.town || addr.city_district || addr.city || addr.village || addr.locality || addr.municipality || "";
-  const stateCode = STATE_CODE[addr.state] || "";
-  const postcode = addr.postcode || "";
+function parseFeature(feature) {
+  const suburb = feature.text || "";
+  const context = feature.context || [];
+  const regionCtx = context.find(c => c.id.startsWith("region"));
+  const postcodeCtx = context.find(c => c.id.startsWith("postcode"));
+  // short_code is like "AU-VIC" → strip "AU-"
+  const stateCode = regionCtx?.short_code?.replace("AU-", "") || "";
+  const postcode = postcodeCtx?.text || "";
   return { suburb, stateCode, postcode };
-}
-
-function formatLabel(addr = {}) {
-  const { suburb, stateCode, postcode } = extractAddress(addr);
-  return [suburb, stateCode, postcode].filter(Boolean).join(", ");
 }
 
 export default function AddressAutocomplete({ value, onChange, onSelect, placeholder, inputStyle = {} }) {
@@ -36,7 +25,6 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
   const wrapperRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     function handler(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -47,7 +35,6 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Recalculate dropdown position whenever it opens or window scrolls/resizes
   useEffect(() => {
     if (!open || !inputRef.current) return;
     function updatePos() {
@@ -72,22 +59,17 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        q,
-        format: "json",
-        addressdetails: "1",
-        countrycodes: "au",
+        access_token: MAPBOX_TOKEN,
+        country: "AU",
+        types: "place,locality,neighborhood,district",
         limit: "7",
+        language: "en",
       });
-      const res = await fetch(`${NOMINATIM}?${params}`, {
-        headers: { "Accept-Language": "en" },
-      });
+      const res = await fetch(`${MAPBOX_URL}/${encodeURIComponent(q)}.json?${params}`);
       const data = await res.json();
-      const filtered = data.filter(item => {
-        const addr = item.address || {};
-        return addr.suburb || addr.town || addr.city || addr.village || addr.locality || addr.municipality;
-      });
-      setSuggestions(filtered);
-      setOpen(filtered.length > 0);
+      const features = data.features || [];
+      setSuggestions(features);
+      setOpen(features.length > 0);
       setActiveIdx(-1);
     } catch {
       setSuggestions([]);
@@ -103,10 +85,10 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
     debounceRef.current = setTimeout(() => fetchSuggestions(val), 400);
   }
 
-  function handleSelect(item) {
-    const { suburb, stateCode, postcode } = extractAddress(item.address || {});
-    onChange(suburb || item.name || "");
-    onSelect?.({ suburb: suburb || item.name || "", state: stateCode, postcode });
+  function handleSelect(feature) {
+    const { suburb, stateCode, postcode } = parseFeature(feature);
+    onChange(suburb);
+    onSelect?.({ suburb, state: stateCode, postcode });
     setSuggestions([]);
     setOpen(false);
   }
@@ -144,12 +126,13 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
       maxHeight: 240,
       overflowY: "auto",
     }}>
-      {suggestions.map((item, i) => {
-        const label = formatLabel(item.address || {});
+      {suggestions.map((feature, i) => {
+        const { suburb, stateCode, postcode } = parseFeature(feature);
+        const label = [suburb, stateCode, postcode].filter(Boolean).join(", ");
         return (
           <li
-            key={item.place_id}
-            onMouseDown={() => handleSelect(item)}
+            key={feature.id}
+            onMouseDown={() => handleSelect(feature)}
             onMouseEnter={() => setActiveIdx(i)}
             style={{
               padding: "9px 14px",
@@ -161,7 +144,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
               lineHeight: 1.3,
             }}
           >
-            {label || item.display_name}
+            {label || feature.place_name}
           </li>
         );
       })}
@@ -173,7 +156,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
         borderTop: "1px solid #f0f0f0",
         listStyle: "none",
       }}>
-        © OpenStreetMap contributors
+        © Mapbox © OpenStreetMap
       </li>
     </ul>,
     document.body

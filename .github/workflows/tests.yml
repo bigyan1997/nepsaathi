@@ -100,4 +100,5 @@ jobs:
           VITE_API_URL: https://placeholder.railway.app
           VITE_GOOGLE_CLIENT_ID: placeholder.apps.googleusercontent.com
           VITE_VAPID_PUBLIC_KEY: placeholder
+          VITE_MAPBOX_TOKEN: pk.placeholder
         run: npm run build
