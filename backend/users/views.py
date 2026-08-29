@@ -317,7 +317,14 @@ class ThrottledRegisterView(APIView):
             email = ''
             ref_code = ''
 
-        response = RegisterView.as_view()(request._request, *args, **kwargs)
+        from django.db import IntegrityError
+        try:
+            response = RegisterView.as_view()(request._request, *args, **kwargs)
+        except IntegrityError:
+            return Response(
+                {"email": ["A user with this email address already exists."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if response.status_code == 201 and email:
             try:

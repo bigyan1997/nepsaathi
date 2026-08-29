@@ -23,7 +23,15 @@ class RegisterTests(BaseAPITest):
 
     def test_duplicate_email_rejected(self):
         email = self._unique_email("dupe")
-        self.create_user(email=email)
+        # Register once via API (creates allauth EmailAddress row)
+        self.client.post("/api/auth/registration/", {
+            "email": email,
+            "password1": "TestPass123!",
+            "password2": "TestPass123!",
+            "first_name": "First",
+            "last_name": "User",
+        })
+        # Second attempt with same email must be rejected
         res = self.client.post("/api/auth/registration/", {
             "email": email,
             "password1": "TestPass123!",
