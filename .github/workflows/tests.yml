@@ -69,7 +69,7 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: python manage.py test tests --verbosity=2
+        run: python manage.py test tests --verbosity=2 --force-drop
 
   # ── Frontend (Vitest) ───────────────────────────────────────────────────────
   frontend:
