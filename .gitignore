@@ -21,6 +21,13 @@ backend/.env
 # Node
 node_modules/
 
+# Android build outputs (keep android/ source, ignore build artifacts)
+frontend/android/build/
+frontend/android/app/build/
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/app/release/
+
 # Editor
 .DS_Store
 .vscode/
