@@ -190,35 +190,35 @@ export default function Footer() {
             flexWrap: "wrap",
           }}
         >
-          {/* Icon */}
-          <div
-            style={{
-              width: "52px",
-              height: "52px",
-              borderRadius: "14px",
-              background: "#EEEDFE",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#534AB7"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {/* Icon + Text grouped so they never split on mobile */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1, minWidth: "220px" }}>
+            <div
+              style={{
+                width: "52px",
+                height: "52px",
+                borderRadius: "14px",
+                background: "#EEEDFE",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
             >
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </div>
-          {/* Text */}
-          <div style={{ flex: 1, minWidth: "200px" }}>
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#534AB7"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </div>
+          <div style={{ flex: 1 }}>
             <div
               style={{
                 fontWeight: 700,
@@ -234,6 +234,7 @@ export default function Footer() {
               Get the latest jobs, events and community resources delivered to
               your inbox.
             </div>
+          </div>
           </div>
           {/* Form */}
           {subscribed ? (

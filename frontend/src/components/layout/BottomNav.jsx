@@ -1,18 +1,11 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  BriefcaseIcon,
-  HouseIcon,
-  ChatCircleDotsIcon,
-  StorefrontIcon,
-  PlusCircleIcon,
-} from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
 
 const TABS = [
-  { to: "/jobs",       Icon: BriefcaseIcon, label: "Jobs",       color: "#534AB7", bg: "#EEEDFE" },
-  { to: "/rooms",      Icon: HouseIcon,     label: "Rooms",      color: "#85510A", bg: "#FFF1E0" },
-  { to: "/businesses", Icon: StorefrontIcon,label: "Businesses", color: "#633806", bg: "#FAEEDA" },
-  { to: "/forum",      Icon: ChatCircleDotsIcon, label: "Community", color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/",            emoji: "🏠", label: "Home",      color: "#534AB7", bg: "#EEEDFE", exact: true },
+  { to: "/jobs",        emoji: "💼", label: "Jobs",      color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/rooms",       emoji: "🛏️", label: "Rooms",     color: "#85510A", bg: "#FFF1E0" },
+  { to: "/forum",       emoji: "💬", label: "Community", color: "#534AB7", bg: "#EEEDFE" },
 ];
 
 export default function BottomNav() {
@@ -23,6 +16,9 @@ export default function BottomNav() {
   const handlePost = () => {
     navigate(isAuthenticated ? "/post-ad" : "/login");
   };
+
+  const isActive = (tab) =>
+    tab.exact ? pathname === tab.to : pathname === tab.to || pathname.startsWith(tab.to + "/");
 
   return (
     <nav
@@ -42,12 +38,12 @@ export default function BottomNav() {
       }}
     >
       {/* First two tabs */}
-      {TABS.slice(0, 2).map(({ to, Icon, label, color, bg }) => {
-        const active = pathname === to || pathname.startsWith(to + "/");
+      {TABS.slice(0, 2).map((tab) => {
+        const active = isActive(tab);
         return (
           <Link
-            key={to}
-            to={to}
+            key={tab.to}
+            to={tab.to}
             style={{
               flex: 1,
               display: "flex",
@@ -56,13 +52,13 @@ export default function BottomNav() {
               justifyContent: "center",
               gap: "3px",
               textDecoration: "none",
-              background: active ? bg : "transparent",
+              background: active ? tab.bg : "transparent",
               transition: "background 0.15s",
             }}
           >
-            <Icon size={20} weight={active ? "fill" : "regular"} color={active ? color : "#999"} />
-            <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? color : "#999", lineHeight: 1 }}>
-              {label}
+            <span style={{ fontSize: "18px", lineHeight: 1 }}>{tab.emoji}</span>
+            <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? tab.color : "#999", lineHeight: 1 }}>
+              {tab.label}
             </span>
           </Link>
         );
@@ -84,22 +80,23 @@ export default function BottomNav() {
             justifyContent: "center",
             cursor: "pointer",
             transition: "transform 0.15s, box-shadow 0.15s",
+            fontSize: "24px",
           }}
           onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.07)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           aria-label="Post a listing"
         >
-          <PlusCircleIcon size={26} weight="fill" color="#fff" />
+          ➕
         </button>
       </div>
 
       {/* Last two tabs */}
-      {TABS.slice(2).map(({ to, Icon, label, color, bg }) => {
-        const active = pathname === to || pathname.startsWith(to + "/");
+      {TABS.slice(2).map((tab) => {
+        const active = isActive(tab);
         return (
           <Link
-            key={to}
-            to={to}
+            key={tab.to}
+            to={tab.to}
             style={{
               flex: 1,
               display: "flex",
@@ -108,13 +105,13 @@ export default function BottomNav() {
               justifyContent: "center",
               gap: "3px",
               textDecoration: "none",
-              background: active ? bg : "transparent",
+              background: active ? tab.bg : "transparent",
               transition: "background 0.15s",
             }}
           >
-            <Icon size={20} weight={active ? "fill" : "regular"} color={active ? color : "#999"} />
-            <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? color : "#999", lineHeight: 1 }}>
-              {label}
+            <span style={{ fontSize: "18px", lineHeight: 1 }}>{tab.emoji}</span>
+            <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? tab.color : "#999", lineHeight: 1 }}>
+              {tab.label}
             </span>
           </Link>
         );

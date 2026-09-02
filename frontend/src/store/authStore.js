@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { Capacitor } from "@capacitor/core";
 
 // Access token: sessionStorage — tab-scoped, cleared on browser close, never persisted
 // Refresh token: httpOnly cookie set by the backend — never readable by JS (XSS-safe)
@@ -11,12 +12,21 @@ const useAuthStore = create(
       isAuthenticated: false,
 
       setAuth: (user, accessToken) => {
-        if (accessToken) sessionStorage.setItem("nepsaathi_access_token", accessToken);
+        if (accessToken) {
+          // Native app: use localStorage so the token survives app restarts.
+          // Web: use sessionStorage (tab-scoped, cleared on browser close).
+          if (Capacitor.isNativePlatform()) {
+            localStorage.setItem("nepsaathi_access_token", accessToken);
+          } else {
+            sessionStorage.setItem("nepsaathi_access_token", accessToken);
+          }
+        }
         set({ user, isAuthenticated: true });
       },
 
       logout: () => {
         sessionStorage.removeItem("nepsaathi_access_token");
+        localStorage.removeItem("nepsaathi_access_token");
         localStorage.removeItem("nepsaathi-auth");
         set({ user: null, isAuthenticated: false });
         window.location.href = "/login";
@@ -25,7 +35,11 @@ const useAuthStore = create(
       updateUser: (user) => set({ user }),
 
       setAccessToken: (accessToken) => {
-        sessionStorage.setItem("nepsaathi_access_token", accessToken);
+        if (Capacitor.isNativePlatform()) {
+          localStorage.setItem("nepsaathi_access_token", accessToken);
+        } else {
+          sessionStorage.setItem("nepsaathi_access_token", accessToken);
+        }
       },
     }),
     {

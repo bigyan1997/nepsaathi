@@ -12,7 +12,9 @@ const api = axios.create({
 // Request interceptor — attach access token from sessionStorage
 api.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem("nepsaathi_access_token");
+    const token =
+      sessionStorage.getItem("nepsaathi_access_token") ||
+      localStorage.getItem("nepsaathi_access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -38,6 +40,7 @@ const processQueue = (error, token = null) => {
 
 const clearAuth = () => {
   sessionStorage.removeItem("nepsaathi_access_token");
+  localStorage.removeItem("nepsaathi_access_token");
   localStorage.removeItem("nepsaathi-auth");
   useAuthStore.getState().logout();
 };

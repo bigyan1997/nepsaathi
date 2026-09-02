@@ -164,7 +164,10 @@ function App() {
     const fetchUser = () =>
       api.get("/api/auth/user/").then((res) => updateUser(res.data)).catch(() => {});
 
-    if (sessionStorage.getItem("nepsaathi_access_token")) {
+    const storedToken =
+      sessionStorage.getItem("nepsaathi_access_token") ||
+      localStorage.getItem("nepsaathi_access_token");
+    if (storedToken) {
       fetchUser();
       return;
     }
