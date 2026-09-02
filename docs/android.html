@@ -1,0 +1,605 @@
+<title>NepSaathi Android</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+:root {
+  --bg: #F5F4F0;
+  --surface: #FFFFFF;
+  --purple-deep: #26215C;
+  --purple: #534AB7;
+  --saffron: #E87722;
+  --text: #1A1520;
+  --muted: #72697A;
+  --border: #E5E3DF;
+  --code-bg: #1A1626;
+  --code-text: #C4BFFE;
+  --code-border: #2A2540;
+  --tag-bg: #EEEDFE;
+  --tag-color: #534AB7;
+  --warn-bg: #FFFBEB;
+  --warn-border: #FDE68A;
+  --warn-color: #92400E;
+  --ok-bg: #ECFDF5;
+  --ok-border: #A7F3D0;
+  --ok-color: #065F46;
+  --err-bg: #FEF2F2;
+  --err-border: #FECACA;
+  --err-color: #991B1B;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F0D16;
+    --surface: #1A1726;
+    --purple-deep: #C4BFFE;
+    --purple: #9B93F0;
+    --saffron: #F09B50;
+    --text: #EDE9FE;
+    --muted: #9590B0;
+    --border: #2A2540;
+    --code-bg: #080610;
+    --code-text: #C4BFFE;
+    --code-border: #1E1A30;
+    --tag-bg: #26215C;
+    --tag-color: #C4BFFE;
+    --warn-bg: #1C1400;
+    --warn-border: #4A3500;
+    --warn-color: #FCD34D;
+    --ok-bg: #022C16;
+    --ok-border: #064E30;
+    --ok-color: #6EE7B7;
+    --err-bg: #1F0808;
+    --err-border: #4B1515;
+    --err-color: #FCA5A5;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F0D16;
+  --surface: #1A1726;
+  --purple-deep: #C4BFFE;
+  --purple: #9B93F0;
+  --saffron: #F09B50;
+  --text: #EDE9FE;
+  --muted: #9590B0;
+  --border: #2A2540;
+  --code-bg: #080610;
+  --code-text: #C4BFFE;
+  --code-border: #1E1A30;
+  --tag-bg: #26215C;
+  --tag-color: #C4BFFE;
+  --warn-bg: #1C1400;
+  --warn-border: #4A3500;
+  --warn-color: #FCD34D;
+  --ok-bg: #022C16;
+  --ok-border: #064E30;
+  --ok-color: #6EE7B7;
+  --err-bg: #1F0808;
+  --err-border: #4B1515;
+  --err-color: #FCA5A5;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.7; margin: 0; }
+
+.layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; max-width: 1120px; margin: 0 auto; }
+
+/* ── Sidebar ── */
+.sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 16px 28px 0; border-right: 1px solid var(--border); }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #E87722 0%, #534AB7 100%); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; color: #fff; font-size: 15px; flex-shrink: 0; }
+.brand-text { line-height: 1.25; }
+.brand-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--text); }
+.brand-sub { font-size: 10.5px; color: var(--muted); font-weight: 400; letter-spacing: 0.05em; }
+
+.nav-group { margin-bottom: 18px; }
+.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 0 10px; margin-bottom: 4px; display: block; }
+.nav-link { display: block; font-size: 13px; color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; transition: color 0.12s, background 0.12s; }
+.nav-link:hover { color: var(--text); background: var(--tag-bg); }
+.nav-link.active { color: var(--purple); background: var(--tag-bg); font-weight: 500; }
+
+/* ── Main ── */
+.main { padding: 48px 52px 80px; }
+
+.page-header { margin-bottom: 44px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--saffron); margin-bottom: 10px; }
+h1 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: var(--purple-deep); margin: 0 0 12px; text-wrap: balance; letter-spacing: -0.02em; line-height: 1.15; }
+.page-desc { font-size: 15px; color: var(--muted); max-width: 54ch; line-height: 1.65; margin: 0 0 16px; }
+.meta-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-color); }
+.chip.orange { background: #FFF1E0; color: #7C3A06; }
+
+.section { margin-bottom: 60px; scroll-margin-top: 24px; }
+h2 { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 700; color: var(--purple-deep); margin: 0 0 16px; text-wrap: balance; letter-spacing: -0.01em; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+h3 { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; margin: 20px 0 8px; }
+p { margin: 0 0 14px; max-width: 62ch; }
+a { color: var(--purple); }
+ul { padding-left: 20px; margin: 0 0 14px; }
+li { margin-bottom: 6px; max-width: 60ch; }
+
+/* Code */
+.code-wrap { position: relative; margin: 12px 0 20px; }
+pre { background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 10px; padding: 16px 20px; overflow-x: auto; margin: 0; }
+pre code { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 12.5px; color: var(--code-text); background: none; padding: 0; border: none; border-radius: 0; }
+code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: var(--tag-bg); color: var(--purple); padding: 1px 6px; border-radius: 4px; }
+.copy-btn { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 5px; border: 1px solid var(--code-border); background: rgba(255,255,255,0.06); color: var(--code-text); cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.12s; }
+.copy-btn:hover { background: rgba(255,255,255,0.12); }
+.copy-btn:focus { outline: 2px solid var(--purple); outline-offset: 2px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--border); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--bg); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+
+/* Callouts */
+.callout { border-radius: 10px; padding: 12px 16px; margin: 16px 0; font-size: 13.5px; line-height: 1.6; display: flex; gap: 10px; }
+.callout.warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-color); }
+.callout.ok { background: var(--ok-bg); border: 1px solid var(--ok-border); color: var(--ok-color); }
+.callout.info { background: var(--tag-bg); border: 1px solid var(--border); color: var(--tag-color); }
+.callout.err { background: var(--err-bg); border: 1px solid var(--err-border); color: var(--err-color); }
+.callout-icon { flex-shrink: 0; font-style: normal; line-height: 1.6; }
+.callout p { margin: 0; max-width: none; color: inherit; }
+
+/* Steps */
+ol.steps { list-style: none; padding: 0; margin: 12px 0 20px; counter-reset: step; }
+ol.steps li { counter-increment: step; display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; align-items: flex-start; }
+ol.steps li:last-child { border-bottom: none; }
+ol.steps li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); color: var(--purple); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; font-family: 'Syne', sans-serif; }
+ol.steps li div { flex: 1; }
+ol.steps li strong { display: block; font-weight: 600; margin-bottom: 2px; }
+
+/* Decision cards */
+.decision { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.decision-q { padding: 11px 16px; font-weight: 600; font-size: 13.5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.decision-a { padding: 10px 16px; font-size: 13px; color: var(--muted); line-height: 1.65; }
+.decision-a p { color: var(--muted); max-width: none; margin: 0; }
+.badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--tag-bg); color: var(--tag-color); font-family: monospace; letter-spacing: 0.02em; }
+
+/* Troubleshoot */
+.trouble { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+.trouble-err { padding: 11px 16px; background: var(--err-bg); border-bottom: 1px solid var(--err-border); font-size: 12.5px; font-family: monospace; color: var(--err-color); overflow-x: auto; white-space: nowrap; }
+.trouble-fix { padding: 12px 16px; font-size: 13.5px; background: var(--surface); }
+.trouble-fix strong { color: var(--ok-color); }
+
+@media (max-width: 720px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 28px 20px 60px; }
+  h1 { font-size: 24px; }
+}
+</style>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <nav class="sidebar" aria-label="Documentation navigation">
+    <div class="sidebar-brand">
+      <div class="brand-icon">N</div>
+      <div class="brand-text">
+        <div class="brand-name">NepSaathi</div>
+        <div class="brand-sub">Android Docs</div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Getting Started</span>
+      <a href="#overview" class="nav-link">Overview</a>
+      <a href="#prereqs" class="nav-link">Prerequisites</a>
+      <a href="#build" class="nav-link">Build & Sync</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Configuration</span>
+      <a href="#branding" class="nav-link">Icon & Splash</a>
+      <a href="#cors" class="nav-link">CORS Setup</a>
+      <a href="#google-auth" class="nav-link">Google Login</a>
+      <a href="#token" class="nav-link">Token Persistence</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Release</span>
+      <a href="#signing" class="nav-link">Signing & Keystore</a>
+      <a href="#playstore" class="nav-link">Play Store</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Reference</span>
+      <a href="#decisions" class="nav-link">Key Decisions</a>
+      <a href="#troubleshoot" class="nav-link">Troubleshooting</a>
+      <a href="#files" class="nav-link">File Reference</a>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main">
+    <header class="page-header">
+      <div class="eyebrow">NepSaathi · Mobile</div>
+      <h1>Android App Documentation</h1>
+      <p class="page-desc">Complete reference for building, signing, and distributing the NepSaathi Android APK. The app wraps the existing React frontend using Capacitor — no separate codebase.</p>
+      <div class="meta-row">
+        <span class="chip">App ID: com.nepsaathi.app</span>
+        <span class="chip">Capacitor 8.5.1</span>
+        <span class="chip orange">Keystore: ~/nepsaathi-release.keystore</span>
+      </div>
+    </header>
+
+    <!-- Overview -->
+    <section class="section" id="overview">
+      <h2>Overview</h2>
+      <p>NepSaathi Android is a <strong>Capacitor shell</strong> wrapping the same React/Vite frontend that runs on the website. There is no separate mobile codebase — all pages, API calls, and state management are shared. The Android project lives in <code>frontend/android/</code>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>App ID (package)</td><td><code>com.nepsaathi.app</code></td></tr>
+            <tr><td>App name</td><td>NepSaathi</td></tr>
+            <tr><td>Capacitor version</td><td>8.5.1</td></tr>
+            <tr><td>Web origin in WebView</td><td><code>https://localhost</code></td></tr>
+            <tr><td>Backend API</td><td>Railway production (same as website)</td></tr>
+            <tr><td>Min SDK</td><td>22 (Android 5.1+)</td></tr>
+            <tr><td>Target SDK</td><td>35</td></tr>
+            <tr><td>Google OAuth plugin</td><td>@codetrix-studio/capacitor-google-auth 3.4.0-rc.4</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout info">
+        <em class="callout-icon">ℹ️</em>
+        <p>The Android app connects directly to <code>https://api.railway.app</code> (the same production backend as the website). There is no separate staging environment for the app.</p>
+      </div>
+    </section>
+
+    <!-- Prerequisites -->
+    <section class="section" id="prereqs">
+      <h2>Prerequisites</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Required version</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Android Studio</td><td>Panda 4 patch 1+</td><td>Installed at <code>/usr/local/android-studio</code>, symlinked to <code>/usr/local/bin/studio.sh</code></td></tr>
+            <tr><td>Java (JDK)</td><td>17+</td><td>Required by Gradle 8</td></tr>
+            <tr><td>Node.js</td><td>18+</td><td>For <code>npm</code> and Capacitor CLI</td></tr>
+            <tr><td>Android SDK</td><td>API 35</td><td>Install via Android Studio SDK Manager</td></tr>
+            <tr><td>ANDROID_HOME</td><td>env var</td><td>Usually <code>~/Android/Sdk</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>First-time setup</h3>
+      <div class="code-wrap">
+        <pre><code>cd ~/nepsaathi/frontend
+npm install                          # installs Capacitor + all deps
+npx cap add android                  # only needed once (android/ already exists)</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+    </section>
+
+    <!-- Build -->
+    <section class="section" id="build">
+      <h2>Build &amp; Sync</h2>
+      <p>Every time you change frontend code, run the sync script before building the APK in Android Studio.</p>
+      <div class="code-wrap">
+        <pre><code>cd ~/nepsaathi/frontend
+npm run cap:sync          # builds React (vite build) then copies dist/ into android/</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <p>This is equivalent to <code>npm run build && npx cap sync android</code>. The script is defined in <code>package.json</code>.</p>
+
+      <h3>Generate APK in Android Studio</h3>
+      <ol class="steps">
+        <li><div><strong>Open project</strong>Run <code>npx cap open android</code> from <code>frontend/</code>, or open <code>frontend/android/</code> directly in Android Studio.</div></li>
+        <li><div><strong>Wait for Gradle sync</strong>The first sync downloads dependencies and takes 2–5 minutes. Watch the bottom status bar.</div></li>
+        <li><div><strong>Debug build (testing only)</strong>Build → Build App Bundle(s) / APK(s) → Build APK(s). Output: <code>android/app/build/outputs/apk/debug/app-debug.apk</code></div></li>
+        <li><div><strong>Release build (Play Store)</strong>Build → Generate Signed Bundle / APK → APK → select <code>~/nepsaathi-release.keystore</code> → alias <code>nepsaathi</code> → select <strong>release</strong> → Create. Output: <code>android/app/release/nepsaathi-release.apk</code></div></li>
+      </ol>
+      <div class="callout warn">
+        <em class="callout-icon">⚠️</em>
+        <p>Do not use the green Run button to generate a release APK — it only builds debug. Always use the Generate Signed APK menu for release builds.</p>
+      </div>
+    </section>
+
+    <!-- Branding -->
+    <section class="section" id="branding">
+      <h2>Icon &amp; Splash Screen</h2>
+      <p>Icons and splash screens are generated from source images in <code>frontend/assets/</code> using the <code>@capacitor/assets</code> package.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source file</th><th>Used for</th><th>Required size</th></tr></thead>
+          <tbody>
+            <tr><td><code>assets/icon-only.png</code></td><td>App icon (all densities)</td><td>1024×1024 px, no padding</td></tr>
+            <tr><td><code>assets/splash.png</code></td><td>Splash screen</td><td>2732×2732 px centred logo</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Regenerate icons</h3>
+      <div class="code-wrap">
+        <pre><code>cd ~/nepsaathi/frontend
+npx @capacitor/assets generate --iconBackgroundColor=#ffffff --android
+npx cap sync android</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="callout warn">
+        <em class="callout-icon">⚠️</em>
+        <p><strong>Do not delete the adaptive icon XMLs</strong> after regeneration — they are needed for the rounded launcher shape on Android 8+. The previous workaround (deleting them) was replaced by providing proper source images to <code>@capacitor/assets</code>.</p>
+      </div>
+      <p>The generated files land in <code>android/app/src/main/res/mipmap-*/</code> and <code>drawable-*/</code>. These are checked into git.</p>
+    </section>
+
+    <!-- CORS -->
+    <section class="section" id="cors">
+      <h2>CORS Setup</h2>
+      <p>The Android WebView uses <code>https://localhost</code> as its request origin. The Railway Django backend must allow this origin.</p>
+      <h3>Railway environment variable</h3>
+      <div class="code-wrap">
+        <pre><code>CORS_ALLOWED_ORIGINS=https://www.nepsaathi.com,https://nepsaathi.com,https://localhost</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <p>Set this in the Railway dashboard under the backend service's Variables tab. The app will show a blank screen or "Network Error" without this.</p>
+      <div class="callout ok">
+        <em class="callout-icon">✓</em>
+        <p>This is already configured in production. Only needed again if the Railway environment is recreated.</p>
+      </div>
+    </section>
+
+    <!-- Google Auth -->
+    <section class="section" id="google-auth">
+      <h2>Google Login</h2>
+      <p>Google OAuth uses different flows on web vs Android. The <code>GoogleLoginButton.jsx</code> component branches on <code>Capacitor.isNativePlatform()</code>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>Library</th><th>How it works</th></tr></thead>
+          <tbody>
+            <tr><td>Web (browser)</td><td><code>@react-oauth/google</code></td><td>Opens a popup window. Returns an access token.</td></tr>
+            <tr><td>Android (native)</td><td><code>@codetrix-studio/capacitor-google-auth</code></td><td>Uses native Google Sign-In SDK. No popup needed.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Both flows send the access token to the Django backend at <code>POST /api/auth/google/</code> — same endpoint, same user accounts.</p>
+
+      <h3>Two Android OAuth clients required</h3>
+      <p>Google requires a separate OAuth credential for each signing certificate. You need <strong>two</strong> Android OAuth clients in <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a>:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Client</th><th>SHA-1 source</th><th>Used for</th></tr></thead>
+          <tbody>
+            <tr><td>Android (debug)</td><td>Debug keystore at <code>~/.android/debug.keystore</code></td><td>Testing in Android Studio / development builds</td></tr>
+            <tr><td>Android (release)</td><td>Release keystore at <code>~/nepsaathi-release.keystore</code></td><td>Signed release APK / Play Store</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Get SHA-1 fingerprints</h3>
+      <div class="code-wrap">
+        <pre><code># Debug SHA-1
+keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android | grep SHA1
+
+# Release SHA-1
+keytool -list -v -keystore ~/nepsaathi-release.keystore -alias nepsaathi | grep SHA1</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <h3>Register in Google Cloud Console</h3>
+      <ol class="steps">
+        <li><div><strong>Open credentials</strong>APIs &amp; Services → Credentials → + Create Credentials → OAuth 2.0 Client ID</div></li>
+        <li><div><strong>Set type</strong>Application type: Android</div></li>
+        <li><div><strong>Fill details</strong>Package name: <code>com.nepsaathi.app</code> · SHA-1: paste the fingerprint</div></li>
+        <li><div><strong>Save and wait</strong>Changes propagate in ~5 minutes. Test Google login after that.</div></li>
+      </ol>
+      <div class="callout info">
+        <em class="callout-icon">ℹ️</em>
+        <p>The <code>serverClientId</code> in <code>capacitor.config.ts</code> is the <strong>Web</strong> client ID, not the Android client ID. The Android credentials are for verification only. Do not change the <code>serverClientId</code>.</p>
+      </div>
+    </section>
+
+    <!-- Token -->
+    <section class="section" id="token">
+      <h2>Token Persistence</h2>
+      <p>On the website, the JWT access token is stored in <code>sessionStorage</code> — it clears when the browser tab closes. On Android, <code>sessionStorage</code> clears when the app is killed, which would log users out every time they close the app.</p>
+      <p>On native (detected via <code>Capacitor.isNativePlatform()</code>), the access token is stored in <code>localStorage</code> instead. This survives app restarts.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Storage</th><th>Web</th><th>Android</th></tr></thead>
+          <tbody>
+            <tr><td>Access token</td><td><code>sessionStorage</code> — clears on tab close</td><td><code>localStorage</code> — survives app restart</td></tr>
+            <tr><td>User object + isAuthenticated</td><td colspan="2"><code>localStorage</code> via Zustand <code>persist</code> middleware — both platforms</td></tr>
+            <tr><td>Refresh token</td><td colspan="2">httpOnly cookie set by Django backend</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <em class="callout-icon">⚠️</em>
+        <p>The httpOnly refresh cookie does not survive app restart on Android due to cross-site cookie restrictions (<code>SameSite=Lax</code> blocks cross-origin requests from <code>https://localhost</code> to Railway). This is why <code>localStorage</code> is used for the access token on native — no cookie refresh needed on startup.</p>
+      </div>
+    </section>
+
+    <!-- Signing -->
+    <section class="section" id="signing">
+      <h2>Signing &amp; Keystore</h2>
+      <div class="callout err">
+        <em class="callout-icon">🔑</em>
+        <p><strong>Never lose the release keystore.</strong> If you lose it, you cannot update the app on Play Store — you would have to publish under a new app ID. The keystore is intentionally not committed to git.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Property</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Keystore path</td><td><code>~/nepsaathi-release.keystore</code></td></tr>
+            <tr><td>Key alias</td><td><code>nepsaathi</code></td></tr>
+            <tr><td>APK output path</td><td><code>frontend/android/app/release/nepsaathi-release.apk</code></td></tr>
+            <tr><td>Git tracking</td><td>Excluded via <code>.gitignore</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Create keystore (first time only — already done)</h3>
+      <div class="code-wrap">
+        <pre><code>keytool -genkey -v \
+  -keystore ~/nepsaathi-release.keystore \
+  -alias nepsaathi \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 10000</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <h3>Verify keystore integrity</h3>
+      <div class="code-wrap">
+        <pre><code>keytool -list -v -keystore ~/nepsaathi-release.keystore -alias nepsaathi</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <div class="callout warn">
+        <em class="callout-icon">⚠️</em>
+        <p><strong>Back up the keystore file.</strong> Store a copy on an external drive or encrypted cloud storage (e.g. personal Google Drive — not the project repo).</p>
+      </div>
+    </section>
+
+    <!-- Play Store -->
+    <section class="section" id="playstore">
+      <h2>Play Store Publishing</h2>
+      <div class="callout info">
+        <em class="callout-icon">ℹ️</em>
+        <p>The Google Play Developer account is pending reactivation (inactive account closure). Contact <a href="mailto:support.google.com">Play Console support</a> to restore it before uploading.</p>
+      </div>
+      <h3>Assets required for store listing</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Asset</th><th>Size / format</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>App icon</td><td>512×512 PNG</td><td><code>frontend/public/icon-512.png</code></td></tr>
+            <tr><td>Feature graphic</td><td>1024×500 PNG or JPG</td><td>Create in Canva</td></tr>
+            <tr><td>Screenshots</td><td>Minimum 2, phone size</td><td>Screenshot from your phone</td></tr>
+            <tr><td>Short description</td><td>Max 80 characters</td><td>Write manually</td></tr>
+            <tr><td>Full description</td><td>Max 4000 characters</td><td>Write manually</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Upload steps</h3>
+      <ol class="steps">
+        <li><div><strong>Sign in to Play Console</strong><a href="https://play.google.com/console" target="_blank" rel="noopener">play.google.com/console</a> → your developer account</div></li>
+        <li><div><strong>Create app</strong>All apps → Create app → fill title, language, type (App), free/paid</div></li>
+        <li><div><strong>Complete store listing</strong>Fill short description, full description, upload icon, feature graphic, screenshots</div></li>
+        <li><div><strong>Set content rating</strong>Policy → App content → Content rating → complete the questionnaire</div></li>
+        <li><div><strong>Set target audience</strong>Policy → App content → Target audience</div></li>
+        <li><div><strong>Create release</strong>Release → Production → Create new release → upload <code>nepsaathi-release.apk</code></div></li>
+        <li><div><strong>Submit for review</strong>Review and roll out to production. Google review takes 1–3 days for new apps.</div></li>
+      </ol>
+    </section>
+
+    <!-- Key Decisions -->
+    <section class="section" id="decisions">
+      <h2>Key Decisions</h2>
+
+      <div class="decision">
+        <div class="decision-q">Why Capacitor and not a native app or React Native?</div>
+        <div class="decision-a"><p>NepSaathi already had a full-featured React SPA. Capacitor wraps it with near-zero code changes — all pages, API calls, and routing are reused. React Native would require rewriting every component. A fully native app would require a separate codebase. Capacitor was the only option that let us ship in days, not months.</p></div>
+      </div>
+
+      <div class="decision">
+        <div class="decision-q">Why does Google login use a different library on Android?</div>
+        <div class="decision-a"><p><code>@react-oauth/google</code> uses <code>window.open()</code> to open a popup for the OAuth flow. Android WebView blocks popups. <code>@codetrix-studio/capacitor-google-auth</code> uses the native Google Sign-In SDK which works correctly in a WebView context. The same Django backend endpoint (<code>/api/auth/google/</code>) accepts both.</p></div>
+      </div>
+
+      <div class="decision">
+        <div class="decision-q">Why are access tokens in localStorage on Android (not sessionStorage)?</div>
+        <div class="decision-a"><p>Android kills <code>sessionStorage</code> when the app process is terminated. The httpOnly refresh token cookie also doesn't survive due to <code>SameSite=Lax</code> blocking cross-origin requests from <code>https://localhost</code> to Railway. <code>localStorage</code> persists across app restarts without needing a cookie round-trip.</p></div>
+      </div>
+
+      <div class="decision">
+        <div class="decision-q">Why is legacy-peer-deps=true in .npmrc?</div>
+        <div class="decision-a"><p><code>@codetrix-studio/capacitor-google-auth@3.4.0-rc.4</code> declares a peer dependency on <code>@capacitor/core@^6.0.0</code>, but the project uses Capacitor 8.5.1. Without <code>legacy-peer-deps=true</code>, <code>npm ci</code> fails with ERESOLVE. The plugin works correctly at runtime with Capacitor 8.</p></div>
+      </div>
+
+      <div class="decision">
+        <div class="decision-q">Why does the APK output name start with "nepsaathi-" not "app-"?</div>
+        <div class="decision-a"><p>Gradle names the APK after the module folder name ("app") by default. <code>setProperty("archivesBaseName", "nepsaathi")</code> in <code>android/app/build.gradle</code> renames the output to <code>nepsaathi-release.apk</code>.</p></div>
+      </div>
+
+      <div class="decision">
+        <div class="decision-q">Why use emoji in BottomNav instead of Phosphor SVG icons?</div>
+        <div class="decision-a"><p>Phosphor icons are SVG components that render correctly in browsers. On Android WebView, SVG rendering can be inconsistent across devices. Emoji render via the OS font stack and display identically everywhere.</p></div>
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section class="section" id="troubleshoot">
+      <h2>Troubleshooting</h2>
+
+      <div class="trouble">
+        <div class="trouble-err">Cannot locate tasks that match ':app:unitTestClasses'</div>
+        <div class="trouble-fix"><strong>Ignore it.</strong> This error appears when Android Studio tries to run unit tests. The Capacitor Android project does not include unit tests. Use Build → Generate Signed Bundle/APK instead of the Run button.</div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-err">npm error code ERESOLVE — could not resolve @capacitor/core@^6.0.0</div>
+        <div class="trouble-fix"><strong>Fix:</strong> Ensure <code>frontend/.npmrc</code> contains <code>legacy-peer-deps=true</code>. This tells npm to skip strict peer dependency resolution.</div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-err">App icon shows Android robot instead of NepSaathi logo</div>
+        <div class="trouble-fix"><strong>Fix:</strong> Regenerate icons with <code>npx @capacitor/assets generate --iconBackgroundColor=#ffffff --android</code> then sync. The adaptive icon XML files in <code>mipmap-anydpi-v26/</code> must be present and point to the correct drawable.</div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-err">Google sign-in shows "access blocked: authorization error"</div>
+        <div class="trouble-fix"><strong>Fix:</strong> The signing certificate's SHA-1 is not registered in Google Cloud Console. Add an Android OAuth credential for the relevant keystore (debug or release). Wait 5 minutes after saving.</div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-err">Listings not loading — network error / blank page</div>
+        <div class="trouble-fix"><strong>Fix:</strong> Check that <code>https://localhost</code> is in <code>CORS_ALLOWED_ORIGINS</code> on Railway. The Android WebView sends requests from this origin.</div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-err">User logged out every time app is closed</div>
+        <div class="trouble-fix"><strong>Fix:</strong> Ensure the latest code is built into the APK. The fix stores access tokens in <code>localStorage</code> (not <code>sessionStorage</code>) on native platforms.</div>
+      </div>
+
+      <div class="trouble">
+        <div class="trouble-err">npx cap open android — Unable to launch Android Studio</div>
+        <div class="trouble-fix"><strong>Fix:</strong> Android Studio is at <code>/usr/local/android-studio/bin/studio.sh</code>. Run <code>studio.sh</code> directly, or open <code>frontend/android/</code> manually via File → Open in Android Studio.</div>
+      </div>
+    </section>
+
+    <!-- File Reference -->
+    <section class="section" id="files">
+      <h2>File Reference</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File / Path</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>frontend/capacitor.config.ts</code></td><td>Main Capacitor config — app ID, web dir, Android scheme, Google Auth plugin config</td></tr>
+            <tr><td><code>frontend/android/</code></td><td>Generated Android project — checked into git except build outputs</td></tr>
+            <tr><td><code>frontend/android/app/build.gradle</code></td><td>Android build config — SDK versions, APK rename (<code>archivesBaseName</code>)</td></tr>
+            <tr><td><code>frontend/android/app/src/main/AndroidManifest.xml</code></td><td>Android permissions (INTERNET only), package declaration</td></tr>
+            <tr><td><code>frontend/android/app/src/main/res/mipmap-*/</code></td><td>App icon at all densities (generated by @capacitor/assets)</td></tr>
+            <tr><td><code>frontend/android/app/src/main/res/drawable-*/</code></td><td>Splash screen images (generated by @capacitor/assets)</td></tr>
+            <tr><td><code>frontend/assets/icon-only.png</code></td><td>Source icon for @capacitor/assets (1024×1024)</td></tr>
+            <tr><td><code>frontend/assets/splash.png</code></td><td>Source splash for @capacitor/assets (2732×2732)</td></tr>
+            <tr><td><code>frontend/.npmrc</code></td><td><code>legacy-peer-deps=true</code> — fixes Capacitor 8 peer dep conflict</td></tr>
+            <tr><td><code>frontend/src/components/auth/GoogleLoginButton.jsx</code></td><td>Branches between native plugin and web OAuth based on <code>Capacitor.isNativePlatform()</code></td></tr>
+            <tr><td><code>frontend/src/store/authStore.js</code></td><td>Uses <code>localStorage</code> for access token on native, <code>sessionStorage</code> on web</td></tr>
+            <tr><td><code>~/nepsaathi-release.keystore</code></td><td>Release signing keystore — NOT in git. Back it up externally.</td></tr>
+            <tr><td><code>frontend/android/app/release/nepsaathi-release.apk</code></td><td>Signed release APK output — excluded from git via .gitignore</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.previousElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// Active nav link via IntersectionObserver
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector('.nav-link[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => obs.observe(s));
+</script>

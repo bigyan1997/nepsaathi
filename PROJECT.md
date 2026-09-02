@@ -39,28 +39,40 @@ Community marketplace and resource hub for Nepalese Australians.
 | Styling | Tailwind 4.2 + inline styles |
 | Backend deploy | Railway (gunicorn + UvicornWorkers) |
 | Frontend deploy | Vercel (SPA rewrite via vercel.json) |
+| Android app | Capacitor 8.5.1 wrapping the React SPA |
+| Android auth | @codetrix-studio/capacitor-google-auth 3.4.0-rc.4 |
+| Android signing | Release keystore at `~/nepsaathi-release.keystore` (alias: nepsaathi) |
 
 ---
 
 ## Architecture Overview
 
 ```
-Vercel (React SPA)
-    │
-    │  REST API + WebSocket
-    ▼
-Railway (Django ASGI)
-    │
-    ├── PostgreSQL
-    ├── Cloudinary (images)
-    ├── Stripe (payments)
-    ├── Resend (email)
-    ├── Redis (optional, for channel layer)
-    └── n8n (self-hosted on Railway, Postgres-backed)
-            │
-            ├── Facebook Page auto-post (Graph API /photos)
-            └── Instagram Business auto-post (Graph API /media → /media_publish)
+Android APK (Capacitor WebView)      Vercel (React SPA)
+    │                                     │
+    │  HTTPS REST API                     │  REST API + WebSocket
+    └─────────────────────────────────────▼
+                              Railway (Django ASGI)
+                                    │
+                                    ├── PostgreSQL
+                                    ├── Cloudinary (images)
+                                    ├── Stripe (payments)
+                                    ├── Resend (email)
+                                    ├── Redis (optional, for channel layer)
+                                    └── n8n (self-hosted on Railway, Postgres-backed)
+                                              │
+                                              ├── Facebook Page auto-post (Graph API /photos)
+                                              └── Instagram Business auto-post (Graph API /media → /media_publish)
 ```
+
+### Android app architecture
+
+- **Capacitor 8.5.1** wraps `frontend/dist/` in a native WebView; app ID `com.nepsaathi.app`.
+- **Origin** — Android WebView uses `https://localhost` as its origin. Railway `CORS_ALLOWED_ORIGINS` includes `https://localhost`.
+- **Google Auth** — web uses `@react-oauth/google` (popup). Android uses `@codetrix-studio/capacitor-google-auth` native plugin (no popup). `Capacitor.isNativePlatform()` branches the two paths in `GoogleLoginButton.jsx`.
+- **Token persistence** — access token stored in `localStorage` on native (survives app restart), `sessionStorage` on web (cleared on tab close). Zustand `persist` keeps `user` + `isAuthenticated` in `localStorage` on both.
+- **Signing** — release keystore at `~/nepsaathi-release.keystore` (never committed). Debug SHA-1 and release SHA-1 both registered as separate Android OAuth clients in Google Cloud Console.
+- **APK output** — `frontend/android/app/release/nepsaathi-release.apk` (excluded from git via `.gitignore`).
 
 ### Key architectural patterns
 
@@ -393,7 +405,7 @@ Notable additions:
 
 ### Key components
 - **Navbar** — sticky, 6 main links (Jobs, Rooms, Events, Businesses, Community→/forum, Send Money), auth-conditional user menu, unread message badge with toast on new message. Community is a direct link (no dropdown). Includes `LangToggle` (🇳🇵/🇬🇧 flag pill) for Nepali/English switching in both desktop nav and mobile menu bottom.
-- **BottomNav** — 5-button fixed mobile nav: Jobs, Rooms, [centre Post button], Businesses, Community (→/forum). Events tab removed; replaced with Community (ChatCircleDotsIcon, purple).
+- **BottomNav** — 4-tab fixed mobile nav with emoji icons: 🏠 Home (/), 💼 Jobs (/jobs), [centre gradient Post button], 🛏️ Rooms (/rooms), 💬 Community (/forum). Phosphor SVG icons replaced with emoji for better cross-platform rendering (incl. Android WebView).
 - **Footer** — Newsletter strip (email subscribe → `POST /api/newsletter/subscribe/`) + 5-column link grid (Brand, Explore, Guides, Account, About). Explore: Jobs, Rooms, Events, Businesses, Forum (5 links). Guides: Send Money, Visa Hub, New to Australia, WhatsApp Groups, Settlement Guides (→/guides/banking). Account column no longer includes Points. Two bottom bars: legal links + contact emails; darker copyright bar. Responsive: 3-col ≤900px, 2-col ≤560px. All labels via `useT()`.
 - **Toast** — `useToast()` exposes `addToast(content, type, duration)` — NOT `showToast`
 - **ProgressBar** — route-change loading indicator
@@ -717,6 +729,17 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **BottomNav** — Events tab replaced with Community (`/forum`); icon changed to `ChatCircleDotsIcon`.
 - **Footer trimmed** — Explore column: removed Notices, Looking For Board, Services (now 5 links). Guides column: 9 individual guide links collapsed to 5 (kept Send Money, Visa Hub, New to Australia, WhatsApp Groups; added "Settlement Guides" → `/guides/banking`). Account column: removed Points.
 - **Homepage** — Notices section and its `useQuery` call removed; notices page still accessible directly at `/notices` but no longer shown on homepage or main nav.
+
+### Phase 10 — Android APK (2026-09-02)
+- **Capacitor setup** — `frontend/capacitor.config.ts` created; app ID `com.nepsaathi.app`, `webDir: dist`, `androidScheme: https`. `frontend/android/` generated by `npx cap add android`.
+- **Custom branding** — app icon and splash screen generated from `frontend/assets/icon-only.png` and `frontend/assets/splash.png` via `@capacitor/assets`. Adaptive icon XMLs removed to prevent default robot icon override.
+- **CORS** — `https://localhost` added to Railway `CORS_ALLOWED_ORIGINS` so Android WebView requests reach the backend.
+- **Native Google Login** — `@codetrix-studio/capacitor-google-auth` plugin added. `GoogleLoginButton.jsx` branches on `Capacitor.isNativePlatform()`: native uses plugin, web uses `@react-oauth/google` popup. Two Android OAuth clients in Google Cloud Console (debug + release SHA-1).
+- **Persistent login** — access token stored in `localStorage` on native (not `sessionStorage`) so user stays logged in after app restart.
+- **Release signing** — keystore at `~/nepsaathi-release.keystore` (alias: nepsaathi). APK output renamed to `nepsaathi-release.apk` via `archivesBaseName` in `build.gradle`.
+- **`.npmrc`** — `legacy-peer-deps=true` added to fix CI `npm ci` failure caused by `@codetrix-studio/capacitor-google-auth` peer dep conflict with Capacitor 8.
+- **Mobile responsiveness sweep** — navbar mobile menu made scrollable (fixed + overflow-y auto); StatsBar responsive; ProfilePage, RegisterBusinessPage outer padding reduced on mobile; LoginPage touch target fix; VisaHubPage media queries added; AdminPanelPage chart grids collapse on mobile.
+- **BottomNav redesign** — Phosphor SVG icons replaced with emoji (🏠💼🛏️💬); Home tab added; Businesses tab removed.
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
