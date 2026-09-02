@@ -190,10 +190,12 @@ export default function ProfilePage() {
           .prof-grid-2 { grid-template-columns: 1fr !important; }
           .prof-stats  { grid-template-columns: repeat(2, 1fr) !important; }
           .prof-links  { grid-template-columns: 1fr !important; }
+          .prof-outer  { padding: 12px !important; }
         }
       `}</style>
 
       <div
+        className="prof-outer"
         style={{
           maxWidth: "680px",
           margin: "0 auto",

@@ -294,10 +294,12 @@ export default function RegisterBusinessPage() {
         @media (max-width: 600px) {
           .rb-grid2  { grid-template-columns: 1fr !important; }
           .rb-grid21 { grid-template-columns: 1fr !important; }
+          .rb-outer  { padding: 12px !important; }
         }
       `}</style>
 
       <div
+        className="rb-outer"
         style={{
           maxWidth: "680px",
           margin: "0 auto",

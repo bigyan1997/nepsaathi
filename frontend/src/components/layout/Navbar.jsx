@@ -298,7 +298,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div
-          style={{ background: "#fff", borderBottom: "0.5px solid #e5e5e5", padding: "12px 20px 16px", display: "flex", flexDirection: "column", gap: "2px", position: "sticky", top: "56px", zIndex: 99 }}
+          style={{ background: "#fff", borderBottom: "0.5px solid #e5e5e5", padding: "12px 20px 16px", display: "flex", flexDirection: "column", gap: "2px", position: "fixed", top: "56px", left: 0, right: 0, bottom: "58px", zIndex: 99, overflowY: "auto", WebkitOverflowScrolling: "touch" }}
           className="mobile-menu"
         >
           {NAV_LINK_DEFS.map(({ to, key, activeColor, activeBg }) => (

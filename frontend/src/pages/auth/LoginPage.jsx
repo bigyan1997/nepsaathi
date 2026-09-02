@@ -295,11 +295,12 @@ export default function LoginPage() {
               color: "#fff",
               border: "none",
               borderRadius: "8px",
-              padding: "12px",
+              padding: "13px",
               fontSize: "14px",
               fontWeight: 500,
               cursor: loading ? "not-allowed" : "pointer",
               marginTop: "4px",
+              minHeight: "46px",
             }}
           >
             {loading ? "Signing in..." : "Sign in"}

@@ -300,8 +300,17 @@ export default function AdminPanelPage() {
       color: T.text,
     }}>
 
+      <style>{`
+        @media (max-width: 600px) {
+          .ap-chart-grid { grid-template-columns: 1fr !important; }
+          .ap-header { padding: 8px 12px !important; height: auto !important; min-height: 52px; flex-wrap: wrap; }
+          .ap-body { padding: 12px 12px 72px !important; }
+          .ap-header-right { flex-wrap: wrap; gap: 6px !important; }
+        }
+      `}</style>
+
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div style={{
+      <div className="ap-header" style={{
         position: "sticky", top: 0, zIndex: 50,
         background: T.surface,
         borderBottom: `1px solid ${T.border}`,
@@ -360,7 +369,7 @@ export default function AdminPanelPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 24px 72px" }}>
+      <div className="ap-body" style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 24px 72px" }}>
 
         {isLoading ? <LoadingSkeleton /> : (
           <>
@@ -397,7 +406,7 @@ export default function AdminPanelPage() {
             </div>
 
             {/* ── Time series ─────────────────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
+            <div className="ap-chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
               <Card title="New Users — Last 30 Days">
                 {usersTimeSeries.every((d) => d.count === 0) ? <EmptyState msg="No new users in 30 days" /> : (
                   <ResponsiveContainer width="100%" height={180}>
@@ -428,7 +437,7 @@ export default function AdminPanelPage() {
             </div>
 
             {/* ── Breakdown charts ─────────────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
+            <div className="ap-chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
               <Card title="Active Listings by Type">
                 {listingsByTypeArr.length === 0 ? <EmptyState /> : (
                   <ResponsiveContainer width="100%" height={200}>
@@ -463,7 +472,7 @@ export default function AdminPanelPage() {
             </div>
 
             {/* ── Revenue + Feedback ─────────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
+            <div className="ap-chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
               <Card title="Revenue by Month (AUD)">
                 {!data?.revenue_by_month?.length ? <EmptyState msg="No completed payments yet" /> : (
                   <ResponsiveContainer width="100%" height={180}>
@@ -514,7 +523,7 @@ export default function AdminPanelPage() {
             </div>
 
             {/* ── Status + Biz category ─────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
+            <div className="ap-chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
               <Card title="All Listings by Status">
                 {listingsByStatusArr.length === 0 ? <EmptyState /> : (
                   <ResponsiveContainer width="100%" height={160}>
@@ -616,7 +625,7 @@ export default function AdminPanelPage() {
             </Card>
 
             {/* ── Payments + Top Listings ───────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
+            <div className="ap-chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10, marginBottom: 10 }}>
               <Card title="Recent Payments">
                 {recentPayments.length === 0 ? <EmptyState msg="No payments yet" /> : (
                   <div style={{ display: "flex", flexDirection: "column" }}>
@@ -746,7 +755,7 @@ function LoadingSkeleton() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10, marginBottom: 20 }}>
         {[...Array(6)].map((_, i) => <div key={i} style={{ ...pulse, height: 60 }} />)}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10 }}>
+      <div className="ap-chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 10 }}>
         {[...Array(4)].map((_, i) => <div key={i} style={{ ...pulse, height: 230 }} />)}
       </div>
     </>

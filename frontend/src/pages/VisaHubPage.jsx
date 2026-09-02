@@ -457,7 +457,7 @@ function PRCalculator() {
       <div style={{ background: "#EEEDFE", borderRadius: "14px", padding: "20px 24px", marginBottom: "24px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <div style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em", color: "#534AB7", marginBottom: "4px" }}>Your total score</div>
-          <div style={{ fontSize: "52px", fontWeight: 800, color: getScoreColor(finalTotal), lineHeight: 1 }}>{finalTotal}</div>
+          <div className="vh-hero-num" style={{ fontSize: "52px", fontWeight: 800, color: getScoreColor(finalTotal), lineHeight: 1 }}>{finalTotal}</div>
           <div style={{ fontSize: "13px", color: "#666", marginTop: "6px", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
             {finalTotal >= 65
               ? <><CheckCircleIcon size={13} weight="fill" color="#16a34a" style={{ flexShrink: 0 }} />Meets minimum threshold (65 pts)</>
@@ -1384,7 +1384,7 @@ function TaxReturnEstimator() {
             <div style={{ fontSize: '13px', fontWeight: 700, color: isRefund ? '#15803d' : '#dc2626', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
               {isRefund ? <><ConfettiIcon size={14} weight="fill" color="#15803d" style={{ flexShrink: 0 }} />Estimated tax refund</> : <><WarningIcon size={14} weight="fill" color="#dc2626" style={{ flexShrink: 0 }} />Estimated tax owing</>}
             </div>
-            <div style={{ fontSize: '52px', fontWeight: 800, color: isRefund ? '#15803d' : '#dc2626', letterSpacing: '-.02em', lineHeight: 1 }}>
+            <div className="vh-hero-num" style={{ fontSize: '52px', fontWeight: 800, color: isRefund ? '#15803d' : '#dc2626', letterSpacing: '-.02em', lineHeight: 1 }}>
               {fmtAUD(diff)}
             </div>
             <div style={{ fontSize: '13px', color: '#666', marginTop: '10px' }}>
@@ -1487,7 +1487,7 @@ function TakeHomeCalculator() {
             <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
               <CurrencyDollarIcon size={13} weight="fill" color="#15803d" style={{ flexShrink: 0 }} />{periodLabel} take-home
             </div>
-            <div style={{ fontSize: '52px', fontWeight: 800, color: '#15803d', letterSpacing: '-.02em', lineHeight: 1 }}>
+            <div className="vh-hero-num" style={{ fontSize: '52px', fontWeight: 800, color: '#15803d', letterSpacing: '-.02em', lineHeight: 1 }}>
               {fmtAUD(pp(annualNet))}
             </div>
             <div style={{ fontSize: '13px', color: '#666', marginTop: '10px' }}>
@@ -1495,7 +1495,7 @@ function TakeHomeCalculator() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div className="vh-tax-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             {[
               { title: `${periodLabel} breakdown`, rows: [
                 { label: 'Gross pay',         value: fmtAUD(pp(annualGross)),       color: '#26215C' },
@@ -1621,6 +1621,13 @@ export default function VisaHubPage() {
 
   return (
     <div style={{ maxWidth: "860px", margin: "0 auto", padding: "32px 16px 64px" }}>
+      <style>{`
+        @media (max-width: 500px) {
+          .vh-hero-num  { font-size: 36px !important; }
+          .vh-tax-grid  { grid-template-columns: 1fr !important; }
+          .vh-result-card { padding: 16px !important; }
+        }
+      `}</style>
       {/* Header */}
       <div style={{ marginBottom: "28px" }}>
         <div style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".1em", color: "#534AB7", marginBottom: "8px" }}>
