@@ -1,11 +1,18 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  HouseIcon,
+  BriefcaseIcon,
+  BedIcon,
+  ChatCircleDotsIcon,
+  PlusCircleIcon,
+} from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
 
 const TABS = [
-  { to: "/",            emoji: "🏠", label: "Home",      color: "#534AB7", bg: "#EEEDFE", exact: true },
-  { to: "/jobs",        emoji: "💼", label: "Jobs",      color: "#534AB7", bg: "#EEEDFE" },
-  { to: "/rooms",       emoji: "🛏️", label: "Rooms",     color: "#85510A", bg: "#FFF1E0" },
-  { to: "/forum",       emoji: "💬", label: "Community", color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/",      Icon: HouseIcon,          label: "Home",      color: "#534AB7", bg: "#EEEDFE", exact: true },
+  { to: "/jobs",  Icon: BriefcaseIcon,       label: "Jobs",      color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/rooms", Icon: BedIcon,             label: "Rooms",     color: "#85510A", bg: "#FFF1E0" },
+  { to: "/forum", Icon: ChatCircleDotsIcon,  label: "Community", color: "#534AB7", bg: "#EEEDFE" },
 ];
 
 export default function BottomNav() {
@@ -37,7 +44,6 @@ export default function BottomNav() {
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
-      {/* First two tabs */}
       {TABS.slice(0, 2).map((tab) => {
         const active = isActive(tab);
         return (
@@ -56,7 +62,7 @@ export default function BottomNav() {
               transition: "background 0.15s",
             }}
           >
-            <span style={{ fontSize: "18px", lineHeight: 1 }}>{tab.emoji}</span>
+            <tab.Icon size={20} weight={active ? "fill" : "regular"} color={active ? tab.color : "#999"} />
             <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? tab.color : "#999", lineHeight: 1 }}>
               {tab.label}
             </span>
@@ -80,17 +86,15 @@ export default function BottomNav() {
             justifyContent: "center",
             cursor: "pointer",
             transition: "transform 0.15s, box-shadow 0.15s",
-            fontSize: "24px",
           }}
           onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.07)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
           aria-label="Post a listing"
         >
-          ➕
+          <PlusCircleIcon size={26} weight="fill" color="#fff" />
         </button>
       </div>
 
-      {/* Last two tabs */}
       {TABS.slice(2).map((tab) => {
         const active = isActive(tab);
         return (
@@ -109,7 +113,7 @@ export default function BottomNav() {
               transition: "background 0.15s",
             }}
           >
-            <span style={{ fontSize: "18px", lineHeight: 1 }}>{tab.emoji}</span>
+            <tab.Icon size={20} weight={active ? "fill" : "regular"} color={active ? tab.color : "#999"} />
             <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? tab.color : "#999", lineHeight: 1 }}>
               {tab.label}
             </span>
