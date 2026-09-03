@@ -1167,7 +1167,7 @@ class AITagSuggestView(APIView):
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
-                max_tokens=300,
+                max_tokens=600,
                 messages=[
                     {"role": "system", "content": "You output only JSON arrays of strings. No explanation, no markdown, no extra text."},
                     {"role": "user", "content": f'Give 10 short lowercase tags (1-3 words each, no # symbol) for: {listing_text}. Output only a JSON array. Example: ["kitchen hand", "sydney", "full time", "hospitality", "urgent", "casual", "food industry", "immediate start", "nsw", "nepalese"]'},
@@ -1181,16 +1181,25 @@ class AITagSuggestView(APIView):
                 return Response({'error': 'AI returned no content. Try again.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             raw = raw.strip()
             import re as _re
-            match = _re.search(r'\[.*\]', raw, _re.DOTALL)
-            if not match:
-                logger.error("ai-suggest-tags: no JSON array in: %r", raw)
-                return Response({'error': 'AI returned unexpected format.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            try:
-                tags = _json.loads(match.group())
-            except _json.JSONDecodeError:
-                # Single-quoted fallback
-                fixed = match.group().replace("'", '"')
-                tags = _json.loads(fixed)
+            # Try complete JSON array first
+            match = _re.search(r'\[.*?\]', raw, _re.DOTALL)
+            tags = None
+            if match:
+                try:
+                    tags = _json.loads(match.group())
+                except _json.JSONDecodeError:
+                    try:
+                        tags = _json.loads(match.group().replace("'", '"'))
+                    except _json.JSONDecodeError:
+                        pass
+            # Fallback: response was truncated — extract all complete quoted strings
+            if not tags:
+                tags = _re.findall(r'"([^"]{1,60})"', raw)
+                if tags:
+                    logger.warning("ai-suggest-tags: used truncation fallback, extracted %d tags from: %r", len(tags), raw)
+                else:
+                    logger.error("ai-suggest-tags: no JSON array in: %r", raw)
+                    return Response({'error': 'AI returned unexpected format.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             tags = [str(t).lower().strip().lstrip('#') for t in tags if t][:10]
             return Response({'tags': tags})
         except groq_sdk.APIError as e:
