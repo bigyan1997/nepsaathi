@@ -5,7 +5,17 @@
       "has": [{ "type": "host", "value": "nepsaathi.com" }],
       "destination": "https://www.nepsaathi.com/$1",
       "permanent": true
-    }
+    },
+    { "source": "/announcements",       "destination": "/notices",              "permanent": true },
+    { "source": "/announcements/:slug", "destination": "/notices/:slug",        "permanent": true },
+    { "source": "/community",           "destination": "/forum",                "permanent": true },
+    { "source": "/looking-for",         "destination": "/forum",                "permanent": true },
+    { "source": "/guides",              "destination": "/guides/banking",       "permanent": true },
+    { "source": "/banking",             "destination": "/guides/banking",       "permanent": true },
+    { "source": "/health",              "destination": "/guides/health",        "permanent": true },
+    { "source": "/tax",                 "destination": "/guides/tax",           "permanent": true },
+    { "source": "/work-rights",         "destination": "/guides/work-rights",   "permanent": true },
+    { "source": "/childcare",           "destination": "/guides/childcare",     "permanent": true }
   ],
   "rewrites": [
     {

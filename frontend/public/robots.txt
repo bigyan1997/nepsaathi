@@ -13,6 +13,13 @@ Disallow: /edit-listing/
 Disallow: /messages
 Disallow: /saved-searches
 Disallow: /payment/
+Disallow: /search
+Disallow: /jobs?
+Disallow: /rooms?
+Disallow: /events?
+Disallow: /notices?
+Disallow: /businesses?
+Disallow: /forum?
 
 Sitemap: https://www.nepsaathi.com/sitemap.xml
 Sitemap: https://www.nepsaathi.com/sitemap-listings.xml

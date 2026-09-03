@@ -62,23 +62,21 @@ class OGListingView(APIView):
 
     def get(self, request, listing_type, slug):
         from listings.models import Listing, ListingImage
+        from django.http import HttpResponseNotFound
 
         path = _TYPE_TO_PATH.get(listing_type, f"{listing_type}s")
         canonical = f"{CANONICAL_BASE}/{path}/{slug}"
-        title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
 
         try:
             listing = Listing.objects.get(slug=slug, listing_type=listing_type, status='active')
-            title = f"{listing.title} — NepSaathi"
-            if listing.description:
-                description = listing.description[:200]
-
-            img_qs = ListingImage.objects.filter(listing=listing)
-            primary = img_qs.filter(is_primary=True).first() or img_qs.first()
-            if primary and primary.image:
-                image = primary.image.url
         except Exception:
-            pass
+            return HttpResponseNotFound("Not found")
+
+        title = f"{listing.title} — NepSaathi"
+        description = listing.description[:200] if listing.description else DEFAULT_DESC
+        img_qs = ListingImage.objects.filter(listing=listing)
+        primary = img_qs.filter(is_primary=True).first() or img_qs.first()
+        image = primary.image.url if (primary and primary.image) else DEFAULT_IMAGE
 
         return _render(title, description, image, canonical)
 
@@ -90,21 +88,19 @@ class OGBusinessView(APIView):
 
     def get(self, request, slug):
         from businesses.models import Business, BusinessImage
+        from django.http import HttpResponseNotFound
 
         canonical = f"{CANONICAL_BASE}/businesses/{slug}"
-        title, description, image = DEFAULT_TITLE, DEFAULT_DESC, DEFAULT_IMAGE
 
         try:
             business = Business.objects.get(slug=slug, is_active=True)
-            title = f"{business.business_name} — NepSaathi"
-            if business.description:
-                description = business.description[:200]
-
-            img_qs = BusinessImage.objects.filter(business=business)
-            primary = img_qs.filter(is_primary=True).first() or img_qs.first()
-            if primary and primary.image:
-                image = primary.image.url
         except Exception:
-            pass
+            return HttpResponseNotFound("Not found")
+
+        title = f"{business.business_name} — NepSaathi"
+        description = business.description[:200] if business.description else DEFAULT_DESC
+        img_qs = BusinessImage.objects.filter(business=business)
+        primary = img_qs.filter(is_primary=True).first() or img_qs.first()
+        image = primary.image.url if (primary and primary.image) else DEFAULT_IMAGE
 
         return _render(title, description, image, canonical)
