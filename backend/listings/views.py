@@ -1117,7 +1117,7 @@ Return only the improved description text — no preamble, no explanation."""
             client = groq_sdk.Groq(api_key=api_key)
             chat = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
-                max_tokens=380,
+                max_tokens=600,
                 messages=[{"role": "user", "content": prompt}],
             )
             import re as _re

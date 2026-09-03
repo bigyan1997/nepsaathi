@@ -706,7 +706,7 @@ export default function EditListingPage() {
               }}
             >
               <div>
-                <label style={labelStyle}>Event date & time</label>
+                <label style={labelStyle}>Start date &amp; time</label>
                 <input
                   type="datetime-local"
                   style={inputStyle}
@@ -717,7 +717,7 @@ export default function EditListingPage() {
                 />
               </div>
               <div>
-                <label style={labelStyle}>End date & time</label>
+                <label style={labelStyle}>End date &amp; time (optional)</label>
                 <input
                   type="datetime-local"
                   style={inputStyle}

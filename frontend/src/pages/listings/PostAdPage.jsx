@@ -1760,7 +1760,7 @@ export default function PostAdPage() {
             >
               <Grid2>
                 <div>
-                  <label style={labelStyle}>Event date and time *</label>
+                  <label style={labelStyle}>Start date &amp; time *</label>
                   <input
                     type="datetime-local"
                     style={inputStyle}
@@ -1769,7 +1769,7 @@ export default function PostAdPage() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>End date and time</label>
+                  <label style={labelStyle}>End date &amp; time (optional)</label>
                   <input
                     type="datetime-local"
                     style={inputStyle}
