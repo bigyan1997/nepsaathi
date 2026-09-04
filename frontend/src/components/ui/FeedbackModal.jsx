@@ -4,13 +4,21 @@ import api from "../../utils/axios";
 import { markShown } from "../../hooks/useExitIntent";
 import { useToast } from "./Toast";
 
+const SATISFACTION = [
+  { value: 1, emoji: "😞", label: "Very bad" },
+  { value: 2, emoji: "😕", label: "Not great" },
+  { value: 3, emoji: "😐", label: "Okay" },
+  { value: 4, emoji: "🙂", label: "Good" },
+  { value: 5, emoji: "😊", label: "Love it!" },
+];
+
 const REASONS = [
-  { value: "not_enough_listings", label: "Not enough listings in my area" },
-  { value: "hard_to_navigate", label: "Hard to navigate" },
-  { value: "just_browsing", label: "Just browsing" },
-  { value: "missing_feature", label: "Missing a feature" },
-  { value: "technical_issue", label: "Technical issue" },
-  { value: "other", label: "Other" },
+  { value: "just_browsing",          label: "Just browsing",                icon: "👀" },
+  { value: "not_enough_listings",    label: "Not enough listings",          icon: "📋" },
+  { value: "missing_feature",        label: "Missing a feature",            icon: "✨" },
+  { value: "hard_to_navigate",       label: "Hard to navigate",             icon: "🧭" },
+  { value: "technical_issue",        label: "Technical issue",              icon: "🐛" },
+  { value: "other",                  label: "Something else",               icon: "💬" },
 ];
 
 export default function FeedbackModal({ onClose }) {
@@ -46,6 +54,8 @@ export default function FeedbackModal({ onClose }) {
     onClose();
   };
 
+  const canSubmit = satisfaction && reason && !mutation.isPending;
+
   return (
     <div
       style={{
@@ -59,11 +69,11 @@ export default function FeedbackModal({ onClose }) {
       <div
         style={{
           background: "#fff",
-          borderRadius: "16px",
-          padding: "32px 28px",
+          borderRadius: "18px",
+          padding: "32px 28px 28px",
           maxWidth: "460px",
           width: "100%",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
           position: "relative",
         }}
       >
@@ -73,115 +83,136 @@ export default function FeedbackModal({ onClose }) {
           style={{
             position: "absolute", top: "14px", right: "16px",
             background: "none", border: "none", fontSize: "20px",
-            cursor: "pointer", color: "#888", lineHeight: 1,
+            cursor: "pointer", color: "#bbb", lineHeight: 1,
           }}
         >
           ×
         </button>
 
-        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#26215C", margin: "0 0 6px" }}>
-          We'd love your feedback!
-        </h2>
-        <p style={{ fontSize: "13px", color: "#888", margin: "0 0 24px" }}>
-          Help us improve NepSaathi for the community.
-        </p>
+        {/* Header */}
+        <div style={{ marginBottom: "24px" }}>
+          <h2 style={{ fontSize: "19px", fontWeight: 700, color: "#26215C", margin: "0 0 5px" }}>
+            Quick feedback?
+          </h2>
+          <p style={{ fontSize: "13px", color: "#999", margin: 0 }}>
+            Takes 10 seconds and helps us improve for the community.
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Satisfaction */}
+          {/* Satisfaction — emoji picker */}
           <div style={{ marginBottom: "24px" }}>
-            <label style={{ fontSize: "14px", fontWeight: 600, color: "#333", display: "block", marginBottom: "12px" }}>
-              Overall, how satisfied are you with the website? <span style={{ color: "#e74c3c" }}>*</span>
+            <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "14px" }}>
+              How's your experience so far? <span style={{ color: "#e74c3c" }}>*</span>
             </label>
-            <div style={{ display: "flex", gap: "10px" }}>
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setSatisfaction(n)}
-                  style={{
-                    width: "44px", height: "44px",
-                    borderRadius: "50%",
-                    border: satisfaction === n ? "2px solid #534AB7" : "1.5px solid #ddd",
-                    background: satisfaction === n ? "#534AB7" : "#fff",
-                    color: satisfaction === n ? "#fff" : "#555",
-                    fontSize: "15px", fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {n}
-                </button>
-              ))}
+            <div style={{ display: "flex", gap: "8px", justifyContent: "space-between" }}>
+              {SATISFACTION.map(({ value, emoji, label }) => {
+                const active = satisfaction === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setSatisfaction(value)}
+                    title={label}
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "5px",
+                      padding: "10px 4px 8px",
+                      borderRadius: "12px",
+                      border: active ? "2px solid #534AB7" : "1.5px solid #eee",
+                      background: active ? "#EEEDFE" : "#fafafa",
+                      cursor: "pointer",
+                      transition: "all 0.13s",
+                    }}
+                  >
+                    <span style={{ fontSize: "22px", lineHeight: 1 }}>{emoji}</span>
+                    <span style={{
+                      fontSize: "10px",
+                      fontWeight: active ? 700 : 500,
+                      color: active ? "#534AB7" : "#bbb",
+                      lineHeight: 1,
+                    }}>
+                      {label}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Reason */}
+          {/* Reason — chip grid */}
           <div style={{ marginBottom: "24px" }}>
-            <label style={{ fontSize: "14px", fontWeight: 600, color: "#333", display: "block", marginBottom: "8px" }}>
-              What's your main reason for leaving our site? <span style={{ color: "#e74c3c" }}>*</span>
+            <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "10px" }}>
+              What's your main reason for the visit? <span style={{ color: "#e74c3c" }}>*</span>
             </label>
-            <select
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              style={{
-                width: "100%",
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "10px 14px",
-                fontSize: "14px",
-                color: reason ? "#333" : "#aaa",
-                background: "#fff",
-                outline: "none",
-                cursor: "pointer",
-                appearance: "none",
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "right 14px center",
-                paddingRight: "36px",
-              }}
-            >
-              <option value="" disabled>Please select</option>
-              {REASONS.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
-              ))}
-            </select>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+              {REASONS.map(({ value, label, icon }) => {
+                const active = reason === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setReason(value)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      border: active ? "2px solid #534AB7" : "1.5px solid #eee",
+                      background: active ? "#EEEDFE" : "#fafafa",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "all 0.13s",
+                    }}
+                  >
+                    <span style={{ fontSize: "16px", lineHeight: 1, flexShrink: 0 }}>{icon}</span>
+                    <span style={{
+                      fontSize: "12.5px",
+                      fontWeight: active ? 700 : 500,
+                      color: active ? "#534AB7" : "#555",
+                      lineHeight: 1.3,
+                    }}>
+                      {label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Privacy note */}
-          <p style={{ fontSize: "11px", color: "#aaa", margin: "0 0 20px", lineHeight: 1.5 }}>
-            Your responses will be used in accordance with our{" "}
-            <a href="/privacy" style={{ color: "#534AB7" }}>privacy policy</a>.
-          </p>
-
           {/* Actions */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
             <button
               type="button"
               onClick={handleClose}
               style={{
                 background: "none", border: "none",
-                color: "#555", fontSize: "14px", fontWeight: 600,
-                cursor: "pointer", padding: "10px 16px",
-                textDecoration: "underline",
+                color: "#999", fontSize: "13.5px", fontWeight: 500,
+                cursor: "pointer", padding: "10px 14px",
               }}
             >
-              Close
+              Skip
             </button>
             <button
               type="submit"
-              disabled={!satisfaction || !reason || mutation.isPending}
+              disabled={!canSubmit}
               style={{
-                background: !satisfaction || !reason ? "#ccc" : "#26215C",
-                color: "#fff",
+                background: canSubmit ? "#26215C" : "#e5e5ea",
+                color: canSubmit ? "#fff" : "#aaa",
                 border: "none",
                 borderRadius: "10px",
                 padding: "10px 28px",
                 fontSize: "14px",
                 fontWeight: 700,
-                cursor: !satisfaction || !reason ? "not-allowed" : "pointer",
+                cursor: canSubmit ? "pointer" : "not-allowed",
+                transition: "background 0.15s",
               }}
             >
-              {mutation.isPending ? "Submitting..." : "Submit"}
+              {mutation.isPending ? "Submitting…" : "Submit"}
             </button>
           </div>
         </form>
