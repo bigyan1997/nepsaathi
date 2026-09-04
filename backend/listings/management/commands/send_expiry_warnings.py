@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         now = timezone.now()
-        window_end = now + timedelta(days=4)
+        window_end = now + timedelta(days=5)  # 5-day window so listings created any time of day are caught
 
         listings = Listing.objects.filter(
             status='active',
