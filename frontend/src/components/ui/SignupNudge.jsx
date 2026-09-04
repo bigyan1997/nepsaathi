@@ -100,7 +100,7 @@ export default function SignupNudge() {
         zIndex: 500,
         background: "#26215C",
         borderTop: "1px solid rgba(255,255,255,0.1)",
-        padding: isMobile ? "14px 16px" : "14px 28px",
+        padding: isMobile ? "14px 44px 14px 16px" : "14px 48px 14px 28px",
         display: "flex",
         alignItems: "center",
         gap: "14px",
@@ -171,11 +171,14 @@ export default function SignupNudge() {
         </Link>
       </div>
 
-      {/* Dismiss */}
+      {/* Dismiss — pinned to top-right so it never wraps */}
       <button
         onClick={dismiss}
         aria-label="Dismiss sign up prompt"
         style={{
+          position: "absolute",
+          top: "12px",
+          right: "12px",
           background: "transparent",
           border: "none",
           color: "#7A74B8",
@@ -183,7 +186,6 @@ export default function SignupNudge() {
           lineHeight: 1,
           padding: "4px 6px",
           cursor: "pointer",
-          flexShrink: 0,
         }}
       >
         ×
