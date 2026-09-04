@@ -24,22 +24,29 @@ class Command(BaseCommand):
             try:
                 from core.emails import send_expiry_warning_email
                 from core.push import send_push_notification
-                # Mark first so a second cron run doesn't double-send even if push fails
+
+                # Send email first — only mark flag after success so a failure allows retry
+                send_expiry_warning_email(listing)
+
                 listing.expiry_warning_sent = True
                 listing.save(update_fields=['expiry_warning_sent'])
-                send_expiry_warning_email(listing)
+
                 type_path = {
                     'job': 'jobs',
                     'room': 'rooms',
                     'event': 'events',
                     'notice': 'notices',
                 }.get(listing.listing_type, 'listings')
-                send_push_notification(
-                    listing.user,
-                    'Listing expiring soon',
-                    f'"{listing.title}" expires in {(listing.expires_at - now).days + 1} days. Renew now to keep it active.',
-                    f'/{type_path}/{listing.slug}',
-                )
+                try:
+                    send_push_notification(
+                        listing.user,
+                        'Listing expiring soon',
+                        f'"{listing.title}" expires in {(listing.expires_at - now).days + 1} days. Renew now to keep it active.',
+                        f'/{type_path}/{listing.slug}',
+                    )
+                except Exception as push_err:
+                    self.stdout.write(f'  ⚠ Push failed for {listing.title}: {push_err}')
+
                 self.stdout.write(f'  ✓ Sent warning for: {listing.title}')
             except Exception as e:
                 self.stdout.write(f'  ✗ Failed for {listing.title}: {e}')

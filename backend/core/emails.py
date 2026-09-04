@@ -570,6 +570,7 @@ def send_expiry_warning_email(listing):
         })
     except Exception as e:
         print(f'Expiry warning email failed: {e}', flush=True)
+        raise
 
 
 # ─────────────────────────────────────────────────────────────
