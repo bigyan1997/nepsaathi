@@ -74,23 +74,25 @@ class CreateCheckoutSessionView(APIView):
             client_reference_id=str(listing.id),
         )
 
-        pending = FeaturedPayment.objects.filter(
-            listing=listing,
-            user=request.user,
-            status='pending',
-        ).first()
-        if pending:
-            pending.stripe_session_id = session.id
-            pending.save(update_fields=['stripe_session_id'])
-        else:
-            FeaturedPayment.objects.create(
+        # Lock the row to prevent concurrent requests creating duplicate pending payments
+        with transaction.atomic():
+            pending = FeaturedPayment.objects.select_for_update().filter(
                 listing=listing,
                 user=request.user,
-                stripe_session_id=session.id,
-                amount_paid=settings.STRIPE_FEATURED_PRICE_CENTS,
-                duration_days=7,
                 status='pending',
-            )
+            ).first()
+            if pending:
+                pending.stripe_session_id = session.id
+                pending.save(update_fields=['stripe_session_id'])
+            else:
+                FeaturedPayment.objects.create(
+                    listing=listing,
+                    user=request.user,
+                    stripe_session_id=session.id,
+                    amount_paid=settings.STRIPE_FEATURED_PRICE_CENTS,
+                    duration_days=7,
+                    status='pending',
+                )
 
         return Response({'checkout_url': session.url})
 

@@ -89,6 +89,10 @@ class Listing(models.Model):
         default=False,
         help_text='Admin can block this listing from being renewed'
     )
+    is_admin_removed = models.BooleanField(
+        default=False,
+        help_text='Set to True only when an admin explicitly removes the listing — used for violation tracking'
+    )
     is_wanted = models.BooleanField(
         default=False)
 

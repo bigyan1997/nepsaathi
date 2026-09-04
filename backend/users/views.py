@@ -110,21 +110,11 @@ class DeleteAccountView(APIView):
             try:
                 from listings.models import Listing
                 from django.db import transaction
-                listings = list(Listing.objects.filter(user=user).prefetch_related('images'))
-                cloudinary_errors = []
-                for listing in listings:
-                    for image in listing.images.all():
-                        try:
-                            image.delete()
-                        except Exception as e:
-                            cloudinary_errors.append(str(e))
-                if cloudinary_errors:
-                    import logging
-                    logging.getLogger(__name__).warning(
-                        'Cloudinary cleanup errors during account deletion for user %s: %s',
-                        user.id, cloudinary_errors
-                    )
+                # Delete everything atomically — Listing.delete() override handles Cloudinary cleanup
+                # per-image. Keeping it inside the transaction means a DB failure rolls back all
+                # DB records, preventing the "account alive but all images 404" state.
                 with transaction.atomic():
+                    listings = list(Listing.objects.filter(user=user))
                     for listing in listings:
                         listing.delete()
                     user.delete()

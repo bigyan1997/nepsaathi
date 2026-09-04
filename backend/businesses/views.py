@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
@@ -115,8 +116,12 @@ def _trigger_business_saved_search_alerts(business, send_fn):
             is_active=True,
         ).exclude(user=business.owner).select_related('user')
 
+        from django.utils import timezone as tz
+        one_hour_ago = tz.now() - timedelta(hours=1)
         for saved in searches:
             try:
+                if saved.last_notified and saved.last_notified > one_hour_ago:
+                    continue
                 f = saved.filters or {}
                 keyword = f.get('search', '').lower()
                 if keyword:

@@ -258,7 +258,7 @@ class ListingReportAdmin(admin.ModelAdmin):
             listing = report.listing
             listing.reports.filter(is_reviewed=False).update(is_reviewed=True)
             listing.is_under_review = False
-            listing.save()
+            listing.save(update_fields=['is_under_review'])
         self.message_user(request, f'{queryset.count()} reports marked as reviewed.')
     mark_reviewed.short_description = '✅ Mark as reviewed'
 
@@ -268,7 +268,7 @@ class ListingReportAdmin(admin.ModelAdmin):
             listing = report.listing
             listing.reports.filter(is_reviewed=False).update(is_reviewed=True)
             listing.is_under_review = False
-            listing.save()
+            listing.save(update_fields=['is_under_review'])
             send_listing_cleared_email(report)
         self.message_user(request, f'{queryset.count()} listings cleared — owners notified.')
     clear_listing.short_description = '✅ Clear listing — notify owner'
@@ -283,19 +283,17 @@ class ListingReportAdmin(admin.ModelAdmin):
                     image.delete()
                 listing.status = 'deleted'
                 listing.is_under_review = False
-                listing.save()
+                listing.is_admin_removed = True
+                listing.save(update_fields=['status', 'is_under_review', 'is_admin_removed'])
                 listing.reports.filter(is_reviewed=False).update(is_reviewed=True)
                 send_listing_removed_email(report, reason)
 
-                # Check if user should be banned (3 removals)
-                # Only count admin-removed listings, not user self-deletes
-            # We track this by checking reports that were reviewed and removed
-                
-                removed_count = ListingReport.objects.filter(
-                    listing__user=owner,
-                    is_reviewed=True,
-                    listing__status='deleted'
-                ).values('listing').distinct().count()
+                # Count only listings explicitly removed by an admin (not user self-deletes or cleared reports)
+                from listings.models import Listing as _Listing
+                removed_count = _Listing.objects.filter(
+                    user=owner,
+                    is_admin_removed=True,
+                ).count()
                 if removed_count >= 3 and not owner.is_banned:
                     owner.is_banned = True
                     owner.ban_reason = 'Multiple listing violations'

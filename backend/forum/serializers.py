@@ -23,8 +23,11 @@ class PollOptionSerializer(serializers.ModelSerializer):
 class ForumAuthorSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     full_name = serializers.CharField()
-    avatar = serializers.URLField(allow_null=True)
+    avatar = serializers.SerializerMethodField()
     is_verified = serializers.BooleanField()
+
+    def get_avatar(self, obj):
+        return obj.avatar or obj.google_avatar or None
 
 
 class ForumReplySerializer(serializers.ModelSerializer):

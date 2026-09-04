@@ -50,12 +50,13 @@ class ForumPostListView(generics.ListCreateAPIView):
         user = self.request.user
         if user.is_banned:
             raise ValidationError('Your account has been suspended.')
-        post = serializer.save(author=user)
-        # If poll options were provided, create them
         poll_options = self.request.data.get('poll_options', [])
+        valid_options = []
         if isinstance(poll_options, list):
-            valid = [o.strip() for o in poll_options if isinstance(o, str) and o.strip()]
-            for i, text in enumerate(valid[:4]):
+            valid_options = [o.strip() for o in poll_options if isinstance(o, str) and o.strip()][:4]
+        with transaction.atomic():
+            post = serializer.save(author=user)
+            for i, text in enumerate(valid_options):
                 PollOption.objects.create(post=post, text=text, order=i)
         ping_indexnow_async(post.slug)
 

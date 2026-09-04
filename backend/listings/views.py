@@ -313,7 +313,7 @@ class ListingCreateView(generics.CreateAPIView):
             pass
 
         # Notify n8n to post to Facebook (fire-and-forget)
-        threading.Thread(target=_notify_n8n, args=(listing,), daemon=False).start()
+        threading.Thread(target=_notify_n8n, args=(listing,), daemon=True).start()
 
         # Ping IndexNow so Bing/Yandex index the new listing quickly
         from core.indexnow import ping_indexnow
@@ -692,13 +692,19 @@ class MarkListingStatusView(APIView):
                 {'detail': 'Invalid status. Use active or filled.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        if new_status == 'active' and listing.renewal_blocked:
-            return Response(
-                {'detail': 'This listing has been restricted by an administrator and cannot be reactivated.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        if new_status == 'active':
+            if listing.renewal_blocked:
+                return Response(
+                    {'detail': 'This listing has been restricted by an administrator and cannot be reactivated.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            if listing.status in ('expired', 'deleted'):
+                return Response(
+                    {'detail': 'Expired or deleted listings must be renewed, not reactivated directly.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         listing.status = new_status
-        listing.save()
+        listing.save(update_fields=['status'])
         return Response({'detail': f'Listing marked as {new_status}.'})
     
 class TrackListingViewView(APIView):
@@ -721,8 +727,13 @@ class TrackListingViewView(APIView):
             ip = ip.split(',')[-1].strip()   # rightmost = Railway-appended real IP; cannot be spoofed
         else:
             ip = request.META.get('REMOTE_ADDR', '')
-        if not ip:
-            ip = '127.0.0.1'
+        # Validate before passing to GenericIPAddressField — malformed IPs from proxies/bots raise DataError
+        from django.core.validators import validate_ipv46_address
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        try:
+            validate_ipv46_address(ip)
+        except (DjangoValidationError, Exception):
+            ip = '0.0.0.0'
 
         user = request.user if request.user.is_authenticated else None
 
