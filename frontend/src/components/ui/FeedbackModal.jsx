@@ -4,13 +4,7 @@ import api from "../../utils/axios";
 import { markShown } from "../../hooks/useExitIntent";
 import { useToast } from "./Toast";
 
-const SATISFACTION = [
-  { value: 1, emoji: "😞", label: "Very bad" },
-  { value: 2, emoji: "😕", label: "Not great" },
-  { value: 3, emoji: "😐", label: "Okay" },
-  { value: 4, emoji: "🙂", label: "Good" },
-  { value: 5, emoji: "😊", label: "Love it!" },
-];
+const SATISFACTION = [1, 2, 3, 4, 5];
 
 const REASONS = [
   { value: "just_browsing",          label: "Just browsing",                icon: "👀" },
@@ -100,46 +94,39 @@ export default function FeedbackModal({ onClose }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Satisfaction — emoji picker */}
+          {/* Satisfaction — star rating */}
           <div style={{ marginBottom: "24px" }}>
-            <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "14px" }}>
+            <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "12px" }}>
               How's your experience so far? <span style={{ color: "#e74c3c" }}>*</span>
             </label>
-            <div style={{ display: "flex", gap: "8px", justifyContent: "space-between" }}>
-              {SATISFACTION.map(({ value, emoji, label }) => {
-                const active = satisfaction === value;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setSatisfaction(value)}
-                    title={label}
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "5px",
-                      padding: "10px 4px 8px",
-                      borderRadius: "12px",
-                      border: active ? "2px solid #534AB7" : "1.5px solid #eee",
-                      background: active ? "#EEEDFE" : "#fafafa",
-                      cursor: "pointer",
-                      transition: "all 0.13s",
-                    }}
-                  >
-                    <span style={{ fontSize: "22px", lineHeight: 1 }}>{emoji}</span>
-                    <span style={{
-                      fontSize: "10px",
-                      fontWeight: active ? 700 : 500,
-                      color: active ? "#534AB7" : "#bbb",
-                      lineHeight: 1,
-                    }}>
-                      {label}
-                    </span>
-                  </button>
-                );
-              })}
+            <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              {SATISFACTION.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setSatisfaction(n)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: "2px",
+                    cursor: "pointer",
+                    fontSize: "32px",
+                    lineHeight: 1,
+                    color: satisfaction >= n ? "#E87722" : "#ddd",
+                    transition: "color 0.1s, transform 0.1s",
+                    transform: satisfaction === n ? "scale(1.15)" : "scale(1)",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.2)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = satisfaction === n ? "scale(1.15)" : "scale(1)"; }}
+                >
+                  ★
+                </button>
+              ))}
+              {satisfaction && (
+                <span style={{ marginLeft: "8px", fontSize: "13px", color: "#999", fontWeight: 500 }}>
+                  {["", "Very bad", "Not great", "Okay", "Good", "Love it!"][satisfaction]}
+                </span>
+              )}
             </div>
           </div>
 
