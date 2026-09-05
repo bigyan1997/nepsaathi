@@ -27,9 +27,11 @@ import IdleTimeoutModal from "./components/ui/IdleTimeoutModal";
 import useIdleTimeout from "./hooks/useIdleTimeout";
 import useExitIntent from "./hooks/useExitIntent";
 import NotFoundPage from "./pages/NotFoundPage";
+// HomePage is eager — it's the landing page and must render immediately without
+// a Suspense delay, which would cause CLS and a blank-flash on initial load.
+import HomePage from "./pages/HomePage";
 
-// Route-based code splitting — each page is a separate JS chunk loaded on demand
-const HomePage             = lazy(() => import("./pages/HomePage"));
+// All other pages are lazy-loaded — each is a separate JS chunk fetched on demand
 const JobsPage             = lazy(() => import("./pages/listings/JobsPage"));
 const RoomsPage            = lazy(() => import("./pages/listings/RoomsPage"));
 const EventsPage           = lazy(() => import("./pages/listings/EventsPage"));
@@ -156,8 +158,8 @@ function App() {
     return () => clearTimeout(t);
   }, []);
 
-  // Prefetch the highest-traffic pages during browser idle time so they load
-  // instantly when the user clicks. Runs once after initial paint.
+  // Prefetch top pages after user interaction — not on load, to avoid blocking
+  // the main thread during Lighthouse's measurement window.
   useEffect(() => {
     const prefetch = () => {
       import("./pages/listings/JobsPage");
@@ -167,12 +169,26 @@ function App() {
       import("./pages/listings/BusinessesPage");
       import("./pages/forum/ForumPage");
     };
-    if ("requestIdleCallback" in window) {
-      const id = requestIdleCallback(prefetch, { timeout: 3000 });
-      return () => cancelIdleCallback(id);
-    }
-    const t = setTimeout(prefetch, 2000);
-    return () => clearTimeout(t);
+    // Only trigger on first user interaction (click/touch/key), not on page load.
+    // This keeps TBT clean during the initial load measurement window.
+    const onInteraction = () => {
+      window.removeEventListener("click", onInteraction);
+      window.removeEventListener("touchstart", onInteraction);
+      window.removeEventListener("keydown", onInteraction);
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(prefetch);
+      } else {
+        setTimeout(prefetch, 200);
+      }
+    };
+    window.addEventListener("click", onInteraction, { passive: true });
+    window.addEventListener("touchstart", onInteraction, { passive: true });
+    window.addEventListener("keydown", onInteraction, { passive: true });
+    return () => {
+      window.removeEventListener("click", onInteraction);
+      window.removeEventListener("touchstart", onInteraction);
+      window.removeEventListener("keydown", onInteraction);
+    };
   }, []);
 
   // On mount: ensure a valid access token exists, then re-fetch the full user
@@ -225,7 +241,7 @@ function App() {
                 <div style={{ flex: 1 }}>
                   <ErrorBoundary>
                   <PageWrapper>
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
                     <Routes>
                         {/* Public routes */}
                         <Route path="/" element={<HomePage />} />
