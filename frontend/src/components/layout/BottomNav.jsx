@@ -216,17 +216,17 @@ export default function BottomNav() {
 
         {TABS.slice(0, 2).map(renderTab)}
 
-        {/* Centre Post button */}
-        <div style={{ flex: "0 0 68px", display: "flex", alignItems: "center", justifyContent: "center", paddingBottom: "6px" }}>
+        {/* Centre Post button — lifted 14px above the nav bar */}
+        <div style={{ flex: "0 0 68px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", top: "-14px" }}>
           <button
             onClick={handlePost}
             style={{
-              width: "50px",
-              height: "50px",
+              width: "54px",
+              height: "54px",
               borderRadius: "50%",
               background: "linear-gradient(135deg, #E87722, #534AB7)",
-              border: "none",
-              boxShadow: "0 4px 14px rgba(83,74,183,0.35)",
+              border: "3px solid #fff",
+              boxShadow: "0 4px 16px rgba(83,74,183,0.4)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
