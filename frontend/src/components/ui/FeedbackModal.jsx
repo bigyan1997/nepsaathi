@@ -12,7 +12,7 @@ const REASONS = [
   { value: "missing_feature",        label: "Missing a feature",            icon: "✨" },
   { value: "hard_to_navigate",       label: "Hard to navigate",             icon: "🧭" },
   { value: "technical_issue",        label: "Technical issue",              icon: "🐛" },
-  { value: "other",                  label: "Something else",               icon: "💬" },
+  { value: "other",                  label: "Easy to use",                  icon: "💬" },
 ];
 
 export default function FeedbackModal({ onClose }) {
