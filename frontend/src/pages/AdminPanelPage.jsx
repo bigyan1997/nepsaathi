@@ -354,7 +354,7 @@ export default function AdminPanelPage() {
             {isFetching ? "Refreshing…" : "Refresh"}
           </button>
           <a
-            href="/nepsaathi-admin/"
+            href="https://nepsaathi-production.up.railway.app/nepsaathi-biggy"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -364,7 +364,7 @@ export default function AdminPanelPage() {
               textDecoration: "none",
             }}
           >
-            Django Admin ↗
+            Admin Panel ↗
           </a>
         </div>
       </div>
@@ -566,7 +566,7 @@ export default function AdminPanelPage() {
             <Card
               title={`Pending Reports (${allPendingReports.length})`}
               action={allPendingReports.length > 0 && (
-                <a href="/nepsaathi-admin/listings/listingreport/" target="_blank" rel="noopener noreferrer"
+                <a href="https://nepsaathi-production.up.railway.app/nepsaathi-biggy/listings/listingreport/" target="_blank" rel="noopener noreferrer"
                   style={{ fontSize: 11, color: T.saffron, textDecoration: "none", fontWeight: 500 }}>
                   Open in Admin ↗
                 </a>
@@ -611,7 +611,7 @@ export default function AdminPanelPage() {
                           <td style={{ padding: "10px 12px", color: T.text2 }}>{r.reporter}</td>
                           <td style={{ padding: "10px 12px", color: T.text3, whiteSpace: "nowrap" }}>{fmtDate(r.created_at)}</td>
                           <td style={{ padding: "10px 12px" }}>
-                            <a href="/nepsaathi-admin/listings/listingreport/" target="_blank" rel="noopener noreferrer"
+                            <a href="https://nepsaathi-production.up.railway.app/nepsaathi-biggy/listings/listingreport/" target="_blank" rel="noopener noreferrer"
                               style={{ fontSize: 11, fontWeight: 600, color: T.saffron, textDecoration: "none" }}>
                               Review →
                             </a>
