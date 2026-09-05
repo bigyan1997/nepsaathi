@@ -193,7 +193,8 @@ export default function Footer() {
           {/* Icon + Text grouped so they never split on mobile */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1, minWidth: "220px" }}>
             <div
-              style={{
+              className="nl-icon"
+            style={{
                 width: "52px",
                 height: "52px",
                 borderRadius: "14px",
@@ -220,7 +221,8 @@ export default function Footer() {
             </div>
           <div style={{ flex: 1 }}>
             <div
-              style={{
+              className="nl-title"
+            style={{
                 fontWeight: 700,
                 fontSize: "15px",
                 color: "#26215C",
@@ -230,7 +232,7 @@ export default function Footer() {
               Stay Updated with{" "}
               <span style={{ color: "#534AB7" }}>NepSaathi</span>
             </div>
-            <div style={{ fontSize: "13px", color: "#666", lineHeight: 1.5 }}>
+            <div className="nl-desc" style={{ fontSize: "13px", color: "#666", lineHeight: 1.5 }}>
               Get the latest jobs, events and community resources delivered to
               your inbox.
             </div>
@@ -663,8 +665,14 @@ export default function Footer() {
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 28px 16px 24px !important; }
           .footer-legal { padding: 14px 16px !important; flex-direction: column !important; align-items: flex-start !important; }
           .footer-copy { padding: 12px 16px !important; flex-direction: column !important; align-items: flex-start !important; gap: 6px !important; }
-          .footer-newsletter { flex-direction: column !important; align-items: flex-start !important; }
-          .footer-newsletter input { width: 100% !important; box-sizing: border-box; }
+          .footer-newsletter { flex-direction: column !important; align-items: flex-start !important; padding: 14px 16px !important; gap: 10px !important; }
+          .footer-newsletter .nl-icon { width: 36px !important; height: 36px !important; border-radius: 10px !important; }
+          .footer-newsletter .nl-icon svg { width: 18px !important; height: 18px !important; }
+          .footer-newsletter .nl-title { font-size: 13px !important; margin-bottom: 1px !important; }
+          .footer-newsletter .nl-desc { font-size: 11.5px !important; }
+          .footer-newsletter form { width: 100% !important; flex-wrap: nowrap !important; }
+          .footer-newsletter input { width: 0 !important; flex: 1 !important; box-sizing: border-box; font-size: 12px !important; padding-top: 9px !important; padding-bottom: 9px !important; }
+          .footer-newsletter button { padding: 9px 14px !important; font-size: 12px !important; }
         }
       `}</style>
     </footer>
