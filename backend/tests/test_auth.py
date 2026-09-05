@@ -21,7 +21,9 @@ class RegisterTests(BaseAPITest):
         })
         self.assertIn(res.status_code, [200, 201])
 
-    def test_duplicate_email_rejected(self):
+    def test_duplicate_email_returns_generic_201(self):
+        """Duplicate email must NOT return 400 — that leaks whether the email is registered.
+        The view catches IntegrityError and returns a generic 201 to prevent email enumeration."""
         email = self._unique_email("dupe")
         # Register once via API (creates allauth EmailAddress row)
         self.client.post("/api/auth/registration/", {
@@ -31,7 +33,7 @@ class RegisterTests(BaseAPITest):
             "first_name": "First",
             "last_name": "User",
         })
-        # Second attempt with same email must be rejected
+        # Second attempt with same email must return 201 (not 400) to prevent enumeration
         res = self.client.post("/api/auth/registration/", {
             "email": email,
             "password1": "TestPass123!",
@@ -39,7 +41,7 @@ class RegisterTests(BaseAPITest):
             "first_name": "Dupe",
             "last_name": "User",
         })
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 201)
 
     def test_mismatched_passwords_rejected(self):
         res = self.client.post("/api/auth/registration/", {
