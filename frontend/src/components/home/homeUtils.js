@@ -41,7 +41,7 @@ export const HOME_CATEGORIES = [
 export const HOME_SEARCH_TYPES = [
   { value: "all",        emoji: "🔍", label: "All" },
   { value: "jobs",       emoji: "💼", label: "Jobs" },
-  { value: "rooms",      emoji: "🏠", label: "Rooms" },
+  { value: "rooms",      emoji: "🏡", label: "Rooms" },
   { value: "events",     emoji: "🎉", label: "Events" },
   { value: "notices",    emoji: "📢", label: "Notices" },
   { value: "businesses", emoji: "🏪", label: "Businesses" },

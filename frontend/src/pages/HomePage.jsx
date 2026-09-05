@@ -33,7 +33,7 @@ const STATES = [
   { value: "NT", label: "NT" },
 ];
 
-const TYPE_EMOJI_MAP = { job: "💼", room: "🏠", event: "🎉", notice: "📢", business: "🏪" };
+const TYPE_EMOJI_MAP = { job: "💼", room: "🏡", event: "🎉", notice: "📢", business: "🏪" };
 const SEARCH_TYPES = HOME_SEARCH_TYPES;
 
 const FEATURED_BADGE = (
@@ -361,7 +361,7 @@ export default function HomePage() {
             </Link>
           )}
           renderCard={(room) => (
-            <DesktopCard key={room.id} to={`/rooms/${room.listing_slug}`} accentType="room" emoji="🏠" isFeatured={!!room.is_featured}
+            <DesktopCard key={room.id} to={`/rooms/${room.listing_slug}`} accentType="room" emoji="🏡" isFeatured={!!room.is_featured}
               timeStr={timeAgo(room.created_at || room.date_posted)} title={room.listing_title}
               subtitle={<><MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />{room.listing_location}, {room.listing_state}</>}
               description={room.description || room.listing_description}
