@@ -671,8 +671,9 @@ export default function Footer() {
           .footer-newsletter .nl-title { font-size: 13px !important; margin-bottom: 1px !important; }
           .footer-newsletter .nl-desc { font-size: 11.5px !important; }
           .footer-newsletter form { width: 100% !important; flex-wrap: nowrap !important; }
-          .footer-newsletter input { width: 0 !important; flex: 1 !important; box-sizing: border-box; font-size: 12px !important; padding-top: 9px !important; padding-bottom: 9px !important; }
-          .footer-newsletter button { padding: 9px 14px !important; font-size: 12px !important; }
+          .footer-newsletter form > div { flex: 1 !important; min-width: 0 !important; }
+          .footer-newsletter input { width: 100% !important; box-sizing: border-box !important; font-size: 12px !important; padding-top: 9px !important; padding-bottom: 9px !important; }
+          .footer-newsletter button { padding: 9px 14px !important; font-size: 12px !important; flex-shrink: 0 !important; }
         }
       `}</style>
     </footer>
