@@ -16,7 +16,15 @@ class JWTWebsocketMiddleware(BaseMiddleware):
         params = parse_qs(query_string)
         ticket = params.get("ticket", [None])[0]
         scope["user"] = await self._get_user(ticket)
-        return await super().__call__(scope, receive, send)
+        try:
+            return await super().__call__(scope, receive, send)
+        except (TimeoutError, ConnectionError, OSError):
+            # Async channels-layer Redis failure — close WebSocket cleanly instead of crashing ASGI
+            if scope.get("type") == "websocket":
+                try:
+                    await send({"type": "websocket.close", "code": 1011})
+                except Exception:
+                    pass
 
     @database_sync_to_async
     def _get_user(self, ticket):
