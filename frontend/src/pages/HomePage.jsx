@@ -15,7 +15,6 @@ import FeaturedCarousel from "../components/home/FeaturedCarousel";
 import NewListingsCarousel from "../components/home/NewListingsCarousel";
 import ListingSection from "../components/home/ListingSection";
 import CategoryCards from "../components/home/CategoryCards";
-import QuickLinks from "../components/home/QuickLinks";
 import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
 import { timeAgo, isNew, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
@@ -288,9 +287,6 @@ export default function HomePage() {
 
         {/* ── CATEGORIES ── */}
         <CategoryCards />
-
-        {/* ── QUICK LINKS ── */}
-        <QuickLinks />
 
         {/* ── STATS ── */}
         <StatsBar stats={statsData} />
