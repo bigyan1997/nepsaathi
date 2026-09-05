@@ -4,7 +4,7 @@ import {
   HouseIcon,
   BriefcaseIcon,
   ChatDotsIcon,
-  ChatCircleDotsIcon,
+  BedIcon,
   PlusCircleIcon,
 } from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
@@ -14,7 +14,7 @@ const TABS = [
   { to: "/",        Icon: HouseIcon,          label: "Home",      color: "#534AB7", bg: "#EEEDFE", exact: true },
   { to: "/jobs",    Icon: BriefcaseIcon,       label: "Jobs",      color: "#534AB7", bg: "#EEEDFE" },
   { to: "/messages",Icon: ChatDotsIcon,        label: "Inbox",     color: "#534AB7", bg: "#EEEDFE", showBadge: true },
-  { to: "/forum",   Icon: ChatCircleDotsIcon,  label: "Community", color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/rooms",   Icon: BedIcon,             label: "Rooms",     color: "#E87722", bg: "#FFF1E0" },
 ];
 
 export default function BottomNav() {
