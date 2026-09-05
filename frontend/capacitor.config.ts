@@ -5,6 +5,7 @@ const config: CapacitorConfig = {
   appName: "NepSaathi",
   webDir: "dist",
   server: {
+    url: "https://www.nepsaathi.com",
     androidScheme: "https",
   },
   android: {
