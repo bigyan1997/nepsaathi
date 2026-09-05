@@ -43,6 +43,10 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for reading and updating NepSaathi user profiles.
     """
     full_name = serializers.ReadOnlyField()
+    is_admin = serializers.SerializerMethodField()
+
+    def get_is_admin(self, obj):
+        return obj.is_staff or obj.is_superuser
 
     class Meta:
         model = User
@@ -58,8 +62,7 @@ class UserSerializer(serializers.ModelSerializer):
             'location',
             'bio',
             'is_verified',
-            'is_staff',
-            'is_superuser',
+            'is_admin',
             'created_at',
             'updated_at',
         )
@@ -67,8 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'email',
             'is_verified',
-            'is_staff',
-            'is_superuser',
+            'is_admin',
             'created_at',
             'updated_at',
             'google_avatar',

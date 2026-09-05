@@ -2,6 +2,7 @@ import logging
 import threading
 
 from rest_framework import permissions, status
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -215,9 +216,14 @@ class MessageSendView(APIView):
         return Response(MessageSerializer(msg).data, status=201)
 
 
+class UnreadCountThrottle(UserRateThrottle):
+    scope = 'unread_count'
+
+
 class UnreadCountView(APIView):
     """GET /api/messages/unread-count/ — total unread messages for navbar badge"""
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (UnreadCountThrottle,)
 
     def get(self, request):
         cached = get_cached_unread(request.user.pk)

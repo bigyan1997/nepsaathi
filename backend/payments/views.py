@@ -97,6 +97,71 @@ class CreateCheckoutSessionView(APIView):
         return Response({'checkout_url': session.url})
 
 
+class CreateBusinessCheckoutSessionView(APIView):
+    """
+    POST /api/payments/feature-business/<business_id>/
+    Creates a Stripe checkout session to feature a business for 7 days.
+    Owner only.
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, business_id):
+        if getattr(request.user, 'is_banned', False):
+            return Response({'detail': 'Your account has been suspended.'}, status=403)
+
+        try:
+            business = Business.objects.get(pk=business_id, owner=request.user)
+        except Business.DoesNotExist:
+            raise NotFound('Business not found or not yours.')
+
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        frontend_url = settings.FRONTEND_URL
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'aud',
+                    'unit_amount': settings.STRIPE_FEATURED_PRICE_CENTS,
+                    'product_data': {
+                        'name': f'Feature business: {business.name}',
+                        'description': 'Your business will appear at the top of the directory for 7 days.',
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=f'{frontend_url}/payment/success?business_id={business.id}',
+            cancel_url=f'{frontend_url}/payment/cancel',
+            metadata={
+                'business_id': str(business.id),
+                'user_id': str(request.user.id),
+                'duration_days': '7',
+            },
+        )
+
+        with transaction.atomic():
+            pending = FeaturedPayment.objects.select_for_update().filter(
+                business=business,
+                user=request.user,
+                status='pending',
+            ).first()
+            if pending:
+                pending.stripe_session_id = session.id
+                pending.save(update_fields=['stripe_session_id'])
+            else:
+                FeaturedPayment.objects.create(
+                    business=business,
+                    user=request.user,
+                    stripe_session_id=session.id,
+                    amount_paid=settings.STRIPE_FEATURED_PRICE_CENTS,
+                    duration_days=7,
+                    status='pending',
+                )
+
+        return Response({'checkout_url': session.url})
+
+
 class StripeWebhookView(APIView):
     """
     POST /api/payments/webhook/
@@ -150,9 +215,11 @@ class StripeWebhookView(APIView):
             payment.save()
 
             if payment.listing:
+                from datetime import timedelta
                 listing = payment.listing
                 listing.is_featured = True
-                listing.save(update_fields=['is_featured'])
+                listing.featured_until = timezone.now() + timedelta(days=payment.duration_days)
+                listing.save(update_fields=['is_featured', 'featured_until'])
 
             if payment.business:
                 from django.utils import timezone as tz

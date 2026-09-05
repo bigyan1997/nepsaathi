@@ -175,10 +175,27 @@ class ListingCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'slug')
         extra_kwargs = {
             'listing_type': {'required': True},
-            'title': {'required': True},
+            'title': {'required': True, 'min_length': 5},
             'description': {'required': True},
             'location': {'required': True},
         }
+
+    def validate_description(self, value):
+        if len(value) > 5000:
+            raise serializers.ValidationError('Description cannot exceed 5000 characters.')
+        return value
+
+    def validate_tags(self, value):
+        if not isinstance(value, list):
+            raise serializers.ValidationError('Tags must be a list.')
+        if len(value) > 10:
+            raise serializers.ValidationError('You can add up to 10 tags.')
+        for tag in value:
+            if not isinstance(tag, str):
+                raise serializers.ValidationError('Each tag must be a string.')
+            if len(tag) > 50:
+                raise serializers.ValidationError('Each tag must be 50 characters or fewer.')
+        return value
 
 
 class SavedListingSerializer(serializers.ModelSerializer):

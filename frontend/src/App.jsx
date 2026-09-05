@@ -275,7 +275,7 @@ function App() {
                         <Route path="/messages" element={<ProtectedRoute><InboxPage /></ProtectedRoute>} />
                         <Route path="/messages/:id" element={<ProtectedRoute><ConversationPage /></ProtectedRoute>} />
                         <Route path="/saved-searches" element={<ProtectedRoute><SavedSearchesPage /></ProtectedRoute>} />
-                        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+                        <Route path="/payment/success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
                         <Route path="/payment/cancel" element={<PaymentCancelPage />} />
                         {/* Internal panel — superuser only, renders 404 for everyone else */}
                         <Route path="/panel" element={<SuperUserRoute><AdminPanelPage /></SuperUserRoute>} />

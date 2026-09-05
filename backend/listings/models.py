@@ -84,6 +84,10 @@ class Listing(models.Model):
         default=False,
         help_text='Featured listings appear at the top of search results'
     )
+    featured_until = models.DateTimeField(
+        null=True, blank=True,
+        help_text='When the featured period ends; None means not currently featured via payment'
+    )
     is_under_review = models.BooleanField(default=False)
     renewal_blocked = models.BooleanField(
         default=False,
@@ -132,7 +136,10 @@ class Listing(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.title) or 'listing'
-            self.slug = f"{base}-{uuid4().hex[:8]}"
+            candidate = f"{base}-{uuid4().hex[:8]}"
+            while Listing.objects.filter(slug=candidate).exists():
+                candidate = f"{base}-{uuid4().hex[:8]}"
+            self.slug = candidate
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

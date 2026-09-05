@@ -50,7 +50,10 @@ class ForumPost(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.title)[:220] or 'post'
-            self.slug = f"{base}-{uuid.uuid4().hex[:6]}"
+            candidate = f"{base}-{uuid.uuid4().hex[:12]}"
+            while ForumPost.objects.filter(slug=candidate).exists():
+                candidate = f"{base}-{uuid.uuid4().hex[:12]}"
+            self.slug = candidate
         super().save(*args, **kwargs)
 
     @property

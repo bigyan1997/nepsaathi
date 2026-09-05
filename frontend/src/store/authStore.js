@@ -25,11 +25,12 @@ const useAuthStore = create(
       },
 
       logout: () => {
+        const returnTo = window.location.pathname !== "/login" ? window.location.pathname : "/";
         sessionStorage.removeItem("nepsaathi_access_token");
         localStorage.removeItem("nepsaathi_access_token");
         localStorage.removeItem("nepsaathi-auth");
         set({ user: null, isAuthenticated: false });
-        window.location.href = "/login";
+        window.location.href = `/login?next=${encodeURIComponent(returnTo)}`;
       },
 
       updateUser: (user) => set({ user }),

@@ -18,8 +18,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Where were they trying to go before login? Validate it's a relative path to prevent open-redirect.
-  const rawFrom = location.state?.from?.pathname || "/";
+  // Where were they trying to go before login? Prefer router state (ProtectedRoute), then ?next param (logout redirect).
+  // Validate it's a relative path to prevent open-redirect.
+  const searchParams = new URLSearchParams(location.search);
+  const rawFrom = location.state?.from?.pathname || searchParams.get("next") || "/";
   const from = rawFrom.startsWith("/") ? rawFrom : "/";
 
   const handleSubmit = async (e) => {
@@ -39,8 +41,6 @@ export default function LoginPage() {
         } else {
           setError("Invalid email or password. Please try again.");
         }
-      } else if (status === 404) {
-        setError("No account found with this email. Please register first.");
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -281,7 +281,7 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             style={{
-              background: loading ? "#534AB7" : "#534AB7",
+              background: loading ? "#7B74C9" : "#534AB7",
               color: "#fff",
               border: "none",
               borderRadius: "8px",

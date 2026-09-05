@@ -1,5 +1,6 @@
 import secrets
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
@@ -81,7 +82,9 @@ class UserReview(models.Model):
     reviewed_user = models.ForeignKey(
         'users.User', on_delete=models.CASCADE, related_name='reviews_received'
     )
-    rating = models.PositiveSmallIntegerField()  # 1–5
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )  # 1–5
     comment = models.TextField(blank=True, max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
 

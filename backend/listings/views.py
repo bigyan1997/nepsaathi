@@ -32,15 +32,15 @@ def _notify_n8n(listing):
         return
     import json, time, urllib.request
     try:
-        time.sleep(60)  # wait for images to finish uploading
         from .models import Listing as _Listing
+        from django.conf import settings as _settings
         fresh = _Listing.objects.prefetch_related('images').get(id=listing.id)
         path = _LISTING_TYPE_PATH.get(fresh.listing_type, fresh.listing_type + 's')
         first_image = fresh.images.first()
         image_url = first_image.image.url if first_image else None
-        # Make relative image URLs absolute
+        # Make relative image URLs absolute using env-configured BACKEND_URL
         if image_url and image_url.startswith('/'):
-            image_url = f"https://nepsaathi-production.up.railway.app{image_url}"
+            image_url = f"{_settings.BACKEND_URL}{image_url}"
         payload = json.dumps({
             "title": fresh.title,
             "category": fresh.listing_type,
@@ -60,8 +60,8 @@ def _notify_n8n(listing):
             headers=headers, method="POST",
         )
         urllib.request.urlopen(req, timeout=10)
-    except Exception:
-        pass
+    except Exception as _e:
+        logger.warning('_notify_n8n failed for listing %s: %s', listing.id, _e)
 
 
 def _normalize_phone(phone):
@@ -1306,6 +1306,12 @@ class SavedSearchListView(APIView):
     POST /api/listings/saved-searches/        — create a saved search
     """
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_scope = 'saved_search_create'
+
+    def get_throttles(self):
+        if self.request.method == 'POST':
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
 
     def get(self, request):
         searches = SavedSearch.objects.filter(user=request.user)

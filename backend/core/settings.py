@@ -177,6 +177,7 @@ REST_FRAMEWORK = {
         'ai_suggest_tags': '30/day' if not DEBUG else '1000/day',
         'forum_post': '20/hour' if not DEBUG else '1000/day',
         'forum_reply': '30/hour' if not DEBUG else '1000/day',
+        'unread_count': '30/minute' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -212,7 +213,7 @@ REST_AUTH = {
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = 'none' if DEBUG else 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = config('EMAIL_VERIFICATION', default='none' if DEBUG else 'mandatory')
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # ─── Google OAuth ─────────────────────────────────────────────────────────────
@@ -292,6 +293,7 @@ STRIPE_FEATURED_PRICE_CENTS = config('STRIPE_FEATURED_PRICE_CENTS', default=999,
 
 # ─── Frontend URL ─────────────────────────────────────────────────────────────
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 
 # ─── Cache ────────────────────────────────────────────────────────────────────
 REDIS_URL = config('REDIS_URL', default=None)

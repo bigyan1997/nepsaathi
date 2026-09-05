@@ -55,8 +55,13 @@ class GoogleLoginView(SocialLoginView):
                     user.save()
                 if is_new_user:
                     from core.emails import send_welcome_email
-                    import threading
-                    threading.Thread(target=send_welcome_email, args=(user,)).start()
+                    import threading, logging as _log
+                    def _send_welcome(_u):
+                        try:
+                            send_welcome_email(_u)
+                        except Exception as _e:
+                            _log.getLogger(__name__).error('Welcome email failed for user %s: %s', _u.pk, _e)
+                    threading.Thread(target=_send_welcome, args=(user,), daemon=True).start()
         except Exception:
             pass
         return response
@@ -72,6 +77,12 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def perform_update(self, serializer):
+        if getattr(self.request.user, 'is_banned', False):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Your account is suspended. Contact support@nepsaathi.com.')
+        serializer.save()
 
 
 class LogoutView(APIView):
@@ -117,6 +128,15 @@ class DeleteAccountView(APIView):
                     listings = list(Listing.objects.filter(user=user))
                     for listing in listings:
                         listing.delete()
+                    # Django CASCADE skips custom delete() on BusinessImage, so we clean
+                    # Cloudinary images explicitly before the user cascade removes them.
+                    try:
+                        from businesses.models import Business
+                        for biz in Business.objects.filter(owner=user):
+                            for img in biz.images.all():
+                                img.delete()
+                    except Exception:
+                        pass
                     user.delete()
                 return Response(
                     {'detail': 'Your account has been permanently deleted.'},
@@ -311,9 +331,12 @@ class ThrottledRegisterView(APIView):
         try:
             response = RegisterView.as_view()(request._request, *args, **kwargs)
         except IntegrityError:
+            # Return the same generic success-like response to prevent email enumeration.
+            # Allauth's ACCOUNT_PREVENT_ENUMERATION=True handles the normal path; this
+            # catches the rare race condition where two requests create the same user simultaneously.
             return Response(
-                {"email": ["A user with this email address already exists."]},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"detail": "Verification email sent."},
+                status=status.HTTP_201_CREATED,
             )
 
         if response.status_code == 201 and email:

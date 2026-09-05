@@ -80,7 +80,13 @@ class ForumPostDetailView(generics.RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         from django.db.models import F
-        ForumPost.objects.filter(pk=instance.pk).update(view_count=F('view_count') + 1)
+        from django.core.cache import cache
+        # Deduplicate view counts — one increment per user/IP per post per hour
+        viewer = request.user.pk if request.user.is_authenticated else request.META.get('REMOTE_ADDR', 'anon')
+        view_key = f"forum_view:{instance.pk}:{viewer}"
+        if not cache.get(view_key):
+            cache.set(view_key, 1, 3600)
+            ForumPost.objects.filter(pk=instance.pk).update(view_count=F('view_count') + 1)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -96,6 +102,9 @@ class ForumPostDetailView(generics.RetrieveUpdateDestroyAPIView):
             raise PermissionDenied('Your account has been suspended.')
         if instance.is_closed:
             raise PermissionDenied('This post is closed and cannot be edited.')
+        non_editable = [k for k in request.data if k not in ('body',)]
+        if non_editable:
+            raise ValidationError('Only the body can be edited after posting.')
         allowed = {k: v for k, v in request.data.items() if k in ('body',)}
         serializer = self.get_serializer(instance, data=allowed, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -193,6 +202,8 @@ class ForumReplyDeleteView(generics.DestroyAPIView):
 
     def check_object_permissions(self, request, obj):
         super().check_object_permissions(request, obj)
+        if getattr(request.user, 'is_banned', False):
+            raise PermissionDenied('Your account has been suspended.')
         if obj.author != request.user and not request.user.is_staff:
             raise PermissionDenied('You do not own this reply.')
 

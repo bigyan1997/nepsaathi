@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getPaymentStatus } from "../../api/payments";
-import { HourglassMediumIcon, WarningIcon, ConfettiIcon, CheckCircleIcon } from "@phosphor-icons/react";
+import { HourglassMediumIcon, WarningIcon, ConfettiIcon, CheckCircleIcon, ProhibitIcon } from "@phosphor-icons/react";
 
 export default function PaymentSuccessPage() {
   const [params] = useSearchParams();
@@ -11,7 +11,7 @@ export default function PaymentSuccessPage() {
   const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
-    if (!listingId) { setConfirmed(true); return; }
+    if (!listingId) { return; }  // no listingId = show error, not success
 
     let cancelled = false;
     let attempts = 0;
@@ -39,6 +39,24 @@ export default function PaymentSuccessPage() {
     poll();
     return () => { cancelled = true; };
   }, [listingId]);
+
+  if (!listingId) {
+    return (
+      <div style={{ maxWidth: 520, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+        <ProhibitIcon size={56} weight="duotone" color="#A32D2D" style={{ marginBottom: 16 }} />
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "#26215C", margin: "0 0 12px" }}>
+          Invalid payment link
+        </h1>
+        <p style={{ fontSize: 14, color: "#666", marginBottom: 24 }}>
+          This page requires a valid listing ID. If you've made a payment, check your listings or contact{" "}
+          <a href="mailto:support@nepsaathi.com" style={{ color: "#534AB7" }}>support@nepsaathi.com</a>.
+        </p>
+        <Link to="/my-listings" style={{ background: "#534AB7", color: "#fff", padding: "12px 24px", borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+          View my listings
+        </Link>
+      </div>
+    );
+  }
 
   if (!confirmed && !timedOut) {
     return (

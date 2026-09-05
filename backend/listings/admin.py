@@ -6,7 +6,8 @@ from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView, SavedSearch
 
-N8N_WEBHOOK_URL = "https://n8n-production-d0c4.up.railway.app/webhook/nepsaathi-listing"
+import os
+N8N_WEBHOOK_URL = os.environ.get('N8N_WEBHOOK_URL', '')
 
 TYPE_PATH = {
     'job': 'jobs', 'room': 'rooms', 'event': 'events',
@@ -37,9 +38,10 @@ def _fire_n8n_webhook(listing):
                 headers=headers,
                 method="POST",
             )
-            urllib.request.urlopen(req, timeout=10)
-        except Exception:
-            pass
+            urllib.request.urlopen(req, timeout=5)
+        except Exception as _err:
+            import logging as _log
+            _log.getLogger(__name__).warning('Admin N8N webhook failed for listing %s: %s', listing.id, _err)
     threading.Thread(target=_send, daemon=True).start()
 
 

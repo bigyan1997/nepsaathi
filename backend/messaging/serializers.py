@@ -28,7 +28,7 @@ class ConversationSerializer(serializers.ModelSerializer):
         return {
             'id': other.id,
             'name': f"{other.first_name} {other.last_name}".strip() or "NepSaathi User",
-            'avatar': getattr(other, 'google_avatar', None),
+            'avatar': getattr(other, 'avatar', None) or getattr(other, 'google_avatar', None),
         }
 
     def get_last_message(self, obj):
