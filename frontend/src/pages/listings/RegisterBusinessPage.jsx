@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { CameraIcon, WarningIcon, LightbulbIcon } from "@phosphor-icons/react";
-import { createBusiness, uploadBusinessImages } from "../../api/businesses";
+import { createBusiness, updateBusiness, uploadBusinessImages, getBusiness } from "../../api/businesses";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
 import { friendlyError } from "../../utils/axios";
@@ -102,7 +102,11 @@ function Grid2({ children }) {
 
 /* ════════════════════════════════════════════════════ */
 export default function RegisterBusinessPage() {
-  usePageTitle("Register Business");
+  const [searchParams] = useSearchParams();
+  const editSlug = searchParams.get("edit");
+  const isEditMode = Boolean(editSlug);
+
+  usePageTitle(isEditMode ? "Edit Business" : "Register Business");
   const { addToast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -113,6 +117,35 @@ export default function RegisterBusinessPage() {
   const [createdSlug, setCreatedSlug] = useState(null);
   const [photoFiles, setPhotoFiles] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [prefillLoading, setPrefillLoading] = useState(isEditMode);
+
+  useEffect(() => {
+    if (!editSlug) return;
+    getBusiness(editSlug).then((data) => {
+      setForm({
+        business_name: data.business_name || "",
+        category: data.category || "restaurant",
+        description: data.description || "",
+        is_nepalese_owned: data.is_nepalese_owned ?? true,
+        address: data.address || "",
+        suburb: data.suburb || "",
+        state: data.state || "NSW",
+        postcode: data.postcode || "",
+        phone: data.phone || "",
+        whatsapp: data.whatsapp || "",
+        email: data.email || "",
+        website: data.website || "",
+        booking_link: data.booking_link || "",
+        abn: data.abn || "",
+        established_year: data.established_year || "",
+        operating_hours: data.operating_hours || "",
+      });
+      setPrefillLoading(false);
+    }).catch(() => {
+      addToast("Failed to load business details.", "error");
+      setPrefillLoading(false);
+    });
+  }, [editSlug]);
   const [photoError, setPhotoError] = useState("");
   const fileInputRef = useRef(null);
 
@@ -206,17 +239,26 @@ export default function RegisterBusinessPage() {
       return v;
     };
     try {
-      const business = await createBusiness({
+      const payload = {
         ...form,
         website: normaliseUrl(form.website),
         booking_link: normaliseUrl(form.booking_link),
         established_year: form.established_year || null,
-      });
+      };
+      const business = isEditMode
+        ? await updateBusiness(editSlug, payload)
+        : await createBusiness(payload);
       queryClient.invalidateQueries({ queryKey: ["businesses"] });
       queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
-      addToast("Business registered! Now add some photos.", "success");
-      setCreatedSlug(business.slug);
-      setStep(2);
+      queryClient.invalidateQueries({ queryKey: ["business", editSlug] });
+      if (isEditMode) {
+        addToast("Business updated!", "success");
+        navigate(`/businesses/${business.slug}`);
+      } else {
+        addToast("Business registered! Now add some photos.", "success");
+        setCreatedSlug(business.slug);
+        setStep(2);
+      }
     } catch (err) {
       const msg = friendlyError(err) || "Something went wrong. Please try again.";
       setError(msg);
@@ -313,7 +355,12 @@ export default function RegisterBusinessPage() {
         }
       `}</style>
 
-      <div
+      {prefillLoading && (
+        <div style={{ maxWidth: "680px", margin: "0 auto", padding: "28px", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#888", fontSize: "14px" }}>
+          Loading business details…
+        </div>
+      )}
+      {!prefillLoading && <div
         className="rb-outer"
         style={{
           maxWidth: "680px",
@@ -350,11 +397,12 @@ export default function RegisterBusinessPage() {
               margin: "0 0 6px",
             }}
           >
-            Register your business
+            {isEditMode ? "Edit your business" : "Register your business"}
           </h1>
           <p style={{ fontSize: "13px", color: "#AFA9EC", margin: 0 }}>
-            List your Nepalese business on NepSaathi — free forever. Your
-            listing goes live immediately.
+            {isEditMode
+              ? "Update your business details below."
+              : "List your Nepalese business on NepSaathi — free forever. Your listing goes live immediately."}
           </p>
         </div>
 
@@ -689,7 +737,7 @@ export default function RegisterBusinessPage() {
                 marginBottom: "12px",
               }}
             >
-              {loading ? "Registering..." : "Register business →"}
+              {loading ? (isEditMode ? "Saving..." : "Registering...") : (isEditMode ? "Save changes →" : "Register business →")}
             </button>
             <p
               style={{
@@ -704,7 +752,7 @@ export default function RegisterBusinessPage() {
             </p>
           </div>
         </div>
-      </div>
+      </div>}
     </>
   );
 }

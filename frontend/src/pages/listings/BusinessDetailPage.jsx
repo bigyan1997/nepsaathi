@@ -355,6 +355,12 @@ export default function BusinessDetailPage() {
             <span style={{ fontSize: "12px", fontWeight: 600, color: "#555", flexShrink: 0, display: "inline-flex", alignItems: "center", gap: "4px" }}>
               <CameraIcon size={12} weight="fill" color="#555" style={{ flexShrink: 0 }} />Photos ({business.images?.length || 0}/5)
             </span>
+            <button
+              onClick={() => navigate(`/register-business?edit=${business.slug}`)}
+              style={{ marginLeft: "auto", background: "#EEEDFE", color: "#534AB7", border: "none", borderRadius: "8px", padding: "6px 14px", fontSize: "12px", fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+            >
+              Edit details
+            </button>
             {business.images?.map((img) => (
               <div key={img.id} style={{ position: "relative" }}>
                 <img

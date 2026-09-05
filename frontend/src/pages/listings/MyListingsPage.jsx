@@ -1324,7 +1324,7 @@ export default function MyListingsPage() {
                         icon: <PencilSimpleIcon size={14} weight="regular" />, label: "Edit business",
                         onClick: () => {
                           setOpenMenu(null);
-                          navigate(`/businesses/${business.slug}`, { state: { editMode: true } });
+                          navigate(`/register-business?edit=${business.slug}`);
                         },
                       },
                       {
