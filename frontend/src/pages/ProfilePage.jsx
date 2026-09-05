@@ -6,6 +6,7 @@ import { getMyListings, getSavedListings } from "../api/listings";
 import useAuthStore from "../store/authStore";
 import usePageTitle from "../hooks/usePageTitle";
 import { useToast } from "../components/ui/Toast";
+import { friendlyError } from "../utils/axios";
 import { useNavigate } from "react-router-dom";
 import VerifiedBadge from "../components/ui/VerifiedBadge";
 import { ClipboardTextIcon, PlusIcon, WarningIcon } from "@phosphor-icons/react";
@@ -84,16 +85,7 @@ export default function ProfilePage() {
       addToast("Profile updated successfully!", "success");
     },
     onError: (err) => {
-      const errors = err.response?.data;
-      if (errors) {
-        const firstError = Object.values(errors)[0];
-        addToast(
-          Array.isArray(firstError) ? firstError[0] : firstError,
-          "error",
-        );
-      } else {
-        addToast("Something went wrong. Please try again.", "error");
-      }
+      addToast(friendlyError(err) || "Something went wrong. Please try again.", "error");
     },
   });
 
@@ -104,13 +96,7 @@ export default function ProfilePage() {
       addToast("Password changed successfully!", "success");
     },
     onError: (err) => {
-      const errors = err.response?.data;
-      if (errors) {
-        const first = Object.values(errors)[0];
-        addToast(Array.isArray(first) ? first[0] : first, "error");
-      } else {
-        addToast("Something went wrong. Please try again.", "error");
-      }
+      addToast(friendlyError(err) || "Something went wrong. Please try again.", "error");
     },
   });
 

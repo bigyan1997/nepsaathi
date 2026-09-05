@@ -11,6 +11,7 @@ import {
 } from "../../api/notices";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
+import { friendlyError } from "../../utils/axios";
 import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 import { SparkleIcon } from "@phosphor-icons/react";
 
@@ -225,13 +226,7 @@ export default function EditListingPage() {
       addToast("Listing updated successfully!", "success");
       navigate(`/${listingType}s/${slug}`);
     } catch (err) {
-      const errors = err.response?.data;
-      if (errors) {
-        const firstError = Object.values(errors)[0];
-        setError(Array.isArray(firstError) ? firstError[0] : firstError);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+      setError(friendlyError(err) || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

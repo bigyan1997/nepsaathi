@@ -145,6 +145,7 @@ SOCIALACCOUNT_ADAPTER = 'users.adapter.CustomSocialAccountAdapter'
 
 # ─── REST Framework ──────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'core.authentication.SilentJWTAuthentication',
     ),

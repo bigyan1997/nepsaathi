@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useToast } from "./Toast";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/axios";
+import api, { friendlyError } from "../../utils/axios";
 import { CheckCircleIcon, FlagIcon } from "@phosphor-icons/react";
 
 const REASONS = [
@@ -41,8 +41,7 @@ export default function ReportButton({ listingId, endpoint, backPath }) {
         navigate(backPath ?? -1);
       }, 2000);
     } catch (err) {
-      const msg = err.response?.data?.detail || "Failed to submit report.";
-      addToast(msg, "error");
+      addToast(friendlyError(err) || "Failed to submit report.", "error");
     } finally {
       setLoading(false);
     }

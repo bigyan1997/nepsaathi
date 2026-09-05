@@ -10,6 +10,7 @@ import usePageTitle from "../../hooks/usePageTitle";
 import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../components/ui/Toast";
+import { friendlyError } from "../../utils/axios";
 import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, MagnifyingGlassIcon, BuildingsIcon, SparkleIcon, LightbulbIcon, WarningCircleIcon, PawPrintIcon, CarIcon, GiftIcon } from "@phosphor-icons/react";
 
 /* ── constants ── */
@@ -588,17 +589,8 @@ export default function PostAdPage() {
       } else if (err.response?.status === 429) {
         const match = data?.detail?.match(/(\d+) seconds?/);
         startCooldown(match ? parseInt(match[1], 10) : 300);
-      } else if (data) {
-        const first = Object.values(data)[0];
-        setError(
-          Array.isArray(first)
-            ? first[0]
-            : typeof first === "string"
-              ? first
-              : "Something went wrong.",
-        );
       } else {
-        setError("Something went wrong. Please try again.");
+        setError(friendlyError(err) || "Something went wrong. Please try again.");
       }
     } finally {
       setLoading(false);

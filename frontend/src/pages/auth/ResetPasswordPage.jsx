@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import usePageTitle from "../../hooks/usePageTitle";
-import api from "../../utils/axios";
+import api, { friendlyError } from "../../utils/axios";
 import { useToast } from "../../components/ui/Toast";
 
 const EyeIcon = ({ open }) =>
@@ -72,10 +72,7 @@ export default function ResetPasswordPage() {
       addToast("Password reset successfully! Please sign in.", "success");
       navigate("/login");
     } catch (err) {
-      const detail =
-        err.response?.data?.token?.[0] ||
-        err.response?.data?.detail ||
-        "Invalid or expired reset link.";
+      const detail = friendlyError(err) || "Invalid or expired reset link.";
       addToast(detail, "error");
     } finally {
       setLoading(false);

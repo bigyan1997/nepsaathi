@@ -5,6 +5,7 @@ import { CameraIcon, WarningIcon, LightbulbIcon } from "@phosphor-icons/react";
 import { createBusiness, uploadBusinessImages } from "../../api/businesses";
 import usePageTitle from "../../hooks/usePageTitle";
 import { useToast } from "../../components/ui/Toast";
+import { friendlyError } from "../../utils/axios";
 import { STATES } from "../../utils/constants";
 import AddressAutocomplete from "../../components/ui/AddressAutocomplete";
 
@@ -196,16 +197,9 @@ export default function RegisterBusinessPage() {
       setCreatedSlug(business.slug);
       setStep(2);
     } catch (err) {
-      const errors = err.response?.data;
-      if (errors) {
-        const firstError = Object.values(errors)[0];
-        const msg = Array.isArray(firstError) ? firstError[0] : firstError;
-        setError(msg);
-        addToast(msg, "error");
-      } else {
-        setError("Something went wrong. Please try again.");
-        addToast("Something went wrong. Please try again.", "error");
-      }
+      const msg = friendlyError(err) || "Something went wrong. Please try again.";
+      setError(msg);
+      addToast(msg, "error");
     } finally {
       setLoading(false);
     }
