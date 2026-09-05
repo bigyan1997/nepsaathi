@@ -1258,6 +1258,95 @@ def send_listing_expired_email(listing):
         print(f'Listing expired email failed: {e}', flush=True)
 
 
+def send_featured_expiry_warning_email(listing):
+    """Sent ~1 day before a paid featured period expires."""
+    listing_url = _listing_url(listing)
+    feature_url = f"{FRONTEND_URL}/my-listings"
+    try:
+        first_name = _h(listing.user.first_name or 'there')
+        until_str = listing.featured_until.strftime('%d %B %Y') if listing.featured_until else 'soon'
+        body = f"""
+<h1 {_H1}>Your featured listing expires tomorrow &#11088;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, just a heads up — your featured promotion ends on
+  <strong>{until_str}</strong>. After that, your listing will still be active but will
+  no longer appear at the top of search results.
+</p>
+
+{_listing_card(
+    listing.title,
+    listing_url,
+    f"Featured until: {until_str}",
+    bg="#F0EFFE"
+)}
+
+{_info_box(
+    "&#11088; Want to keep reaching more people? You can re-feature your listing from My Listings.",
+    bg="#F0EFFE", border="#C5BDEE", color="#3A2F8A"
+)}
+
+{_btn("Go to My Listings &rarr;", feature_url, color="#534AB7")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Your listing will remain active after the featured period ends — it just won't be pinned
+  to the top of results.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [listing.user.email],
+            'subject': f'[NepSaathi] Your featured listing expires tomorrow — {listing.title}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Featured expiry warning email failed: {e}', flush=True)
+        raise
+
+
+def send_featured_removed_email(listing):
+    """Sent immediately after a listing's featured period has ended."""
+    listing_url = _listing_url(listing)
+    feature_url = f"{FRONTEND_URL}/my-listings"
+    try:
+        first_name = _h(listing.user.first_name or 'there')
+        body = f"""
+<h1 {_H1}>Your featured promotion has ended &#11088;</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, your featured period for the listing below has now ended.
+  Your listing is still active and visible to the community — it just won't be pinned to
+  the top of search results anymore.
+</p>
+
+{_listing_card(
+    listing.title,
+    listing_url,
+    "Featured period: ended",
+    bg="#F5F4F0"
+)}
+
+{_info_box(
+    "&#128269; Want more visibility? You can feature your listing again anytime from My Listings.",
+    bg="#F0EFFE", border="#C5BDEE", color="#3A2F8A"
+)}
+
+{_btn("Feature again &rarr;", feature_url, color="#534AB7")}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Questions? Email us at
+  <a href="mailto:support@nepsaathi.com" style="color:#534AB7;text-decoration:none;">support@nepsaathi.com</a>.
+</p>"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [listing.user.email],
+            'subject': f'[NepSaathi] Your featured promotion has ended — {listing.title}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        print(f'Featured removed email failed: {e}', flush=True)
+        raise
+
+
 # ─────────────────────────────────────────────────────────────
 # 14. EVENT RSVP REMINDER
 # ─────────────────────────────────────────────────────────────

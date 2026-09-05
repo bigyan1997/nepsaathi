@@ -7,6 +7,7 @@ run_jobs() {
   python manage.py expire_featured_listings
   python manage.py expire_featured_businesses
   python manage.py send_expiry_warnings
+  python manage.py send_featured_warnings
   python manage.py send_event_reminders
   python manage.py fetch_remittance_rates
   echo "[cron] $(date) — done"

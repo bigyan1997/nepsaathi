@@ -105,6 +105,7 @@ class Listing(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     expires_at = models.DateTimeField(null=True, blank=True)
     expiry_warning_sent = models.BooleanField(default=False)
+    featured_warning_sent = models.BooleanField(default=False)
 
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
