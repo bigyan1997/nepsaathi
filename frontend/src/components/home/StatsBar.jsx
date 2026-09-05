@@ -1,7 +1,7 @@
 export default function StatsBar({ stats }) {
   const items = [
     { num: stats ? `${stats.total_jobs}+` : "—",        label: "Active job listings", color: "#E87722", emoji: "💼" },
-    { num: stats ? `${stats.total_rooms}+` : "—",       label: "Rooms available",     color: "#534AB7", emoji: "🛏️" },
+    { num: stats ? `${stats.total_rooms}+` : "—",       label: "Rooms available",     color: "#534AB7", emoji: "🏡" },
     { num: stats ? `${stats.total_businesses}+` : "—",  label: "Businesses listed",   color: "#E87722", emoji: "🏪" },
     { num: stats ? `${stats.total_members}+` : "—",     label: "Community members",   color: "#26215C", emoji: "🤝" },
   ];
