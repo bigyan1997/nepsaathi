@@ -354,7 +354,7 @@ export default function AdminPanelPage() {
             {isFetching ? "Refreshing…" : "Refresh"}
           </button>
           <a
-            href="https://nepsaathi-production.up.railway.app/nepsaathi-biggy"
+            href="https://nepsaathi-production.up.railway.app/nepsaathi-biggy/"
             target="_blank"
             rel="noopener noreferrer"
             style={{
