@@ -108,6 +108,7 @@ export default function RegisterBusinessPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [step, setStep] = useState(1);
   const [createdSlug, setCreatedSlug] = useState(null);
   const [photoFiles, setPhotoFiles] = useState([]);
@@ -184,14 +185,18 @@ export default function RegisterBusinessPage() {
   const setCheck = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.checked }));
 
+  function clearFieldError(field) {
+    setFieldErrors((p) => { const n = { ...p }; delete n[field]; return n; });
+  }
+
   const handleSubmit = async () => {
-    if (!form.business_name || !form.description || !form.suburb) {
-      addToast(
-        "Please fill in business name, description and suburb.",
-        "error",
-      );
-      return;
-    }
+    if (loading) return;
+    const errs = {};
+    if (!form.business_name.trim()) errs.business_name = "Business name is required.";
+    if (!form.description.trim() || form.description.trim().length < 20) errs.description = "Description must be at least 20 characters.";
+    if (!form.suburb.trim()) errs.suburb = "Please enter a suburb or city.";
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
     setLoading(true);
     setError("");
     // Normalise URLs in case user didn't tab out of the field before clicking submit
@@ -384,11 +389,12 @@ export default function RegisterBusinessPage() {
             <div>
               <label style={labelStyle}>Business name *</label>
               <input
-                style={inputStyle}
+                style={{ ...inputStyle, borderColor: fieldErrors.business_name ? "#F09595" : undefined }}
                 placeholder="e.g. Himalayan Cafe"
                 value={form.business_name}
-                onChange={set("business_name")}
+                onChange={(e) => { set("business_name")(e); clearFieldError("business_name"); }}
               />
+              {fieldErrors.business_name && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.business_name}</p>}
             </div>
 
             <div>
@@ -413,10 +419,11 @@ export default function RegisterBusinessPage() {
                   ...inputStyle,
                   minHeight: "100px",
                   resize: "vertical",
+                  borderColor: fieldErrors.description ? "#F09595" : undefined,
                 }}
                 placeholder="Describe what your business offers, your specialties, and why customers should choose you..."
                 value={form.description}
-                onChange={set("description")}
+                onChange={(e) => { set("description")(e); clearFieldError("description"); }}
                 maxLength={1000}
               />
               <div
@@ -429,6 +436,7 @@ export default function RegisterBusinessPage() {
               >
                 {form.description.length}/1000
               </div>
+              {fieldErrors.description && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.description}</p>}
             </div>
           </Section>
 
@@ -444,16 +452,12 @@ export default function RegisterBusinessPage() {
                 <label style={labelStyle}>Suburb *</label>
                 <AddressAutocomplete
                   value={form.suburb}
-                  onChange={(val) => setForm(p => ({ ...p, suburb: val }))}
-                  onSelect={({ suburb, state, postcode }) => setForm(p => ({
-                    ...p,
-                    suburb,
-                    ...(state && { state }),
-                    ...(postcode && { postcode }),
-                  }))}
+                  onChange={(val) => { setForm(p => ({ ...p, suburb: val })); clearFieldError("suburb"); }}
+                  onSelect={({ suburb, state, postcode }) => { setForm(p => ({ ...p, suburb, ...(state && { state }), ...(postcode && { postcode }) })); clearFieldError("suburb"); }}
                   placeholder="e.g. Parramatta"
-                  inputStyle={inputStyle}
+                  inputStyle={{ ...inputStyle, borderColor: fieldErrors.suburb ? "#F09595" : undefined }}
                 />
+                {fieldErrors.suburb && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.suburb}</p>}
               </div>
               <div>
                 <label style={labelStyle}>State *</label>

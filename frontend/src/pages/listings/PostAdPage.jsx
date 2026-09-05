@@ -341,8 +341,37 @@ export default function PostAdPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef(null);
+
+  function clearFieldError(field) {
+    setFieldErrors((p) => { const n = { ...p }; delete n[field]; return n; });
+  }
+
+  function validate(atStep) {
+    const errs = {};
+    if (atStep === 2) {
+      if (!baseForm.title.trim() || baseForm.title.trim().length < 5)
+        errs.title = "Title must be at least 5 characters.";
+      if (!baseForm.description.trim() || baseForm.description.trim().length < 20)
+        errs.description = "Description must be at least 20 characters.";
+      if (!baseForm.location.trim())
+        errs.location = "Please enter a suburb or city.";
+    }
+    if (atStep === 3) {
+      if (listingType === "room" && !baseForm.is_wanted && !roomForm.price)
+        errs.room_price = "Please enter a weekly rent.";
+      if (listingType === "event") {
+        if (!eventForm.event_date)
+          errs.event_date = "Please set an event date.";
+        else if (new Date(eventForm.event_date) < new Date())
+          errs.event_date = "Event date must be in the future.";
+      }
+    }
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
 
   function startCooldown(seconds) {
     setCooldown(seconds);
@@ -498,6 +527,8 @@ export default function PostAdPage() {
 
   /* ── submit ── */
   const handleSubmit = async () => {
+    if (loading || cooldown > 0) return;
+    if (!validate(3)) return;
     setLoading(true);
     setError("");
     let baseListingSlug;
@@ -969,7 +1000,7 @@ export default function PostAdPage() {
               <div>
                 <label style={labelStyle}>Title *</label>
                 <input
-                  style={inputStyle}
+                  style={{ ...inputStyle, borderColor: fieldErrors.title ? "#F09595" : "#ddd" }}
                   value={baseForm.title}
                   placeholder={
                     baseForm.is_wanted && listingType === "job"
@@ -986,8 +1017,9 @@ export default function PostAdPage() {
                                 ? "e.g. Dashain Celebration 2025"
                                 : "e.g. Community notice"
                   }
-                  onChange={setBase("title")}
+                  onChange={(e) => { setBase("title")(e); clearFieldError("title"); }}
                 />
+                {fieldErrors.title && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.title}</p>}
               </div>
               <div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
@@ -1021,6 +1053,7 @@ export default function PostAdPage() {
                     ...inputStyle,
                     minHeight: "100px",
                     resize: "vertical",
+                    borderColor: fieldErrors.description ? "#F09595" : "#ddd",
                   }}
                   value={baseForm.description}
                   maxLength={2000}
@@ -1033,9 +1066,11 @@ export default function PostAdPage() {
                   }
                   onChange={(e) => {
                     setBase("description")(e);
+                    clearFieldError("description");
                     if (aiState.preview || aiState.error) setAiState({ loading: false, preview: null, error: null });
                   }}
                 />
+                {fieldErrors.description && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.description}</p>}
                 <div style={{ textAlign: "right", fontSize: "11px", color: baseForm.description.length > 1800 ? "#E87722" : "#bbb", marginTop: "3px" }}>
                   {baseForm.description.length}/2000
                 </div>
@@ -1162,16 +1197,12 @@ export default function PostAdPage() {
                   <label style={labelStyle}>Suburb / City *</label>
                   <AddressAutocomplete
                     value={baseForm.location}
-                    onChange={(val) => setBaseForm(p => ({ ...p, location: val }))}
-                    onSelect={({ suburb, state, postcode }) => setBaseForm(p => ({
-                      ...p,
-                      location: suburb,
-                      ...(state && { state }),
-                      ...(postcode && { postcode }),
-                    }))}
+                    onChange={(val) => { setBaseForm(p => ({ ...p, location: val })); clearFieldError("location"); }}
+                    onSelect={({ suburb, state, postcode }) => { setBaseForm(p => ({ ...p, location: suburb, ...(state && { state }), ...(postcode && { postcode }) })); clearFieldError("location"); }}
                     placeholder="e.g. Parramatta"
-                    inputStyle={inputStyle}
+                    inputStyle={{ ...inputStyle, borderColor: fieldErrors.location ? "#F09595" : "#ddd" }}
                   />
+                  {fieldErrors.location && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.location}</p>}
                 </div>
                 <div>
                   <label style={labelStyle}>Postcode</label>
@@ -1253,17 +1284,11 @@ export default function PostAdPage() {
             <NavButtons
               onBack={() => {
                 setError("");
+                setFieldErrors({});
                 setStep(1);
               }}
               onNext={() => {
-                if (
-                  !baseForm.title ||
-                  !baseForm.description ||
-                  !baseForm.location
-                ) {
-                  setError("Please fill in title, description and location.");
-                  return;
-                }
+                if (!validate(2)) return;
                 setError("");
                 setStep(3);
               }}
@@ -1483,11 +1508,12 @@ export default function PostAdPage() {
                   </label>
                   <input
                     type="number"
-                    style={inputStyle}
+                    style={{ ...inputStyle, borderColor: fieldErrors.room_price ? "#F09595" : "#ddd" }}
                     placeholder="e.g. 250"
                     value={roomForm.price}
-                    onChange={setRoom("price")}
+                    onChange={(e) => { setRoom("price")(e); clearFieldError("room_price"); }}
                   />
+                  {fieldErrors.room_price && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.room_price}</p>}
                 </div>
                 <div>
                   <label style={labelStyle}>
@@ -1761,10 +1787,11 @@ export default function PostAdPage() {
                   <label style={labelStyle}>Start date &amp; time *</label>
                   <input
                     type="datetime-local"
-                    style={inputStyle}
+                    style={{ ...inputStyle, borderColor: fieldErrors.event_date ? "#F09595" : "#ddd" }}
                     value={eventForm.event_date}
-                    onChange={setEvt("event_date")}
+                    onChange={(e) => { setEvt("event_date")(e); clearFieldError("event_date"); }}
                   />
+                  {fieldErrors.event_date && <p style={{ fontSize: "11px", color: "#A32D2D", margin: "4px 0 0" }}>{fieldErrors.event_date}</p>}
                 </div>
                 <div>
                   <label style={labelStyle}>End date &amp; time (optional)</label>
@@ -1870,17 +1897,7 @@ export default function PostAdPage() {
                 setError("");
                 setStep(2);
               }}
-              onNext={() => {
-                if (!eventForm.event_date) {
-                  setError("Please set an event date.");
-                  return;
-                }
-                if (new Date(eventForm.event_date) < new Date()) {
-                  setError("Event date must be in the future.");
-                  return;
-                }
-                handleSubmit();
-              }}
+              onNext={handleSubmit}
               loading={loading}
               disabled={cooldown > 0}
               nextLabel="Post event →"
