@@ -327,9 +327,6 @@ if REDIS_URL:
                 "hosts": [REDIS_URL],
                 "capacity": 1500,       # max messages queued per channel
                 "expiry": 60,           # drop stale messages after 60s
-                "socket_connect_timeout": 5,
-                "socket_timeout": 5,
-                "retry_on_timeout": True,
             },
         }
     }
