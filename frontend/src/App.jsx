@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import axios from "axios";
 import api from "./utils/axios";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
@@ -25,53 +25,54 @@ import CookieConsent from "./components/ui/CookieConsent";
 import SignupNudge from "./components/ui/SignupNudge";
 import IdleTimeoutModal from "./components/ui/IdleTimeoutModal";
 import useIdleTimeout from "./hooks/useIdleTimeout";
-import UserProfilePage from "./pages/UserProfilePage";
 import useExitIntent from "./hooks/useExitIntent";
+import NotFoundPage from "./pages/NotFoundPage";
 
-import HomePage              from "./pages/HomePage";
-import JobsPage              from "./pages/listings/JobsPage";
-import RoomsPage             from "./pages/listings/RoomsPage";
-import EventsPage            from "./pages/listings/EventsPage";
-import FeaturedPage          from "./pages/FeaturedPage";
-import JobDetailPage         from "./pages/listings/JobDetailPage";
-import RoomDetailPage        from "./pages/listings/RoomDetailPage";
-import NoticesPage           from "./pages/listings/NoticesPage";
-import NoticeDetailPage      from "./pages/listings/NoticeDetailPage";
-import EventDetailPage       from "./pages/listings/EventDetailPage";
-import BusinessesPage        from "./pages/listings/BusinessesPage";
-import BusinessDetailPage    from "./pages/listings/BusinessDetailPage";
-import RegisterBusinessPage  from "./pages/listings/RegisterBusinessPage";
-import EditListingPage       from "./pages/listings/EditListingPage";
-import SearchPage            from "./pages/SearchPage";
-import PrivacyPage           from "./pages/PrivacyPage";
-import TermsPage             from "./pages/TermsPage";
-import ContactPage           from "./pages/ContactPage";
-import NotFoundPage          from "./pages/NotFoundPage";
-import PostAdPage            from "./pages/listings/PostAdPage";
-import MyListingsPage        from "./pages/listings/MyListingsPage";
-import ProfilePage           from "./pages/ProfilePage";
-import InboxPage             from "./pages/InboxPage";
-import ConversationPage      from "./pages/ConversationPage";
-import SavedSearchesPage     from "./pages/SavedSearchesPage";
-import PaymentSuccessPage    from "./pages/payment/PaymentSuccessPage";
-import PaymentCancelPage     from "./pages/payment/PaymentCancelPage";
-import AdminPanelPage        from "./pages/AdminPanelPage";
-import ForumPage             from "./pages/forum/ForumPage";
-import ForumPostPage         from "./pages/forum/ForumPostPage";
-import CreatePostPage        from "./pages/forum/CreatePostPage";
-import RemittancePage        from "./pages/RemittancePage";
-import NewListingsPage       from "./pages/NewListingsPage";
-import NewToAustraliaPage   from "./pages/NewToAustraliaPage";
-import LocationPage          from "./pages/listings/LocationPage";
-import ServicesPage          from "./pages/ServicesPage";
-import VisaHubPage           from "./pages/VisaHubPage";
-import WhatsAppGroupsPage    from "./pages/WhatsAppGroupsPage";
-import GuidesPage            from "./pages/GuidesPage";
-import LoginPage             from "./pages/auth/LoginPage";
-import RegisterPage          from "./pages/auth/RegisterPage";
-import VerifyEmailPage       from "./pages/auth/VerifyEmailPage";
-import ForgotPasswordPage    from "./pages/auth/ForgotPasswordPage";
-import ResetPasswordPage     from "./pages/auth/ResetPasswordPage";
+// Route-based code splitting — each page is a separate JS chunk loaded on demand
+const HomePage             = lazy(() => import("./pages/HomePage"));
+const JobsPage             = lazy(() => import("./pages/listings/JobsPage"));
+const RoomsPage            = lazy(() => import("./pages/listings/RoomsPage"));
+const EventsPage           = lazy(() => import("./pages/listings/EventsPage"));
+const FeaturedPage         = lazy(() => import("./pages/FeaturedPage"));
+const JobDetailPage        = lazy(() => import("./pages/listings/JobDetailPage"));
+const RoomDetailPage       = lazy(() => import("./pages/listings/RoomDetailPage"));
+const NoticesPage          = lazy(() => import("./pages/listings/NoticesPage"));
+const NoticeDetailPage     = lazy(() => import("./pages/listings/NoticeDetailPage"));
+const EventDetailPage      = lazy(() => import("./pages/listings/EventDetailPage"));
+const BusinessesPage       = lazy(() => import("./pages/listings/BusinessesPage"));
+const BusinessDetailPage   = lazy(() => import("./pages/listings/BusinessDetailPage"));
+const RegisterBusinessPage = lazy(() => import("./pages/listings/RegisterBusinessPage"));
+const EditListingPage      = lazy(() => import("./pages/listings/EditListingPage"));
+const SearchPage           = lazy(() => import("./pages/SearchPage"));
+const PrivacyPage          = lazy(() => import("./pages/PrivacyPage"));
+const TermsPage            = lazy(() => import("./pages/TermsPage"));
+const ContactPage          = lazy(() => import("./pages/ContactPage"));
+const PostAdPage           = lazy(() => import("./pages/listings/PostAdPage"));
+const MyListingsPage       = lazy(() => import("./pages/listings/MyListingsPage"));
+const ProfilePage          = lazy(() => import("./pages/ProfilePage"));
+const UserProfilePage      = lazy(() => import("./pages/UserProfilePage"));
+const InboxPage            = lazy(() => import("./pages/InboxPage"));
+const ConversationPage     = lazy(() => import("./pages/ConversationPage"));
+const SavedSearchesPage    = lazy(() => import("./pages/SavedSearchesPage"));
+const PaymentSuccessPage   = lazy(() => import("./pages/payment/PaymentSuccessPage"));
+const PaymentCancelPage    = lazy(() => import("./pages/payment/PaymentCancelPage"));
+const AdminPanelPage       = lazy(() => import("./pages/AdminPanelPage"));
+const ForumPage            = lazy(() => import("./pages/forum/ForumPage"));
+const ForumPostPage        = lazy(() => import("./pages/forum/ForumPostPage"));
+const CreatePostPage       = lazy(() => import("./pages/forum/CreatePostPage"));
+const RemittancePage       = lazy(() => import("./pages/RemittancePage"));
+const NewListingsPage      = lazy(() => import("./pages/NewListingsPage"));
+const NewToAustraliaPage   = lazy(() => import("./pages/NewToAustraliaPage"));
+const LocationPage         = lazy(() => import("./pages/listings/LocationPage"));
+const ServicesPage         = lazy(() => import("./pages/ServicesPage"));
+const VisaHubPage          = lazy(() => import("./pages/VisaHubPage"));
+const WhatsAppGroupsPage   = lazy(() => import("./pages/WhatsAppGroupsPage"));
+const GuidesPage           = lazy(() => import("./pages/GuidesPage"));
+const LoginPage            = lazy(() => import("./pages/auth/LoginPage"));
+const RegisterPage         = lazy(() => import("./pages/auth/RegisterPage"));
+const VerifyEmailPage      = lazy(() => import("./pages/auth/VerifyEmailPage"));
+const ForgotPasswordPage   = lazy(() => import("./pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage    = lazy(() => import("./pages/auth/ResetPasswordPage"));
 
 function RedirectAnnouncementSlug() {
   const { slug } = useParams ? useParams() : {};
@@ -205,6 +206,7 @@ function App() {
                 <div style={{ flex: 1 }}>
                   <ErrorBoundary>
                   <PageWrapper>
+                    <Suspense fallback={null}>
                     <Routes>
                         {/* Public routes */}
                         <Route path="/" element={<HomePage />} />
@@ -282,6 +284,7 @@ function App() {
                         {/* 404 — must be last */}
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
+                    </Suspense>
                   </PageWrapper>
                   </ErrorBoundary>
                 </div>
