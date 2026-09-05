@@ -34,7 +34,7 @@ function timeAgo(dateStr) {
 function Avatar({ user, size = 36 }) {
   const initials = (user?.full_name || "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   if (user?.avatar) {
-    return <img src={user.avatar} alt={user.full_name || "User avatar"} style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />;
+    return <img src={user.avatar} alt={user.full_name || "User avatar"} width={size} height={size} loading="lazy" style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />;
   }
   return (
     <div style={{ width: size, height: size, borderRadius: "50%", background: "#EEEDFE", color: "#534AB7", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: size * 0.38, flexShrink: 0 }}>

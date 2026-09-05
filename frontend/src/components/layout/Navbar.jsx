@@ -215,7 +215,7 @@ export default function Navbar() {
                 >
                   <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#534AB7", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 600, flexShrink: 0, overflow: "hidden" }}>
                     {user?.google_avatar ? (
-                      <img src={user.google_avatar} alt={user.first_name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img src={user.google_avatar} alt={user.first_name} width="32" height="32" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
                       user?.first_name?.[0]?.toUpperCase()
                     )}
@@ -318,7 +318,7 @@ export default function Navbar() {
               <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px", background: "#F5F4F0", borderRadius: "8px", marginBottom: "4px" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#534AB7", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 600, flexShrink: 0, overflow: "hidden" }}>
                   {user?.google_avatar ? (
-                    <img src={user.google_avatar} alt={user.first_name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={user.google_avatar} alt={user.first_name} width="32" height="32" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     user?.first_name?.[0]?.toUpperCase()
                   )}

@@ -156,6 +156,25 @@ function App() {
     return () => clearTimeout(t);
   }, []);
 
+  // Prefetch the highest-traffic pages during browser idle time so they load
+  // instantly when the user clicks. Runs once after initial paint.
+  useEffect(() => {
+    const prefetch = () => {
+      import("./pages/listings/JobsPage");
+      import("./pages/listings/RoomsPage");
+      import("./pages/listings/EventsPage");
+      import("./pages/listings/NoticesPage");
+      import("./pages/listings/BusinessesPage");
+      import("./pages/forum/ForumPage");
+    };
+    if ("requestIdleCallback" in window) {
+      const id = requestIdleCallback(prefetch, { timeout: 3000 });
+      return () => cancelIdleCallback(id);
+    }
+    const t = setTimeout(prefetch, 2000);
+    return () => clearTimeout(t);
+  }, []);
+
   // On mount: ensure a valid access token exists, then re-fetch the full user
   // object to restore is_staff / is_superuser (stripped from localStorage persistence).
   useEffect(() => {

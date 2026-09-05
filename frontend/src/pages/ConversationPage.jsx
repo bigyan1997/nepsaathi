@@ -224,7 +224,7 @@ export default function ConversationPage() {
             flexShrink: 0,
           }}>
             {other?.avatar
-              ? <img src={other.avatar} alt={other.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ? <img src={other.avatar} alt={other.name} width="40" height="40" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               : other?.name?.[0]?.toUpperCase() || "?"}
           </div>
           <div>
