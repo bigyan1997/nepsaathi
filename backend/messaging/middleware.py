@@ -25,10 +25,17 @@ class JWTWebsocketMiddleware(BaseMiddleware):
         try:
             from django.core.cache import cache
             from django.contrib.auth import get_user_model
-            user_pk = cache.get(f'ws_ticket:{ticket}')
+            try:
+                user_pk = cache.get(f'ws_ticket:{ticket}')
+            except Exception:
+                # Redis unavailable — fail open as anonymous rather than crashing ASGI
+                return AnonymousUser()
             if not user_pk:
                 return AnonymousUser()
-            cache.delete(f'ws_ticket:{ticket}')
+            try:
+                cache.delete(f'ws_ticket:{ticket}')
+            except Exception:
+                pass  # ticket reuse risk is low; don't crash over a failed delete
             User = get_user_model()
             return User.objects.get(pk=user_pk)
         except Exception:

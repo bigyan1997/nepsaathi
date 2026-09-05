@@ -303,6 +303,11 @@ if REDIS_URL:
         'default': {
             'BACKEND': 'django.core.cache.backends.redis.RedisCache',
             'LOCATION': REDIS_URL,
+            'OPTIONS': {
+                'socket_connect_timeout': 5,
+                'socket_timeout': 5,
+                'retry_on_timeout': True,
+            },
         }
     }
 else:
@@ -318,7 +323,14 @@ if REDIS_URL:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {"hosts": [REDIS_URL]},
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+                "capacity": 1500,       # max messages queued per channel
+                "expiry": 60,           # drop stale messages after 60s
+                "socket_connect_timeout": 5,
+                "socket_timeout": 5,
+                "retry_on_timeout": True,
+            },
         }
     }
 else:
