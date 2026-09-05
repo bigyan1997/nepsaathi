@@ -151,6 +151,22 @@ export default function ForumPage() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const listKey = `${category}-${search}`;
+  const pillsRef = useRef(null);
+  const dragState = useRef({ dragging: false, startX: 0, scrollLeft: 0 });
+
+  const onMouseDown = (e) => {
+    dragState.current = { dragging: true, startX: e.pageX, scrollLeft: pillsRef.current.scrollLeft };
+    pillsRef.current.style.cursor = "grabbing";
+  };
+  const onMouseMove = (e) => {
+    if (!dragState.current.dragging) return;
+    e.preventDefault();
+    pillsRef.current.scrollLeft = dragState.current.scrollLeft - (e.pageX - dragState.current.startX);
+  };
+  const onMouseUp = () => {
+    dragState.current.dragging = false;
+    if (pillsRef.current) pillsRef.current.style.cursor = "grab";
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["forum-posts", category, search],
@@ -223,7 +239,13 @@ export default function ForumPage() {
       </form>
 
       {/* Category pills — horizontally scrollable single row */}
-      <div style={{ display: "flex", gap: "6px", flexWrap: "nowrap", overflowX: "auto", marginBottom: "20px", alignItems: "center", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch", paddingBottom: "2px" }}>
+      <div
+        ref={pillsRef}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+        style={{ display: "flex", gap: "6px", flexWrap: "nowrap", overflowX: "auto", marginBottom: "20px", alignItems: "center", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch", paddingBottom: "2px", cursor: "grab", userSelect: "none" }}>
         {CATEGORIES.map((c, i) => {
           const isTopicDivider = i === 6; // before visa (index 6)
           return (

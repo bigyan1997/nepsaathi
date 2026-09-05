@@ -81,9 +81,9 @@ function RedirectAnnouncementSlug() {
 function SuperUserRoute({ children }) {
   const { user, isAuthenticated } = useAuthStore();
   if (!isAuthenticated) return <NotFoundPage />;
-  // is_staff / is_superuser are not persisted — undefined means the re-fetch is still in flight
-  if (user?.is_staff === undefined) return null;
-  if (!user.is_staff || !user.is_superuser) return <NotFoundPage />;
+  // is_admin is undefined while user profile is still loading
+  if (user?.is_admin === undefined) return null;
+  if (!user.is_admin) return <NotFoundPage />;
   return children;
 }
 
