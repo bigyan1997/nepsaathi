@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -67,6 +67,12 @@ export default function BottomNav() {
     sheetTouchStartY.current = null;
   }, []);
 
+  // Lock body scroll while sheet is open so background content doesn't move
+  useEffect(() => {
+    document.body.style.overflow = sheetOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [sheetOpen]);
+
   const { data: unreadData } = useQuery({
     queryKey: ["unread-count"],
     queryFn: getUnreadCount,
@@ -122,12 +128,14 @@ export default function BottomNav() {
       {sheetOpen && (
         <div
           onClick={() => setSheetOpen(false)}
+          onTouchMove={(e) => e.preventDefault()}
           style={{
             position: "fixed",
             inset: 0,
             background: "rgba(0,0,0,0.35)",
             zIndex: 108,
             backdropFilter: "blur(2px)",
+            touchAction: "none",
           }}
         />
       )}
