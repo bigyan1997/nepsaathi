@@ -173,6 +173,14 @@ export default function RegisterBusinessPage() {
 
   const set = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const setUrl = (field) => (e) => {
+    let val = e.target.value.trim();
+    if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
+      val = "https://" + val;
+    }
+    setForm((prev) => ({ ...prev, [field]: val }));
+  };
   const setCheck = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.checked }));
 
@@ -519,21 +527,26 @@ export default function RegisterBusinessPage() {
               <div>
                 <label style={labelStyle}>Website</label>
                 <input
-                  type="url"
+                  type="text"
                   style={inputStyle}
-                  placeholder="e.g. https://mybusiness.com"
+                  placeholder="e.g. www.mybusiness.com.au"
                   value={form.website}
                   onChange={set("website")}
+                  onBlur={setUrl("website")}
                 />
+                <div style={{ fontSize: "11px", color: "#aaa", marginTop: "4px" }}>
+                  Just type the address — we'll add https:// for you if needed.
+                </div>
               </div>
               <div>
                 <label style={labelStyle}>Booking / Appointment Link <span style={{ fontWeight: 400, color: "#aaa" }}>(optional)</span></label>
                 <input
-                  type="url"
+                  type="text"
                   style={inputStyle}
-                  placeholder="e.g. https://calendly.com/yourbusiness"
+                  placeholder="e.g. www.calendly.com/yourbusiness"
                   value={form.booking_link}
                   onChange={set("booking_link")}
+                  onBlur={setUrl("booking_link")}
                 />
               </div>
             </div>
