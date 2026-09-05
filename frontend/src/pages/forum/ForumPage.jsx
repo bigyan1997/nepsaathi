@@ -222,8 +222,8 @@ export default function ForumPage() {
         )}
       </form>
 
-      {/* Category pills — intent tags first, then topic tags */}
-      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "20px", alignItems: "center" }}>
+      {/* Category pills — horizontally scrollable single row */}
+      <div style={{ display: "flex", gap: "6px", flexWrap: "nowrap", overflowX: "auto", marginBottom: "20px", alignItems: "center", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch", paddingBottom: "2px" }}>
         {CATEGORIES.map((c, i) => {
           const isTopicDivider = i === 6; // before visa (index 6)
           return (
@@ -246,6 +246,8 @@ export default function ForumPage() {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "5px",
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
                 }}
               >
                 {c.Icon && <c.Icon size={13} weight="regular" color={category === c.value ? "#fff" : "#534AB7"} />}
