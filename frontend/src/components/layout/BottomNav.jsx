@@ -7,6 +7,14 @@ import {
   ChatDotsIcon,
   BedIcon,
   PlusCircleIcon,
+  ChatCircleDotsIcon,
+  CurrencyCircleDollarIcon,
+  BookOpenIcon,
+  AirplaneTakeoffIcon,
+  WhatsappLogoIcon,
+  CompassIcon,
+  WrenchIcon,
+  SparkleIcon,
 } from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
 import { getUnreadCount } from "../../api/messages";
@@ -19,14 +27,14 @@ const TABS = [
 ];
 
 const MORE_LINKS = [
-  { to: "/forum",            emoji: "💬", label: "Community"    },
-  { to: "/send-money",       emoji: "💸", label: "Send Money"   },
-  { to: "/guides/banking",   emoji: "📖", label: "Guides"       },
-  { to: "/visa",             emoji: "🛂", label: "Visa Hub"     },
-  { to: "/whatsapp-groups",  emoji: "📱", label: "WhatsApp"     },
-  { to: "/new-to-australia", emoji: "🇦🇺", label: "New Here?"   },
-  { to: "/services",         emoji: "🛠️", label: "Services"     },
-  { to: "/new-listings",     emoji: "🆕", label: "New Today"    },
+  { to: "/forum",            Icon: ChatCircleDotsIcon,      label: "Community",  color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/send-money",       Icon: CurrencyCircleDollarIcon,label: "Send Money", color: "#1D9E75", bg: "#E1F5EE" },
+  { to: "/guides/banking",   Icon: BookOpenIcon,            label: "Guides",     color: "#0C447C", bg: "#E6F1FB" },
+  { to: "/visa",             Icon: AirplaneTakeoffIcon,     label: "Visa Hub",   color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/whatsapp-groups",  Icon: WhatsappLogoIcon,        label: "WhatsApp",   color: "#1D9E75", bg: "#E1F5EE" },
+  { to: "/new-to-australia", Icon: CompassIcon,             label: "New Here?",  color: "#E87722", bg: "#FFF1E0" },
+  { to: "/services",         Icon: WrenchIcon,              label: "Services",   color: "#8B5E00", bg: "#FAEEDA" },
+  { to: "/new-listings",     Icon: SparkleIcon,             label: "New Today",  color: "#534AB7", bg: "#EEEDFE" },
 ];
 
 export default function BottomNav() {
@@ -149,7 +157,7 @@ export default function BottomNav() {
           More
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
-          {MORE_LINKS.map(({ to, emoji, label }) => (
+          {MORE_LINKS.map(({ to, Icon, label, color, bg }) => (
             <Link
               key={to}
               to={to}
@@ -158,15 +166,15 @@ export default function BottomNav() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
                 textDecoration: "none",
-                padding: "12px 4px",
-                borderRadius: "12px",
-                background: "#F7F6FF",
-                border: "0.5px solid #EEEDFE",
+                padding: "14px 4px 10px",
+                borderRadius: "14px",
+                background: bg,
+                border: "0.5px solid rgba(0,0,0,0.06)",
               }}
             >
-              <span style={{ fontSize: "22px", lineHeight: 1 }}>{emoji}</span>
+              <Icon size={24} weight="duotone" color={color} />
               <span style={{ fontSize: "10px", fontWeight: 600, color: "#444", textAlign: "center", lineHeight: 1.2 }}>{label}</span>
             </Link>
           ))}
@@ -190,6 +198,7 @@ export default function BottomNav() {
           alignItems: "stretch",
           height: "58px",
           paddingBottom: "env(safe-area-inset-bottom)",
+          overflow: "visible",
         }}
       >
         {/* Swipe hint — pill at top centre */}
