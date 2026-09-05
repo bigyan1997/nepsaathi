@@ -53,6 +53,7 @@ const useAuthStore = create(
               ...state.user,
               is_staff: undefined,
               is_superuser: undefined,
+              is_admin: undefined,
               phone: undefined,
               bio: undefined,
               referral_code: undefined,
