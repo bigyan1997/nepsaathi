@@ -32,7 +32,7 @@ export const CARD_ACCENT = {
 
 export const HOME_CATEGORIES = [
   { to: "/jobs",       emoji: "💼", label: "Jobs",       desc: "Find work near you",        color: "#EEEDFE", border: "#AFA9EC" },
-  { to: "/rooms",      emoji: "🏠", label: "Rooms",      desc: "Affordable rentals",         color: "#FFF1E0", border: "#EFD9C0" },
+  { to: "/rooms",      emoji: "🏡", label: "Rooms",      desc: "Affordable rentals",         color: "#FFF1E0", border: "#EFD9C0" },
   { to: "/events",     emoji: "🎉", label: "Events",     desc: "Community gatherings",       color: "#E1F5EE", border: "#9FE1CB" },
   { to: "/notices",    emoji: "📢", label: "Notices",    desc: "News and updates",           color: "#E6F1FB", border: "#B5D4F4" },
   { to: "/businesses", emoji: "🏪", label: "Businesses", desc: "Nepalese directory",         color: "#FAEEDA", border: "#FAC775" },
