@@ -805,7 +805,10 @@ export default function MyListingsPage() {
             },
             listing.status === "filled" && {
               label: "↺ Reopen listing",
-              onClick: () => { setOpenMenu(null); markStatusMutation.mutate({ id: listing.id, status: "active" }); },
+              onClick: () => {
+                setOpenMenu(null);
+                confirmDelete(`Reopen "${listing.title}" as active?`, () => markStatusMutation.mutate({ id: listing.id, status: "active" }), "Yes, Reopen", "#534AB7");
+              },
             },
             {
               icon: <TrashIcon size={14} weight="regular" />, label: "Delete listing", danger: true,
@@ -1315,6 +1318,13 @@ export default function MyListingsPage() {
                         onClick: () => {
                           setOpenMenu(null);
                           navigate(`/businesses/${business.slug}`);
+                        },
+                      },
+                      {
+                        icon: <PencilSimpleIcon size={14} weight="regular" />, label: "Edit business",
+                        onClick: () => {
+                          setOpenMenu(null);
+                          navigate(`/businesses/${business.slug}`, { state: { editMode: true } });
                         },
                       },
                       {

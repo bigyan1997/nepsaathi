@@ -1,24 +1,35 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   HouseIcon,
   BriefcaseIcon,
-  BedIcon,
+  ChatDotsIcon,
   ChatCircleDotsIcon,
   PlusCircleIcon,
 } from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
+import { getUnreadCount } from "../../api/messages";
 
 const TABS = [
-  { to: "/",      Icon: HouseIcon,          label: "Home",      color: "#534AB7", bg: "#EEEDFE", exact: true },
-  { to: "/jobs",  Icon: BriefcaseIcon,       label: "Jobs",      color: "#534AB7", bg: "#EEEDFE" },
-  { to: "/rooms", Icon: BedIcon,             label: "Rooms",     color: "#85510A", bg: "#FFF1E0" },
-  { to: "/forum", Icon: ChatCircleDotsIcon,  label: "Community", color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/",        Icon: HouseIcon,          label: "Home",      color: "#534AB7", bg: "#EEEDFE", exact: true },
+  { to: "/jobs",    Icon: BriefcaseIcon,       label: "Jobs",      color: "#534AB7", bg: "#EEEDFE" },
+  { to: "/messages",Icon: ChatDotsIcon,        label: "Inbox",     color: "#534AB7", bg: "#EEEDFE", showBadge: true },
+  { to: "/forum",   Icon: ChatCircleDotsIcon,  label: "Community", color: "#534AB7", bg: "#EEEDFE" },
 ];
 
 export default function BottomNav() {
   const { pathname } = useLocation();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
+
+  const { data: unreadData } = useQuery({
+    queryKey: ["unread-count"],
+    queryFn: getUnreadCount,
+    enabled: isAuthenticated,
+    refetchInterval: 15000,
+    staleTime: 0,
+  });
+  const unreadCount = unreadData?.unread_count || 0;
 
   const handlePost = () => {
     navigate(isAuthenticated ? "/post-ad" : "/login");
@@ -46,6 +57,7 @@ export default function BottomNav() {
     >
       {TABS.slice(0, 2).map((tab) => {
         const active = isActive(tab);
+        const badge = tab.showBadge && unreadCount > 0 ? unreadCount : 0;
         return (
           <Link
             key={tab.to}
@@ -60,9 +72,17 @@ export default function BottomNav() {
               textDecoration: "none",
               background: active ? tab.bg : "transparent",
               transition: "background 0.15s",
+              position: "relative",
             }}
           >
-            <tab.Icon size={20} weight={active ? "fill" : "regular"} color={active ? tab.color : "#999"} />
+            <div style={{ position: "relative" }}>
+              <tab.Icon size={20} weight={active ? "fill" : "regular"} color={active ? tab.color : "#999"} />
+              {badge > 0 && (
+                <span style={{ position: "absolute", top: "-4px", right: "-6px", background: "#A32D2D", color: "#fff", fontSize: "9px", fontWeight: 700, borderRadius: "10px", padding: "1px 4px", lineHeight: 1.4, minWidth: "14px", textAlign: "center" }}>
+                  {badge > 9 ? "9+" : badge}
+                </span>
+              )}
+            </div>
             <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? tab.color : "#999", lineHeight: 1 }}>
               {tab.label}
             </span>
@@ -97,6 +117,7 @@ export default function BottomNav() {
 
       {TABS.slice(2).map((tab) => {
         const active = isActive(tab);
+        const badge = tab.showBadge && unreadCount > 0 ? unreadCount : 0;
         return (
           <Link
             key={tab.to}
@@ -111,9 +132,17 @@ export default function BottomNav() {
               textDecoration: "none",
               background: active ? tab.bg : "transparent",
               transition: "background 0.15s",
+              position: "relative",
             }}
           >
-            <tab.Icon size={20} weight={active ? "fill" : "regular"} color={active ? tab.color : "#999"} />
+            <div style={{ position: "relative" }}>
+              <tab.Icon size={20} weight={active ? "fill" : "regular"} color={active ? tab.color : "#999"} />
+              {badge > 0 && (
+                <span style={{ position: "absolute", top: "-4px", right: "-6px", background: "#A32D2D", color: "#fff", fontSize: "9px", fontWeight: 700, borderRadius: "10px", padding: "1px 4px", lineHeight: 1.4, minWidth: "14px", textAlign: "center" }}>
+                  {badge > 9 ? "9+" : badge}
+                </span>
+              )}
+            </div>
             <span style={{ fontSize: "10px", fontWeight: active ? 700 : 500, color: active ? tab.color : "#999", lineHeight: 1 }}>
               {tab.label}
             </span>

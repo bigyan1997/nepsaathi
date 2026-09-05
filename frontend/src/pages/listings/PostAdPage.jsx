@@ -677,7 +677,9 @@ export default function PostAdPage() {
 
           {/* Step indicator — circles + connector lines only, label below */}
           <div style={{ display: "flex", alignItems: "center" }}>
-            {[1, 2, 3, 4].map((s) => {
+            {STEP_LABELS.map((_, idx) => {
+              const s = idx + 1;
+              const totalSteps = STEP_LABELS.length;
               const done = step > s;
               const current = step === s;
               return (
@@ -686,7 +688,7 @@ export default function PostAdPage() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    flex: s < 4 ? 1 : "none",
+                    flex: s < totalSteps ? 1 : "none",
                   }}
                 >
                   <div
@@ -1021,6 +1023,7 @@ export default function PostAdPage() {
                     resize: "vertical",
                   }}
                   value={baseForm.description}
+                  maxLength={2000}
                   placeholder={
                     baseForm.is_wanted && listingType === "job"
                       ? "Tell employers about yourself and what work you're looking for..."
@@ -1033,6 +1036,9 @@ export default function PostAdPage() {
                     if (aiState.preview || aiState.error) setAiState({ loading: false, preview: null, error: null });
                   }}
                 />
+                <div style={{ textAlign: "right", fontSize: "11px", color: baseForm.description.length > 1800 ? "#E87722" : "#bbb", marginTop: "3px" }}>
+                  {baseForm.description.length}/2000
+                </div>
                 {aiState.error && (
                   <p style={{ fontSize: 11, color: "#A32D2D", margin: "4px 0 0" }}>{aiState.error}</p>
                 )}
@@ -1770,6 +1776,9 @@ export default function PostAdPage() {
                   />
                 </div>
               </Grid2>
+              <div style={{ fontSize: "11px", color: "#999", marginTop: "-4px" }}>
+                Times are in your local timezone. If your event has attendees in other states, mention the timezone in your description.
+              </div>
               <div>
                 <label style={labelStyle}>Venue / Address</label>
                 <input

@@ -422,6 +422,7 @@ export default function EditListingPage() {
           <label style={labelStyle}>Contact phone</label>
           <input
             style={inputStyle}
+            placeholder="e.g. 0412 345 678"
             value={baseForm.contact_phone}
             onChange={(e) =>
               setBaseForm({ ...baseForm, contact_phone: e.target.value })
@@ -433,6 +434,7 @@ export default function EditListingPage() {
           <label style={labelStyle}>WhatsApp</label>
           <input
             style={inputStyle}
+            placeholder="e.g. 0412 345 678"
             value={baseForm.contact_whatsapp}
             onChange={(e) =>
               setBaseForm({ ...baseForm, contact_whatsapp: e.target.value })
@@ -445,6 +447,7 @@ export default function EditListingPage() {
           <input
             type="email"
             style={inputStyle}
+            placeholder="e.g. hello@example.com"
             value={baseForm.contact_email}
             onChange={(e) =>
               setBaseForm({ ...baseForm, contact_email: e.target.value })

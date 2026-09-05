@@ -194,9 +194,17 @@ export default function RegisterBusinessPage() {
     }
     setLoading(true);
     setError("");
+    // Normalise URLs in case user didn't tab out of the field before clicking submit
+    const normaliseUrl = (val) => {
+      const v = (val || "").trim();
+      if (v && !v.startsWith("http://") && !v.startsWith("https://")) return "https://" + v;
+      return v;
+    };
     try {
       const business = await createBusiness({
         ...form,
+        website: normaliseUrl(form.website),
+        booking_link: normaliseUrl(form.booking_link),
         established_year: form.established_year || null,
       });
       queryClient.invalidateQueries({ queryKey: ["businesses"] });

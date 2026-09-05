@@ -43,7 +43,7 @@ function Avatar({ user, size = 36 }) {
   );
 }
 
-function ReplyCard({ reply, currentUser, onDelete, onVote }) {
+function ReplyCard({ reply, currentUser, onDelete, onVote, confirmingDeleteId, onConfirmDelete, onCancelDelete }) {
   return (
     <div style={{ background: "#fff", borderRadius: "12px", border: "0.5px solid #e8e8e8", padding: "14px 16px" }}>
       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
@@ -66,12 +66,17 @@ function ReplyCard({ reply, currentUser, onDelete, onVote }) {
               ▲ {reply.upvote_count}
             </button>
             {currentUser?.id === reply.author?.id && (
-              <button
-                onClick={() => onDelete(reply.id)}
-                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "12px", color: "#A32D2D", padding: 0 }}
-              >
-                Delete
-              </button>
+              confirmingDeleteId === reply.id ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span style={{ fontSize: "11px", color: "#555" }}>Delete?</span>
+                  <button onClick={() => onConfirmDelete(reply.id)} style={{ fontSize: "11px", fontWeight: 700, color: "#fff", background: "#A32D2D", border: "none", borderRadius: "5px", padding: "3px 8px", cursor: "pointer" }}>Yes</button>
+                  <button onClick={onCancelDelete} style={{ fontSize: "11px", color: "#888", background: "none", border: "none", cursor: "pointer" }}>No</button>
+                </div>
+              ) : (
+                <button onClick={() => onDelete(reply.id)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "12px", color: "#A32D2D", padding: 0 }}>
+                  Delete
+                </button>
+              )
             )}
           </div>
         </div>
@@ -87,6 +92,7 @@ export default function ForumPostPage() {
   const { addToast } = useToast();
   const qc = useQueryClient();
   const [replyBody, setReplyBody] = useState("");
+  const [confirmingDelete, setConfirmingDelete] = useState(null); // "post" | replyId
 
   const { data: post, isLoading } = useQuery({
     queryKey: ["forum-post", slug],
@@ -140,7 +146,14 @@ export default function ForumPostPage() {
     );
   }
 
-  if (!post) return <div style={{ padding: "48px", textAlign: "center", color: "#888" }}>Post not found.</div>;
+  if (!post) return (
+    <div style={{ padding: "64px 24px", textAlign: "center", color: "#888" }}>
+      <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
+      <div style={{ fontSize: "16px", fontWeight: 600, color: "#444", marginBottom: "6px" }}>Post not found</div>
+      <div style={{ fontSize: "13px", color: "#aaa", marginBottom: "20px" }}>This post may have been removed or never existed.</div>
+      <Link to="/forum" style={{ fontSize: "13px", color: "#534AB7", fontWeight: 600, textDecoration: "none" }}>← Back to Forum</Link>
+    </div>
+  );
 
   const cat = CAT_COLORS[post.category] || CAT_COLORS.general;
   const isOwner = user?.id === post.author?.id;
@@ -262,12 +275,17 @@ export default function ForumPostPage() {
           </button>
           <span style={{ fontSize: "13px", color: "#888", display: "inline-flex", alignItems: "center", gap: "4px" }}><ChatDotsIcon size={13} weight="regular" color="#aaa" /> {(post.replies || []).length} replies</span>
           {isOwner && (
-            <button
-              onClick={() => { if (window.confirm("Delete this post?")) deletePostMutation.mutate(); }}
-              style={{ marginLeft: "auto", background: "none", border: "none", fontSize: "13px", color: "#A32D2D", cursor: "pointer" }}
-            >
-              Delete post
-            </button>
+            confirmingDelete === "post" ? (
+              <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "12px", color: "#555" }}>Delete this post?</span>
+                <button onClick={() => deletePostMutation.mutate()} style={{ fontSize: "12px", fontWeight: 700, color: "#fff", background: "#A32D2D", border: "none", borderRadius: "6px", padding: "4px 10px", cursor: "pointer" }}>Yes, delete</button>
+                <button onClick={() => setConfirmingDelete(null)} style={{ fontSize: "12px", color: "#888", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>
+              </div>
+            ) : (
+              <button onClick={() => setConfirmingDelete("post")} style={{ marginLeft: "auto", background: "none", border: "none", fontSize: "13px", color: "#A32D2D", cursor: "pointer" }}>
+                Delete post
+              </button>
+            )
           )}
         </div>
       </div>
@@ -283,7 +301,10 @@ export default function ForumPostPage() {
               key={reply.id}
               reply={reply}
               currentUser={user}
-              onDelete={(id) => { if (window.confirm("Delete reply?")) deleteReplyMutation.mutate(id); }}
+              onDelete={(id) => setConfirmingDelete(id)}
+              confirmingDeleteId={confirmingDelete}
+              onConfirmDelete={(id) => { deleteReplyMutation.mutate(id); setConfirmingDelete(null); }}
+              onCancelDelete={() => setConfirmingDelete(null)}
               onVote={(id) => isAuthenticated ? voteReplyMutation.mutate(id) : navigate("/login")}
             />
           ))}

@@ -168,24 +168,14 @@ export default function LoginPage() {
             {(error.includes("Invalid email or password") ||
               error.includes("Incorrect password")) && (
               <div style={{ marginTop: "8px", fontSize: "12px" }}>
-                Forgot your password? Email us at or click{" "}
-                <Link
-                  to="/forgot-password"
-                  style={{
-                    color: "#A32D2D",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                  }}
-                >
-                  here
-                </Link>{" "}
-                to reset it.
-                <a
-                  href="mailto:support@nepsaathi.com"
-                  style={{ color: "#A32D2D", fontWeight: 600 }}
-                >
+                Forgot your password?{" "}
+                <Link to="/forgot-password" style={{ color: "#A32D2D", fontWeight: 600, textDecoration: "none" }}>
+                  Click here to reset it
+                </Link>
+                , or email{" "}
+                <a href="mailto:support@nepsaathi.com" style={{ color: "#A32D2D", fontWeight: 600 }}>
                   support@nepsaathi.com
-                </a>
+                </a>.
               </div>
             )}
           </div>
@@ -291,7 +281,7 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             style={{
-              background: loading ? "#ccc" : "#534AB7",
+              background: loading ? "#534AB7" : "#534AB7",
               color: "#fff",
               border: "none",
               borderRadius: "8px",
@@ -301,10 +291,28 @@ export default function LoginPage() {
               cursor: loading ? "not-allowed" : "pointer",
               marginTop: "4px",
               minHeight: "46px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              opacity: loading ? 0.85 : 1,
+              transition: "opacity 0.15s",
             }}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading && (
+              <span style={{
+                width: "16px", height: "16px",
+                border: "2px solid rgba(255,255,255,0.4)",
+                borderTopColor: "#fff",
+                borderRadius: "50%",
+                display: "inline-block",
+                animation: "spin 0.7s linear infinite",
+                flexShrink: 0,
+              }} />
+            )}
+            {loading ? "Signing you in…" : "Sign in"}
           </button>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </form>
 
         {/* Divider */}
