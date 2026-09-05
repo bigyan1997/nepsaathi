@@ -473,22 +473,6 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* Preferred Source button — rendered by Google's publisher.js */}
-            <div style={{ marginTop: "20px" }}>
-              <div
-                style={{
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  color: "rgba(201,196,245,0.6)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.07em",
-                  marginBottom: "10px",
-                }}
-              >
-                Google Preferred Source
-              </div>
-              <div google-add-preferred-source-btn data-theme="dark" />
-            </div>
           </div>
 
           {/* Explore */}
