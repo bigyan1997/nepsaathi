@@ -42,7 +42,7 @@ listing_sitemaps = {
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
-ADMIN_URL = config('ADMIN_URL', default='nepsaathi-admin/')
+ADMIN_URL = config('ADMIN_URL', default='nepsaathi-admin/').rstrip('/') + '/'
 
 urlpatterns = [
     # Admin panel — path configurable via ADMIN_URL env var
