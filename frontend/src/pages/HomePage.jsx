@@ -19,7 +19,7 @@ import StatsBar from "../components/home/StatsBar";
 import CtaBanner from "../components/home/CtaBanner";
 import { timeAgo, isNew, HOME_SEARCH_TYPES } from "../components/home/homeUtils";
 import useT from "../hooks/useT";
-import { BriefcaseIcon, HouseIcon, MapPinIcon, StarIcon } from "@phosphor-icons/react";
+import { MapPinIcon, StarIcon } from "@phosphor-icons/react";
 
 const STATES = [
   { value: "", label: "All states" },
@@ -312,7 +312,7 @@ export default function HomePage() {
             <Link key={job.id} to={`/jobs/${job.listing_slug}`} className="lc lc-job"
               style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><BriefcaseIcon size={18} weight="duotone" color="#3C3489" /></div>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "20px" }}>💼</div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     {job.listing_title}{job.is_featured && FEATURED_BADGE}{isNew(job.created_at) && NEW_BADGE}
@@ -344,7 +344,7 @@ export default function HomePage() {
             <Link key={room.id} to={`/rooms/${room.listing_slug}`} className="lc lc-room"
               style={{ background: "#fff", border: "0.5px solid #e8e8e8", borderRadius: "12px", padding: "16px 20px", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#FFF1E0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><HouseIcon size={18} weight="duotone" color="#633806" /></div>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "#FFF1E0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "20px" }}>🏡</div>
                 <div>
                   <div style={{ fontSize: "14px", fontWeight: 600, color: "#26215C", marginBottom: "3px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
                     {room.listing_title}{room.is_featured && FEATURED_BADGE}{isNew(room.created_at) && NEW_BADGE}
