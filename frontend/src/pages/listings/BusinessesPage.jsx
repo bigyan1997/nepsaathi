@@ -419,39 +419,12 @@ function BusinessMobileCard({ biz }) {
           </div>
         )}
 
-        {/* Badges — bottom left */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "8px",
-            left: "8px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            zIndex: 2,
-          }}
-        >
-          {biz.is_nepalese_owned && (
-            <span
-              style={{
-                background: "rgba(255,255,255,0.92)",
-                color: "#3C3489",
-                fontSize: "9px",
-                fontWeight: 700,
-                padding: "2px 8px",
-                borderRadius: "5px",
-                alignSelf: "flex-start",
-              }}
-            >
-              🇳🇵 Nepalese
-            </span>
-          )}
-          {isNew(biz.created_at) && (
-            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px", alignSelf: "flex-start" }}>
-              NEW
-            </span>
-          )}
-        </div>
+        {/* NEW badge — top left of strip only */}
+        {isNew(biz.created_at) && (
+          <div style={{ position: "absolute", top: "8px", left: "8px", zIndex: 2 }}>
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px" }}>NEW</span>
+          </div>
+        )}
 
         <div
           style={{
@@ -476,19 +449,27 @@ function BusinessMobileCard({ biz }) {
           gap: "4px",
         }}
       >
-        <div
-          style={{
-            fontSize: "13px",
-            fontWeight: 700,
-            color: "#26215C",
-            lineHeight: 1.3,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {biz.business_name}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "6px" }}>
+          <div
+            style={{
+              fontSize: "13px",
+              fontWeight: 700,
+              color: "#26215C",
+              lineHeight: 1.3,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              flex: 1,
+            }}
+          >
+            {biz.business_name}
+          </div>
+          {biz.is_nepalese_owned && (
+            <span style={{ background: "#EEEDFE", color: "#3C3489", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "5px", whiteSpace: "nowrap", flexShrink: 0 }}>
+              🇳🇵 Nepali
+            </span>
+          )}
         </div>
 
         {/* Rating */}
@@ -675,15 +656,15 @@ function BusinessCard({ business }) {
           <CatIcon size={11} weight="duotone" color={catColor.color} />
           {catLabel}
         </span>
-        <div
-          style={{
-            fontSize: "15px",
-            fontWeight: 700,
-            color: "#26215C",
-            lineHeight: 1.25,
-          }}
-        >
-          {business.business_name}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "6px" }}>
+          <div style={{ fontSize: "15px", fontWeight: 700, color: "#26215C", lineHeight: 1.25, flex: 1 }}>
+            {business.business_name}
+          </div>
+          {business.is_nepalese_owned && (
+            <span style={{ background: "#EEEDFE", color: "#3C3489", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "5px", whiteSpace: "nowrap", flexShrink: 0 }}>
+              🇳🇵 Nepali
+            </span>
+          )}
         </div>
         {business.avg_rating > 0 ? (
           <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
