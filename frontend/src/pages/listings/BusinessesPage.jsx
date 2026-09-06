@@ -340,133 +340,46 @@ function BusinessMobileCard({ biz }) {
       to={`/businesses/${biz.slug}`}
       style={{
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         background: "#fff",
-        border: "0.5px solid #e5e5e5",
+        border: "0.5px solid #e8e8e8",
         borderRadius: "14px",
         overflow: "hidden",
         textDecoration: "none",
         transition: "box-shadow 0.15s",
-        height: "100%",
       }}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(139,94,0,0.12)")
-      }
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-      onTouchStart={(e) =>
-        (e.currentTarget.style.boxShadow = "0 4px 16px rgba(139,94,0,0.12)")
-      }
+      onTouchStart={(e) => (e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.10)")}
       onTouchEnd={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
-      {/* Strip */}
-      <div
-        style={{
-          background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.45) 0%, ${catColor.bg} 65%)`,
-          height: "130px",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          overflow: "hidden",
-        }}
-      >
+      {/* Left: square image/icon */}
+      <div style={{
+        width: 88,
+        flexShrink: 0,
+        background: `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.5) 0%, ${catColor.bg} 100%)`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
         {biz.logo_url ? (
-          <img
-            src={biz.logo_url}
-            alt={biz.business_name}
-            width="64"
-            height="64"
-            loading="lazy"
-            style={{
-              width: "64px",
-              height: "64px",
-              objectFit: "contain",
-              borderRadius: "12px",
-            }}
-          />
+          <img src={biz.logo_url} alt={biz.business_name} width="56" height="56" loading="lazy"
+            style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 10 }} />
         ) : (
-          <div style={{ width: 60, height: 60, borderRadius: 16, background: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-            <CatIcon size={28} weight="duotone" color={catColor.color} />
+          <div style={{ width: 52, height: 52, borderRadius: 14, background: "rgba(255,255,255,0.75)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <CatIcon size={26} weight="duotone" color={catColor.color} />
           </div>
         )}
-
-        {/* Verified — top right */}
-        {biz.is_verified && (
-          <div
-            style={{
-              position: "absolute",
-              top: "8px",
-              right: "8px",
-              zIndex: 2,
-            }}
-          >
-            <span
-              style={{
-                background: "rgba(255,255,255,0.95)",
-                color: "#085041",
-                fontSize: "10px",
-                fontWeight: 700,
-                padding: "3px 8px",
-                borderRadius: "20px",
-                display: "flex",
-                alignItems: "center",
-                gap: "3px",
-              }}
-            >
-              <SealCheckIcon size={10} weight="fill" color="#085041" /> Verified
-            </span>
-          </div>
-        )}
-
-        {/* NEW badge — top left of strip only */}
-        {isNew(biz.created_at) && (
-          <div style={{ position: "absolute", top: "8px", left: "8px", zIndex: 2 }}>
-            <span style={{ background: "#16a34a", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 8px", borderRadius: "5px" }}>NEW</span>
-          </div>
-        )}
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "2px",
-            background: "#8B5E00",
-            opacity: 0.4,
-          }}
-        />
       </div>
 
-      {/* Body */}
-      <div
-        style={{
-          padding: "10px 12px 12px",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "6px" }}>
-          <div
-            style={{
-              fontSize: "13px",
-              fontWeight: 700,
-              color: "#26215C",
-              lineHeight: 1.3,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              flex: 1,
-            }}
-          >
+      {/* Right: content */}
+      <div style={{ flex: 1, minWidth: 0, padding: "11px 12px 10px", display: "flex", flexDirection: "column", gap: 3 }}>
+
+        {/* Name + Nepali badge */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#26215C", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
             {biz.business_name}
           </div>
           {biz.is_nepalese_owned && (
-            <span style={{ background: "#EEEDFE", color: "#3C3489", fontSize: "9px", fontWeight: 700, padding: "2px 6px", borderRadius: "5px", whiteSpace: "nowrap", flexShrink: 0 }}>
+            <span style={{ background: "#EEEDFE", color: "#3C3489", fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 5, whiteSpace: "nowrap", flexShrink: 0 }}>
               🇳🇵 Nepali
             </span>
           )}
@@ -474,51 +387,44 @@ function BusinessMobileCard({ biz }) {
 
         {/* Rating */}
         {biz.avg_rating > 0 ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-            {[1, 2, 3, 4, 5].map((s) => (
-              <span key={s} style={{ fontSize: "11px", color: s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd" }}>★</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+            {[1,2,3,4,5].map((s) => (
+              <span key={s} style={{ fontSize: 11, color: s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd" }}>★</span>
             ))}
-            <span style={{ fontSize: "11px", color: "#E87722", fontWeight: 700, marginLeft: "2px" }}>{Number(biz.avg_rating).toFixed(1)}</span>
-            <span style={{ fontSize: "10px", color: "#bbb" }}>({biz.review_count})</span>
+            <span style={{ fontSize: 11, color: "#E87722", fontWeight: 700, marginLeft: 2 }}>{Number(biz.avg_rating).toFixed(1)}</span>
+            <span style={{ fontSize: 10, color: "#bbb" }}>({biz.review_count})</span>
           </div>
         ) : (
-          <span style={{ fontSize: "10px", color: "#bbb" }}>No reviews yet</span>
+          <span style={{ fontSize: 10, color: "#bbb" }}>★ New listing · 0 reviews</span>
         )}
 
-        <span
-          style={{
-            background: catColor.bg,
-            color: catColor.color,
-            fontSize: "10px",
-            fontWeight: 600,
-            padding: "2px 8px",
-            borderRadius: "6px",
-            alignSelf: "flex-start",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "4px",
-          }}
-        >
+        {/* Category */}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: catColor.bg, color: catColor.color, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, alignSelf: "flex-start" }}>
           <CatIcon size={10} weight="duotone" color={catColor.color} />
           {catLabel}
         </span>
-        <div
-          style={{
-            fontSize: "11px",
-            color: "#777",
-            display: "flex",
-            alignItems: "center",
-            gap: "3px",
-            overflow: "hidden",
-          }}
-        >
-          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{biz.suburb}, {biz.state}</span>
+
+        {/* Location */}
+        <div style={{ fontSize: 11, color: "#777", display: "flex", alignItems: "center", gap: 3 }}>
+          <MapPinIcon size={11} weight="fill" color="#E87722" style={{ flexShrink: 0 }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{biz.suburb}, {biz.state}</span>
         </div>
-        {biz.created_at && (
-          <div style={{ fontSize: "10px", color: "#aaa" }}>
-            Listed {timeAgo(biz.created_at)}
-          </div>
-        )}
+
+        {/* Footer: NEW · Verified · time */}
+        <div style={{ borderTop: "0.5px solid #f0f0f0", marginTop: 4, paddingTop: 5, display: "flex", alignItems: "center", gap: 6 }}>
+          {isNew(biz.created_at) && (
+            <span style={{ background: "#16a34a", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 7px", borderRadius: 4 }}>NEW</span>
+          )}
+          {biz.is_verified && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 2, fontSize: 10, color: "#085041", fontWeight: 600 }}>
+              <SealCheckIcon size={10} weight="fill" color="#085041" /> Verified
+            </span>
+          )}
+          {biz.created_at && (
+            <span style={{ fontSize: 10, color: "#aaa", marginLeft: "auto" }}>{timeAgo(biz.created_at)}</span>
+          )}
+        </div>
+
       </div>
     </Link>
   );
@@ -1207,7 +1113,7 @@ export default function BusinessesPage() {
           <>
             <div
               className="bz-mobile"
-              style={{ gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}
+              style={{ gridTemplateColumns: "1fr", gap: "10px" }}
             >
               {[1, 2, 3, 4].map((i) => <SkeletonBusinessCard key={i} />)}
             </div>
@@ -1247,11 +1153,11 @@ export default function BusinessesPage() {
           />
         )}
 
-        {/* Mobile: 2-col card grid */}
+        {/* Mobile: 1-col horizontal card list */}
         <div
           className="bz-mobile"
           style={{
-            gridTemplateColumns: "repeat(2, 1fr)",
+            gridTemplateColumns: "1fr",
             gap: "10px",
             opacity: isFetching && page === 1 ? 0.5 : 1,
             transition: "opacity 0.2s",
