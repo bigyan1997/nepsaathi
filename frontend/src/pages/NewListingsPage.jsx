@@ -157,22 +157,29 @@ export default function NewListingsPage() {
     <>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .nl-container { max-width: 1000px; margin: 0 auto; padding: 28px 28px 80px; background: #F5F4F0; min-height: 100vh; }
         .nl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .nl-types-wrap { position: relative; flex: 1; overflow: hidden; min-width: 0; }
+        .nl-types-wrap::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 28px; background: linear-gradient(to right, transparent, #fff); pointer-events: none; border-radius: 0 10px 10px 0; }
+        .nl-hero { background: linear-gradient(135deg, #14532d, #16a34a); border-radius: 16px; padding: 20px 24px; margin-bottom: 14px; }
+        @media (max-width: 640px) { .nl-hero { padding: 16px 16px; border-radius: 12px; } }
         .nl-types { display: flex; gap: 8px; flex-wrap: wrap; }
         @media (max-width: 900px) { .nl-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 540px) {
+        @media (max-width: 640px) {
+          .nl-container { padding: 16px 14px 90px !important; }
           .nl-grid  { grid-template-columns: 1fr !important; }
           .nl-types { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 2px !important; scrollbar-width: none !important; -ms-overflow-style: none !important; }
           .nl-types::-webkit-scrollbar { display: none; }
           .nl-filter-row { flex-direction: column !important; gap: 10px !important; }
           .nl-state { width: 100% !important; margin-left: 0 !important; }
+          .nl-types-wrap::after { background: linear-gradient(to right, transparent, #fff) !important; }
         }
       `}</style>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 28px 80px", background: "#F5F4F0", minHeight: "100vh" }}>
+      <div className="nl-container">
 
         {/* Hero */}
-        <div style={{ background: "linear-gradient(135deg, #14532d, #16a34a)", borderRadius: 16, padding: "20px 24px", marginBottom: 14 }}>
+        <div className="nl-hero">
           <div style={{ fontSize: 11, color: "#86efac", letterSpacing: "0.06em", marginBottom: 6 }}>FRESH LISTINGS</div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
             <div>
@@ -188,29 +195,31 @@ export default function NewListingsPage() {
         {/* Filters */}
         <div style={{ background: "#fff", border: "0.5px solid #e5e5e5", borderRadius: 14, padding: "14px 18px", marginBottom: 20 }}>
           <div className="nl-filter-row" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div className="nl-types" style={{ flex: 1 }}>
-              {[{ value: "", label: "All types", Icon: null }, ...Object.entries(TYPE_CONFIG).map(([v, c]) => ({ value: v, label: c.label, Icon: c.Icon, color: c.color }))].map(({ value, label, Icon: TypeIcon, color }) => (
-                <button
-                  key={value}
-                  onClick={() => handleFilter({ type: value })}
-                  style={{
-                    padding: "6px 14px",
-                    borderRadius: 20,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    border: filterType === value ? "1.5px solid #16a34a" : "1px solid #e5e5e5",
-                    background: filterType === value ? "#f0fdf4" : "#fff",
-                    color: filterType === value ? "#15803d" : "#555",
-                    whiteSpace: "nowrap",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  {TypeIcon && <TypeIcon size={12} weight={filterType === value ? "fill" : "regular"} color={filterType === value ? "#15803d" : color || "#777"} />}{label}
-                </button>
-              ))}
+            <div className="nl-types-wrap">
+              <div className="nl-types">
+                {[{ value: "", label: "All types", Icon: null }, ...Object.entries(TYPE_CONFIG).map(([v, c]) => ({ value: v, label: c.label, Icon: c.Icon, color: c.color }))].map(({ value, label, Icon: TypeIcon, color }) => (
+                  <button
+                    key={value}
+                    onClick={() => handleFilter({ type: value })}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: 20,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      border: filterType === value ? "1.5px solid #16a34a" : "1px solid #e5e5e5",
+                      background: filterType === value ? "#f0fdf4" : "#fff",
+                      color: filterType === value ? "#15803d" : "#555",
+                      whiteSpace: "nowrap",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    {TypeIcon && <TypeIcon size={12} weight={filterType === value ? "fill" : "regular"} color={filterType === value ? "#15803d" : color || "#777"} />}{label}
+                  </button>
+                ))}
+              </div>
             </div>
             <select
               className="nl-state"
