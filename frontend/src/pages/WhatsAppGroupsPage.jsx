@@ -150,11 +150,12 @@ export default function WhatsAppGroupsPage() {
     "nepali whatsapp group australia, nepali community sydney melbourne brisbane"
   );
 
-  const { data: groups = [], isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["whatsapp-groups", state, category],
     queryFn: () => getWhatsAppGroups({ state, category }),
     staleTime: 1000 * 60 * 10,
   });
+  const groups = data?.results ?? data ?? [];
 
   return (
     <div style={{ maxWidth: "860px", margin: "0 auto", padding: "32px 16px 64px" }}>
