@@ -81,6 +81,13 @@ function RedirectAnnouncementSlug() {
   return <Navigate to={`/notices/${slug}`} replace />;
 }
 
+// Resets ErrorBoundary on every route change so a lazy-load failure on one
+// page doesn't persist to the next page.
+function RouteErrorBoundary({ children }) {
+  const { pathname } = useLocation();
+  return <ErrorBoundary resetKey={pathname}>{children}</ErrorBoundary>;
+}
+
 function SuperUserRoute({ children }) {
   const { user, isAuthenticated } = useAuthStore();
   if (!isAuthenticated) return <NotFoundPage />;
@@ -239,7 +246,7 @@ function App() {
               >
                 <Navbar />
                 <div style={{ flex: 1 }}>
-                  <ErrorBoundary>
+                  <RouteErrorBoundary>
                   <PageWrapper>
                     <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
                     <Routes>
@@ -321,7 +328,7 @@ function App() {
                     </Routes>
                     </Suspense>
                   </PageWrapper>
-                  </ErrorBoundary>
+                  </RouteErrorBoundary>
                 </div>
                 <Footer />
               </div>

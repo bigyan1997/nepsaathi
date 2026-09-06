@@ -3,7 +3,15 @@ import { Component } from "react";
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, prevResetKey: props.resetKey };
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    // Reset when the route changes so a page error doesn't persist to the next route
+    if (props.resetKey !== state.prevResetKey) {
+      return { hasError: false, prevResetKey: props.resetKey };
+    }
+    return null;
   }
 
   static getDerivedStateFromError() {

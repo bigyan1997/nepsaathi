@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, MapPinIcon, SparkleIcon } from "@phosphor-icons/react";
+import { BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, StorefrontIcon, MapPinIcon, SparkleIcon } from "@phosphor-icons/react";
 import { getNewListings } from "../api/listings";
 import usePageMeta from "../hooks/usePageMeta";
 
 const TYPE_CONFIG = {
-  job:    { Icon: BriefcaseIcon, label: "Jobs",    bg: "#EEEDFE", color: "#3C3489", path: "jobs" },
-  room:   { Icon: HouseIcon,     label: "Rooms",   bg: "#FFF1E0", color: "#633806", path: "rooms" },
-  event:  { Icon: ConfettiIcon,  label: "Events",  bg: "#E1F5EE", color: "#085041", path: "events" },
-  notice: { Icon: MegaphoneIcon, label: "Notices", bg: "#E6F1FB", color: "#0C447C", path: "notices" },
+  job:      { Icon: BriefcaseIcon,  label: "Jobs",       bg: "#EEEDFE", color: "#3C3489",  path: "jobs" },
+  room:     { Icon: HouseIcon,      label: "Rooms",      bg: "#FFF1E0", color: "#633806",  path: "rooms" },
+  event:    { Icon: ConfettiIcon,   label: "Events",     bg: "#E1F5EE", color: "#085041",  path: "events" },
+  notice:   { Icon: MegaphoneIcon,  label: "Notices",    bg: "#E6F1FB", color: "#0C447C",  path: "notices" },
+  business: { Icon: StorefrontIcon, label: "Businesses", bg: "#FAEEDA", color: "#8B5E00",  path: "businesses" },
 };
 
 const STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
@@ -168,7 +169,7 @@ export default function NewListingsPage() {
         }
       `}</style>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 28px", background: "#F5F4F0", minHeight: "100vh" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 28px 80px", background: "#F5F4F0", minHeight: "100vh" }}>
 
         {/* Hero */}
         <div style={{ background: "linear-gradient(135deg, #14532d, #16a34a)", borderRadius: 16, padding: "20px 24px", marginBottom: 14 }}>
