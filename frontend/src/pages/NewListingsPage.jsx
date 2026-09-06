@@ -157,20 +157,21 @@ export default function NewListingsPage() {
     <>
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        .nl-container { max-width: 1000px; margin: 0 auto; padding: 28px 28px 80px; background: #F5F4F0; min-height: 100vh; }
+        .nl-container { max-width: 1000px; margin: 0 auto; padding: 28px 28px 80px; background: #F5F4F0; min-height: 100vh; overflow-x: hidden; }
         .nl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .nl-types-wrap { flex: 1; min-width: 0; }
-        .nl-hero { background: linear-gradient(135deg, #14532d, #16a34a); border-radius: 16px; padding: 20px 24px; margin-bottom: 14px; }
-        @media (max-width: 640px) { .nl-hero { padding: 16px 16px; border-radius: 12px; } }
+        .nl-types-wrap { flex: 1; min-width: 0; overflow: hidden; }
         .nl-types { display: flex; gap: 8px; flex-wrap: wrap; }
+        .nl-hero { background: linear-gradient(135deg, #14532d, #16a34a); border-radius: 16px; padding: 20px 24px; margin-bottom: 14px; }
         @media (max-width: 900px) { .nl-grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (max-width: 640px) {
           .nl-container { padding: 16px 14px 90px !important; }
+          .nl-hero { padding: 16px !important; border-radius: 12px !important; }
           .nl-grid  { grid-template-columns: 1fr !important; }
-          .nl-types { flex-wrap: nowrap !important; overflow-x: auto !important; min-width: 0 !important; padding-bottom: 2px !important; scrollbar-width: none !important; -ms-overflow-style: none !important; }
-          .nl-types::-webkit-scrollbar { display: none; }
           .nl-filter-row { flex-direction: column !important; gap: 10px !important; }
           .nl-state { width: 100% !important; margin-left: 0 !important; }
+          .nl-types-wrap { overflow-x: auto !important; overflow-y: visible !important; scrollbar-width: none !important; -ms-overflow-style: none !important; }
+          .nl-types-wrap::-webkit-scrollbar { display: none; }
+          .nl-types { flex-wrap: nowrap !important; width: max-content; }
         }
       `}</style>
 
