@@ -333,6 +333,7 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 function BusinessMobileCard({ biz }) {
   const catColor = CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
   const CatIcon = CATEGORY_ICONS[biz.category] || StorefrontIcon;
+  const catEmoji = CATEGORY_EMOJIS[biz.category] || "🏪";
   const catLabel = CATEGORIES.find((c) => c.value === biz.category)?.label?.replace(/^[^\s]+\s/, "") || (biz.category?.replace(/_/g, " ") ?? "Other");
 
   return (
@@ -364,9 +365,7 @@ function BusinessMobileCard({ biz }) {
           <img src={biz.logo_url} alt={biz.business_name} width="56" height="56" loading="lazy"
             style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 10 }} />
         ) : (
-          <div style={{ width: 52, height: 52, borderRadius: 14, background: "rgba(255,255,255,0.75)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <CatIcon size={26} weight="duotone" color={catColor.color} />
-          </div>
+          <span style={{ fontSize: 38 }}>{catEmoji}</span>
         )}
       </div>
 
