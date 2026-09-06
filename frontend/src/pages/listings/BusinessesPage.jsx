@@ -372,16 +372,9 @@ function BusinessMobileCard({ biz }) {
       {/* Right: content */}
       <div style={{ flex: 1, minWidth: 0, padding: "11px 12px 10px", display: "flex", flexDirection: "column", gap: 3 }}>
 
-        {/* Name + Nepali badge */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#26215C", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-            {biz.business_name}
-          </div>
-          {biz.is_nepalese_owned && (
-            <span style={{ background: "#EEEDFE", color: "#3C3489", fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 5, whiteSpace: "nowrap", flexShrink: 0 }}>
-              🇳🇵 Nepali
-            </span>
-          )}
+        {/* Name — full, wraps */}
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#26215C", lineHeight: 1.25 }}>
+          {biz.business_name}
         </div>
 
         {/* Rating */}
@@ -397,11 +390,14 @@ function BusinessMobileCard({ biz }) {
           <span style={{ fontSize: 10, color: "#bbb" }}>★ New listing · 0 reviews</span>
         )}
 
-        {/* Category */}
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: catColor.bg, color: catColor.color, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, alignSelf: "flex-start" }}>
-          <CatIcon size={10} weight="duotone" color={catColor.color} />
-          {catLabel}
-        </span>
+        {/* Category + Nepal flag */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: catColor.bg, color: catColor.color, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6 }}>
+            <CatIcon size={10} weight="duotone" color={catColor.color} />
+            {catLabel}
+          </span>
+          {biz.is_nepalese_owned && <span style={{ fontSize: 14 }}>🇳🇵</span>}
+        </div>
 
         {/* Location */}
         <div style={{ fontSize: 11, color: "#777", display: "flex", alignItems: "center", gap: 3 }}>
