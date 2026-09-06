@@ -332,7 +332,8 @@ function MobileFilterDrawer({ filters, onApply, onClose }) {
 /* ── Mobile card — Option B ───────────────────────── */
 function BusinessMobileCard({ biz }) {
   const catColor = CATEGORY_COLORS[biz.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[biz.category] || "🏪";
+  const CatIcon = CATEGORY_ICONS[biz.category] || StorefrontIcon;
+  const catLabel = CATEGORIES.find((c) => c.value === biz.category)?.label?.replace(/^[^\s]+\s/, "") || (biz.category?.replace(/_/g, " ") ?? "Other");
 
   return (
     <Link
@@ -385,7 +386,9 @@ function BusinessMobileCard({ biz }) {
             }}
           />
         ) : (
-          <span style={{ fontSize: "36px" }}>{catEmoji}</span>
+          <div style={{ width: 60, height: 60, borderRadius: 16, background: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <CatIcon size={28} weight="duotone" color={catColor.color} />
+          </div>
         )}
 
         {/* Verified — top right */}
@@ -492,38 +495,13 @@ function BusinessMobileCard({ biz }) {
         {biz.avg_rating > 0 ? (
           <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
             {[1, 2, 3, 4, 5].map((s) => (
-              <span
-                key={s}
-                style={{
-                  fontSize: "11px",
-                  color: s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd",
-                }}
-              >
-                ★
-              </span>
+              <span key={s} style={{ fontSize: "11px", color: s <= Math.round(biz.avg_rating) ? "#E87722" : "#ddd" }}>★</span>
             ))}
-            <span
-              style={{
-                fontSize: "11px",
-                color: "#E87722",
-                fontWeight: 700,
-                marginLeft: "2px",
-              }}
-            >
-              {Number(biz.avg_rating).toFixed(1)}
-            </span>
-            <span style={{ fontSize: "10px", color: "#bbb" }}>
-              ({biz.review_count})
-            </span>
+            <span style={{ fontSize: "11px", color: "#E87722", fontWeight: 700, marginLeft: "2px" }}>{Number(biz.avg_rating).toFixed(1)}</span>
+            <span style={{ fontSize: "10px", color: "#bbb" }}>({biz.review_count})</span>
           </div>
         ) : (
-          <div style={{ display: "flex", gap: "1px" }}>
-            {[1, 2, 3, 4, 5].map((s) => (
-              <span key={s} style={{ fontSize: "11px", color: "#ddd" }}>
-                ★
-              </span>
-            ))}
-          </div>
+          <span style={{ fontSize: "10px", color: "#bbb" }}>No reviews yet</span>
         )}
 
         <span
@@ -531,13 +509,17 @@ function BusinessMobileCard({ biz }) {
             background: catColor.bg,
             color: catColor.color,
             fontSize: "10px",
-            fontWeight: 500,
-            padding: "2px 7px",
+            fontWeight: 600,
+            padding: "2px 8px",
             borderRadius: "6px",
             alignSelf: "flex-start",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
           }}
         >
-          {catEmoji} {biz.category?.replace("_", " ")}
+          <CatIcon size={10} weight="duotone" color={catColor.color} />
+          {catLabel}
         </span>
         <div
           style={{
@@ -564,7 +546,8 @@ function BusinessMobileCard({ biz }) {
 /* ── Desktop card ─────────────────────────────────── */
 function BusinessCard({ business }) {
   const catColor = CATEGORY_COLORS[business.category] || CATEGORY_COLORS.other;
-  const catEmoji = CATEGORY_EMOJIS[business.category] || "🏪";
+  const CatIcon = CATEGORY_ICONS[business.category] || StorefrontIcon;
+  const catLabel = CATEGORIES.find((c) => c.value === business.category)?.label?.replace(/^[^\s]+\s/, "") || (business.category?.replace(/_/g, " ") ?? "Other");
   return (
     <Link
       to={`/businesses/${business.slug}`}
@@ -608,7 +591,9 @@ function BusinessCard({ business }) {
             }}
           />
         ) : (
-          <span style={{ fontSize: "44px" }}>{catEmoji}</span>
+          <div style={{ width: 64, height: 64, borderRadius: 16, background: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <CatIcon size={32} weight="duotone" color={catColor.color} />
+          </div>
         )}
         {business.is_verified && (
           <div style={{ position: "absolute", top: "10px", right: "10px" }}>
@@ -678,13 +663,17 @@ function BusinessCard({ business }) {
             background: catColor.bg,
             color: catColor.color,
             fontSize: "10px",
-            fontWeight: 500,
+            fontWeight: 600,
             padding: "2px 8px",
             borderRadius: "8px",
             alignSelf: "flex-start",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
           }}
         >
-          {catEmoji} {business.category?.replace("_", " ")}
+          <CatIcon size={11} weight="duotone" color={catColor.color} />
+          {catLabel}
         </span>
         <div
           style={{
@@ -721,21 +710,7 @@ function BusinessCard({ business }) {
             </span>
           </div>
         ) : (
-          <div style={{ display: "flex", gap: "1px" }}>
-            {[1, 2, 3, 4, 5].map((s) => (
-              <span
-                key={s}
-                style={{ fontSize: "12px", color: "#ddd", lineHeight: 1 }}
-              >
-                ★
-              </span>
-            ))}
-            <span
-              style={{ fontSize: "11px", color: "#ccc", marginLeft: "4px" }}
-            >
-              No reviews yet
-            </span>
-          </div>
+          <span style={{ fontSize: "11px", color: "#bbb" }}>No reviews yet</span>
         )}
         <div style={{ fontSize: "12px", color: "#777", display: "flex", alignItems: "center", gap: "3px", overflow: "hidden" }}>
           <MapPinIcon size={12} weight="fill" color="#E87722" style={{ flexShrink: 0 }} /><span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{business.suburb}, {business.state}</span>
