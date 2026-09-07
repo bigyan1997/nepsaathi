@@ -21,10 +21,22 @@ if ("serviceWorker" in navigator) {
 }
 
 // After a new deployment, old JS chunk filenames no longer exist on the server.
-// Vite fires this event when a dynamic import (lazy page) fails to load.
-// Force a full reload so the browser fetches the fresh index.html and new chunks.
-window.addEventListener("vite:preloadError", () => {
-  window.location.reload();
+// Two events cover the two failure modes:
+//   vite:preloadError — Vite fires this for modulepreload failures
+//   unhandledrejection — fired for lazy import() failures (e.g. in Instagram WebView)
+// Use sessionStorage to prevent an infinite reload loop if the chunk is genuinely missing.
+function reloadOnceForStalechunk() {
+  if (!sessionStorage.getItem("_chunkReload")) {
+    sessionStorage.setItem("_chunkReload", "1");
+    window.location.reload();
+  }
+}
+window.addEventListener("vite:preloadError", reloadOnceForStalechunk);
+window.addEventListener("unhandledrejection", (e) => {
+  if (e.reason instanceof TypeError &&
+      e.reason.message.includes("Failed to fetch dynamically imported module")) {
+    reloadOnceForStalechunk();
+  }
 });
 
 createRoot(document.getElementById("root")).render(
