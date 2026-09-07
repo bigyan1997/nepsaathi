@@ -13,28 +13,28 @@ RATES_URL = 'https://open.er-api.com/v6/latest/AUD'
 # Wise is tightest (~0.5%), WU highest (~3.5%).
 PROVIDERS = {
     'wise': {
-        'spread':   0.0055,   # ~0.55% markup
+        'spread':   0.0055,   # ~0.55% markup — verified against Wise live rate API
         'fee_aud':  3.99,
         'send_url': 'https://wise.com/au/send-money/#/',
     },
     'remitly': {
-        'spread':   0.012,    # ~1.2% markup
-        'fee_aud':  0.00,     # typically free for bank transfers from AU
+        'spread':   -0.0177,  # verified 2026-09-07: actual rate 110.92 vs mid 108.99
+        'fee_aud':  0.99,
         'send_url': 'https://www.remitly.com/au/en/nepal',
     },
     'superfastremit': {
-        'spread':   -0.023,   # ~2.3% above mid-market — SFR uses a higher source rate than open.er-api
+        'spread':   -0.023,   # verified 2026-09-07: actual rate 111.50 vs mid 108.99
         'fee_aud':  5.00,
         'send_url': 'https://superfastremit.com.au',
     },
     'worldremit': {
-        'spread':   0.018,    # ~1.8% markup
-        'fee_aud':  1.99,
+        'spread':   -0.0191,  # verified 2026-09-07: actual rate 111.071 vs mid 108.99
+        'fee_aud':  0.00,
         'send_url': 'https://www.worldremit.com/en/australia/send-money-to-nepal',
     },
     'wu': {
-        'spread':   0.035,    # ~3.5% markup
-        'fee_aud':  5.00,
+        'spread':   0.0242,   # verified 2026-09-07: regular rate 106.35 vs mid 108.99
+        'fee_aud':  2.90,
         'send_url': 'https://www.westernunion.com/au/en/send-money/app/start',
     },
 }
