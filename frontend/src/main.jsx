@@ -26,8 +26,9 @@ if ("serviceWorker" in navigator) {
 //   unhandledrejection — fired for lazy import() failures (e.g. in Instagram WebView)
 // Use sessionStorage to prevent an infinite reload loop if the chunk is genuinely missing.
 function reloadOnceForStalechunk() {
-  if (!sessionStorage.getItem("_chunkReload")) {
-    sessionStorage.setItem("_chunkReload", "1");
+  const last = parseInt(sessionStorage.getItem("_chunkReload") || "0", 10);
+  if (Date.now() - last > 60_000) {
+    sessionStorage.setItem("_chunkReload", String(Date.now()));
     window.location.reload();
   }
 }

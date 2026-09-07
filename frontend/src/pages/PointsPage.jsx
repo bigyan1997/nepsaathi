@@ -61,7 +61,7 @@ export default function PointsPage() {
     navigator.clipboard.writeText(referralLink).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   };
 
   return (
