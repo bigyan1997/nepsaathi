@@ -23,7 +23,7 @@ PROVIDERS = {
         'send_url': 'https://www.remitly.com/au/en/nepal',
     },
     'superfastremit': {
-        'spread':   0.014,    # ~1.4% markup — Nepal-specific AU provider, competitive corridor
+        'spread':   -0.023,   # ~2.3% above mid-market — SFR uses a higher source rate than open.er-api
         'fee_aud':  5.00,
         'send_url': 'https://superfastremit.com.au',
     },
