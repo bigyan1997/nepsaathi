@@ -4,10 +4,11 @@ import { getRates } from "../api/remittance";
 import usePageMeta from "../hooks/usePageMeta";
 
 const PROVIDER_META = {
-  wise:       { color: "#163300", bg: "#9FE870", label: "Wise" },
-  remitly:    { color: "#fff",    bg: "#2B3FD0", label: "Remitly" },
-  worldremit: { color: "#fff",    bg: "#E31837", label: "WorldRemit" },
-  wu:         { color: "#000",    bg: "#FFDD00", label: "Western Union" },
+  wise:           { color: "#163300", bg: "#9FE870", label: "Wise" },
+  remitly:        { color: "#fff",    bg: "#2B3FD0", label: "Remitly" },
+  superfastremit: { color: "#fff",    bg: "#1565C0", label: "Super Fast Remit" },
+  worldremit:     { color: "#fff",    bg: "#E31837", label: "WorldRemit" },
+  wu:             { color: "#000",    bg: "#FFDD00", label: "Western Union" },
 };
 
 function minutesAgo(iso) {

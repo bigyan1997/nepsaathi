@@ -22,6 +22,11 @@ PROVIDERS = {
         'fee_aud':  0.00,     # typically free for bank transfers from AU
         'send_url': 'https://www.remitly.com/au/en/nepal',
     },
+    'superfastremit': {
+        'spread':   0.014,    # ~1.4% markup — Nepal-specific AU provider, competitive corridor
+        'fee_aud':  2.99,
+        'send_url': 'https://superfastremit.com.au',
+    },
     'worldremit': {
         'spread':   0.018,    # ~1.8% markup
         'fee_aud':  1.99,
