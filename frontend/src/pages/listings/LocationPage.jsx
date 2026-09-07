@@ -193,9 +193,24 @@ export default function LocationPage({ listingType }) {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
+  const TYPE_TITLE = {
+    job:      `Jobs for Nepalis in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    room:     `Rooms for Rent in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    event:    `Nepali Events in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    notice:   `Community Notices in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    business: `Nepali Businesses in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+  };
+  const TYPE_DESC = {
+    job:      `Find jobs for Nepalis in ${displayLabel}${loc ? `, ${loc.state}` : ""}. Browse full-time, part-time and casual job listings posted by the Nepalese community in Australia on NepSaathi.`,
+    room:     `Find rooms for rent in ${displayLabel}${loc ? `, ${loc.state}` : ""}. Browse shared accommodation, house shares and rooms listed by the Nepalese community in Australia on NepSaathi.`,
+    event:    `Discover Nepali events and community gatherings in ${displayLabel}${loc ? `, ${loc.state}` : ""}. Find cultural events, festivals and meetups posted on NepSaathi.`,
+    notice:   `Browse community notices and announcements in ${displayLabel}${loc ? `, ${loc.state}` : ""} posted by the Nepalese community in Australia on NepSaathi.`,
+    business: `Find Nepali-owned businesses in ${displayLabel}${loc ? `, ${loc.state}` : ""}. Browse the Nepalese business directory for ${displayLabel} on NepSaathi.`,
+  };
+
   usePageMeta(
-    `${cfg.label} in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
-    `Find ${cfg.label.toLowerCase()} in ${displayLabel} posted by the community in Australia. Browse listings on NepSaathi.`
+    TYPE_TITLE[listingType] || `${cfg.label} in ${displayLabel}${loc ? `, ${loc.state}` : ""}`,
+    TYPE_DESC[listingType]  || `Find ${cfg.label.toLowerCase()} in ${displayLabel} posted by the Nepalese community in Australia. Browse listings on NepSaathi.`
   );
 
   const { data, isLoading, error } = useQuery({
