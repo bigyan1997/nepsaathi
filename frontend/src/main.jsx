@@ -20,6 +20,13 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js").catch(() => {});
 }
 
+// After a new deployment, old JS chunk filenames no longer exist on the server.
+// Vite fires this event when a dynamic import (lazy page) fails to load.
+// Force a full reload so the browser fetches the fresh index.html and new chunks.
+window.addEventListener("vite:preloadError", () => {
+  window.location.reload();
+});
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HelmetProvider>
