@@ -24,7 +24,7 @@ PROVIDERS = {
     },
     'superfastremit': {
         'spread':   0.014,    # ~1.4% markup — Nepal-specific AU provider, competitive corridor
-        'fee_aud':  2.99,
+        'fee_aud':  5.00,
         'send_url': 'https://superfastremit.com.au',
     },
     'worldremit': {
