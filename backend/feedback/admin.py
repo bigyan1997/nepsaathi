@@ -6,11 +6,16 @@ from .models import FeedbackResponse, NewsletterSubscriber
 
 @admin.register(FeedbackResponse)
 class FeedbackResponseAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'satisfaction', 'reason_display', 'short_message', 'page_url', 'user')
+    list_display = ('created_at', 'satisfaction_stars', 'reason_display', 'short_message', 'page_url', 'user')
     list_filter = ('satisfaction', 'reason', 'created_at')
     search_fields = ('user__email', 'page_url', 'message')
     readonly_fields = ('satisfaction', 'reason', 'message', 'page_url', 'user', 'created_at')
     ordering = ('-created_at',)
+
+    def satisfaction_stars(self, obj):
+        labels = {1: '★ Very bad', 2: '★★ Not great', 3: '★★★ Okay', 4: '★★★★ Good', 5: '★★★★★ Love it!'}
+        return labels.get(obj.satisfaction, obj.satisfaction)
+    satisfaction_stars.short_description = 'Rating'
 
     def reason_display(self, obj):
         return obj.get_reason_display()

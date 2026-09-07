@@ -8,11 +8,11 @@ class UserAdmin(BaseUserAdmin):
     """Admin configuration for NepSaathi User model — no username field."""
 
     # What shows in the user list
-    list_display = ('email', 'first_name', 'last_name', 'is_verified', 'is_staff', 'created_at')
-    list_filter = ('is_verified', 'is_staff', 'is_active')
+    list_display = ('email', 'first_name', 'last_name', 'is_verified', 'is_banned', 'is_staff', 'created_at')
+    list_filter = ('is_verified', 'is_banned', 'is_staff', 'is_active')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('-created_at',)
-    actions = ['verify_users', 'unverify_users']
+    actions = ['verify_users', 'unverify_users', 'ban_users', 'unban_users']
 
     @admin.action(description='✅ Verify selected users (sends confirmation email)')
     def verify_users(self, request, queryset):
@@ -32,6 +32,26 @@ class UserAdmin(BaseUserAdmin):
     def unverify_users(self, request, queryset):
         updated = queryset.filter(is_verified=True).update(is_verified=False)
         self.message_user(request, f'{updated} user(s) unverified.')
+
+    @admin.action(description='🚫 Ban selected users')
+    def ban_users(self, request, queryset):
+        from core.emails import send_user_banned_email
+        count = 0
+        for user in queryset.filter(is_banned=False):
+            user.is_banned = True
+            user.ban_reason = user.ban_reason or 'Banned by admin'
+            user.save(update_fields=['is_banned', 'ban_reason'])
+            try:
+                send_user_banned_email(user)
+            except Exception as e:
+                print(f'Ban email failed for {user.email}: {e}', flush=True)
+            count += 1
+        self.message_user(request, f'{count} user(s) banned and notified.')
+
+    @admin.action(description='✅ Unban selected users')
+    def unban_users(self, request, queryset):
+        updated = queryset.filter(is_banned=True).update(is_banned=False, ban_reason='')
+        self.message_user(request, f'{updated} user(s) unbanned.')
 
     # Override fieldsets — remove username completely
     fieldsets = (

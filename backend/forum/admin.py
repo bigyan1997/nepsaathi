@@ -17,7 +17,7 @@ class ForumPostAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'view_count', 'created_at', 'updated_at')
     list_editable = ('is_pinned', 'is_closed')
     inlines = (ForumReplyInline,)
-    actions = ('pin_posts', 'unpin_posts', 'close_posts')
+    actions = ('pin_posts', 'unpin_posts', 'close_posts', 'open_posts')
 
     def reply_count(self, obj):
         return obj.replies.count()
@@ -38,6 +38,10 @@ class ForumPostAdmin(admin.ModelAdmin):
     @admin.action(description='Close selected posts')
     def close_posts(self, request, queryset):
         queryset.update(is_closed=True)
+
+    @admin.action(description='Reopen selected posts')
+    def open_posts(self, request, queryset):
+        queryset.update(is_closed=False)
 
 
 @admin.register(ForumReply)

@@ -72,6 +72,8 @@ class ListingAdmin(admin.ModelAdmin):
         'status',
         'review_badge',
         'is_featured',
+        'expires_at',
+        'expiry_warning_sent',
         'created_at',
     )
     list_filter = (
@@ -80,6 +82,7 @@ class ListingAdmin(admin.ModelAdmin):
         'state',
         'is_featured',
         'is_under_review',
+        'expiry_warning_sent',
     )
     search_fields = (
         'title',
@@ -108,7 +111,7 @@ class ListingAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    actions = ['approve_listings', 'mark_featured', 'unmark_featured']
+    actions = ['approve_listings', 'mark_featured', 'unmark_featured', 'send_expiry_warning', 'reset_expiry_warning']
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('reports')
@@ -159,6 +162,29 @@ class ListingAdmin(admin.ModelAdmin):
         queryset.update(is_featured=False)
         self.message_user(request, f'{queryset.count()} listings removed from featured.')
     unmark_featured.short_description = '✖ Remove from featured'
+
+    def send_expiry_warning(self, request, queryset):
+        from core.emails import send_expiry_warning_email
+        sent = 0
+        failed = 0
+        for listing in queryset.filter(status='active').select_related('user'):
+            try:
+                send_expiry_warning_email(listing)
+                listing.expiry_warning_sent = True
+                listing.save(update_fields=['expiry_warning_sent'])
+                sent += 1
+            except Exception as e:
+                failed += 1
+        msg = f'✉ Expiry warning sent to {sent} listing(s).'
+        if failed:
+            msg += f' {failed} failed.'
+        self.message_user(request, msg)
+    send_expiry_warning.short_description = '⏰ Send expiry warning email to owner'
+
+    def reset_expiry_warning(self, request, queryset):
+        updated = queryset.update(expiry_warning_sent=False)
+        self.message_user(request, f'{updated} listing(s) reset — expiry warning can be re-sent.')
+    reset_expiry_warning.short_description = '↺ Reset expiry warning flag (allow re-send)'
 
     
 
