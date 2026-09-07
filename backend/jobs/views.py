@@ -1,3 +1,4 @@
+import logging
 from rest_framework import generics, permissions, filters, status
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from rest_framework.response import Response
@@ -7,6 +8,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
 from .models import Job, JobApplication
 from .serializers import JobSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class JobListView(generics.ListAPIView):
@@ -166,8 +169,11 @@ class JobApplyView(APIView):
         if not created:
             return Response({'detail': 'You have already applied to this job.'}, status=400)
 
-        from core.emails import send_job_application_email
-        send_job_application_email(poster=job.listing.user, applicant=request.user, job=job, cover_letter=cover_letter)
+        try:
+            from core.emails import send_job_application_email
+            send_job_application_email(poster=job.listing.user, applicant=request.user, job=job, cover_letter=cover_letter)
+        except Exception as e:
+            logger.warning('Job application email failed for job %s: %s', job.id, e)
 
         return Response({'detail': 'Application submitted.'}, status=201)
 

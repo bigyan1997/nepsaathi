@@ -18,7 +18,8 @@ class Command(BaseCommand):
             expires_at__lte=window_end,
         ).select_related('user')
 
-        self.stdout.write(f'Found {listings.count()} listings expiring within 4 days...')
+        listings = list(listings)
+        self.stdout.write(f'Found {len(listings)} listings expiring within 4 days...')
 
         for listing in listings:
             try:

@@ -52,7 +52,7 @@ class GoogleLoginView(SocialLoginView):
                 is_new_user = (timezone.now() - user.date_joined) < timedelta(seconds=30)  # 30s catches OAuth users created moments before this signal fires
                 if picture_url and not user.google_avatar:
                     user.google_avatar = picture_url
-                    user.save()
+                    user.save(update_fields=['google_avatar'])
                 if is_new_user:
                     from core.emails import send_welcome_email
                     import threading, logging as _log

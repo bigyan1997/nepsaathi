@@ -1046,27 +1046,31 @@ def send_payment_invoice_email(payment):
     from payments.pdf import generate_invoice_pdf
     import logging as _logging
     listing = payment.listing
-    if not listing:
+    business = getattr(payment, 'business', None)
+    if not listing and not business:
         _logging.getLogger(__name__).warning(
-            'send_payment_invoice_email: payment %s has no listing (deleted?), skipping invoice email',
+            'send_payment_invoice_email: payment %s has no listing or business, skipping invoice email',
             payment.id,
         )
         return
-    listing_url = _listing_url(listing)
+    if listing:
+        listing_url = _listing_url(listing)
+    else:
+        listing_url = f"{FRONTEND_URL}/businesses"
     try:
         first_name = _h(payment.user.first_name or 'there')
         invoice_number = f"INV-{payment.id:05d}"
         amount_aud = payment.amount_paid / 100
         date_paid = payment.completed_at.strftime('%d %B %Y')
         featured_until = (payment.completed_at + timedelta(days=payment.duration_days)).strftime('%d %B %Y')
-        ref = payment.stripe_session_id[:32] + '...'
+        ref = (payment.stripe_session_id or '')[:32] + '...'
         pdf_bytes = generate_invoice_pdf(payment)
 
         body = f"""
 <h1 {_H1}>Payment confirmed &#9989;</h1>
 <p {_P}>
   Hi <strong>{first_name}</strong>, thank you for your payment!
-  Your listing is now featured and will appear at the top of search results.
+  Your {'business' if business else 'listing'} is now featured and will appear at the top of {'the directory' if business else 'search results'}.
 </p>
 
 <!-- PAID badge + invoice number -->

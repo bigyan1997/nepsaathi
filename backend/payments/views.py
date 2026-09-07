@@ -124,7 +124,7 @@ class CreateBusinessCheckoutSessionView(APIView):
                     'currency': 'aud',
                     'unit_amount': settings.STRIPE_FEATURED_PRICE_CENTS,
                     'product_data': {
-                        'name': f'Feature business: {business.name}',
+                        'name': f'Feature business: {business.business_name}',
                         'description': 'Your business will appear at the top of the directory for 7 days.',
                     },
                 },
