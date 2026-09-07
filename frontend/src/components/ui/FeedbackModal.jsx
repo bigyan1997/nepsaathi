@@ -18,6 +18,7 @@ const REASONS = [
 export default function FeedbackModal({ onClose }) {
   const [satisfaction, setSatisfaction] = useState(null);
   const [reason, setReason] = useState("");
+  const [message, setMessage] = useState("");
   const { addToast } = useToast();
 
   const mutation = useMutation({
@@ -25,6 +26,7 @@ export default function FeedbackModal({ onClose }) {
       api.post("/api/feedback/", {
         satisfaction,
         reason,
+        message: message.trim(),
         page_url: window.location.pathname,
       }),
     onSuccess: () => {
@@ -168,6 +170,37 @@ export default function FeedbackModal({ onClose }) {
                   </button>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Optional text */}
+          <div style={{ marginBottom: "24px" }}>
+            <label style={{ fontSize: "13px", fontWeight: 600, color: "#555", display: "block", marginBottom: "8px" }}>
+              Anything else you'd like to share? <span style={{ fontSize: "12px", color: "#bbb", fontWeight: 400 }}>(optional)</span>
+            </label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value.slice(0, 200))}
+              placeholder="Tell us what you think…"
+              rows={3}
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                border: "1.5px solid #eee",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                fontSize: "13px",
+                color: "#333",
+                fontFamily: "inherit",
+                resize: "none",
+                outline: "none",
+                transition: "border-color 0.15s",
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#534AB7"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "#eee"; }}
+            />
+            <div style={{ textAlign: "right", fontSize: "11px", color: "#bbb", marginTop: "4px" }}>
+              {message.length}/200
             </div>
           </div>
 

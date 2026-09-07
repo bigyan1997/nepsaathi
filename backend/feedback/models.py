@@ -14,6 +14,7 @@ REASON_CHOICES = [
 class FeedbackResponse(models.Model):
     satisfaction = models.PositiveSmallIntegerField()
     reason = models.CharField(max_length=50, choices=REASON_CHOICES)
+    message = models.TextField(blank=True, default="")
     page_url = models.CharField(max_length=500, blank=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

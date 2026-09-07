@@ -7,7 +7,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FeedbackResponse
-        fields = ('satisfaction', 'reason', 'page_url')
+        fields = ('satisfaction', 'reason', 'message', 'page_url')
 
     def validate_satisfaction(self, value):
         if not 1 <= value <= 5:

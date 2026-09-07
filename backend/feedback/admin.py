@@ -6,15 +6,19 @@ from .models import FeedbackResponse, NewsletterSubscriber
 
 @admin.register(FeedbackResponse)
 class FeedbackResponseAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'satisfaction', 'reason_display', 'page_url', 'user')
+    list_display = ('created_at', 'satisfaction', 'reason_display', 'short_message', 'page_url', 'user')
     list_filter = ('satisfaction', 'reason', 'created_at')
-    search_fields = ('user__email', 'page_url')
-    readonly_fields = ('satisfaction', 'reason', 'page_url', 'user', 'created_at')
+    search_fields = ('user__email', 'page_url', 'message')
+    readonly_fields = ('satisfaction', 'reason', 'message', 'page_url', 'user', 'created_at')
     ordering = ('-created_at',)
 
     def reason_display(self, obj):
         return obj.get_reason_display()
     reason_display.short_description = 'Reason'
+
+    def short_message(self, obj):
+        return (obj.message[:60] + "…") if len(obj.message) > 60 else obj.message
+    short_message.short_description = 'Message'
 
 
 def export_emails_csv(modeladmin, request, queryset):

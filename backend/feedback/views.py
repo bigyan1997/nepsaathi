@@ -22,6 +22,7 @@ class FeedbackView(APIView):
         feedback = FeedbackResponse.objects.create(
             satisfaction=serializer.validated_data['satisfaction'],
             reason=serializer.validated_data['reason'],
+            message=serializer.validated_data.get('message', ''),
             page_url=serializer.validated_data.get('page_url', ''),
             user=user,
         )
