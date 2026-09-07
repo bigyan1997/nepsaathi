@@ -1,15 +1,19 @@
 #!/bin/bash
-set -e
+
+run_cmd() {
+  echo "[cron] running: $*"
+  "$@" || echo "[cron] FAILED: $*"
+}
 
 run_jobs() {
   echo "[cron] $(date) — starting jobs"
-  python manage.py expire_listings
-  python manage.py expire_featured_listings
-  python manage.py expire_featured_businesses
-  python manage.py send_expiry_warnings
-  python manage.py send_featured_warnings
-  python manage.py send_event_reminders
-  python manage.py fetch_remittance_rates
+  run_cmd python manage.py expire_listings
+  run_cmd python manage.py expire_featured_listings
+  run_cmd python manage.py expire_featured_businesses
+  run_cmd python manage.py send_expiry_warnings
+  run_cmd python manage.py send_featured_warnings
+  run_cmd python manage.py send_event_reminders
+  run_cmd python manage.py fetch_remittance_rates
   echo "[cron] $(date) — done"
 }
 
