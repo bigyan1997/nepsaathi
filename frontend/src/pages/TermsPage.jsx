@@ -64,9 +64,15 @@ const SECTIONS = [
     content: `NepSaathi offers free and paid features. This policy applies to paid services only (currently: Featured Listings).\n\n**Free features**\nPosting jobs, rooms, events, notices and business listings is free. No charges apply.\n\n**Featured listings**\nFeatured listing payments are processed securely via Stripe. Once your listing has been successfully featured and made visible on the platform, the payment is non-refundable.\n\n**Eligible for a full refund:**\n- Your listing was rejected or removed by the NepSaathi team before the featured period began\n- You were charged more than once for the same listing due to a technical error\n- A technical fault on our platform prevented your listing from being featured at all\n\n**Not eligible for a refund:**\n- You changed your mind after the listing went live\n- Your listing expired or was removed by you during the featured period\n- You were dissatisfied with the number of responses received\n\n**How to request a refund**\nEmail us at hello@nepsaathi.com within 7 days of the charge with your listing title and the email address on your account. We will review and respond within 3 business days.\n\nRefunds are issued to the original payment method and may take 5–10 business days to appear depending on your bank.`,
   },
   {
+    id: "child-safety",
+    short: "Child safety",
+    title: "11. Child safety",
+    content: `NepSaathi is committed to the safety and protection of children. Our platform requires all users to be at least 18 years old.\n\n**Our standards**\nWe have zero tolerance for child sexual abuse material (CSAM) or any content that exploits, endangers or harms minors in any way. Any such content is strictly prohibited and will result in immediate account termination and reporting to the relevant authorities.\n\n**How to report**\nIf you encounter any content or behaviour on NepSaathi that you believe involves the exploitation or endangerment of a child, please report it immediately:\n\n- Use the in-app report button on any listing or business profile\n- Email us directly at safety@nepsaathi.com\n\nAll reports are reviewed promptly. We report confirmed cases of child sexual abuse material to the Australian Federal Police (AFP) and the National Centre for Missing and Exploited Children (NCMEC) as required by law.\n\n**Compliance**\nNepSaathi complies with all applicable Australian and international child safety laws, including the Online Safety Act 2021 (Cth). We cooperate fully with law enforcement agencies in any investigation involving child safety.`,
+  },
+  {
     id: "contact",
     short: "Contact us",
-    title: "11. Contact us",
+    title: "12. Contact us",
     content: `For questions about these Terms of Use, contact us at:`,
     links: [
       { label: "Email", value: "legal@nepsaathi.com", href: "mailto:legal@nepsaathi.com" },
@@ -127,7 +133,7 @@ export default function TermsPage() {
             <p style={{ fontSize: "13px", color: "#AFA9EC", margin: "0 0 20px" }}>Last updated: September 2026</p>
             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
               {[
-                { Icon: ArticleIcon, text: "11 sections" },
+                { Icon: ArticleIcon, text: "12 sections" },
                 { Icon: ScalesIcon, text: "Governed by Australian law" },
                 { Icon: EnvelopeIcon, text: "legal@nepsaathi.com" },
               ].map(({ Icon, text }) => (
