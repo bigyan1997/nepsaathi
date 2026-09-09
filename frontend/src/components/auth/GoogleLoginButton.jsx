@@ -4,7 +4,7 @@ import { Capacitor } from "@capacitor/core";
 import { googleLogin, googleLoginNative } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const WEB_CLIENT_ID = "496474413327-stsoi3lvg6te5t3mb89dh4494j1kdjhn.apps.googleusercontent.com";
 
@@ -13,15 +13,6 @@ export default function GoogleLoginButton({ redirectTo = "/" }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      GoogleAuth.initialize({
-        clientId: WEB_CLIENT_ID,
-        scopes: ["profile", "email"],
-      });
-    }
-  }, []);
 
   const webLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -44,6 +35,11 @@ export default function GoogleLoginButton({ redirectTo = "/" }) {
     setLoading(true);
     setError("");
     try {
+      await GoogleAuth.initialize({
+        clientId: WEB_CLIENT_ID,
+        scopes: ["profile", "email"],
+        grantOfflineAccess: false,
+      });
       const googleUser = await GoogleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
       const data = await googleLoginNative(idToken);
