@@ -51,7 +51,8 @@ export default function GoogleLoginButton({ redirectTo = "/" }) {
       navigate(redirectTo);
     } catch (err) {
       const msg = err?.message || err?.error || String(err) || "unknown";
-      setError(`Google login failed: ${msg}`);
+      const code = err?.code || err?.status || "";
+      setError(`Google login failed: ${msg} [code:${code}]`);
     } finally {
       setLoading(false);
     }
