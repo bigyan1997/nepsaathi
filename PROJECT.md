@@ -39,9 +39,11 @@ Community marketplace and resource hub for Nepalese Australians.
 | Styling | Tailwind 4.2 + inline styles |
 | Backend deploy | Railway (gunicorn + UvicornWorkers) |
 | Frontend deploy | Vercel (SPA rewrite via vercel.json) |
-| Android app | Capacitor 8.5.1 wrapping the React SPA |
-| Android auth | @codetrix-studio/capacitor-google-auth 3.4.0-rc.4 |
+| Android app | Capacitor 8.5.1 wrapping live site via WebView (server.url) |
+| Android auth | @codetrix-studio/capacitor-google-auth 3.4.0-rc.4 (uses idToken, not accessToken) |
+| Android push | firebase-admin + @capacitor/push-notifications (FCM V1 API) |
 | Android signing | Release keystore at `~/nepsaathi-release.keystore` (alias: nepsaathi) |
+| Android version | versionCode 10, versionName 1.0.9 |
 
 ---
 
@@ -69,10 +71,12 @@ Android APK (Capacitor WebView)      Vercel (React SPA)
 
 - **Capacitor 8.5.1** wraps `frontend/dist/` in a native WebView; app ID `com.nepsaathi.app`.
 - **Origin** — Android WebView uses `https://localhost` as its origin. Railway `CORS_ALLOWED_ORIGINS` includes `https://localhost`.
-- **Google Auth** — web uses `@react-oauth/google` (popup). Android uses `@codetrix-studio/capacitor-google-auth` native plugin (no popup). `Capacitor.isNativePlatform()` branches the two paths in `GoogleLoginButton.jsx`.
+- **Google Auth** — web uses `@react-oauth/google` (popup) → `/api/users/auth/google/`. Android uses `@codetrix-studio/capacitor-google-auth` native plugin → extracts `idToken` (NOT `accessToken` — it's empty on Android v3.4.x) → `/api/users/auth/google/native/`. `Capacitor.isNativePlatform()` branches the two paths in `GoogleLoginButton.jsx`. `forceCodeForRefreshToken` must NOT be set — causes error 8.
 - **Token persistence** — access token stored in `localStorage` on native (survives app restart), `sessionStorage` on web (cleared on tab close). Zustand `persist` keeps `user` + `isAuthenticated` in `localStorage` on both.
-- **Signing** — release keystore at `~/nepsaathi-release.keystore` (never committed). Debug SHA-1 and release SHA-1 both registered as separate Android OAuth clients in Google Cloud Console.
-- **APK output** — `frontend/android/app/release/nepsaathi-release.apk` (excluded from git via `.gitignore`).
+- **Signing** — release keystore at `~/nepsaathi-release.keystore` (never committed). Four Android OAuth clients registered in Google Cloud: PlayApp Signing Key, Debug Release (local keystore), Debug (debug SHA-1). Play App Signing SHA-1: `B1:36:05:17:6C:B6:C9:7F:34:FC:FF:04:E8:16:40:7A:BD:70:3D:69`.
+- **google-services.json** — at `frontend/android/app/google-services.json`, excluded from git. Must include BOTH Android client (client_type 1, PlayApp Signing Key) and web client (client_type 3). File must be recreated locally if missing.
+- **FCM push notifications** — `@capacitor/push-notifications` registers Android devices; tokens stored in `FcmToken` model; `send_fcm_notification()` in `backend/core/push.py` uses `firebase-admin` SDK with `FIREBASE_SERVICE_ACCOUNT_JSON` env var. Dual push: FCM for Android, VAPID for browsers.
+- **Current versionCode** — 10 (versionName 1.0.9). Build: `npm run cap:sync` → Android Studio → Build → Generate Signed App Bundle.
 
 ### Key architectural patterns
 
@@ -129,7 +133,8 @@ Android APK (Capacitor WebView)      Vercel (React SPA)
 - **User** — custom AbstractUser, `USERNAME_FIELD='email'`. Fields: email(unique), avatar(URLField), google_avatar, phone, location, bio(500 chars), is_verified, is_banned, ban_reason, points(PositiveIntegerField, default 0), referral_code(CharField max_length=12, unique, auto-generated via secrets.token_urlsafe on save), referred_by(FK→self, nullable). Method: `award_points(delta, event_type, description)` — atomic increment via `models.F()`.
 - **PointEvent** — user(FK), event_type(signup/post_ad/referral/profile_complete), delta(IntegerField), description, created_at. DB table: `point_events`.
 - **UserReview** — reviewer(FK→User), reviewee(FK→User), rating(1–5), comment(500 chars), created_at. unique_together=(reviewer, reviewee). Owner cannot review themselves.
-- **PushSubscription** — user(FK), endpoint(unique), p256dh, auth
+- **PushSubscription** — user(FK), endpoint(unique), p256dh, auth — VAPID web push
+- **FcmToken** — user(FK), token(unique TextField), created_at — FCM Android push; db_table=`fcm_tokens`; migration `0010_add_fcm_token`
 
 #### `rooms`
 - **Room** — listing(OneToOne), room_type(private/shared/entire/studio), price(Decimal/week AUD), furnishing, bond, bills_included, available_from, bedrooms, bathrooms, max_occupants, nepalese_household, pets_allowed, parking_available, street_address
@@ -187,13 +192,16 @@ POST   /api/auth/token/refresh/             # refresh access token
 POST   /api/auth/password/reset/            # reset email (3/hr)
 POST   /api/auth/password/change/           # change password (auth)
 GET    /api/auth/user/                      # current user (auth)
-POST   /api/users/auth/google/              # Google OAuth → JWT
+POST   /api/users/auth/google/              # Google OAuth → JWT (web)
+POST   /api/users/auth/google/native/       # Android native sign-in via ID token → JWT (no allauth)
 GET    /api/users/profile/                  # (auth)
 PATCH  /api/users/profile/                  # (auth)
 DELETE /api/users/delete-account/           # deletes user + all data + Cloudinary cleanup
 POST   /api/users/contact/                  # contact form (5/hr, public)
-POST   /api/users/push/subscribe/           # register push subscription (auth)
-DELETE /api/users/push/subscribe/           # unregister push (auth)
+POST   /api/users/push/subscribe/           # register VAPID web push subscription (auth)
+DELETE /api/users/push/subscribe/           # unregister web push (auth)
+POST   /api/users/push/fcm/                 # register FCM Android token (auth)
+DELETE /api/users/push/fcm/                 # unregister FCM token (auth)
 GET    /api/users/<id>/public/              # public profile (public)
 GET    /api/users/points/                   # points balance + recent PointEvent history (auth)
 GET    /api/users/<id>/reviews/             # list reviews for a user (public)
@@ -389,7 +397,7 @@ GET  /api/remittance/rates/              # live AUD→NPR rates per provider (pu
 | `usePageMeta` | Sets title, description, OG tags, canonical |
 | `useIsMobile` | `window.innerWidth < 768` |
 | `useExitIntent` | Desktop: mouse to top edge; mobile: 15s timer OR 60% scroll depth; 7-day cooldown |
-| `usePushNotifications` | Service Worker + VAPID subscription |
+| `usePushNotifications` | Native Android: FCM via `@capacitor/push-notifications`; Web: Service Worker + VAPID subscription |
 | `usePWAInstall` | Captures `beforeinstallprompt` |
 
 ### API modules (`src/api/`)
@@ -481,11 +489,15 @@ Webhook is idempotent — always checks `payment.status != 'completed'` before p
 
 ```bash
 python manage.py expire_listings              # sets expired listings to status='expired'
+python manage.py expire_featured_listings     # clears is_featured on expired listings
 python manage.py expire_featured_businesses   # clears is_featured on expired businesses
-python manage.py send_expiry_warnings         # emails owners within 4 days of expiry
+python manage.py send_expiry_warnings         # emails owners within 5 days of expiry (5-day window matches UI "Expires soon" threshold)
+python manage.py send_featured_warnings       # emails owners before featured listing expires
 python manage.py send_event_reminders         # emails RSVP'd users 24 hrs before event
 python manage.py fetch_remittance_rates       # pulls live AUD→NPR from Wise/Remitly/WorldRemit/WU
 ```
+
+Runs every 6 hours (immediately on cron service start, then `sleep 21600` loop).
 
 ---
 
@@ -512,6 +524,8 @@ STRIPE_FEATURED_PRICE_CENTS
 VAPID_PRIVATE_KEY
 VAPID_PUBLIC_KEY
 VAPID_ADMIN_EMAIL
+
+FIREBASE_SERVICE_ACCOUNT_JSON    # single-line JSON string of Firebase service account (FCM Android push)
 
 RESEND_API_KEY                   # production email (absent = Zoho SMTP fallback)
 EMAIL_HOST                       # Zoho SMTP host
@@ -740,6 +754,15 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **`.npmrc`** — `legacy-peer-deps=true` added to fix CI `npm ci` failure caused by `@codetrix-studio/capacitor-google-auth` peer dep conflict with Capacitor 8.
 - **Mobile responsiveness sweep** — navbar mobile menu made scrollable (fixed + overflow-y auto); StatsBar responsive; ProfilePage, RegisterBusinessPage outer padding reduced on mobile; LoginPage touch target fix; VisaHubPage media queries added; AdminPanelPage chart grids collapse on mobile.
 - **BottomNav redesign** — Phosphor SVG icons replaced with emoji (🏠💼🛏️💬); Home tab added; Businesses tab removed.
+
+### Phase 11 — Android fixes & FCM push notifications (2026-09-09)
+
+- **Google Sign-In root causes fixed** (4-layer problem): (1) Play App Signing uses a different SHA-1 than local keystore — registered Play SHA-1 `B1:36:...` as Android OAuth client in Google Cloud; (2) `@codetrix-studio/capacitor-google-auth` v3.4.x returns empty `accessToken` on Android — switched to `idToken` flow; (3) `forceCodeForRefreshToken: true` caused error 8 ("something went wrong") — removed; (4) `google-services.json` was missing the Android OAuth client (client_type 1) — added `496474413327-hu95j5r9lks4m2hfsd2ekkjbj015vtqi`.
+- **New backend endpoint** — `POST /api/users/auth/google/native/` (`GoogleIdTokenLoginView`) verifies ID token via Google tokeninfo API, checks `aud` against known client IDs, creates/gets user by email, returns JWT + sets refresh cookie.
+- **FCM push notifications** — `firebase-admin>=6.0` added to requirements; `FcmToken` model (migration `0010`) stores per-device FCM tokens; `POST /api/users/push/fcm/` registers tokens; `send_fcm_notification()` in `core/push.py` sends to all user devices via FCM V1 API using `FIREBASE_SERVICE_ACCOUNT_JSON` env var; stale tokens auto-cleaned on `UnregisteredError`. Dual push strategy: FCM for Android, VAPID for browsers.
+- **Frontend** — `@capacitor/push-notifications@^8.1.2` added; `usePushNotifications.js` branches on `Capacitor.isNativePlatform()`: native calls `PushNotifications.register()` → registers FCM token; web uses existing VAPID flow.
+- **`FIREBASE_SERVICE_ACCOUNT_JSON`** added to `settings.py` via `config()` — was missing, causing silent Firebase init failure.
+- **Current versionCode**: 10 (versionName 1.0.9)
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
