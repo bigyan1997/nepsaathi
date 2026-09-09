@@ -6,7 +6,7 @@ import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-const WEB_CLIENT_ID = "496474413327-stsoi3lvg6te5t3mb89dh4494j1kdjhn.apps.googleusercontent.com";
+const WEB_CLIENT_ID = "821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs.apps.googleusercontent.com";
 
 export default function GoogleLoginButton({ redirectTo = "/" }) {
   const { setAuth } = useAuthStore();
