@@ -22,6 +22,7 @@ urlpatterns = [
 
     # Push notifications
     path('push/subscribe/', views.PushSubscribeView.as_view(), name='push-subscribe'),
+    path('push/fcm/', views.FcmTokenView.as_view(), name='push-fcm'),
     path('push/test/', views.PushTestView.as_view(), name='push-test'),
 
     # Public user profile

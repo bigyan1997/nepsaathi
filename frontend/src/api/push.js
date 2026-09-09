@@ -16,3 +16,11 @@ export const subscribePush = async (subscription) => {
 export const unsubscribePush = async (endpoint) => {
   await api.delete("/api/users/push/subscribe/", { data: { endpoint } });
 };
+
+export const registerFcmToken = async (token) => {
+  await api.post("/api/users/push/fcm/", { token });
+};
+
+export const unregisterFcmToken = async (token) => {
+  await api.delete("/api/users/push/fcm/", { data: { token } });
+};

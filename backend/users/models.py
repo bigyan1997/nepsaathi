@@ -133,3 +133,19 @@ class PushSubscription(models.Model):
 
     def __str__(self):
         return f'{self.user.email} — {self.endpoint[:60]}'
+
+
+class FcmToken(models.Model):
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='fcm_tokens',
+    )
+    token = models.TextField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'fcm_tokens'
+
+    def __str__(self):
+        return f'{self.user.email} — {self.token[:40]}'

@@ -34,6 +34,7 @@ stripe>=15.0
 
 fpdf2==2.8.7
 pywebpush>=2.0
+firebase-admin>=6.0
 gspread>=6.0
 google-auth>=2.0
 

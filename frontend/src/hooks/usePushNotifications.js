@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { subscribePush } from "../api/push";
+import { subscribePush, registerFcmToken } from "../api/push";
+import { Capacitor } from "@capacitor/core";
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
@@ -18,8 +19,6 @@ export async function registerPushSubscription() {
 
     let subscription = await registration.pushManager.getSubscription();
 
-    // Always force a fresh subscription so the correct VAPID key is used.
-    // After the first successful rotation this is a no-op (unsubscribe returns false).
     if (subscription) {
       await subscription.unsubscribe();
       subscription = null;
@@ -35,20 +34,57 @@ export async function registerPushSubscription() {
   }
 }
 
+async function registerNativePush() {
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+
+    const permResult = await PushNotifications.requestPermissions();
+    if (permResult.receive !== "granted") return;
+
+    await PushNotifications.register();
+
+    PushNotifications.addListener("registration", async ({ value: token }) => {
+      try {
+        await registerFcmToken(token);
+      } catch (err) {
+        console.warn("[fcm] token registration failed:", err);
+      }
+    });
+
+    PushNotifications.addListener("registrationError", (err) => {
+      console.warn("[fcm] registration error:", err);
+    });
+
+    PushNotifications.addListener("pushNotificationReceived", (notification) => {
+      console.log("[fcm] foreground notification:", notification);
+    });
+
+    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      const url = action.notification?.data?.url;
+      if (url) window.location.href = url;
+    });
+  } catch (err) {
+    console.warn("[fcm] native push setup failed:", err);
+  }
+}
+
 export function usePushNotifications(isLoggedIn) {
   const attempted = useRef(false);
 
   useEffect(() => {
     if (!isLoggedIn || attempted.current) return;
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
-    if (!VAPID_PUBLIC_KEY) return;
-
     attempted.current = true;
 
-    (async () => {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
-      await registerPushSubscription();
-    })();
+    if (Capacitor.isNativePlatform()) {
+      registerNativePush();
+    } else {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+      if (!VAPID_PUBLIC_KEY) return;
+      (async () => {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
+        await registerPushSubscription();
+      })();
+    }
   }, [isLoggedIn]);
 }

@@ -497,6 +497,31 @@ class PushSubscribeView(APIView):
         return Response({'detail': 'Unsubscribed.'}, status=status.HTTP_200_OK)
 
 
+class FcmTokenView(APIView):
+    """
+    POST   /api/users/push/fcm/ — register an FCM device token (Android)
+    DELETE /api/users/push/fcm/ — remove an FCM device token
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        token = request.data.get('token', '').strip()
+        if not token:
+            return Response({'detail': 'token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        from users.models import FcmToken
+        FcmToken.objects.filter(token=token).exclude(user=request.user).delete()
+        FcmToken.objects.get_or_create(token=token, defaults={'user': request.user})
+        return Response({'detail': 'FCM token registered.'}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        token = request.data.get('token', '').strip()
+        if not token:
+            return Response({'detail': 'token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        from users.models import FcmToken
+        FcmToken.objects.filter(user=request.user, token=token).delete()
+        return Response({'detail': 'FCM token removed.'}, status=status.HTTP_200_OK)
+
+
 class PushTestView(APIView):
     """
     POST /api/users/push/test/ — send a test push and return real per-subscription results.
