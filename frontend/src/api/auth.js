@@ -64,7 +64,7 @@ export const changePassword = async ({ old_password, new_password1, new_password
   return response.data;
 };
 
-// Google OAuth login
+// Google OAuth login (web — sends OAuth2 access token)
 export const googleLogin = async (accessToken) => {
   const response = await api.post("/api/users/auth/google/", {
     access_token: accessToken,
@@ -83,6 +83,22 @@ export const googleLogin = async (accessToken) => {
     }
   }
 
+  return data;
+};
+
+// Google OAuth login (native Android — sends Google ID token)
+export const googleLoginNative = async (idToken) => {
+  const response = await api.post("/api/users/auth/google/native/", {
+    id_token: idToken,
+  });
+  const data = response.data;
+  if (data.access) {
+    try {
+      sessionStorage.setItem("nepsaathi_access_token", data.access);
+      const profileResponse = await api.get("/api/users/profile/");
+      data.user = profileResponse.data;
+    } catch (e) {}
+  }
   return data;
 };
 

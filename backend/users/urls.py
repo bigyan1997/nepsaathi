@@ -9,6 +9,7 @@ urlpatterns = [
 
      # Google OAuth
     path('auth/google/', views.GoogleLoginView.as_view(), name='google-login'),
+    path('auth/google/native/', views.GoogleIdTokenLoginView.as_view(), name='google-native-login'),
 
     # Logout
     path('auth/logout/', views.LogoutView.as_view(), name='logout'),

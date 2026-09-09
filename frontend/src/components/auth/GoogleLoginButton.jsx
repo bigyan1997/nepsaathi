@@ -1,7 +1,7 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { Capacitor } from "@capacitor/core";
-import { googleLogin } from "../../api/auth";
+import { googleLogin, googleLoginNative } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -40,8 +40,8 @@ export default function GoogleLoginButton({ redirectTo = "/" }) {
         scopes: ["profile", "email"],
       });
       const googleUser = await GoogleAuth.signIn();
-      const accessToken = googleUser.authentication.accessToken;
-      const data = await googleLogin(accessToken);
+      const idToken = googleUser.authentication.idToken;
+      const data = await googleLoginNative(idToken);
       setAuth(data.user, data.access, data.refresh);
       navigate(redirectTo);
     } catch {

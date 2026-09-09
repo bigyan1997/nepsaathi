@@ -12,6 +12,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
+import requests as http_requests
 
 User = get_user_model()
 
@@ -64,6 +65,94 @@ class GoogleLoginView(SocialLoginView):
                     threading.Thread(target=_send_welcome, args=(user,), daemon=True).start()
         except Exception:
             pass
+        return response
+
+
+GOOGLE_CLIENT_IDS = {
+    '496474413327-stsoi3lvg6te5t3mb89dh4494j1kdjhn.apps.googleusercontent.com',
+}
+
+
+class GoogleIdTokenLoginView(APIView):
+    """
+    POST /api/users/auth/google/native/
+    Android-only: accepts a Google ID token (from Capacitor Google Auth),
+    verifies it with Google's tokeninfo endpoint, creates or retrieves the user,
+    and returns NepSaathi JWT tokens with the same cookie shape as the web flow.
+    """
+    throttle_classes = [LoginRateThrottle]
+
+    def post(self, request):
+        id_token_str = request.data.get('id_token', '').strip()
+        if not id_token_str:
+            return Response({'detail': 'id_token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            resp = http_requests.get(
+                'https://oauth2.googleapis.com/tokeninfo',
+                params={'id_token': id_token_str},
+                timeout=10,
+            )
+        except Exception:
+            return Response({'detail': 'Could not verify token with Google.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        if resp.status_code != 200:
+            return Response({'detail': 'Google login failed. Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        payload = resp.json()
+
+        if payload.get('aud') not in GOOGLE_CLIENT_IDS:
+            return Response({'detail': 'Google login failed. Token audience mismatch.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = payload.get('email', '').lower()
+        if not email or not payload.get('email_verified') == 'true':
+            return Response({'detail': 'Google login failed. Email not verified.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        first_name = payload.get('given_name', '')
+        last_name = payload.get('family_name', '')
+        picture = payload.get('picture', '')
+
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={'first_name': first_name, 'last_name': last_name, 'is_active': True},
+        )
+
+        if getattr(user, 'is_banned', False):
+            return Response(
+                {'detail': 'Your account has been suspended. Contact support@nepsaathi.com'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if picture and not user.google_avatar:
+            user.google_avatar = picture
+            user.save(update_fields=['google_avatar'])
+
+        if created:
+            from core.emails import send_welcome_email
+            import threading, logging as _log
+            def _send_welcome(_u):
+                try:
+                    send_welcome_email(_u)
+                except Exception as _e:
+                    _log.getLogger(__name__).error('Welcome email failed for user %s: %s', _u.pk, _e)
+            threading.Thread(target=_send_welcome, args=(user,), daemon=True).start()
+
+        refresh = RefreshToken.for_user(user)
+        access_str = str(refresh.access_token)
+        refresh_str = str(refresh)
+
+        response = Response({
+            'access': access_str,
+            'user': UserSerializer(user).data,
+        })
+        response.set_cookie(
+            'nepsaathi-refresh',
+            refresh_str,
+            httponly=True,
+            secure=True,
+            samesite='None',
+            max_age=60 * 60 * 24 * 7,
+        )
         return response
 
 
