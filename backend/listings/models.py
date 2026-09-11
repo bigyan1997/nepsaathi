@@ -104,6 +104,7 @@ class Listing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     expires_at = models.DateTimeField(null=True, blank=True)
+    bumped_at = models.DateTimeField(null=True, blank=True)
     expiry_warning_sent = models.BooleanField(default=False)
     featured_warning_sent = models.BooleanField(default=False)
 
@@ -165,7 +166,7 @@ class ListingImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images'
     )
-    image = CloudinaryField('image', folder='nepsaathi/listings/')
+    image = CloudinaryField('image', folder='nepsaathi/listings/', transformation={'width': 1600, 'crop': 'limit'})
     is_primary = models.BooleanField(
         default=False,
         help_text='Primary image shown as the listing thumbnail'

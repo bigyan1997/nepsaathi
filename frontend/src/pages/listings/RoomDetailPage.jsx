@@ -338,6 +338,34 @@ export default function RoomDetailPage() {
           </div>
         )}
 
+        {/* ── Filled / expired banner ── */}
+        {(room.listing_status === "filled" || room.listing_status === "expired") && (
+          <div
+            style={{
+              background: "#F5F4F0",
+              border: "0.5px solid #D9D7D0",
+              borderRadius: "12px",
+              padding: "12px 18px",
+              marginBottom: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <WarningIcon size={20} weight="fill" color="#888" />
+            <div>
+              <div style={{ fontSize: "13px", fontWeight: 600, color: "#555" }}>
+                {room.listing_status === "filled" ? "This room has been taken" : "This listing has expired"}
+              </div>
+              <div style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>
+                {room.listing_status === "filled"
+                  ? "The landlord has found a tenant. Check similar rooms below."
+                  : "This listing is no longer active."}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Image gallery ── */}
         {room?.images?.length > 0 && (
           <div style={{ marginBottom: "14px" }}>

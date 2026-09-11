@@ -10,6 +10,7 @@ import {
   markListingStatus,
   renewListing,
   getMyAnalytics,
+  bumpListing,
 } from "../../api/listings";
 import { createCheckoutSession, downloadInvoice } from "../../api/payments";
 import { getMyBusinesses, deleteBusiness } from "../../api/businesses";
@@ -507,6 +508,26 @@ export default function MyListingsPage() {
     onError: () => addToast("Failed to update status.", "error"),
   });
 
+  const bumpMutation = useMutation({
+    mutationFn: bumpListing,
+    onSuccess: () => {
+      ["my-listings", "jobs", "rooms", "events", "notices", "home-jobs", "home-rooms", "listings"].forEach(
+        (k) => queryClient.invalidateQueries({ queryKey: [k] })
+      );
+      addToast("Listing bumped to the top! 🚀", "success");
+    },
+    onError: (err) => {
+      const msg = err?.response?.data?.detail || "Could not bump listing.";
+      const nextBump = err?.response?.data?.next_bump_at;
+      if (nextBump) {
+        const when = new Date(nextBump).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
+        addToast(`Already bumped recently. Next bump available ${when}.`, "info");
+      } else {
+        addToast(msg, "error");
+      }
+    },
+  });
+
   const renewMutation = useMutation({
     mutationFn: renewListing,
     onSuccess: () => {
@@ -802,6 +823,10 @@ export default function MyListingsPage() {
                 setOpenMenu(null);
                 confirmDelete(`Mark "${listing.title}" as filled/taken?`, () => markStatusMutation.mutate({ id: listing.id, status: "filled" }), "Yes, Mark filled", "#534AB7");
               },
+            },
+            listing.status === "active" && {
+              label: "🚀 Bump to top",
+              onClick: () => { setOpenMenu(null); bumpMutation.mutate(listing.id); },
             },
             listing.status === "filled" && {
               label: "↺ Reopen listing",

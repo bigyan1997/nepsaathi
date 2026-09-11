@@ -157,7 +157,7 @@ class BusinessImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = CloudinaryField('image', folder='nepsaathi/businesses/')
+    image = CloudinaryField('image', folder='nepsaathi/businesses/', transformation={'width': 1600, 'crop': 'limit'})
     is_primary = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

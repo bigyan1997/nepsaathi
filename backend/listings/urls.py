@@ -28,6 +28,7 @@ urlpatterns = [
     path('<int:pk>/save/', views.SaveListingView.as_view(), name='save-listing'),
     path('<int:pk>/report/', views.ReportListingView.as_view(), name='report-listing'),
     path('<int:pk>/status/', views.MarkListingStatusView.as_view(), name='listing-status'),
+    path('<int:pk>/bump/', views.ListingBumpView.as_view(), name='listing-bump'),
     path('<int:pk>/view/', views.TrackListingViewView.as_view(), name='track-view'),
     path('<int:pk>/similar/', views.SimilarListingsView.as_view(), name='similar-listings'),
     path('<int:pk>/renew/', views.RenewListingView.as_view(), name='renew-listing'),

@@ -91,6 +91,12 @@ export const markListingStatus = async (id, status) => {
   return response.data;
 };
 
+// Bump listing to top (1 free bump per 7 days)
+export const bumpListing = async (id) => {
+  const response = await api.post(`/api/listings/${id}/bump/`);
+  return response.data;
+};
+
 // View Count
 export const trackView = async (id) => {
   const response = await api.post(`/api/listings/${id}/view/`);

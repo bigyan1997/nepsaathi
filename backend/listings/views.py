@@ -16,7 +16,8 @@ from django.db.models import Q
 from datetime import timedelta
 from rest_framework.exceptions import ValidationError
 from businesses.models import Business
-from django.db.models import Count, Case, When, IntegerField, Value
+from django.db.models import Count, Case, When, IntegerField, Value, F
+from django.db.models.functions import Coalesce
 from core.emails import send_spam_detected_email
 
 
@@ -209,8 +210,8 @@ class ListingListView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_fields = ('listing_type', 'state', 'status', 'is_featured', 'user')
-    ordering_fields = ('created_at', 'updated_at')
-    ordering = ('-created_at',)
+    ordering_fields = ('created_at', 'updated_at', 'effective_date')
+    ordering = ('-effective_date',)
 
     def get_queryset(self):
         from django.contrib.postgres.search import SearchQuery
@@ -220,7 +221,8 @@ class ListingListView(generics.ListAPIView):
         ).select_related('user').prefetch_related(
             'images', 'job_detail', 'room_detail', 'reports'
         ).annotate(
-            view_count_annotated=Count('views')
+            view_count_annotated=Count('views'),
+            effective_date=Coalesce(F('bumped_at'), F('created_at')),
         )
         if self.request.query_params.get('new') == 'true':
             qs = qs.filter(created_at__gte=timezone.now() - timedelta(hours=24))
@@ -706,7 +708,38 @@ class MarkListingStatusView(APIView):
         listing.status = new_status
         listing.save(update_fields=['status'])
         return Response({'detail': f'Listing marked as {new_status}.'})
-    
+
+
+class ListingBumpView(APIView):
+    """
+    POST /api/listings/<id>/bump/
+    Move a listing back to the top of search results.
+    One free bump per listing per 7 days.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            listing = Listing.objects.get(pk=pk, user=request.user, status='active')
+        except Listing.DoesNotExist:
+            return Response({'detail': 'Active listing not found.'}, status=404)
+
+        now = timezone.now()
+        cooldown = timedelta(days=7)
+        if listing.bumped_at and (now - listing.bumped_at) < cooldown:
+            next_bump_at = listing.bumped_at + cooldown
+            seconds_left = int((next_bump_at - now).total_seconds())
+            return Response({
+                'detail': 'Listing was bumped recently.',
+                'next_bump_at': next_bump_at,
+                'seconds_left': seconds_left,
+            }, status=429)
+
+        listing.bumped_at = now
+        listing.save(update_fields=['bumped_at'])
+        return Response({'detail': 'Listing bumped to the top.', 'bumped_at': now})
+
+
 class TrackListingViewView(APIView):
     """
     POST /api/listings/<id>/view/
