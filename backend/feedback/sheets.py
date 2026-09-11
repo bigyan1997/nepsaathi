@@ -40,13 +40,14 @@ def _append_row(feedback):
 
         rows = sheet.get_all_values()
         if not rows or not rows[0] or rows[0][0] != 'Timestamp':
-            sheet.insert_row(['Timestamp', 'Satisfaction', 'Reason', 'Page URL', 'User ID', 'User Email'], index=1)
+            sheet.insert_row(['Timestamp', 'Satisfaction', 'Reason', 'Message', 'Page URL', 'User ID', 'User Email'], index=1)
 
         local_time = feedback.created_at.astimezone(ZoneInfo('Australia/Sydney'))
         sheet.append_row([
             local_time.strftime('%Y-%m-%d %H:%M:%S'),
             feedback.satisfaction,
             feedback.get_reason_display(),
+            feedback.message or '',
             feedback.page_url or '',
             str(feedback.user_id) if feedback.user_id else 'anonymous',
             feedback.user.email if feedback.user else 'anonymous',
