@@ -457,9 +457,12 @@ export default function PostAdPage() {
   const [aiTagState, setAiTagState] = useState({ loading: false, suggestions: [], error: null });
 
   // ── Draft auto-save ─────────────────────────────────────────────────────────
-  // Debounced save: fires 1.5s after the last form change, only on steps 1-3
+  // Debounced save: fires 1.5s after the last form change, only on steps 1-3.
+  // Only saves if the user has actually started filling in the form (title is non-empty)
+  // so that opening the page without typing never creates a phantom draft.
   useEffect(() => {
     if (step > 3) return;
+    if (!baseForm.title.trim()) return;
     clearTimeout(draftTimer.current);
     draftTimer.current = setTimeout(() => {
       saveDraft({ listingType, baseForm, jobForm, roomForm, noticeForm, eventForm, tags });
