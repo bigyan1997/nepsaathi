@@ -45,10 +45,8 @@ export default function GoogleLoginButton({ redirectTo = "/" }) {
       const data = await googleLoginNative(idToken);
       setAuth(data.user, data.access, data.refresh);
       navigate(redirectTo);
-    } catch (err) {
-      const msg = err?.message || err?.error || String(err) || "unknown";
-      const code = err?.code || err?.status || "";
-      setError(`Google login failed: ${msg} [code:${code}]`);
+    } catch {
+      setError("Google sign-in failed. Please try again.");
     } finally {
       setLoading(false);
     }

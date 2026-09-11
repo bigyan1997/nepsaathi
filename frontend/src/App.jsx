@@ -4,6 +4,7 @@ import api from "./utils/axios";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Capacitor } from "@capacitor/core";
 import useAuthStore from "./store/authStore";
 import { usePushNotifications } from "./hooks/usePushNotifications";
 
@@ -110,6 +111,31 @@ const queryClient = new QueryClient({
 function PushInit() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   usePushNotifications(isAuthenticated);
+  return null;
+}
+
+function NativeInit() {
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    let backHandler;
+    const setup = async () => {
+      const { StatusBar, Style } = await import("@capacitor/status-bar");
+      StatusBar.setBackgroundColor({ color: "#F5F4F0" });
+      StatusBar.setStyle({ style: Style.Dark });
+
+      const { App } = await import("@capacitor/app");
+      backHandler = await App.addListener("backButton", ({ canGoBack }) => {
+        if (canGoBack) {
+          window.history.back();
+        } else {
+          App.exitApp();
+        }
+      });
+    };
+    setup();
+    return () => { backHandler?.remove(); };
+  }, []);
   return null;
 }
 
@@ -333,6 +359,7 @@ function App() {
                 <Footer />
               </div>
               <PushInit />
+              <NativeInit />
               <PWAInstallPrompt />
               <FeedbackTrigger />
               <IdleGuard />

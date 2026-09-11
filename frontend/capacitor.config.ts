@@ -17,6 +17,10 @@ const config: CapacitorConfig = {
       scopes: ["profile", "email"],
       serverClientId: "821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs.apps.googleusercontent.com",
     },
+    Keyboard: {
+      resize: "body",
+      resizeOnFullScreen: true,
+    },
   },
 };
 
