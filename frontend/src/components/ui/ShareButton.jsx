@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Capacitor } from "@capacitor/core";
 import { useToast } from "./Toast";
 import {
   LinkSimpleIcon,
@@ -57,10 +58,23 @@ export default function ShareButton({ title, url, compact = false }) {
     },
   ];
 
+  const handleShare = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { Share } = await import("@capacitor/share");
+        await Share.share({ title: shareTitle, url: shareUrl });
+      } catch {
+        // user cancelled or share failed — no-op
+      }
+      return;
+    }
+    setOpen(!open);
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleShare}
         aria-label="Share Listing"
         style={{
           display: "flex",

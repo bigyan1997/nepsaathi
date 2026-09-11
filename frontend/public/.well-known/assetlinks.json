@@ -1,10 +1,12 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.nepsaathi.app",
-    "sha256_cert_fingerprints": [
-      "55:F3:90:82:93:90:08:15:6B:0E:9F:EC:2D:59:A9:18:80:02:8B:95:CD:57:98:BE:B3:54:19:36:6C:BE:C9:27"
-    ]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.nepsaathi.app",
+      "sha256_cert_fingerprints": [
+        "9F:1E:7C:F1:C5:D7:86:B8:F8:FC:A8:E1:D7:BD:0B:52:F0:CD:E4:EC:08:53:9E:66:1C:0B:5C:14:D5:AF:04:78"
+      ]
+    }
   }
-}]
+]

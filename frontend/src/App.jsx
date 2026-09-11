@@ -24,6 +24,7 @@ import PWAInstallPrompt from "./components/ui/PWAInstallPrompt";
 import FeedbackModal from "./components/ui/FeedbackModal";
 import CookieConsent from "./components/ui/CookieConsent";
 import SignupNudge from "./components/ui/SignupNudge";
+import OfflineBanner from "./components/ui/OfflineBanner";
 import IdleTimeoutModal from "./components/ui/IdleTimeoutModal";
 import useIdleTimeout from "./hooks/useIdleTimeout";
 import useExitIntent from "./hooks/useExitIntent";
@@ -119,6 +120,7 @@ function NativeInit() {
     if (!Capacitor.isNativePlatform()) return;
 
     let backHandler;
+    let deepLinkHandler;
     const setup = async () => {
       const { StatusBar, Style } = await import("@capacitor/status-bar");
       StatusBar.setBackgroundColor({ color: "#F5F4F0" });
@@ -132,9 +134,23 @@ function NativeInit() {
           App.exitApp();
         }
       });
+
+      // Handle deep links (Android App Links)
+      deepLinkHandler = await App.addListener("appUrlOpen", ({ url }) => {
+        try {
+          const path = new URL(url).pathname + new URL(url).search;
+          if (path && path !== "/") {
+            window.history.pushState({}, "", path);
+            window.dispatchEvent(new PopStateEvent("popstate"));
+          }
+        } catch {}
+      });
     };
     setup();
-    return () => { backHandler?.remove(); };
+    return () => {
+      backHandler?.remove();
+      deepLinkHandler?.remove();
+    };
   }, []);
   return null;
 }
@@ -262,6 +278,7 @@ function App() {
           <ScrollToTop />
           <ProgressProvider>
             <ToastProvider>
+              <OfflineBanner />
               <div
                 style={{
                   backgroundColor: "#F5F4F0",
