@@ -563,7 +563,7 @@ export default function MyListingsPage() {
   const allSaved = savedData?.results || [];
 
   // Stats
-  const activeCount = allListings.filter((l) => l.status === "active").length;
+  const activeCount = allListings.filter((l) => l.status === "active" && !l.is_under_review).length;
   const expiringCount = allListings.filter(
     (l) => isExpiringSoon(l.expires_at) && l.status === "active",
   ).length;
