@@ -2,6 +2,7 @@ import { render, screen, act, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 import SignupNudge from "../components/ui/SignupNudge";
+import { ToastProvider } from "../components/ui/Toast";
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -25,9 +26,11 @@ import useAuthStore from "../store/authStore";
 
 function renderNudge(path = "/jobs") {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <SignupNudge />
-    </MemoryRouter>
+    <ToastProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <SignupNudge />
+      </MemoryRouter>
+    </ToastProvider>
   );
 }
 
