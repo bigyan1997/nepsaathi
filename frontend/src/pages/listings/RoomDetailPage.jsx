@@ -14,8 +14,6 @@ import VerifiedBadge from "../../components/ui/VerifiedBadge";
 import WhatsAppButton from "../../components/ui/WhatsAppButton";
 import usePageMeta from "../../hooks/usePageMeta";
 import { trackView, getSimilarListings } from "../../api/listings";
-import MarketBenchmark from "../../components/ui/MarketBenchmark";
-import SafeMeetingPoints from "../../components/ui/SafeMeetingPoints";
 import { useEffect } from "react";
 import ImageGallery from "../../components/ui/ImageGallery";
 import useIsMobile from "../../hooks/useIsMobile";
@@ -635,8 +633,6 @@ export default function RoomDetailPage() {
                   );
                 })()}
               </div>
-              <MarketBenchmark type="room" location={room.listing_location} state={room.listing_state} />
-              <SafeMeetingPoints state={room.listing_state} suburb={room.listing_location} />
             </div>
 
             {/* Room details — orange tinted */}
@@ -666,89 +662,54 @@ export default function RoomDetailPage() {
                   Room details
                 </h3>
               </div>
-              <div style={{ padding: "20px" }}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-                    gap: "16px",
-                  }}
-                >
+              <div style={{ padding: "16px 20px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
                   {(isWanted
                     ? [
-                        {
-                          label: "Room type needed",
-                          value: room.room_type?.replace("_", " ") || "—",
-                        },
-                        {
-                          label: "Furnishing pref.",
-                          value: room.furnishing?.replace("_", " ") || "Any",
-                        },
+                        { label: "Room type needed", value: room.room_type?.replace("_", " ") || "—" },
+                        { label: "Furnishing pref.", value: room.furnishing?.replace("_", " ") || "Any" },
                         {
                           label: "Move in",
                           value: room.available_from
-                            ? new Date(room.available_from).toLocaleDateString(
-                                "en-AU",
-                                { day: "numeric", month: "short" },
-                              )
+                            ? new Date(room.available_from).toLocaleDateString("en-AU", { day: "numeric", month: "short" })
                             : "Flexible",
                         },
                         { label: "Max budget/week", value: room.price_display },
                       ]
                     : [
-                        {
-                          label: "Room type",
-                          value: room.room_type?.replace("_", " ") || "—",
-                        },
+                        { label: "Room type", value: room.room_type?.replace("_", " ") || "—" },
                         { label: "Bedrooms", value: room.bedrooms || "—" },
                         { label: "Bathrooms", value: room.bathrooms || "—" },
-                        {
-                          label: "Max occupants",
-                          value: room.max_occupants || "—",
-                        },
-                        {
-                          label: "Bond",
-                          value: room.bond?.replace("_", " ") || "—",
-                        },
+                        { label: "Max occupants", value: room.max_occupants || "—" },
+                        { label: "Bond", value: room.bond?.replace("_", " ") || "—" },
                         {
                           label: "Expires",
                           value: room.expires_at
-                            ? new Date(room.expires_at).toLocaleDateString(
-                                "en-AU",
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                },
-                              )
+                            ? new Date(room.expires_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })
                             : "30 days",
                         },
                       ]
-                  ).map(({ label, value }) => (
-                    <div key={label}>
+                  ).map(({ label, value }, i, arr) => {
+                    const isLastRow = i >= arr.length - (arr.length % 2 === 0 ? 2 : 1);
+                    const isLeftCol = i % 2 === 0;
+                    return (
                       <div
+                        key={label}
                         style={{
-                          fontSize: "10px",
-                          color: "#E87722",
-                          marginBottom: "4px",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.06em",
-                          fontWeight: 700,
+                          padding: "14px 16px",
+                          borderBottom: isLastRow ? "none" : "0.5px solid #F5F4F0",
+                          borderRight: isLeftCol ? "0.5px solid #F5F4F0" : "none",
                         }}
                       >
-                        {label}
+                        <div style={{ fontSize: "10px", color: "#E87722", marginBottom: "5px", textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 700 }}>
+                          {label}
+                        </div>
+                        <div style={{ fontSize: "14px", color: "#26215C", fontWeight: 600, textTransform: "capitalize" }}>
+                          {value}
+                        </div>
                       </div>
-                      <div
-                        style={{
-                          fontSize: "13px",
-                          color: "#26215C",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {value}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
