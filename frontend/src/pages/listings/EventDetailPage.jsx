@@ -344,7 +344,7 @@ export default function EventDetailPage() {
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {event?.view_count > 0 && (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", color: "#666", background: "#f5f4f0", borderRadius: "20px", padding: "5px 10px", fontWeight: 500, whiteSpace: "nowrap" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "12px", color: "#666", background: "#f5f4f0", borderRadius: "20px", padding: "5px 10px", fontWeight: 500, whiteSpace: "nowrap", flexShrink: 0 }}>
                 <EyeIcon size={13} weight="regular" style={{ flexShrink: 0 }} />
                 {event.view_count} views
               </span>
