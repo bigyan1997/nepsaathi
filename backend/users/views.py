@@ -81,6 +81,7 @@ class GoogleIdTokenLoginView(APIView):
     verifies it with Google's tokeninfo endpoint, creates or retrieves the user,
     and returns NepSaathi JWT tokens with the same cookie shape as the web flow.
     """
+    permission_classes = [permissions.AllowAny]
     throttle_classes = [LoginRateThrottle]
 
     def post(self, request):
