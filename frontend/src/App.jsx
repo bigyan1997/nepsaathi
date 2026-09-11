@@ -124,30 +124,32 @@ function NativeInit() {
     let backHandler;
     let deepLinkHandler;
     const setup = async () => {
-      const { StatusBar, Style } = await import("@capacitor/status-bar");
-      StatusBar.setBackgroundColor({ color: "#F5F4F0" });
-      StatusBar.setStyle({ style: Style.Dark });
+      try {
+        const { StatusBar, Style } = await import("@capacitor/status-bar");
+        await StatusBar.setBackgroundColor({ color: "#F5F4F0" });
+        await StatusBar.setStyle({ style: Style.Dark });
+      } catch {}
 
-
-      const { App } = await import("@capacitor/app");
-      backHandler = await App.addListener("backButton", ({ canGoBack }) => {
-        if (canGoBack) {
-          window.history.back();
-        } else {
-          App.exitApp();
-        }
-      });
-
-      // Handle Android App Links — use React Router's navigate to avoid breaking history index
-      deepLinkHandler = await App.addListener("appUrlOpen", ({ url }) => {
-        try {
-          const parsed = new URL(url);
-          const path = parsed.pathname + parsed.search;
-          if (path && path !== "/") {
-            navigate?.(path);
+      try {
+        const { App } = await import("@capacitor/app");
+        backHandler = await App.addListener("backButton", ({ canGoBack }) => {
+          if (canGoBack) {
+            window.history.back();
+          } else {
+            App.exitApp();
           }
-        } catch {}
-      });
+        });
+
+        deepLinkHandler = await App.addListener("appUrlOpen", ({ url }) => {
+          try {
+            const parsed = new URL(url);
+            const path = parsed.pathname + parsed.search;
+            if (path && path !== "/") {
+              navigate?.(path);
+            }
+          } catch {}
+        });
+      } catch {}
     };
     setup();
     return () => {

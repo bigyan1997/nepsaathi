@@ -9,13 +9,26 @@ export default function OfflineBanner() {
 
     async function setup() {
       if (Capacitor.isNativePlatform()) {
-        const { Network } = await import("@capacitor/network");
-        const status = await Network.getStatus();
-        setOffline(!status.connected);
-        const handler = await Network.addListener("networkStatusChange", (s) => {
-          setOffline(!s.connected);
-        });
-        removeListener = () => handler.remove();
+        try {
+          const { Network } = await import("@capacitor/network");
+          const status = await Network.getStatus();
+          setOffline(!status.connected);
+          const handler = await Network.addListener("networkStatusChange", (s) => {
+            setOffline(!s.connected);
+          });
+          removeListener = () => handler.remove();
+        } catch {
+          // Plugin not available in this build — fall back to browser events
+          const onOnline = () => setOffline(false);
+          const onOffline = () => setOffline(true);
+          setOffline(!navigator.onLine);
+          window.addEventListener("online", onOnline);
+          window.addEventListener("offline", onOffline);
+          removeListener = () => {
+            window.removeEventListener("online", onOnline);
+            window.removeEventListener("offline", onOffline);
+          };
+        }
       } else {
         const onOnline = () => setOffline(false);
         const onOffline = () => setOffline(true);
