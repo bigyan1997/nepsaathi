@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
-import { googleLogin } from "../../api/auth";
+import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
+import { Capacitor } from "@capacitor/core";
+import { googleLogin, googleLoginNative } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import useIsMobile from "../../hooks/useIsMobile";
+
+const WEB_CLIENT_ID = "821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs.apps.googleusercontent.com";
 
 const STORAGE_KEY = "nepsaathi_signup_nudge";
 const COOKIE_KEY = "nepsaathi_cookie_consent";
@@ -68,7 +72,7 @@ export default function SignupNudge() {
     setVisible(false);
   };
 
-  const handleGoogleLogin = useGoogleLogin({
+  const webGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setLoading(true);
       try {
@@ -82,6 +86,34 @@ export default function SignupNudge() {
       }
     },
   });
+
+  async function nativeGoogleLogin() {
+    setLoading(true);
+    try {
+      await GoogleAuth.initialize({
+        clientId: WEB_CLIENT_ID,
+        scopes: ["profile", "email"],
+        grantOfflineAccess: false,
+      });
+      const googleUser = await GoogleAuth.signIn();
+      const idToken = googleUser.authentication.idToken;
+      const data = await googleLoginNative(idToken);
+      setAuth(data.user, data.access, data.refresh);
+      setVisible(false);
+    } catch {
+      // silently fail — user can try via /login
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleGoogleLogin() {
+    if (Capacitor.isNativePlatform()) {
+      nativeGoogleLogin();
+    } else {
+      webGoogleLogin();
+    }
+  }
 
   if (!visible) return null;
 
@@ -129,7 +161,7 @@ export default function SignupNudge() {
       {/* Actions */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", flexShrink: 0 }}>
         <button
-          onClick={() => handleGoogleLogin()}
+          onClick={handleGoogleLogin}
           disabled={loading}
           style={{
             display: "flex",
