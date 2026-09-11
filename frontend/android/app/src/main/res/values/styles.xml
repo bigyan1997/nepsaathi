@@ -13,6 +13,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Match the app's beige-white background so the nav bar doesn't flash a different colour -->
+        <item name="android:navigationBarColor">#F5F4F0</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
 

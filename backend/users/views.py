@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, status
+from rest_framework.throttling import ScopedRateThrottle
 from users.throttles import LoginRateThrottle, RegisterRateThrottle, PasswordResetThrottle, ContactRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -617,10 +618,18 @@ class UserReviewListCreateView(APIView):
     GET  /api/users/<id>/reviews/ — list reviews for a user
     POST /api/users/<id>/reviews/ — leave a review (must have had a conversation with them)
     """
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review_create'
+
     def get_permissions(self):
         if self.request.method == 'GET':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
+
+    def get_throttles(self):
+        if self.request.method == 'GET':
+            return []
+        return super().get_throttles()
 
     def get(self, request, id):
         from .models import UserReview

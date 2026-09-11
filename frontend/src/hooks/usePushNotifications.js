@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { subscribePush, registerFcmToken } from "../api/push";
 import { Capacitor } from "@capacitor/core";
 
@@ -34,49 +35,64 @@ export async function registerPushSubscription() {
   }
 }
 
-async function registerNativePush() {
-  try {
-    const { PushNotifications } = await import("@capacitor/push-notifications");
-
-    const permResult = await PushNotifications.requestPermissions();
-    if (permResult.receive !== "granted") return;
-
-    await PushNotifications.register();
-
-    PushNotifications.addListener("registration", async ({ value: token }) => {
-      try {
-        await registerFcmToken(token);
-      } catch (err) {
-        console.warn("[fcm] token registration failed:", err);
-      }
-    });
-
-    PushNotifications.addListener("registrationError", (err) => {
-      console.warn("[fcm] registration error:", err);
-    });
-
-    PushNotifications.addListener("pushNotificationReceived", (notification) => {
-      console.log("[fcm] foreground notification:", notification);
-    });
-
-    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
-      const url = action.notification?.data?.url;
-      if (url) window.location.href = url;
-    });
-  } catch (err) {
-    console.warn("[fcm] native push setup failed:", err);
-  }
-}
-
 export function usePushNotifications(isLoggedIn) {
   const attempted = useRef(false);
+  const navigate = useNavigate();
+
+  // Reset on logout so a new user who logs in on the same device gets registered
+  useEffect(() => {
+    if (!isLoggedIn) {
+      attempted.current = false;
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (!isLoggedIn || attempted.current) return;
     attempted.current = true;
 
     if (Capacitor.isNativePlatform()) {
-      registerNativePush();
+      (async () => {
+        try {
+          const { PushNotifications } = await import("@capacitor/push-notifications");
+
+          const permResult = await PushNotifications.requestPermissions();
+          if (permResult.receive !== "granted") return;
+
+          await PushNotifications.register();
+
+          PushNotifications.addListener("registration", async ({ value: token }) => {
+            try {
+              await registerFcmToken(token);
+            } catch (err) {
+              console.warn("[fcm] token registration failed:", err);
+            }
+          });
+
+          PushNotifications.addListener("registrationError", (err) => {
+            console.warn("[fcm] registration error:", err);
+          });
+
+          PushNotifications.addListener("pushNotificationReceived", (notification) => {
+            console.log("[fcm] foreground notification:", notification);
+          });
+
+          // Use React Router navigate to avoid a full WebView reload
+          PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+            const url = action.notification?.data?.url;
+            if (url) {
+              try {
+                const path = new URL(url, window.location.origin).pathname +
+                             new URL(url, window.location.origin).search;
+                navigate(path);
+              } catch {
+                window.location.href = url;
+              }
+            }
+          });
+        } catch (err) {
+          console.warn("[fcm] native push setup failed:", err);
+        }
+      })();
     } else {
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
       if (!VAPID_PUBLIC_KEY) return;
@@ -86,5 +102,5 @@ export function usePushNotifications(isLoggedIn) {
         await registerPushSubscription();
       })();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
 }

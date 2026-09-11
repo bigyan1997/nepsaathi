@@ -76,7 +76,7 @@ export default function InboxPage() {
     return () => document.removeEventListener("visibilitychange", handler);
   }, []);
 
-  const { data: conversations = [], isLoading } = useQuery({
+  const { data: conversations = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["conversations"],
     queryFn: getConversations,
     refetchInterval: visible ? 5000 : false,
@@ -104,6 +104,18 @@ export default function InboxPage() {
           {[1, 2, 3].map((i) => (
             <div key={i} style={{ height: 72, borderRadius: 12, background: "#e8e8e8", animation: "pulse 1.5s infinite" }} />
           ))}
+        </div>
+      ) : isError ? (
+        <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: "#E53E3E", marginBottom: 8 }}>
+            Failed to load messages
+          </div>
+          <button
+            onClick={() => refetch()}
+            style={{ fontSize: 13, color: "#534AB7", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+          >
+            Try again
+          </button>
         </div>
       ) : conversations.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 20px", color: "#888" }}>

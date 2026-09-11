@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import axios from "axios";
 import api from "./utils/axios";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Capacitor } from "@capacitor/core";
@@ -116,6 +116,8 @@ function PushInit() {
 }
 
 function NativeInit() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
@@ -126,6 +128,7 @@ function NativeInit() {
       StatusBar.setBackgroundColor({ color: "#F5F4F0" });
       StatusBar.setStyle({ style: Style.Dark });
 
+
       const { App } = await import("@capacitor/app");
       backHandler = await App.addListener("backButton", ({ canGoBack }) => {
         if (canGoBack) {
@@ -135,13 +138,13 @@ function NativeInit() {
         }
       });
 
-      // Handle deep links (Android App Links)
+      // Handle Android App Links — use React Router's navigate to avoid breaking history index
       deepLinkHandler = await App.addListener("appUrlOpen", ({ url }) => {
         try {
-          const path = new URL(url).pathname + new URL(url).search;
+          const parsed = new URL(url);
+          const path = parsed.pathname + parsed.search;
           if (path && path !== "/") {
-            window.history.pushState({}, "", path);
-            window.dispatchEvent(new PopStateEvent("popstate"));
+            navigate?.(path);
           }
         } catch {}
       });
@@ -151,7 +154,7 @@ function NativeInit() {
       backHandler?.remove();
       deepLinkHandler?.remove();
     };
-  }, []);
+  }, [navigate]);
   return null;
 }
 

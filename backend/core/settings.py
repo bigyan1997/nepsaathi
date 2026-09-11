@@ -178,6 +178,7 @@ REST_FRAMEWORK = {
         'forum_post': '20/hour' if not DEBUG else '1000/day',
         'forum_reply': '30/hour' if not DEBUG else '1000/day',
         'unread_count': '30/minute' if not DEBUG else '1000/day',
+        'review_create': '5/day' if not DEBUG else '1000/day',
     },
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',

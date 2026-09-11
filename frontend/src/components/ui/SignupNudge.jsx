@@ -6,6 +6,7 @@ import { Capacitor } from "@capacitor/core";
 import { googleLogin, googleLoginNative } from "../../api/auth";
 import useAuthStore from "../../store/authStore";
 import useIsMobile from "../../hooks/useIsMobile";
+import { useToast } from "./Toast";
 
 const WEB_CLIENT_ID = "821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs.apps.googleusercontent.com";
 
@@ -18,6 +19,7 @@ export default function SignupNudge() {
   const { isAuthenticated, setAuth } = useAuthStore();
   const location = useLocation();
   const isMobile = useIsMobile(768);
+  const { addToast } = useToast();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -77,14 +79,16 @@ export default function SignupNudge() {
       setLoading(true);
       try {
         const data = await googleLogin(tokenResponse.access_token);
-        setAuth(data.user, data.access, data.refresh);
+        setAuth(data.user, data.access);
         setVisible(false);
       } catch {
-        // silently fail — user can try via /login
+        addToast("Google sign-in failed. Please try again.", "error");
       } finally {
         setLoading(false);
       }
     },
+    onError: () => addToast("Google sign-in failed. Please try again.", "error"),
+    onNonOAuthError: () => addToast("Google sign-in was cancelled or blocked.", "error"),
   });
 
   async function nativeGoogleLogin() {
@@ -98,7 +102,7 @@ export default function SignupNudge() {
       const googleUser = await GoogleAuth.signIn();
       const idToken = googleUser.authentication.idToken;
       const data = await googleLoginNative(idToken);
-      setAuth(data.user, data.access, data.refresh);
+      setAuth(data.user, data.access);
       setVisible(false);
     } catch {
       // silently fail — user can try via /login

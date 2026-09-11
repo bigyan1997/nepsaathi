@@ -8,6 +8,7 @@ from django.db.models import Avg, Count, Q
 
 logger = logging.getLogger(__name__)
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.throttling import ScopedRateThrottle
 from listings.throttles import BusinessCreateThrottle
 from .models import Business, BusinessImage, BusinessReport, BusinessReview
 from .serializers import BusinessImageSerializer, BusinessSerializer, BusinessReviewSerializer
@@ -198,10 +199,18 @@ class BusinessReviewListCreateView(APIView):
     GET  /api/businesses/<pk>/reviews/ — list reviews for a business
     POST /api/businesses/<pk>/reviews/ — submit a review (authenticated, not owner, one per business)
     """
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review_create'
+
     def get_permissions(self):
         if self.request.method == 'GET':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
+
+    def get_throttles(self):
+        if self.request.method == 'GET':
+            return []
+        return super().get_throttles()
 
     def get(self, request, slug):
         try:
