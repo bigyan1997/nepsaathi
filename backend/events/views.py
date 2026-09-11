@@ -5,11 +5,12 @@ from rest_framework.views import APIView
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
+from listings.list_cache import CachedListMixin
 from .models import Event, EventRSVP
 from .serializers import EventSerializer
 
 
-class EventListView(generics.ListAPIView):
+class EventListView(CachedListMixin, generics.ListAPIView):
     """
     GET /api/events/
     Returns all active events.
@@ -17,8 +18,8 @@ class EventListView(generics.ListAPIView):
 
     Security:
     - Read only — no authentication required
-    - Rate limited via DEFAULT_THROTTLE_CLASSES
     """
+    listing_cache_type = "event"
     serializer_class = EventSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (

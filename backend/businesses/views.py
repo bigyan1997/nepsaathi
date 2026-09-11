@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.throttling import ScopedRateThrottle
 from listings.throttles import BusinessCreateThrottle
+from listings.list_cache import CachedListMixin
 from .models import Business, BusinessImage, BusinessReport, BusinessReview
 from .serializers import BusinessImageSerializer, BusinessSerializer, BusinessReviewSerializer
 
@@ -22,11 +23,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.owner == request.user
 
 
-class BusinessListView(generics.ListAPIView):
+class BusinessListView(CachedListMixin, generics.ListAPIView):
     """
     GET /api/businesses/
     Returns all active businesses.
     """
+    listing_cache_type = "business"
     serializer_class = BusinessSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (

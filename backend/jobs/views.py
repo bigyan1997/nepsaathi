@@ -6,18 +6,20 @@ from rest_framework.views import APIView
 from rest_framework.throttling import ScopedRateThrottle
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
+from listings.list_cache import CachedListMixin
 from .models import Job, JobApplication
 from .serializers import JobSerializer
 
 logger = logging.getLogger(__name__)
 
 
-class JobListView(generics.ListAPIView):
+class JobListView(CachedListMixin, generics.ListAPIView):
     """
     GET /api/jobs/
     Returns all active job listings.
     Anyone can browse — no login needed.
     """
+    listing_cache_type = "job"
     serializer_class = JobSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)

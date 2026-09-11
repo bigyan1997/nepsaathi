@@ -2,16 +2,18 @@ from rest_framework import generics, permissions, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
+from listings.list_cache import CachedListMixin
 from .models import Room
 from .serializers import RoomSerializer
 
 
-class RoomListView(generics.ListAPIView):
+class RoomListView(CachedListMixin, generics.ListAPIView):
     """
     GET /api/rooms/
     Returns all active room listings.
     Anyone can browse — no login needed.
     """
+    listing_cache_type = "room"
     serializer_class = RoomSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)

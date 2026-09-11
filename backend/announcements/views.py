@@ -5,27 +5,18 @@ from rest_framework import generics, permissions, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from listings.models import Listing
+from listings.list_cache import CachedListMixin
 from .models import Announcement
 from .serializers import AnnouncementSerializer
 
 
-class AnnouncementListView(generics.ListAPIView):
+class AnnouncementListView(CachedListMixin, generics.ListAPIView):
     """
     GET /api/announcements/
     Returns all active announcements.
     Anyone can browse — no login needed.
-
-    Security:
-    - Read only — no authentication required
-    - Filtered to active listings only
-    - Rate limited via DEFAULT_THROTTLE_CLASSES in settings
-
-    Filters:
-        /api/announcements/?category=sale
-        /api/announcements/?is_free=true
-        /api/announcements/?is_urgent=true
-        /api/announcements/?search=laptop
     """
+    listing_cache_type = "notice"
     serializer_class = AnnouncementSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (
