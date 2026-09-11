@@ -19,6 +19,7 @@ from businesses.models import Business
 from django.db.models import Count, Case, When, IntegerField, Value, F
 from django.db.models.functions import Coalesce
 from core.emails import send_spam_detected_email
+from .list_cache import invalidate as invalidate_list_cache
 
 
 from decouple import config as _env_config
@@ -737,6 +738,7 @@ class ListingBumpView(APIView):
 
         listing.bumped_at = now
         listing.save(update_fields=['bumped_at'])
+        invalidate_list_cache(listing.listing_type)
         return Response({'detail': 'Listing bumped to the top.', 'bumped_at': now})
 
 

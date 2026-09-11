@@ -31,18 +31,20 @@ class RoomListView(CachedListMixin, generics.ListAPIView):
         'listing__location',
         'listing__state',
     )
-    ordering_fields = ('listing__created_at', 'price', 'listing__is_featured')
-    ordering = ('-listing__is_featured', '-listing__created_at',)
+    ordering_fields = ('listing__created_at', 'price', 'listing__is_featured', 'effective_date')
+    ordering = ('-listing__is_featured', '-effective_date',)
 
     def get_queryset(self):
-        from django.db.models import Count
+        from django.db.models import Count, F
+        from django.db.models.functions import Coalesce
         queryset = Room.objects.filter(
             listing__status='active',
             listing__is_under_review=False,
         ).select_related('listing', 'listing__user').prefetch_related(
             'listing__reports', 'listing__images'
         ).annotate(
-            view_count_annotated=Count('listing__views')
+            view_count_annotated=Count('listing__views'),
+            effective_date=Coalesce(F('listing__bumped_at'), F('listing__created_at')),
         )
         params = self.request.query_params
         try:
