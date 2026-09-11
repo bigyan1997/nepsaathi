@@ -747,7 +747,7 @@ export default function MyListingsPage() {
               </span>
             )}
             {listing.is_under_review && (
-              <span style={{ background: "#FFF8E0", color: "#8B6914", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #E8D5A0", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+              <span title="Your listing is temporarily hidden while our team reviews it. This usually resolves within 24 hours. Contact support@nepsaathi.com if you have questions." style={{ background: "#FFF8E0", color: "#8B6914", fontSize: "10px", fontWeight: 600, padding: "2px 9px", borderRadius: "20px", whiteSpace: "nowrap", border: "0.5px solid #E8D5A0", display: "inline-flex", alignItems: "center", gap: "3px", cursor: "help" }}>
                 <ClockIcon size={10} weight="fill" color="currentColor" style={{ flexShrink: 0 }} />Under Review
               </span>
             )}

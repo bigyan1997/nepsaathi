@@ -1217,6 +1217,38 @@ def send_spam_detected_email(listing, reason, matched_listing=None):
             'subject': f'[URGENT] Duplicate listing flagged — {listing.title}',
             'html':    _wrap(body),
         })
+
+        # — Owner notification —
+        first_name = _h(listing.user.first_name or 'there')
+        listing_url = _listing_url(listing)
+        owner_body = f"""
+<h1 {_H1}>Your listing is under review</h1>
+<p {_P}>
+  Hi <strong>{first_name}</strong>, your listing has been temporarily hidden from public view
+  while our team reviews it. This can happen when our system detects similarity with another listing.
+</p>
+
+{_listing_card(listing.title, listing_url, f"Type: {listing.listing_type}", bg="#FFF8E0")}
+
+{_info_box(
+    "&#9989; If your listing is genuine, no action is needed — we typically complete reviews within 24 hours "
+    "and your listing will go live again automatically.<br><br>"
+    "If you believe this is a mistake, please reply to this email or contact us at support@nepsaathi.com.",
+    bg="#EEEDFE", border="#AFA9EC", color="#3C3489"
+)}
+
+{_DIVIDER}
+<p {_SMALL}>
+  Questions? Contact us at
+  <a href="mailto:support@nepsaathi.com" style="color:#534AB7;text-decoration:none;">support@nepsaathi.com</a>
+</p>"""
+
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [listing.user.email],
+            'subject': f'[NepSaathi] Your listing is under review — {listing.title}',
+            'html':    _wrap(owner_body),
+        })
     except Exception as e:
         print(f'Spam detected email failed: {e}', flush=True)
 
