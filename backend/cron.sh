@@ -14,6 +14,7 @@ run_jobs() {
   run_cmd python manage.py send_featured_warnings
   run_cmd python manage.py send_event_reminders
   run_cmd python manage.py fetch_remittance_rates
+  run_cmd python manage.py purge_deleted_listings
   echo "[cron] $(date) — done"
 }
 

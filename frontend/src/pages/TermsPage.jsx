@@ -49,7 +49,7 @@ const SECTIONS = [
     id: "termination",
     short: "Termination",
     title: "8. Termination",
-    content: `We reserve the right to suspend or terminate your account at any time if you violate these terms or engage in behaviour that is harmful to the community.\n\nYou may delete your account at any time by contacting support@nepsaathi.com`,
+    content: `We reserve the right to suspend or terminate your account at any time if you violate these terms or engage in behaviour that is harmful to the community.\n\nYou may delete your account at any time by contacting support@nepsaathi.com\n\n**Data after termination**\nWhen you delete a listing, it is immediately hidden from public view. The listing data is retained for up to 30 days to maintain audit trail integrity, then permanently and irreversibly deleted along with all associated images and contact details. Account data is similarly removed within 30 days of a deletion request.`,
   },
   {
     id: "changes",

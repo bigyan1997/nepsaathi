@@ -40,15 +40,21 @@ const SECTIONS = [
     content: `You have the right to:\n\n- Access your personal data at any time via your Profile settings\n- Update or correct your information in Profile settings\n- Delete your account by contacting support@nepsaathi.com\n- Opt out of non-essential communications\n\nFor any privacy concerns, contact us at legal@nepsaathi.com`,
   },
   {
+    id: "retention",
+    short: "Data retention",
+    title: "7. Data retention",
+    content: `We retain your data only for as long as it is needed:\n\n- **Active listings** — kept for the duration of the listing period (typically 30 days) and renewed if you extend or bump the listing\n- **Deleted listings** — when you delete a listing, it is immediately hidden from the public but retained in our systems for up to 30 days. After 30 days it is permanently and irreversibly deleted, along with all associated images and contact details\n- **Account data** — retained while your account is active. If you request account deletion, your personal information is removed within 30 days\n- **Contact details** — phone numbers and WhatsApp numbers you provide on listings are shared only with logged-in users and are removed when the listing is permanently deleted\n\nTo request early deletion of your data, contact legal@nepsaathi.com`,
+  },
+  {
     id: "cookies",
     short: "Cookies",
-    title: "7. Cookies",
+    title: "8. Cookies",
     content: `NepSaathi uses minimal cookies and local storage to:\n\n- Keep you logged in between sessions\n- Remember your preferences\n\nWe do not use advertising cookies or tracking pixels.`,
   },
   {
     id: "contact",
     short: "Contact us",
-    title: "8. Contact us",
+    title: "9. Contact us",
     content: `If you have questions about this Privacy Policy, please contact us at:`,
     links: [
       { label: "Email", value: "legal@nepsaathi.com", href: "mailto:legal@nepsaathi.com" },
