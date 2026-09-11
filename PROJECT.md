@@ -43,7 +43,7 @@ Community marketplace and resource hub for Nepalese Australians.
 | Android auth | @codetrix-studio/capacitor-google-auth 3.4.0-rc.4 (uses idToken, not accessToken) |
 | Android push | firebase-admin + @capacitor/push-notifications (FCM V1 API) |
 | Android signing | Release keystore at `~/nepsaathi-release.keystore` (alias: nepsaathi) |
-| Android version | versionCode 13, versionName 1.1.2 |
+| Android version | versionCode 15, versionName 1.2.0 |
 
 ---
 
@@ -60,7 +60,7 @@ Android APK (Capacitor WebView)      Vercel (React SPA)
                                     ├── Cloudinary (images)
                                     ├── Stripe (payments)
                                     ├── Resend (email)
-                                    ├── Redis (optional, for channel layer)
+                                    ├── Redis (channel layer + listing list cache)
                                     └── n8n (self-hosted on Railway, Postgres-backed)
                                               │
                                               ├── Facebook Page auto-post (Graph API /photos)
@@ -76,7 +76,11 @@ Android APK (Capacitor WebView)      Vercel (React SPA)
 - **Signing** — release keystore at `~/nepsaathi-release.keystore` (never committed). Play App Signing is enabled — Google re-signs before delivery. **Play App Signing SHA-1** (what GMS validates on device): `73:38:D5:9F:2F:58:0A:3C:F7:F1:0B:85:76:6D:87:9E:F3:2D:B2:BB`. Upload key SHA-1: `49:8E:55:90:06:74:45:52:31:E4:3C:5D:AB:85:F0:D6:09:AD:A0:66`. To verify actual cert on device: `adb pull $(adb shell pm path com.nepsaathi.app | grep base | cut -d: -f2 | tr -d '\r\n ') /tmp/app.apk && /home/bigyan/Android/Sdk/build-tools/35.0.0/apksigner verify --print-certs /tmp/app.apk`.
 - **google-services.json** — at `frontend/android/app/google-services.json`, excluded from git. All clients in GCP project `821160570278` (Firebase `nepsaathi-df7ea`). Three Android clients (Play App Signing key `73:38:...`, upload key `49:8E:...`, old key `B1:36:...`) + web client `821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs` (type 3). Native `serverClientId`/`WEB_CLIENT_ID` = `821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs`. Web login still uses `496474413327-stsoi3lvg6te5t3mb89dh4494j1kdjhn` (Railway + Vercel) — do NOT change.
 - **FCM push notifications** — `@capacitor/push-notifications` registers Android devices; tokens stored in `FcmToken` model; `send_fcm_notification()` in `backend/core/push.py` uses `firebase-admin` SDK with `FIREBASE_SERVICE_ACCOUNT_JSON` env var. Dual push: FCM for Android, VAPID for browsers.
-- **Current versionCode** — 13 (versionName 1.1.2). Build: `npm run build && npx cap sync android` → `cd android && ./gradlew bundleRelease`.
+- **Current versionCode** — 15 (versionName 1.2.0). Build: `npm run build && npx cap sync android` → `cd android && ./gradlew bundleRelease`.
+- **Offline banner** — `OfflineBanner.jsx` detects network state via `@capacitor/network` on native, `navigator.onLine` + window events on web. Fixed `paddingTop: "calc(10px + env(safe-area-inset-top))"` to avoid status bar overlap. Renders as a fixed top banner (zIndex 9999).
+- **Native share** — `ShareButton.jsx` uses `@capacitor/share` Share sheet on native; falls back to existing dropdown on web.
+- **Deep links (Android App Links)** — two `android:autoVerify="true"` intent-filters in `AndroidManifest.xml` (for `www.nepsaathi.com` and `nepsaathi.com`). `assetlinks.json` hosted at `frontend/public/.well-known/assetlinks.json` with Play App Signing SHA-256 `9F:1E:7C:F1:C5:D7:86:B8:F8:FC:A8:E1:D7:BD:0B:52:F0:CD:E4:EC:08:53:9E:66:1C:0B:5C:14:D5:AF:04:78`. Handler in `NativeInit` uses `useNavigate()` (not `window.history.pushState`) to avoid React Router v6 history index corruption.
+- **Navigation bar colour** — set via Android theme XML (`styles.xml`): `android:navigationBarColor="#F5F4F0"` + `windowLightNavigationBar`.
 
 ### Key architectural patterns
 
@@ -91,6 +95,8 @@ Android APK (Capacitor WebView)      Vercel (React SPA)
 - **n8n social automation** — on listing creation, `perform_create` fires a background thread (`time.sleep(60)` to wait for image uploads) that POSTs to n8n webhook. n8n posts to Facebook (`/photos`) and Instagram (`/media` → wait → `/media_publish`). Also triggered from Django admin when spam-cleared listings are approved. n8n self-hosted on Railway with Postgres persistence.
 - **Silent token refresh** — on App mount, if `isAuthenticated` but no sessionStorage access token (new tab), proactively calls the refresh endpoint with localStorage refresh token before any API calls fail.
 - **Max active listings per user: 20** (enforced in `listings/views.py`).
+- **Redis listing list cache** — `listings/list_cache.py` provides `CachedListMixin` and generation-based invalidation. Anonymous GET requests to the 5 public list endpoints (`/api/jobs/`, `/api/rooms/`, `/api/events/`, `/api/announcements/`, `/api/businesses/`) are cached in Redis for 120s. Cache key = `ll:<type>:g<generation>:<md5_of_sorted_params>`. Invalidation bumps a generation counter via `post_save`/`post_delete` signals on `Listing` and `Business` — all old keys become unreachable instantly. Authenticated requests bypass cache entirely.
+- **Review throttle** — `review_create` DRF scope: 5/day in production, unlimited in debug. Applied to `UserReviewListCreateView` and `BusinessReviewListCreateView` (GET requests exempt via `get_throttles()`).
 - **Panel security** — 4-layer: `IsSuperUser` DRF permission (returns "Not found." to anyone else), `SuperUserRoute` in React (renders `NotFoundPage`), no UI links, not in sitemap.
 
 ---
@@ -763,6 +769,18 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Frontend** — `@capacitor/push-notifications@^8.1.2` added; `usePushNotifications.js` branches on `Capacitor.isNativePlatform()`: native calls `PushNotifications.register()` → registers FCM token; web uses existing VAPID flow.
 - **`FIREBASE_SERVICE_ACCOUNT_JSON`** added to `settings.py` via `config()` — was missing, causing silent Firebase init failure.
 - **Current versionCode**: 13 (versionName 1.1.2)
+
+### Phase 12 — Android v1.2.0, Redis cache, audit fixes (2026-09-11)
+
+- **Android v1.2.0 (versionCode 15)** — offline banner, native share, Android App Links deep links, navigation bar colour.
+- **Offline banner** — `OfflineBanner.jsx` fixed-top banner using `@capacitor/network` on native and `navigator.onLine` on web. Safe-area-aware padding to avoid overlap with status bar.
+- **Native share** — `ShareButton.jsx` triggers the OS share sheet on Android via `@capacitor/share`; web falls back to existing copy/dropdown.
+- **Android App Links** — `assetlinks.json` + `android:autoVerify="true"` intent-filters. Deep link handler uses `useNavigate()` instead of `pushState` to avoid React Router v6 history index corruption.
+- **Redis listing list cache** — `listings/list_cache.py`: `CachedListMixin` + generation-based invalidation. All 5 public list endpoints cached 120s for anonymous users; invalidated on any `Listing`/`Business` save or delete via Django signals.
+- **Review throttle** — 5 reviews/day limit (`review_create` scope) on both `UserReviewListCreateView` and `BusinessReviewListCreateView`; GET exempt.
+- **Comprehensive audit fixes** — push notification `navigate()` instead of `window.location.href` (avoids WebView reload); FCM token re-registration when user logs out then back in; SignupNudge Google sign-in error toasts; InboxPage error state with "Try again" button.
+- **RoomDetailPage** — removed `MarketBenchmark` and `SafeMeetingPoints` components; redesigned Room details section from auto-fit single-column to fixed 2-column grid with internal row/column dividers.
+- **Test fix** — `SignupNudge.test.jsx` wrapped in `ToastProvider` (was crashing on `useToast()` returning null).
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
