@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useDraft } from "../../hooks/useDraft";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAuthStore from "../../store/authStore";
@@ -69,6 +70,7 @@ export default function Navbar() {
     staleTime: 0,
   });
   const unreadCount = unreadData?.unread_count || 0;
+  const hasDraft = useDraft();
 
   useEffect(() => {
     if (prevUnreadRef.current === null) {
@@ -202,9 +204,12 @@ export default function Navbar() {
 
               <Link
                 to="/post-ad"
-                style={{ background: "#E87722", color: "#fff", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}
+                style={{ background: "#E87722", color: "#fff", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap", position: "relative" }}
               >
                 {t("nav.postAd")}
+                {hasDraft && (
+                  <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "10px", height: "10px", borderRadius: "50%", background: "#1D9E75", border: "2px solid #fff" }} title="You have a saved draft" />
+                )}
               </Link>
 
               {/* User dropdown */}

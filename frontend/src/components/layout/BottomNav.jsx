@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
 import { getUnreadCount } from "../../api/messages";
+import { useDraft } from "../../hooks/useDraft";
 
 const TABS = [
   { to: "/",         Icon: HouseIcon,    label: "Home",  color: "#534AB7", bg: "#EEEDFE", exact: true },
@@ -81,6 +82,7 @@ export default function BottomNav() {
     staleTime: 0,
   });
   const unreadCount = unreadData?.unread_count || 0;
+  const hasDraft = useDraft();
 
   const handlePost = () => navigate(isAuthenticated ? "/post-ad" : "/login");
 
@@ -240,12 +242,16 @@ export default function BottomNav() {
               justifyContent: "center",
               cursor: "pointer",
               transition: "transform 0.15s, box-shadow 0.15s",
+              position: "relative",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.07)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
             aria-label="Post a listing"
           >
             <PlusCircleIcon size={26} weight="fill" color="#fff" />
+            {hasDraft && (
+              <span style={{ position: "absolute", top: "1px", right: "1px", width: "12px", height: "12px", borderRadius: "50%", background: "#1D9E75", border: "2px solid #fff" }} />
+            )}
           </button>
         </div>
 
