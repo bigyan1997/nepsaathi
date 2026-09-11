@@ -43,7 +43,7 @@ Community marketplace and resource hub for Nepalese Australians.
 | Android auth | @codetrix-studio/capacitor-google-auth 3.4.0-rc.4 (uses idToken, not accessToken) |
 | Android push | firebase-admin + @capacitor/push-notifications (FCM V1 API) |
 | Android signing | Release keystore at `~/nepsaathi-release.keystore` (alias: nepsaathi) |
-| Android version | versionCode 10, versionName 1.0.9 |
+| Android version | versionCode 13, versionName 1.1.2 |
 
 ---
 
@@ -73,10 +73,10 @@ Android APK (Capacitor WebView)      Vercel (React SPA)
 - **Origin** — Android WebView uses `https://localhost` as its origin. Railway `CORS_ALLOWED_ORIGINS` includes `https://localhost`.
 - **Google Auth** — web uses `@react-oauth/google` (popup) → `/api/users/auth/google/`. Android uses `@codetrix-studio/capacitor-google-auth` native plugin → extracts `idToken` (NOT `accessToken` — it's empty on Android v3.4.x) → `/api/users/auth/google/native/`. `Capacitor.isNativePlatform()` branches the two paths in `GoogleLoginButton.jsx`. `forceCodeForRefreshToken` must NOT be set — causes error 8.
 - **Token persistence** — access token stored in `localStorage` on native (survives app restart), `sessionStorage` on web (cleared on tab close). Zustand `persist` keeps `user` + `isAuthenticated` in `localStorage` on both.
-- **Signing** — release keystore at `~/nepsaathi-release.keystore` (never committed). Four Android OAuth clients registered in Google Cloud: PlayApp Signing Key, Debug Release (local keystore), Debug (debug SHA-1). Play App Signing SHA-1: `B1:36:05:17:6C:B6:C9:7F:34:FC:FF:04:E8:16:40:7A:BD:70:3D:69`.
-- **google-services.json** — at `frontend/android/app/google-services.json`, excluded from git. Must include BOTH Android client (client_type 1, PlayApp Signing Key) and web client (client_type 3). File must be recreated locally if missing.
+- **Signing** — release keystore at `~/nepsaathi-release.keystore` (never committed). Play App Signing is enabled — Google re-signs before delivery. **Play App Signing SHA-1** (what GMS validates on device): `73:38:D5:9F:2F:58:0A:3C:F7:F1:0B:85:76:6D:87:9E:F3:2D:B2:BB`. Upload key SHA-1: `49:8E:55:90:06:74:45:52:31:E4:3C:5D:AB:85:F0:D6:09:AD:A0:66`. To verify actual cert on device: `adb pull $(adb shell pm path com.nepsaathi.app | grep base | cut -d: -f2 | tr -d '\r\n ') /tmp/app.apk && /home/bigyan/Android/Sdk/build-tools/35.0.0/apksigner verify --print-certs /tmp/app.apk`.
+- **google-services.json** — at `frontend/android/app/google-services.json`, excluded from git. All clients in GCP project `821160570278` (Firebase `nepsaathi-df7ea`). Three Android clients (Play App Signing key `73:38:...`, upload key `49:8E:...`, old key `B1:36:...`) + web client `821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs` (type 3). Native `serverClientId`/`WEB_CLIENT_ID` = `821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs`. Web login still uses `496474413327-stsoi3lvg6te5t3mb89dh4494j1kdjhn` (Railway + Vercel) — do NOT change.
 - **FCM push notifications** — `@capacitor/push-notifications` registers Android devices; tokens stored in `FcmToken` model; `send_fcm_notification()` in `backend/core/push.py` uses `firebase-admin` SDK with `FIREBASE_SERVICE_ACCOUNT_JSON` env var. Dual push: FCM for Android, VAPID for browsers.
-- **Current versionCode** — 10 (versionName 1.0.9). Build: `npm run cap:sync` → Android Studio → Build → Generate Signed App Bundle.
+- **Current versionCode** — 13 (versionName 1.1.2). Build: `npm run build && npx cap sync android` → `cd android && ./gradlew bundleRelease`.
 
 ### Key architectural patterns
 
@@ -755,14 +755,14 @@ python manage.py fetch_remittance_rates   # seed initial rates
 - **Mobile responsiveness sweep** — navbar mobile menu made scrollable (fixed + overflow-y auto); StatsBar responsive; ProfilePage, RegisterBusinessPage outer padding reduced on mobile; LoginPage touch target fix; VisaHubPage media queries added; AdminPanelPage chart grids collapse on mobile.
 - **BottomNav redesign** — Phosphor SVG icons replaced with emoji (🏠💼🛏️💬); Home tab added; Businesses tab removed.
 
-### Phase 11 — Android fixes & FCM push notifications (2026-09-09)
+### Phase 11 — Android fixes & FCM push notifications (2026-09-09 → 2026-09-11)
 
-- **Google Sign-In root causes fixed** (4-layer problem): (1) Play App Signing uses a different SHA-1 than local keystore — registered Play SHA-1 `B1:36:...` as Android OAuth client in Google Cloud; (2) `@codetrix-studio/capacitor-google-auth` v3.4.x returns empty `accessToken` on Android — switched to `idToken` flow; (3) `forceCodeForRefreshToken: true` caused error 8 ("something went wrong") — removed; (4) `google-services.json` was missing the Android OAuth client (client_type 1) — added `496474413327-hu95j5r9lks4m2hfsd2ekkjbj015vtqi`.
-- **New backend endpoint** — `POST /api/users/auth/google/native/` (`GoogleIdTokenLoginView`) verifies ID token via Google tokeninfo API, checks `aud` against known client IDs, creates/gets user by email, returns JWT + sets refresh cookie.
+- **Google Sign-In fully working as of versionCode 13** (3 root causes fixed): (1) All OAuth clients moved from GCP project `496474413327` to Firebase project `821160570278` — `mobilesdk_app_id` and Android clients must be in the same GCP project; (2) Play App Signing SHA-1 (`73:38:D5:9F:2F:58:0A:3C:F7:F1:0B:85:76:6D:87:9E:F3:2D:B2:BB`) is what GMS validates on device — NOT the upload key or local keystore SHA-1. Real SHA-1 found by pulling APK with adb and running apksigner; (3) `GoogleIdTokenLoginView` was missing `permission_classes = [AllowAny]` — caused 401 on all unauthenticated POSTs.
+- **New backend endpoint** — `POST /api/users/auth/google/native/` (`GoogleIdTokenLoginView`) verifies ID token via Google tokeninfo API, checks `aud` against `GOOGLE_CLIENT_IDS` set (includes both old `496474413327-...` web client and new `821160570278-3888u1qfkqv316m7v1q3d2f0h0upe6fs` native client), creates/gets user by email, returns JWT + sets refresh cookie.
 - **FCM push notifications** — `firebase-admin>=6.0` added to requirements; `FcmToken` model (migration `0010`) stores per-device FCM tokens; `POST /api/users/push/fcm/` registers tokens; `send_fcm_notification()` in `core/push.py` sends to all user devices via FCM V1 API using `FIREBASE_SERVICE_ACCOUNT_JSON` env var; stale tokens auto-cleaned on `UnregisteredError`. Dual push strategy: FCM for Android, VAPID for browsers.
 - **Frontend** — `@capacitor/push-notifications@^8.1.2` added; `usePushNotifications.js` branches on `Capacitor.isNativePlatform()`: native calls `PushNotifications.register()` → registers FCM token; web uses existing VAPID flow.
 - **`FIREBASE_SERVICE_ACCOUNT_JSON`** added to `settings.py` via `config()` — was missing, causing silent Firebase init failure.
-- **Current versionCode**: 10 (versionName 1.0.9)
+- **Current versionCode**: 13 (versionName 1.1.2)
 
 ### Removed features
 - **Visa Tracker** (removed 2026-07-12) — application tracking, document expiry alerts, GSM points calculator, community processing times board. Removed after decision to descope: all backend models, migrations, management commands, email functions, frontend pages, routes, and nav/footer links deleted.
