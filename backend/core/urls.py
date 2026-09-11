@@ -28,7 +28,7 @@ from users import views as users_views
 from forum.sitemaps import ForumPostSitemap
 from listings.sitemaps import ListingSitemap
 from businesses.sitemaps import BusinessSitemap
-from feedback.views import NewsletterSubscribeView
+from feedback.views import NewsletterSubscribeView, NewsletterUnsubscribeView
 from core.og_views import OGListingView, OGBusinessView
 
 sitemaps = {
@@ -105,8 +105,9 @@ urlpatterns = [
     # Feedback / exit-intent survey
     path('api/feedback/', include('feedback.urls')),
 
-    # Newsletter subscribe (matches frontend /api/newsletter/subscribe/)
+    # Newsletter subscribe / unsubscribe
     path('api/newsletter/subscribe/', NewsletterSubscribeView.as_view()),
+    path('api/newsletter/unsubscribe/', NewsletterUnsubscribeView.as_view()),
 
     # Community forum
     path('api/forum/', include('forum.urls')),

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createListing, deleteListing, aiImproveDescription, aiSuggestTags } from "../../api/listings";
 import { createJob } from "../../api/jobs";
@@ -344,6 +344,9 @@ export default function PostAdPage() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef(null);
+  const [draftBanner, setDraftBanner] = useState(false);
+  const draftTimer = useRef(null);
+  const DRAFT_KEY = "nepsaathi_post_draft";
 
   function clearFieldError(field) {
     setFieldErrors((p) => { const n = { ...p }; delete n[field]; return n; });
@@ -451,6 +454,53 @@ export default function PostAdPage() {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [aiTagState, setAiTagState] = useState({ loading: false, suggestions: [], error: null });
+
+  // ── Draft auto-save ─────────────────────────────────────────────────────────
+  // On mount: if a saved draft exists and step is still 1, offer to restore it
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.listingType || d.baseForm?.title) setDraftBanner(true);
+      }
+    } catch {}
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Debounced save: fires 1.5s after the last form change, only on steps 1-3
+  useEffect(() => {
+    if (step > 3) return;
+    clearTimeout(draftTimer.current);
+    draftTimer.current = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          listingType, baseForm, jobForm, roomForm, noticeForm, eventForm, tags,
+          savedAt: new Date().toISOString(),
+        }));
+      } catch {}
+    }, 1500);
+    return () => clearTimeout(draftTimer.current);
+  }, [listingType, baseForm, jobForm, roomForm, noticeForm, eventForm, tags, step]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
+  }
+
+  function restoreDraft() {
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}");
+      if (d.listingType) setListingType(d.listingType);
+      if (d.baseForm) setBaseForm((p) => ({ ...p, ...d.baseForm }));
+      if (d.jobForm) setJobForm((p) => ({ ...p, ...d.jobForm }));
+      if (d.roomForm) setRoomForm((p) => ({ ...p, ...d.roomForm }));
+      if (d.noticeForm) setNoticeForm((p) => ({ ...p, ...d.noticeForm }));
+      if (d.eventForm) setEventForm((p) => ({ ...p, ...d.eventForm }));
+      if (d.tags) setTags(d.tags);
+      if (d.listingType) setStep(2);
+    } catch {}
+    setDraftBanner(false);
+  }
+  // ────────────────────────────────────────────────────────────────────────────
 
   function addTag(raw) {
     const t = raw.toLowerCase().trim().replace(/^#+/, "").replace(/[^\w\s-]/g, "");
@@ -591,10 +641,12 @@ export default function PostAdPage() {
       setCreatedListingId(listing.id);
       setCreatedListingSlug(listing.slug);
       if (baseForm.is_wanted) {
+        clearDraft();
         addToast("Your listing is live!", "success");
         navigate(`/${listingType}s/${listing.slug}`);
         return;
       }
+      clearDraft();
       setStep(4);
       addToast("Listing created! Now add some photos.", "success");
     } catch (err) {
@@ -661,6 +713,17 @@ export default function PostAdPage() {
           input, select, textarea { font-size: 16px !important; }
         }
       `}</style>
+
+      {/* Draft restore banner */}
+      {draftBanner && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9998, background: "#26215C", color: "#fff", padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap", fontSize: "13px", fontWeight: 500 }}>
+          <span>You have an unsaved draft — want to restore it?</span>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button onClick={restoreDraft} style={{ background: "#534AB7", color: "#fff", border: "none", borderRadius: "8px", padding: "6px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>Restore</button>
+            <button onClick={() => { clearDraft(); setDraftBanner(false); }} style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "none", borderRadius: "8px", padding: "6px 16px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>Discard</button>
+          </div>
+        </div>
+      )}
 
       <div
         className="pa-wrap"

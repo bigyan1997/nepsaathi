@@ -1450,6 +1450,9 @@ def send_job_application_email(poster, applicant, job, cover_letter):
 
 def send_newsletter_welcome_email(email: str) -> None:
     try:
+        from django.core import signing
+        token = signing.dumps(email, salt='newsletter-unsub')
+        unsub_url = f"https://nepsaathi-production.up.railway.app/api/newsletter/unsubscribe/?token={token}"
         body = f"""
 <h2 style="font-size:22px;font-weight:700;color:#26215C;margin:0 0 12px;font-family:Arial,sans-serif;">Welcome to NepSaathi</h2>
 <p style="font-size:15px;color:#444;line-height:1.6;margin:0 0 16px;font-family:Arial,sans-serif;">
@@ -1460,7 +1463,7 @@ def send_newsletter_welcome_email(email: str) -> None:
 </p>
 {_btn("Browse NepSaathi &rarr;", FRONTEND_URL)}
 {_DIVIDER}
-<p {_SMALL}>You're receiving this because you subscribed at nepsaathi.com. You can unsubscribe at any time by replying to this email.</p>"""
+<p {_SMALL}>You're receiving this because you subscribed at nepsaathi.com. <a href="{unsub_url}" style="color:#534AB7;">Unsubscribe</a></p>"""
         _fire({
             'from':    'NepSaathi <noreply@nepsaathi.com>',
             'to':      [email],
