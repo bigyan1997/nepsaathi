@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import mark_safe
 from unfold.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, UserReview, PointEvent, PushSubscription
@@ -35,11 +35,11 @@ class UserAdmin(ModelAdmin, BaseUserAdmin):
 
     def auth_method(self, obj):
         if obj.google_avatar:
-            return format_html(
+            return mark_safe(
                 '<span style="background:#E8F0FE;color:#1A56A4;padding:2px 10px;border-radius:20px;'
                 'font-size:11px;font-weight:600;white-space:nowrap;">G Google</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background:#F3F4F6;color:#374151;padding:2px 10px;border-radius:20px;'
             'font-size:11px;font-weight:600;white-space:nowrap;">✉ Email</span>'
         )
