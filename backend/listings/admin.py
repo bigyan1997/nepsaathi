@@ -47,14 +47,12 @@ def _fire_n8n_webhook(listing):
 
 
 class ListingImageInline(TabularInline):
-    """
-    Shows images directly inside the listing admin page.
-    So you can add/remove images without leaving the listing.
-    """
     model = ListingImage
     extra = 1
     fields = ('image', 'is_primary', 'uploaded_at')
     readonly_fields = ('uploaded_at',)
+    tab = True
+    verbose_name_plural = 'Images'
 
 
 @admin.register(Listing)
@@ -96,20 +94,24 @@ class ListingAdmin(ModelAdmin):
 
     fieldsets = (
         ('Basic Info', {
-            'fields': ('user', 'listing_type', 'title', 'description')
+            'fields': ('user', 'listing_type', 'title', 'description'),
+            'classes': ['tab'],
         }),
         ('Location', {
-            'fields': ('location', 'state')
+            'fields': ('location', 'state'),
+            'classes': ['tab'],
         }),
         ('Contact', {
-            'fields': ('contact_email', 'contact_phone', 'contact_whatsapp')
+            'fields': ('contact_email', 'contact_phone', 'contact_whatsapp'),
+            'classes': ['tab'],
         }),
         ('Status', {
-            'fields': ('status', 'is_featured', 'is_under_review', 'renewal_blocked', 'expires_at', 'expiry_warning_sent')
+            'fields': ('status', 'is_featured', 'is_under_review', 'renewal_blocked', 'expires_at', 'expiry_warning_sent'),
+            'classes': ['tab'],
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
+            'classes': ['tab'],
         }),
     )
     actions = ['approve_listings', 'mark_featured', 'unmark_featured', 'send_expiry_warning', 'reset_expiry_warning']

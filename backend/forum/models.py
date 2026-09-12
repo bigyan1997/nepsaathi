@@ -107,6 +107,8 @@ class ForumReply(models.Model):
     class Meta:
         db_table = 'forum_replies'
         ordering = ['created_at']
+        verbose_name = 'Forum Reply'
+        verbose_name_plural = 'Forum Replies'
 
     def __str__(self):
         return f'Reply by {self.author} on {self.post}'

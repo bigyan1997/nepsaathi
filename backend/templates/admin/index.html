@@ -1,0 +1,179 @@
+{% extends 'admin/base.html' %}
+{% load i18n %}
+
+{% block title %}Dashboard | NepSaathi Admin{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<style>
+  .ns-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .ns-group {
+    background: var(--color-base-50, #f9f9f9);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .ns-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-base-400, #999);
+    margin-bottom: 10px;
+  }
+  .ns-model-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-base-0, #fff);
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--color-base-900, #111);
+    text-decoration: none;
+    border: 1px solid var(--color-base-100, #ececec);
+    transition: background 0.12s;
+  }
+  .ns-model-row:hover {
+    background: var(--color-primary-50, #fff7ed);
+    border-color: var(--color-primary-200, #fbd5aa);
+  }
+  .ns-model-row span.material-symbols-outlined {
+    font-size: 15px;
+    color: var(--color-base-400, #bbb);
+  }
+  .ns-model-row:hover span.material-symbols-outlined {
+    color: var(--color-primary-500, #f97316);
+  }
+  @media (max-width: 640px) {
+    .ns-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="flex flex-col lg:flex-row lg:gap-8">
+  <div class="grow">
+
+    {# ── Stat cards ── #}
+    {% if dashboard_stats %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;">
+      {% for stat in dashboard_stats %}
+      <div style="background:{{ stat.bg }};border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="material-symbols-outlined" style="font-size:20px;color:{{ stat.color }};">{{ stat.icon }}</span>
+          <span style="font-size:11px;font-weight:700;color:#666;letter-spacing:0.04em;text-transform:uppercase;">{{ stat.label }}</span>
+        </div>
+        <div style="font-size:28px;font-weight:900;color:{{ stat.color }};line-height:1;">{{ stat.value }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# ── Listings ── #}
+    <div class="ns-group">
+      <div class="ns-group-title">Listings</div>
+      <div class="ns-grid">
+        {% for app in app_list %}{% for model in app.models %}
+          {% if app.app_label == 'listings' and model.object_name == 'Listing' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Listings <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'jobs' and model.object_name == 'Job' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Jobs <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'rooms' and model.object_name == 'Room' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Rooms <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'events' and model.object_name == 'Event' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Events <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'announcements' and model.object_name == 'Announcement' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Notices <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'businesses' and model.object_name == 'Business' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Businesses <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+
+    {# ── Moderation ── #}
+    <div class="ns-group">
+      <div class="ns-group-title">Moderation</div>
+      <div class="ns-grid">
+        {% for app in app_list %}{% for model in app.models %}
+          {% if app.app_label == 'listings' and model.object_name == 'ListingReport' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Listing Reports <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'businesses' and model.object_name == 'BusinessReport' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Business Reports <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+
+    {# ── Community ── #}
+    <div class="ns-group">
+      <div class="ns-group-title">Community</div>
+      <div class="ns-grid">
+        {% for app in app_list %}{% for model in app.models %}
+          {% if app.app_label == 'forum' and model.object_name == 'ForumPost' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Forum Posts <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'visa' and model.object_name == 'WhatsAppGroup' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">WhatsApp Groups <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'community' and model.object_name == 'ServiceListing' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Community Services <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+
+    {# ── Users & Comms ── #}
+    <div class="ns-group">
+      <div class="ns-group-title">Users &amp; Comms</div>
+      <div class="ns-grid">
+        {% for app in app_list %}{% for model in app.models %}
+          {% if app.app_label == 'users' and model.object_name == 'User' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Users <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'messaging' and model.object_name == 'Conversation' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Conversations <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'payments' and model.object_name == 'FeaturedPayment' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Payments <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'feedback' and model.object_name == 'FeedbackResponse' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Feedback <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+
+    {# ── Data ── #}
+    <div class="ns-group">
+      <div class="ns-group-title">Data</div>
+      <div class="ns-grid">
+        {% for app in app_list %}{% for model in app.models %}
+          {% if app.app_label == 'remittance' and model.object_name == 'RemittanceRate' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Remittance Rates <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+          {% if app.app_label == 'visa' and model.object_name == 'VisaTimeline' %}
+            <a href="{{ model.admin_url }}" class="ns-model-row">Visa Timelines <span class="material-symbols-outlined">chevron_right</span></a>
+          {% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  {# Recent actions sidebar — kept from Unfold default #}
+  {% include "unfold/helpers/history.html" %}
+</div>
+{% endblock %}

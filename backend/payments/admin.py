@@ -20,7 +20,8 @@ class FeaturedPaymentAdmin(ModelAdmin):
     def invoice_link(self, obj):
         if obj.status != 'completed':
             return '-'
-        url = f'/admin/payments/featuredpayment/{obj.pk}/invoice/'
+        from django.urls import reverse
+        url = reverse('admin:payment-invoice', args=[obj.pk])
         return format_html('<a href="{}" target="_blank">Download PDF</a>', url)
     invoice_link.short_description = 'Invoice'
 

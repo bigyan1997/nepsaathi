@@ -318,6 +318,8 @@ class SavedSearch(models.Model):
     class Meta:
         db_table = "saved_searches"
         ordering = ["-created_at"]
+        verbose_name = 'Saved Search'
+        verbose_name_plural = 'Saved Searches'
 
     def __str__(self):
         return f"{self.user.email} — {self.listing_type} search"

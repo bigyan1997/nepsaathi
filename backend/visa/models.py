@@ -76,6 +76,8 @@ class WhatsAppGroup(models.Model):
     class Meta:
         db_table = 'whatsapp_groups'
         ordering = ['order', '-created_at']
+        verbose_name = 'WhatsApp Group'
+        verbose_name_plural = 'WhatsApp Groups'
 
     def __str__(self):
         return f'{self.name} ({self.city})'

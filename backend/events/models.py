@@ -123,6 +123,8 @@ class EventRSVP(models.Model):
         db_table = 'event_rsvps'
         unique_together = ('event', 'user')
         ordering = ['created_at']
+        verbose_name = 'Event RSVP'
+        verbose_name_plural = 'Event RSVPs'
 
     def __str__(self):
         return f'{self.user} → {self.event}'

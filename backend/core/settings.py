@@ -388,6 +388,7 @@ UNFOLD = {
     "SITE_SYMBOL": "home",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
+    "DASHBOARD_CALLBACK": "core.admin_dashboard.dashboard_callback",
     "COLORS": {
         "primary": {
             "50":  "255 247 237",
@@ -417,6 +418,7 @@ UNFOLD = {
                     {"title": "Events", "icon": "event", "link": "/nepsaathi-biggy/events/event/"},
                     {"title": "Notices", "icon": "campaign", "link": "/nepsaathi-biggy/announcements/announcement/"},
                     {"title": "Businesses", "icon": "store", "link": "/nepsaathi-biggy/businesses/business/"},
+                    {"title": "Saved Searches", "icon": "manage_search", "link": "/nepsaathi-biggy/listings/savedsearch/"},
                 ],
             },
             {
@@ -426,7 +428,8 @@ UNFOLD = {
                     {"title": "Forum", "icon": "forum", "link": "/nepsaathi-biggy/forum/forumpost/"},
                     {"title": "Community Services", "icon": "handshake", "link": "/nepsaathi-biggy/community/servicelisting/"},
                     {"title": "WhatsApp Groups", "icon": "chat", "link": "/nepsaathi-biggy/visa/whatsappgroup/"},
-                    {"title": "Reports", "icon": "flag", "link": "/nepsaathi-biggy/listings/listingreport/"},
+                    {"title": "Listing Reports", "icon": "flag", "link": "/nepsaathi-biggy/listings/listingreport/"},
+                    {"title": "Business Reports", "icon": "report", "link": "/nepsaathi-biggy/businesses/businessreport/"},
                 ],
             },
             {
@@ -437,6 +440,10 @@ UNFOLD = {
                     {"title": "Messages", "icon": "message", "link": "/nepsaathi-biggy/messaging/conversation/"},
                     {"title": "Payments", "icon": "payments", "link": "/nepsaathi-biggy/payments/featuredpayment/"},
                     {"title": "Feedback", "icon": "rate_review", "link": "/nepsaathi-biggy/feedback/feedbackresponse/"},
+                    {"title": "Newsletter", "icon": "mail", "link": "/nepsaathi-biggy/feedback/newslettersubscriber/"},
+                    {"title": "Point Events", "icon": "star", "link": "/nepsaathi-biggy/users/pointevent/"},
+                    {"title": "Push Subscriptions", "icon": "notifications", "link": "/nepsaathi-biggy/users/pushsubscription/"},
+                    {"title": "User Reviews", "icon": "thumb_up", "link": "/nepsaathi-biggy/users/userreview/"},
                 ],
             },
             {
@@ -445,6 +452,20 @@ UNFOLD = {
                 "items": [
                     {"title": "Remittance Rates", "icon": "currency_exchange", "link": "/nepsaathi-biggy/remittance/remittancerate/"},
                     {"title": "Visa / Invitations", "icon": "flight", "link": "/nepsaathi-biggy/visa/occupationinvitation/"},
+                    {"title": "Visa Timelines", "icon": "timeline", "link": "/nepsaathi-biggy/visa/visatimeline/"},
+                    {"title": "Occupations", "icon": "badge", "link": "/nepsaathi-biggy/visa/occupation/"},
+                    {"title": "Invitation Rounds", "icon": "calendar_month", "link": "/nepsaathi-biggy/visa/invitationround/"},
+                ],
+            },
+            {
+                "title": "System",
+                "collapsible": True,
+                "items": [
+                    {"title": "Auth Tokens", "icon": "key", "link": "/nepsaathi-biggy/authtoken/tokenproxy/"},
+                    {"title": "Blacklisted Tokens", "icon": "block", "link": "/nepsaathi-biggy/token_blacklist/blacklistedtoken/"},
+                    {"title": "Outstanding Tokens", "icon": "pending", "link": "/nepsaathi-biggy/token_blacklist/outstandingtoken/"},
+                    {"title": "Auth Groups", "icon": "group", "link": "/nepsaathi-biggy/auth/group/"},
+                    {"title": "Sites", "icon": "language", "link": "/nepsaathi-biggy/sites/site/"},
                 ],
             },
         ],

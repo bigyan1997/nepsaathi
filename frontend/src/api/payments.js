@@ -19,6 +19,9 @@ export const downloadInvoice = async (listingId, invoiceLabel) => {
   const a = document.createElement("a");
   a.href = url;
   a.download = invoiceLabel || "NepSaathi-Invoice.pdf";
+  a.style.display = "none";
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 };
