@@ -106,7 +106,7 @@ const getSavedPath = (saved) => {
 };
 
 /* ── Confirm modal ── */
-function ConfirmModal({ message, onConfirm, onCancel, confirmLabel = "Yes, Delete", confirmColor = "#A32D2D" }) {
+function ConfirmModal({ message, note, onConfirm, onCancel, confirmLabel = "Yes, Delete", confirmColor = "#A32D2D" }) {
   return (
     <div
       style={{
@@ -141,9 +141,24 @@ function ConfirmModal({ message, onConfirm, onCancel, confirmLabel = "Yes, Delet
         >
           Are you sure?
         </h3>
-        <p style={{ fontSize: "14px", color: "#888", marginBottom: "24px" }}>
+        <p style={{ fontSize: "14px", color: "#888", marginBottom: note ? "12px" : "24px" }}>
           {message}
         </p>
+        {note && (
+          <div style={{
+            background: "#F5F3FF",
+            border: "1px solid #DDD8F8",
+            borderRadius: "8px",
+            padding: "10px 12px",
+            marginBottom: "24px",
+            fontSize: "12px",
+            color: "#534AB7",
+            textAlign: "left",
+            lineHeight: "1.5",
+          }}>
+            ℹ️ {note}
+          </div>
+        )}
         <div style={{ display: "flex", gap: "10px" }}>
           <button
             onClick={onCancel}
@@ -604,7 +619,7 @@ export default function MyListingsPage() {
 
   const bulkDelete = () => {
     confirmDelete(
-      `Delete ${selectedIds.size} selected listing${selectedIds.size > 1 ? "s" : ""}? This cannot be undone.`,
+      `${selectedIds.size} selected listing${selectedIds.size > 1 ? "s" : ""} will be hidden from public view immediately.`,
       async () => {
         const count = selectedIds.size;
         try {
@@ -621,7 +636,10 @@ export default function MyListingsPage() {
         } catch {
           addToast("Failed to delete some listings. Please try again.", "error");
         }
-      }
+      },
+      "Yes, Delete",
+      "#A32D2D",
+      "All listing data will be permanently removed from our database 30 days after deletion."
     );
   };
 
@@ -646,9 +664,10 @@ export default function MyListingsPage() {
   };
 
   /* ── modal helpers ── */
-  const confirmDelete = (message, fn, confirmLabel = "Yes, Delete", confirmColor = "#A32D2D") =>
+  const confirmDelete = (message, fn, confirmLabel = "Yes, Delete", confirmColor = "#A32D2D", note = null) =>
     setConfirmModal({
       message,
+      note,
       confirmLabel,
       confirmColor,
       onConfirm: () => {
@@ -839,7 +858,13 @@ export default function MyListingsPage() {
               icon: <TrashIcon size={14} weight="regular" />, label: "Delete listing", danger: true,
               onClick: () => {
                 setOpenMenu(null);
-                confirmDelete("This listing will be permanently deleted.", () => { setDeletingId(listing.id); deleteListingMutation.mutate(listing.slug); });
+                confirmDelete(
+                  "Your listing will be hidden from public view immediately.",
+                  () => { setDeletingId(listing.id); deleteListingMutation.mutate(listing.slug); },
+                  "Yes, Delete",
+                  "#A32D2D",
+                  "All listing data will be permanently removed from our database 30 days after deletion."
+                );
               },
             },
           ].filter(Boolean)}
