@@ -1,7 +1,23 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, UserReview, PointEvent, PushSubscription
+
+
+class GoogleAuthFilter(admin.SimpleListFilter):
+    title = 'Auth method'
+    parameter_name = 'auth_method'
+
+    def lookups(self, request, model_admin):
+        return [('google', 'Google'), ('email', 'Email / Password')]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'google':
+            return queryset.exclude(google_avatar='')
+        if self.value() == 'email':
+            return queryset.filter(google_avatar='')
+        return queryset
 
 
 @admin.register(User)
@@ -9,13 +25,25 @@ class UserAdmin(ModelAdmin, BaseUserAdmin):
     """Admin configuration for NepSaathi User model — no username field."""
 
     # What shows in the user list
-    list_display = ('email', 'first_name', 'last_name', 'is_verified', 'is_banned', 'is_staff', 'created_at')
-    list_filter = ('is_verified', 'is_banned', 'is_staff', 'is_active')
+    list_display = ('email', 'first_name', 'last_name', 'auth_method', 'is_verified', 'is_banned', 'is_staff', 'created_at')
+    list_filter = ('is_verified', 'is_banned', 'is_staff', 'is_active', GoogleAuthFilter)
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('-created_at',)
     date_hierarchy = 'created_at'
     show_full_result_count = False
     actions = ['verify_users', 'unverify_users', 'ban_users', 'unban_users']
+
+    def auth_method(self, obj):
+        if obj.google_avatar:
+            return format_html(
+                '<span style="background:#E8F0FE;color:#1A56A4;padding:2px 10px;border-radius:20px;'
+                'font-size:11px;font-weight:600;white-space:nowrap;">G Google</span>'
+            )
+        return format_html(
+            '<span style="background:#F3F4F6;color:#374151;padding:2px 10px;border-radius:20px;'
+            'font-size:11px;font-weight:600;white-space:nowrap;">✉ Email</span>'
+        )
+    auth_method.short_description = 'Auth'
 
     @admin.action(description='✅ Verify selected users (sends confirmation email)')
     def verify_users(self, request, queryset):
