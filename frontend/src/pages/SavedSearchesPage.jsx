@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getSavedSearches, deleteSavedSearch, updateSavedSearch } from "../api/listings";
 import { useToast } from "../components/ui/Toast";
 import { BellIcon, BriefcaseIcon, HouseIcon, ConfettiIcon, MegaphoneIcon, StorefrontIcon, ClipboardTextIcon } from "@phosphor-icons/react";
+import usePageTitle from "../hooks/usePageTitle";
 
 const TYPE_LABELS = {
   job:      { label: "Jobs",       Icon: BriefcaseIcon, iconColor: "#3C3489", color: "#EEEDFE" },
@@ -13,6 +14,7 @@ const TYPE_LABELS = {
 };
 
 export default function SavedSearchesPage() {
+  usePageTitle("Saved Searches — NepSaathi");
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);

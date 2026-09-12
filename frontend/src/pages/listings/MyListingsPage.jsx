@@ -1008,7 +1008,8 @@ export default function MyListingsPage() {
             borderRadius: "12px",
             width: "100%",
             marginBottom: "16px",
-            flexWrap: "wrap",
+            overflowX: "auto",
+            flexWrap: "nowrap",
           }}
         >
           {[

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConversation, sendMessage, deleteConversation } from "../api/messages";
 import useAuthStore from "../store/authStore";
 import { useToast } from "../components/ui/Toast";
+import usePageTitle from "../hooks/usePageTitle";
 
 const WS_BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/^http/, "ws");
 
@@ -30,6 +31,7 @@ export default function ConversationPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  usePageTitle("Messages");
   const { addToast } = useToast();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
@@ -199,7 +201,7 @@ export default function ConversationPage() {
   const other = conversation?.other_user;
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", height: "calc(100dvh - 100px)" }}>
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", height: "calc(100dvh - 100px - 58px - env(safe-area-inset-bottom, 0px))" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <button

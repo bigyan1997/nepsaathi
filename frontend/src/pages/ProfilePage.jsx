@@ -161,8 +161,30 @@ export default function ProfilePage() {
 
   if (isLoading)
     return (
-      <div style={{ textAlign: "center", padding: "60px", color: "#888" }}>
-        Loading profile...
+      <div style={{ maxWidth: "640px", margin: "0 auto", padding: "24px 16px" }}>
+        <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.45}}`}</style>
+        {/* Hero skeleton */}
+        <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", marginBottom: "12px", display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#e8e8e8", animation: "pulse 1.5s infinite", flexShrink: 0 }} />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ height: 16, width: "50%", borderRadius: 6, background: "#e8e8e8", animation: "pulse 1.5s infinite" }} />
+            <div style={{ height: 12, width: "35%", borderRadius: 6, background: "#e8e8e8", animation: "pulse 1.5s infinite" }} />
+          </div>
+          <div style={{ width: 90, height: 36, borderRadius: 10, background: "#e8e8e8", animation: "pulse 1.5s infinite" }} />
+        </div>
+        {/* Stats skeleton */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 12 }}>
+          {[1,2,3].map(i => <div key={i} style={{ height: 72, borderRadius: 12, background: "#e8e8e8", animation: "pulse 1.5s infinite" }} />)}
+        </div>
+        {/* Form skeleton */}
+        <div style={{ background: "#fff", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: 14 }}>
+          {[1,2,3,4].map(i => (
+            <div key={i}>
+              <div style={{ height: 10, width: "30%", borderRadius: 4, background: "#e8e8e8", animation: "pulse 1.5s infinite", marginBottom: 8 }} />
+              <div style={{ height: 38, borderRadius: 8, background: "#e8e8e8", animation: "pulse 1.5s infinite" }} />
+            </div>
+          ))}
+        </div>
       </div>
     );
 
@@ -577,7 +599,7 @@ export default function ProfilePage() {
               onClick={handleSubmit}
               disabled={updateMutation.isPending}
               style={{
-                background: updateMutation.isPending ? "#ccc" : "#534AB7",
+                background: updateMutation.isPending ? "#AFA9EC" : "#E87722",
                 color: "#fff",
                 border: "none",
                 borderRadius: "9px",

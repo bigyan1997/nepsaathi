@@ -1299,6 +1299,8 @@ export default function PostAdPage() {
               <div>
                 <label style={labelStyle}>Phone</label>
                 <input
+                  type="tel"
+                  inputMode="tel"
                   style={inputStyle}
                   placeholder="e.g. 0412 345 678"
                   value={baseForm.contact_phone}
@@ -1309,6 +1311,8 @@ export default function PostAdPage() {
                 <div>
                   <label style={labelStyle}>WhatsApp</label>
                   <input
+                    type="tel"
+                    inputMode="tel"
                     style={inputStyle}
                     placeholder="e.g. 0412 345 678"
                     value={baseForm.contact_whatsapp}

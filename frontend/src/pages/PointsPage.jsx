@@ -58,10 +58,30 @@ export default function PointsPage() {
     : "";
 
   const copyLink = () => {
-    navigator.clipboard.writeText(referralLink).then(() => {
+    const doCopy = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(referralLink).then(doCopy).catch(fallback);
+    } else {
+      fallback();
+    }
+    function fallback() {
+      try {
+        const el = document.createElement("textarea");
+        el.value = referralLink;
+        el.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+        document.body.appendChild(el);
+        el.focus();
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        doCopy();
+      } catch {
+        // clipboard unavailable — silently ignore
+      }
+    }
   };
 
   return (

@@ -15,6 +15,8 @@ import {
   CompassIcon,
   WrenchIcon,
   SparkleIcon,
+  ConfettiIcon,
+  MegaphoneIcon,
 } from "@phosphor-icons/react";
 import useAuthStore from "../../store/authStore";
 import { getUnreadCount } from "../../api/messages";
@@ -28,6 +30,8 @@ const TABS = [
 ];
 
 const MORE_LINKS = [
+  { to: "/events",           Icon: ConfettiIcon,            label: "Events",     color: "#085041", bg: "#E1F5EE" },
+  { to: "/notices",          Icon: MegaphoneIcon,           label: "Notices",    color: "#0C447C", bg: "#E6F1FB" },
   { to: "/forum",            Icon: ChatCircleDotsIcon,      label: "Community",  color: "#534AB7", bg: "#EEEDFE" },
   { to: "/send-money",       Icon: CurrencyCircleDollarIcon,label: "Send Money", color: "#1D9E75", bg: "#E1F5EE" },
   { to: "/guides/banking",   Icon: BookOpenIcon,            label: "Guides",     color: "#0C447C", bg: "#E6F1FB" },

@@ -84,7 +84,7 @@ function NewCard({ listing }) {
 
       {/* Footer */}
       <div style={{ background: "#f0fdf4", borderTop: "1px solid #bbf7d0", padding: "9px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ color: "#15803d", fontSize: "11px", fontWeight: 600 }}>Posted today</span>
+        <span style={{ color: "#15803d", fontSize: "11px", fontWeight: 600 }}>{timeAgo(listing.created_at)}</span>
         <span style={{ color: "#15803d", fontSize: "13px", fontWeight: 600 }}>View →</span>
       </div>
     </Link>

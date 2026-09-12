@@ -5,6 +5,7 @@ import { getConversations } from "../api/messages";
 import useAuthStore from "../store/authStore";
 import { registerPushSubscription } from "../hooks/usePushNotifications";
 import { BellIcon, ChatDotsIcon } from "@phosphor-icons/react";
+import usePageTitle from "../hooks/usePageTitle";
 
 function NotificationBanner() {
   const [permission, setPermission] = useState(
@@ -66,6 +67,7 @@ function timeAgo(dateStr) {
 }
 
 export default function InboxPage() {
+  usePageTitle("Inbox — NepSaathi");
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();

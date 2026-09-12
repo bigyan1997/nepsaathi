@@ -61,7 +61,7 @@ export default function SearchPage() {
       : "Search for jobs, rooms, events and businesses on NepSaathi — Australia's Nepalese community platform."
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["global-search", query, state],
     queryFn: () => globalSearch(query, state),
     enabled: query.length >= 2 || !!state,
@@ -137,6 +137,16 @@ export default function SearchPage() {
         </div>
       )}
 
+      {/* ── Error ── */}
+      {isError && (
+        <div style={{ textAlign: "center", padding: "64px 28px", background: "#fff", borderRadius: "16px", border: "0.5px solid #e5e5e5" }}>
+          <p style={{ fontSize: "14px", color: "#e74c3c", fontWeight: 600, marginBottom: "12px" }}>Something went wrong. Please try again.</p>
+          <button onClick={() => window.location.reload()} style={{ background: "#26215C", color: "#fff", border: "none", borderRadius: "9px", padding: "10px 22px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+            Retry
+          </button>
+        </div>
+      )}
+
       {/* ── Loading ── */}
       {isLoading && (
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -193,9 +203,13 @@ export default function SearchPage() {
                   padding: "8px 16px",
                   borderRadius: "20px",
                   textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
                 }}
               >
-                {cfg.emoji} {cfg.label}
+                <cfg.Icon size={14} weight="duotone" color={cfg.textColor} />
+                {cfg.label}
               </Link>
             ))}
           </div>
@@ -234,7 +248,7 @@ export default function SearchPage() {
                     gap: "8px",
                   }}
                 >
-                  <span>{config.emoji}</span>
+                  <config.Icon size={14} weight="duotone" color={config.textColor} />
                   {config.label}
                   <span
                     style={{
