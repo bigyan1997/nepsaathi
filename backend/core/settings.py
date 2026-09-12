@@ -217,6 +217,7 @@ ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = config('EMAIL_VERIFICATION', default='none' if DEBUG else 'mandatory')
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 300 / 86400  # 5 minutes (in fractional days)
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # ─── Google OAuth ─────────────────────────────────────────────────────────────
