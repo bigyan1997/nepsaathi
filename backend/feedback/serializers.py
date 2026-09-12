@@ -3,7 +3,7 @@ from .models import FeedbackResponse, REASON_CHOICES
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
-    reason = serializers.ChoiceField(choices=[r[0] for r in REASON_CHOICES])
+    reason = serializers.ChoiceField(choices=[r[0] for r in REASON_CHOICES] + [""], allow_blank=True, required=False, default="")
 
     class Meta:
         model = FeedbackResponse
