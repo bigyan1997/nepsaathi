@@ -1,10 +1,11 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, UserReview, PointEvent, PushSubscription
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(ModelAdmin, BaseUserAdmin):
     """Admin configuration for NepSaathi User model — no username field."""
 
     # What shows in the user list
@@ -106,7 +107,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 @admin.register(UserReview)
-class UserReviewAdmin(admin.ModelAdmin):
+class UserReviewAdmin(ModelAdmin):
     list_display = ('reviewer', 'reviewed_user', 'rating', 'created_at')
     list_filter = ('rating',)
     search_fields = ('reviewer__email', 'reviewed_user__email', 'comment')
@@ -115,7 +116,7 @@ class UserReviewAdmin(admin.ModelAdmin):
 
 
 @admin.register(PointEvent)
-class PointEventAdmin(admin.ModelAdmin):
+class PointEventAdmin(ModelAdmin):
     list_display = ('user', 'event_type', 'delta', 'description', 'created_at')
     list_filter = ('event_type',)
     search_fields = ('user__email', 'description')
@@ -124,7 +125,7 @@ class PointEventAdmin(admin.ModelAdmin):
 
 
 @admin.register(PushSubscription)
-class PushSubscriptionAdmin(admin.ModelAdmin):
+class PushSubscriptionAdmin(ModelAdmin):
     list_display = ('user', 'endpoint', 'created_at')
     search_fields = ('user__email', 'endpoint')
     readonly_fields = ('user', 'endpoint', 'p256dh', 'auth', 'created_at')

@@ -1,8 +1,9 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Conversation, Message
 
 
-class MessageInline(admin.TabularInline):
+class MessageInline(TabularInline):
     model = Message
     extra = 0
     readonly_fields = ('sender', 'content', 'is_read', 'created_at')
@@ -10,7 +11,7 @@ class MessageInline(admin.TabularInline):
 
 
 @admin.register(Conversation)
-class ConversationAdmin(admin.ModelAdmin):
+class ConversationAdmin(ModelAdmin):
     list_display = ('id', 'listing_title', 'listing_type', 'participant_list', 'updated_at')
     list_filter = ('listing_type',)
     search_fields = ('listing_title', 'participants__email')
@@ -23,7 +24,7 @@ class ConversationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
+class MessageAdmin(ModelAdmin):
     list_display = ('id', 'sender', 'conversation', 'content_preview', 'is_read', 'created_at')
     list_filter = ('is_read',)
     search_fields = ('sender__email', 'content')

@@ -135,6 +135,15 @@ class Listing(models.Model):
     def __str__(self):
         return f'{self.listing_type.upper()} — {self.title} ({self.location})'
 
+    def get_absolute_url(self):
+        from django.conf import settings
+        type_to_path = {
+            'job': 'jobs', 'room': 'rooms', 'event': 'events',
+            'notice': 'notices', 'business': 'businesses',
+        }
+        path = type_to_path.get(self.listing_type, 'listings')
+        return f'{settings.FRONTEND_URL}/{path}/{self.slug}'
+
     def save(self, *args, **kwargs):
         if not self.slug:
             base = slugify(self.title) or 'listing'

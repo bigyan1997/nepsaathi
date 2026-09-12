@@ -2,6 +2,7 @@ import json
 import threading
 import urllib.request
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from django.urls import reverse
 from django.utils.html import format_html, mark_safe
 from .models import Listing, ListingImage, SavedListing, ListingReport, ListingView, SavedSearch
@@ -45,7 +46,7 @@ def _fire_n8n_webhook(listing):
     threading.Thread(target=_send, daemon=True).start()
 
 
-class ListingImageInline(admin.TabularInline):
+class ListingImageInline(TabularInline):
     """
     Shows images directly inside the listing admin page.
     So you can add/remove images without leaving the listing.
@@ -57,7 +58,7 @@ class ListingImageInline(admin.TabularInline):
 
 
 @admin.register(Listing)
-class ListingAdmin(admin.ModelAdmin):
+class ListingAdmin(ModelAdmin):
     """
     Admin configuration for the base Listing model.
     """
@@ -190,7 +191,7 @@ class ListingAdmin(admin.ModelAdmin):
 
 
 @admin.register(ListingImage)
-class ListingImageAdmin(admin.ModelAdmin):
+class ListingImageAdmin(ModelAdmin):
     """
     Admin for listing images.
     """
@@ -198,7 +199,7 @@ class ListingImageAdmin(admin.ModelAdmin):
     list_filter = ('is_primary',)
 
 @admin.register(ListingReport)
-class ListingReportAdmin(admin.ModelAdmin):
+class ListingReportAdmin(ModelAdmin):
     list_display = (
         'listing_title',
         'reason',
@@ -337,7 +338,7 @@ class ListingReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(SavedListing)
-class SavedListingAdmin(admin.ModelAdmin):
+class SavedListingAdmin(ModelAdmin):
     list_display = ('user', 'listing', 'saved_at')
     search_fields = ('user__email', 'listing__title')
     readonly_fields = ('user', 'listing', 'saved_at')
@@ -345,7 +346,7 @@ class SavedListingAdmin(admin.ModelAdmin):
 
 
 @admin.register(ListingView)
-class ListingViewAdmin(admin.ModelAdmin):
+class ListingViewAdmin(ModelAdmin):
     list_display = ('listing', 'user', 'ip_address', 'viewed_at')
     list_filter = ('viewed_at',)
     search_fields = ('listing__title', 'user__email', 'ip_address')
@@ -354,7 +355,7 @@ class ListingViewAdmin(admin.ModelAdmin):
 
 
 @admin.register(SavedSearch)
-class SavedSearchAdmin(admin.ModelAdmin):
+class SavedSearchAdmin(ModelAdmin):
     list_display = ('user', 'label', 'listing_type', 'is_active', 'last_notified', 'created_at')
     list_filter = ('listing_type', 'is_active')
     search_fields = ('user__email', 'label')

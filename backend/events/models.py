@@ -80,6 +80,9 @@ class Event(models.Model):
     def __str__(self):
         return f'{self.listing.title} — {self.event_date.strftime("%d %b %Y")}'
 
+    def get_absolute_url(self):
+        return self.listing.get_absolute_url()
+
     @property
     def ticket_display(self):
         if self.is_free:

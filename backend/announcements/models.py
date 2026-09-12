@@ -63,6 +63,9 @@ class Announcement(models.Model):
     def __str__(self):
         return f'{self.get_category_display()} — {self.listing.title}'
 
+    def get_absolute_url(self):
+        return self.listing.get_absolute_url()
+
     @property
     def price_display(self):
         if self.is_free:

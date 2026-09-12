@@ -145,6 +145,10 @@ class Business(models.Model):
     def __str__(self):
         return f'{self.business_name} ({self.get_category_display()}) — {self.suburb}'
 
+    def get_absolute_url(self):
+        from django.conf import settings
+        return f'{settings.FRONTEND_URL}/businesses/{self.slug}'
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{slugify(self.business_name) or 'business'}-{uuid4().hex[:8]}"

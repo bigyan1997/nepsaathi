@@ -1,4 +1,5 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.http import HttpResponse
 from django.utils.html import format_html
 from .models import FeaturedPayment
@@ -6,7 +7,7 @@ from .pdf import generate_invoice_pdf
 
 
 @admin.register(FeaturedPayment)
-class FeaturedPaymentAdmin(admin.ModelAdmin):
+class FeaturedPaymentAdmin(ModelAdmin):
     list_display = ('id', 'listing', 'user', 'amount_display', 'duration_days', 'status', 'created_at', 'invoice_link')
     list_filter = ('status',)
     search_fields = ('listing__title', 'user__email', 'stripe_session_id')

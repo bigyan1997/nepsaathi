@@ -18,6 +18,7 @@ ALLOWED_HOSTS = config(
 
 # ─── Apps ────────────────────────────────────────────────────────────────────
 DJANGO_APPS = [
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -378,6 +379,77 @@ CSRF_TRUSTED_ORIGINS = config(
 ADMIN_SITE_HEADER = "NepSaathi Admin"
 ADMIN_SITE_TITLE = "NepSaathi Admin Portal"
 ADMIN_INDEX_TITLE = "NepSaathi Administration"
+
+# ─── Unfold Admin ─────────────────────────────────────────────────────────────
+UNFOLD = {
+    "SITE_TITLE": "NepSaathi",
+    "SITE_HEADER": "NepSaathi Admin",
+    "SITE_SUBHEADER": "Community Platform",
+    "SITE_SYMBOL": "home",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "COLORS": {
+        "primary": {
+            "50":  "255 247 237",
+            "100": "255 237 213",
+            "200": "254 215 170",
+            "300": "253 186 116",
+            "400": "251 146 60",
+            "500": "249 115 22",
+            "600": "234 119 34",
+            "700": "194 65 12",
+            "800": "154 52 18",
+            "900": "124 45 18",
+            "950": "67 20 7",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": "Listings",
+                "collapsible": True,
+                "items": [
+                    {"title": "Listings", "icon": "list", "link": "/nepsaathi-biggy/listings/listing/"},
+                    {"title": "Jobs", "icon": "work", "link": "/nepsaathi-biggy/jobs/job/"},
+                    {"title": "Rooms", "icon": "home", "link": "/nepsaathi-biggy/rooms/room/"},
+                    {"title": "Events", "icon": "event", "link": "/nepsaathi-biggy/events/event/"},
+                    {"title": "Notices", "icon": "campaign", "link": "/nepsaathi-biggy/announcements/announcement/"},
+                    {"title": "Businesses", "icon": "store", "link": "/nepsaathi-biggy/businesses/business/"},
+                ],
+            },
+            {
+                "title": "Community",
+                "collapsible": True,
+                "items": [
+                    {"title": "Forum", "icon": "forum", "link": "/nepsaathi-biggy/forum/forumpost/"},
+                    {"title": "Community Services", "icon": "handshake", "link": "/nepsaathi-biggy/community/servicelisting/"},
+                    {"title": "WhatsApp Groups", "icon": "chat", "link": "/nepsaathi-biggy/visa/whatsappgroup/"},
+                    {"title": "Reports", "icon": "flag", "link": "/nepsaathi-biggy/listings/listingreport/"},
+                ],
+            },
+            {
+                "title": "Users",
+                "collapsible": True,
+                "items": [
+                    {"title": "Users", "icon": "people", "link": "/nepsaathi-biggy/users/user/"},
+                    {"title": "Messages", "icon": "message", "link": "/nepsaathi-biggy/messaging/conversation/"},
+                    {"title": "Payments", "icon": "payments", "link": "/nepsaathi-biggy/payments/featuredpayment/"},
+                    {"title": "Feedback", "icon": "rate_review", "link": "/nepsaathi-biggy/feedback/feedbackresponse/"},
+                ],
+            },
+            {
+                "title": "Data",
+                "collapsible": True,
+                "items": [
+                    {"title": "Remittance Rates", "icon": "currency_exchange", "link": "/nepsaathi-biggy/remittance/remittancerate/"},
+                    {"title": "Visa / Invitations", "icon": "flight", "link": "/nepsaathi-biggy/visa/occupationinvitation/"},
+                ],
+            },
+        ],
+    },
+}
 
 # ─── Sentry ──────────────────────────────────────────────────────────────────
 SENTRY_DSN = config('SENTRY_DSN', default='')

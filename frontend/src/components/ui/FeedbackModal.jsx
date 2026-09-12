@@ -41,7 +41,7 @@ export default function FeedbackModal({ onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!satisfaction || !reason) return;
+    if (!satisfaction || (!reason && !message.trim())) return;
     mutation.mutate();
   };
 
@@ -50,7 +50,7 @@ export default function FeedbackModal({ onClose }) {
     onClose();
   };
 
-  const canSubmit = satisfaction && reason && !mutation.isPending;
+  const canSubmit = satisfaction && (reason || message.trim()) && !mutation.isPending;
 
   return (
     <div

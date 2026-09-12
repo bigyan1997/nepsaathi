@@ -1,8 +1,9 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import ForumPost, ForumReply, PollOption, PollVote
 
 
-class ForumReplyInline(admin.TabularInline):
+class ForumReplyInline(TabularInline):
     model = ForumReply
     extra = 0
     readonly_fields = ('author', 'body', 'created_at')
@@ -10,7 +11,7 @@ class ForumReplyInline(admin.TabularInline):
 
 
 @admin.register(ForumPost)
-class ForumPostAdmin(admin.ModelAdmin):
+class ForumPostAdmin(ModelAdmin):
     list_display = ('title', 'category', 'author', 'reply_count', 'upvote_count', 'is_pinned', 'is_closed', 'created_at')
     list_filter = ('category', 'is_pinned', 'is_closed')
     search_fields = ('title', 'body', 'author__email')
@@ -45,13 +46,13 @@ class ForumPostAdmin(admin.ModelAdmin):
 
 
 @admin.register(ForumReply)
-class ForumReplyAdmin(admin.ModelAdmin):
+class ForumReplyAdmin(ModelAdmin):
     list_display = ('author', 'post', 'created_at')
     search_fields = ('body', 'author__email', 'post__title')
     readonly_fields = ('created_at', 'updated_at')
 
 
-class PollVoteInline(admin.TabularInline):
+class PollVoteInline(TabularInline):
     model = PollVote
     extra = 0
     readonly_fields = ('voter',)
@@ -59,7 +60,7 @@ class PollVoteInline(admin.TabularInline):
 
 
 @admin.register(PollOption)
-class PollOptionAdmin(admin.ModelAdmin):
+class PollOptionAdmin(ModelAdmin):
     list_display = ('post', 'text', 'vote_count')
     search_fields = ('post__title', 'text')
     readonly_fields = ('post',)
@@ -71,7 +72,7 @@ class PollOptionAdmin(admin.ModelAdmin):
 
 
 @admin.register(PollVote)
-class PollVoteAdmin(admin.ModelAdmin):
+class PollVoteAdmin(ModelAdmin):
     list_display = ('voter', 'option', 'option_post')
     search_fields = ('voter__email', 'option__text', 'option__post__title')
     readonly_fields = ('voter', 'option')

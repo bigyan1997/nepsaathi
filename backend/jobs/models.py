@@ -63,6 +63,9 @@ class Job(models.Model):
     def __str__(self):
         return f'{self.listing.title} at {self.company_name}'
 
+    def get_absolute_url(self):
+        return self.listing.get_absolute_url()
+
     @property
     def salary_display(self):
         """Returns formatted salary string e.g. $23.50/hr"""

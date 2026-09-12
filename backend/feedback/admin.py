@@ -1,11 +1,12 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.http import HttpResponse
 import csv
 from .models import FeedbackResponse, NewsletterSubscriber
 
 
 @admin.register(FeedbackResponse)
-class FeedbackResponseAdmin(admin.ModelAdmin):
+class FeedbackResponseAdmin(ModelAdmin):
     list_display = ('created_at', 'satisfaction_stars', 'reason_display', 'short_message', 'page_url', 'user')
     list_filter = ('satisfaction', 'reason', 'created_at')
     search_fields = ('user__email', 'page_url', 'message')
@@ -38,7 +39,7 @@ export_emails_csv.short_description = 'Export selected as CSV'
 
 
 @admin.register(NewsletterSubscriber)
-class NewsletterSubscriberAdmin(admin.ModelAdmin):
+class NewsletterSubscriberAdmin(ModelAdmin):
     list_display = ('email', 'subscribed_at', 'is_active')
     list_filter = ('is_active', 'subscribed_at')
     search_fields = ('email',)

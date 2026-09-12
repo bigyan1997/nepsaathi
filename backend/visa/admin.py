@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import VisaTimeline, WhatsAppGroup, Occupation, InvitationRound, OccupationInvitation
 
 
 @admin.register(VisaTimeline)
-class VisaTimelineAdmin(admin.ModelAdmin):
+class VisaTimelineAdmin(ModelAdmin):
     list_display = ('visa_type', 'lodged_month', 'granted_month', 'state_lodged', 'occupation', 'is_granted', 'is_approved', 'created_at')
     list_filter = ('visa_type', 'state_lodged', 'is_granted', 'is_approved')
     search_fields = ('occupation', 'anzsco_code', 'notes', 'user__email')
@@ -23,7 +24,7 @@ class VisaTimelineAdmin(admin.ModelAdmin):
 
 
 @admin.register(WhatsAppGroup)
-class WhatsAppGroupAdmin(admin.ModelAdmin):
+class WhatsAppGroupAdmin(ModelAdmin):
     list_display = ('name', 'city', 'state', 'category', 'member_count', 'is_verified', 'is_active', 'order')
     list_filter = ('state', 'category', 'is_verified', 'is_active')
     search_fields = ('name', 'city', 'description')
@@ -31,7 +32,7 @@ class WhatsAppGroupAdmin(admin.ModelAdmin):
     ordering = ('order', '-created_at')
 
 
-class OccupationInvitationInline(admin.TabularInline):
+class OccupationInvitationInline(TabularInline):
     model = OccupationInvitation
     extra = 0
     fields = ('round_date', 'visa_type', 'score', 'was_invited', 'notes')
@@ -39,7 +40,7 @@ class OccupationInvitationInline(admin.TabularInline):
 
 
 @admin.register(Occupation)
-class OccupationAdmin(admin.ModelAdmin):
+class OccupationAdmin(ModelAdmin):
     list_display = ('anzsco_code', 'title', 'list_type', 'eligible_visas', 'last_updated')
     list_filter = ('list_type',)
     search_fields = ('anzsco_code', 'title', 'alternative_titles')
@@ -49,7 +50,7 @@ class OccupationAdmin(admin.ModelAdmin):
 
 
 @admin.register(OccupationInvitation)
-class OccupationInvitationAdmin(admin.ModelAdmin):
+class OccupationInvitationAdmin(ModelAdmin):
     list_display = ('occupation', 'round_date', 'visa_type', 'score', 'was_invited', 'notes')
     list_filter = ('visa_type', 'was_invited', 'round_date')
     search_fields = ('occupation__anzsco_code', 'occupation__title', 'round_date')
@@ -57,7 +58,7 @@ class OccupationInvitationAdmin(admin.ModelAdmin):
 
 
 @admin.register(InvitationRound)
-class InvitationRoundAdmin(admin.ModelAdmin):
+class InvitationRoundAdmin(ModelAdmin):
     list_display = ('round_date', 'visa_type', 'lowest_score', 'invitations_issued', 'tiebreaker_date')
     list_filter = ('visa_type',)
     search_fields = ('round_date',)

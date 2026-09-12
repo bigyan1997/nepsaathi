@@ -82,6 +82,9 @@ class Room(models.Model):
     def __str__(self):
         return f'{self.get_room_type_display()} — ${self.price:,.2f}/wk ({self.listing.location})'
 
+    def get_absolute_url(self):
+        return self.listing.get_absolute_url()
+
     @property
     def price_display(self):
         """Returns formatted price string e.g. $250.00/wk"""

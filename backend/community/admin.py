@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import ReverseRequest, ServiceListing
 
 
 @admin.register(ReverseRequest)
-class ReverseRequestAdmin(admin.ModelAdmin):
+class ReverseRequestAdmin(ModelAdmin):
     list_display  = ['title', 'user', 'category', 'state', 'is_active', 'created_at']
     list_filter   = ['category', 'is_active', 'state']
     search_fields = ['title', 'user__email']
@@ -15,7 +16,7 @@ class ReverseRequestAdmin(admin.ModelAdmin):
 
 
 @admin.register(ServiceListing)
-class ServiceListingAdmin(admin.ModelAdmin):
+class ServiceListingAdmin(ModelAdmin):
     list_display  = ['title', 'user', 'category', 'state', 'is_active', 'created_at']
     list_filter   = ['category', 'is_active', 'state']
     search_fields = ['title', 'user__email']

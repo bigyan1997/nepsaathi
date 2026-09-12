@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import Event, EventRSVP
 
 
 @admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(ModelAdmin):
     """Admin configuration for Events."""
 
     list_display = (
@@ -42,7 +43,7 @@ class EventAdmin(admin.ModelAdmin):
 
 
 @admin.register(EventRSVP)
-class EventRSVPAdmin(admin.ModelAdmin):
+class EventRSVPAdmin(ModelAdmin):
     list_display = ('user', 'event', 'created_at')
     search_fields = ('user__email', 'event__listing__title')
     readonly_fields = ('user', 'event', 'created_at')

@@ -1,15 +1,16 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Business, BusinessImage, BusinessReport, BusinessReview
 
 
-class BusinessImageInline(admin.TabularInline):
+class BusinessImageInline(TabularInline):
     model = BusinessImage
     extra = 0
     readonly_fields = ('uploaded_at',)
 
 
 @admin.register(Business)
-class BusinessAdmin(admin.ModelAdmin):
+class BusinessAdmin(ModelAdmin):
     """
     Admin for Nepalese businesses.
     Admins can verify businesses from here.
@@ -120,7 +121,7 @@ class BusinessAdmin(admin.ModelAdmin):
 
 
 @admin.register(BusinessReport)
-class BusinessReportAdmin(admin.ModelAdmin):
+class BusinessReportAdmin(ModelAdmin):
     list_display = ('business', 'user', 'reason', 'is_reviewed', 'created_at')
     list_filter = ('reason', 'is_reviewed')
     search_fields = ('business__business_name', 'user__email')
@@ -159,7 +160,7 @@ class BusinessReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(BusinessReview)
-class BusinessReviewAdmin(admin.ModelAdmin):
+class BusinessReviewAdmin(ModelAdmin):
     list_display = ('business', 'reviewer', 'rating', 'created_at')
     list_filter = ('rating',)
     search_fields = ('business__business_name', 'reviewer__email', 'comment')
