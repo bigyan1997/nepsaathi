@@ -31,13 +31,16 @@ class EventAdmin(ModelAdmin):
 
     fieldsets = (
         ('Event Details', {
-            'fields': ('listing', 'category', 'organiser')
+            'fields': ('listing', 'category', 'organiser'),
+            'classes': ['tab'],
         }),
         ('Date & Venue', {
-            'fields': ('event_date', 'event_end_date', 'venue', 'is_online', 'event_url')
+            'fields': ('event_date', 'event_end_date', 'venue', 'is_online', 'event_url'),
+            'classes': ['tab'],
         }),
         ('Tickets', {
-            'fields': ('is_free', 'ticket_price', 'max_attendees')
+            'fields': ('is_free', 'ticket_price', 'max_attendees'),
+            'classes': ['tab'],
         }),
     )
 

@@ -28,13 +28,16 @@ class JobAdmin(ModelAdmin):
 
     fieldsets = (
         ('Job Details', {
-            'fields': ('listing', 'company_name', 'job_type', 'is_urgent')
+            'fields': ('listing', 'company_name', 'job_type', 'is_urgent'),
+            'classes': ['tab'],
         }),
         ('Salary', {
-            'fields': ('salary', 'salary_type')
+            'fields': ('salary', 'salary_type'),
+            'classes': ['tab'],
         }),
         ('Requirements', {
-            'fields': ('experience_required', 'qualifications')
+            'fields': ('experience_required', 'qualifications'),
+            'classes': ['tab'],
         }),
     )
 

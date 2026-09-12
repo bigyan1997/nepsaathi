@@ -13,6 +13,8 @@ class UserAdmin(ModelAdmin, BaseUserAdmin):
     list_filter = ('is_verified', 'is_banned', 'is_staff', 'is_active')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('-created_at',)
+    date_hierarchy = 'created_at'
+    show_full_result_count = False
     actions = ['verify_users', 'unverify_users', 'ban_users', 'unban_users']
 
     @admin.action(description='✅ Verify selected users (sends confirmation email)')

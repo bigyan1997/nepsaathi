@@ -32,10 +32,12 @@ class RoomAdmin(ModelAdmin):
 
     fieldsets = (
         ('Room Details', {
-            'fields': ('listing', 'room_type', 'furnishing')
+            'fields': ('listing', 'room_type', 'furnishing'),
+            'classes': ['tab'],
         }),
         ('Pricing', {
-            'fields': ('price', 'bond', 'bills_included')
+            'fields': ('price', 'bond', 'bills_included'),
+            'classes': ['tab'],
         }),
         ('Property Info', {
             'fields': (
@@ -43,13 +45,15 @@ class RoomAdmin(ModelAdmin):
                 'bathrooms',
                 'max_occupants',
                 'available_from',
-            )
+            ),
+            'classes': ['tab'],
         }),
         ('Extra Features', {
             'fields': (
                 'nepalese_household',
                 'pets_allowed',
                 'parking_available',
-            )
+            ),
+            'classes': ['tab'],
         }),
     )

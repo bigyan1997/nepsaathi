@@ -8,10 +8,29 @@ from .pdf import generate_invoice_pdf
 
 @admin.register(FeaturedPayment)
 class FeaturedPaymentAdmin(ModelAdmin):
-    list_display = ('id', 'listing', 'user', 'amount_display', 'duration_days', 'status', 'created_at', 'invoice_link')
+    list_display = ('id', 'listing', 'user', 'amount_display', 'duration_days', 'status_badge', 'created_at', 'invoice_link')
     list_filter = ('status',)
     search_fields = ('listing__title', 'user__email', 'stripe_session_id')
+    date_hierarchy = 'created_at'
+    show_full_result_count = False
     readonly_fields = ('stripe_session_id', 'amount_paid', 'created_at', 'completed_at')
+
+    _STATUS_COLORS = {
+        'completed': ('#166534', '#dcfce7'),
+        'pending':   ('#92400e', '#fef3c7'),
+        'failed':    ('#991b1b', '#fee2e2'),
+    }
+
+    def status_badge(self, obj):
+        from django.utils.html import format_html
+        fg, bg = self._STATUS_COLORS.get(obj.status, ('#374151', '#f3f4f6'))
+        return format_html(
+            '<span style="background:{};color:{};padding:2px 10px;border-radius:20px;'
+            'font-size:11px;font-weight:600;white-space:nowrap;">{}</span>',
+            bg, fg, obj.status.title(),
+        )
+    status_badge.short_description = 'Status'
+    status_badge.admin_order_field = 'status'
 
     def amount_display(self, obj):
         return f'${obj.amount_paid / 100:.2f} AUD'

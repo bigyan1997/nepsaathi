@@ -29,9 +29,11 @@ class AnnouncementAdmin(ModelAdmin):
 
     fieldsets = (
         ('Announcement Details', {
-            'fields': ('listing', 'category', 'is_urgent')
+            'fields': ('listing', 'category', 'is_urgent'),
+            'classes': ['tab'],
         }),
         ('Pricing', {
-            'fields': ('price', 'is_free', 'condition')
+            'fields': ('price', 'is_free', 'condition'),
+            'classes': ['tab'],
         }),
     )

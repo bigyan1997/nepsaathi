@@ -41,6 +41,8 @@ class BusinessAdmin(ModelAdmin):
         'abn',
     )
     ordering = ('-created_at',)
+    date_hierarchy = 'created_at'
+    show_full_result_count = False
     readonly_fields = ('created_at', 'updated_at')
 
     fieldsets = (

@@ -68,11 +68,10 @@ class ListingAdmin(ModelAdmin):
         'user',
         'location',
         'state',
-        'status',
+        'status_badge',
         'review_badge',
         'is_featured',
         'expires_at',
-        'expiry_warning_sent',
         'created_at',
     )
     list_filter = (
@@ -90,6 +89,8 @@ class ListingAdmin(ModelAdmin):
         'user__email',
     )
     ordering = ('-is_under_review', '-created_at')
+    date_hierarchy = 'created_at'
+    show_full_result_count = False
     readonly_fields = ('created_at', 'updated_at')
 
     fieldsets = (
@@ -115,6 +116,23 @@ class ListingAdmin(ModelAdmin):
         }),
     )
     actions = ['approve_listings', 'mark_featured', 'unmark_featured', 'send_expiry_warning', 'reset_expiry_warning']
+
+    _STATUS_COLORS = {
+        'active':  ('#166534', '#dcfce7'),
+        'pending': ('#92400e', '#fef3c7'),
+        'expired': ('#374151', '#f3f4f6'),
+        'deleted': ('#991b1b', '#fee2e2'),
+    }
+
+    def status_badge(self, obj):
+        fg, bg = self._STATUS_COLORS.get(obj.status, ('#374151', '#f3f4f6'))
+        return format_html(
+            '<span style="background:{};color:{};padding:2px 10px;border-radius:20px;'
+            'font-size:11px;font-weight:600;white-space:nowrap;">{}</span>',
+            bg, fg, obj.get_status_display(),
+        )
+    status_badge.short_description = 'Status'
+    status_badge.admin_order_field = 'status'
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('reports')
