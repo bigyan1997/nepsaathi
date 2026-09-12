@@ -72,6 +72,7 @@ class ListingAdmin(ModelAdmin):
         'review_badge',
         'is_featured',
         'expires_at',
+        'purge_date',
         'created_at',
     )
     list_filter = (
@@ -133,6 +134,28 @@ class ListingAdmin(ModelAdmin):
         )
     status_badge.short_description = 'Status'
     status_badge.admin_order_field = 'status'
+
+    def purge_date(self, obj):
+        if obj.status != 'deleted':
+            return mark_safe('<span style="color:#ccc;">—</span>')
+        from datetime import timedelta
+        from django.utils import timezone
+        purge_at = obj.updated_at + timedelta(days=30)
+        days_left = (purge_at.date() - timezone.now().date()).days
+        date_str = purge_at.strftime('%-d %b %Y')
+        if days_left <= 0:
+            color, bg, label = '#991b1b', '#fee2e2', f'Due for purge ({date_str})'
+        elif days_left <= 7:
+            color, bg, label = '#92400e', '#fef3c7', f'In {days_left}d ({date_str})'
+        else:
+            color, bg, label = '#374151', '#f3f4f6', date_str
+        return format_html(
+            '<span style="background:{};color:{};padding:2px 8px;border-radius:20px;'
+            'font-size:11px;font-weight:600;white-space:nowrap;" title="Permanently deleted from database on {}">{}</span>',
+            bg, color, date_str, label,
+        )
+    purge_date.short_description = 'DB Purge'
+    purge_date.admin_order_field = 'updated_at'
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('reports')
