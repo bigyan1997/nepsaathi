@@ -9,6 +9,7 @@ export const register = async (data) => {
     password1: data.password,
     password2: data.confirmPassword,
     ...(data.refCode ? { ref_code: data.refCode } : {}),
+    ...(data.referralSource ? { referral_source: data.referralSource } : {}),
   });
   return response.data;
 };

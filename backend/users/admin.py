@@ -25,9 +25,9 @@ class UserAdmin(ModelAdmin, BaseUserAdmin):
     """Admin configuration for NepSaathi User model — no username field."""
 
     # What shows in the user list
-    list_display = ('email', 'first_name', 'last_name', 'auth_method', 'is_verified', 'is_banned', 'is_staff', 'created_at')
-    list_filter = ('is_verified', 'is_banned', 'is_staff', 'is_active', GoogleAuthFilter)
-    search_fields = ('email', 'first_name', 'last_name')
+    list_display = ('email', 'first_name', 'last_name', 'auth_method', 'referral_source', 'registration_ip', 'is_verified', 'is_banned', 'is_staff', 'created_at')
+    list_filter = ('is_verified', 'is_banned', 'is_staff', 'is_active', 'referral_source', GoogleAuthFilter)
+    search_fields = ('email', 'first_name', 'last_name', 'registration_ip')
     ordering = ('-created_at',)
     date_hierarchy = 'created_at'
     show_full_result_count = False
@@ -106,6 +106,9 @@ class UserAdmin(ModelAdmin, BaseUserAdmin):
         ('Account Status', {
             'fields': ('is_banned', 'ban_reason'),
         }),
+        ('Registration info', {
+            'fields': ('registration_ip', 'referral_source'),
+        }),
     )
 
     # Override add_fieldsets — form when creating a new user in admin
@@ -116,7 +119,7 @@ class UserAdmin(ModelAdmin, BaseUserAdmin):
         }),
     )
 
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'registration_ip')
 
     def save_model(self, request, obj, form, change):
         if change:

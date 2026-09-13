@@ -43,6 +43,24 @@ class User(AbstractUser):
         on_delete=models.SET_NULL, related_name='referrals'
     )
 
+    registration_ip = models.GenericIPAddressField(null=True, blank=True)
+
+    class ReferralSource(models.TextChoices):
+        INSTAGRAM  = 'instagram',  'Instagram'
+        FACEBOOK   = 'facebook',   'Facebook'
+        TIKTOK     = 'tiktok',     'TikTok'
+        GOOGLE     = 'google',     'Google Search'
+        FRIEND     = 'friend',     'Friend / Word of mouth'
+        COMMUNITY  = 'community',  'Nepali community group'
+        OTHER      = 'other',      'Other'
+
+    referral_source = models.CharField(
+        max_length=20,
+        choices=ReferralSource.choices,
+        blank=True,
+        default='',
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

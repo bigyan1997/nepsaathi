@@ -19,6 +19,7 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    referralSource: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -447,6 +448,36 @@ export default function RegisterPage() {
                 </span>
               </div>
             )}
+          </div>
+
+          {/* How did you hear about us */}
+          <div>
+            <label style={{ fontSize: "13px", fontWeight: 600, color: "#26215C", display: "block", marginBottom: "6px" }}>
+              How did you hear about NepSaathi? <span style={{ fontWeight: 400, color: "#aaa" }}>(optional)</span>
+            </label>
+            <select
+              value={form.referralSource}
+              onChange={(e) => setForm({ ...form, referralSource: e.target.value })}
+              style={{
+                width: "100%",
+                border: "1px solid #e0e0e0",
+                borderRadius: "10px",
+                padding: "11px 14px",
+                fontSize: "14px",
+                color: form.referralSource ? "#111" : "#aaa",
+                background: "#fff",
+                outline: "none",
+              }}
+            >
+              <option value="">Select an option…</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="tiktok">TikTok</option>
+              <option value="google">Google Search</option>
+              <option value="friend">Friend / Word of mouth</option>
+              <option value="community">Nepali community group</option>
+              <option value="other">Other</option>
+            </select>
           </div>
 
           <button

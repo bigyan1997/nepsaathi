@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 import requests as http_requests
+from django.core.cache import cache
 
 User = get_user_model()
 
@@ -22,6 +23,41 @@ User = get_user_model()
 _DUMMY_HASH = make_password('nepsaathi-dummy-constant-time')
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+
+def _get_client_ip(request):
+    """Return the real client IP, unwrapping Railway's X-Forwarded-For if present."""
+    xff = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if xff:
+        return xff.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', '')
+
+
+def _check_new_account_rate(ip):
+    """
+    Returns True (allowed) if fewer than 3 new accounts have been created
+    from this IP in the last hour. Increments the counter on each call.
+    """
+    if not ip:
+        return True
+    key = f'new_account_rate:{ip}'
+    count = cache.get(key, 0)
+    if count >= 3:
+        return False
+    cache.set(key, count + 1, 3600)
+    return True
+
+
+def _notify_admin_new_signup(user, ip):
+    """Fire-and-forget admin notification for new signups."""
+    import threading, logging as _log
+    def _send():
+        try:
+            from core.emails import send_new_signup_admin_notification
+            send_new_signup_admin_notification(user, ip)
+        except Exception as e:
+            _log.getLogger(__name__).warning('Admin signup notify failed: %s', e)
+    threading.Thread(target=_send, daemon=True).start()
 
 
 class GoogleLoginView(SocialLoginView):
@@ -51,11 +87,25 @@ class GoogleLoginView(SocialLoginView):
                 picture_url = extra_data.get('picture', '')
                 from django.utils import timezone
                 from datetime import timedelta
-                is_new_user = (timezone.now() - user.date_joined) < timedelta(seconds=30)  # 30s catches OAuth users created moments before this signal fires
+                is_new_user = (timezone.now() - user.date_joined) < timedelta(seconds=30)
                 if picture_url and not user.google_avatar:
                     user.google_avatar = picture_url
                     user.save(update_fields=['google_avatar'])
                 if is_new_user:
+                    ip = _get_client_ip(self.request)
+                    if not _check_new_account_rate(ip):
+                        user.delete()
+                        return Response(
+                            {'detail': 'Too many accounts created from this IP. Please try again later.'},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS,
+                        )
+                    update_fields = []
+                    if ip and not user.registration_ip:
+                        user.registration_ip = ip
+                        update_fields.append('registration_ip')
+                    if update_fields:
+                        user.save(update_fields=update_fields)
+                    _notify_admin_new_signup(user, ip)
                     from core.emails import send_welcome_email
                     import threading, logging as _log
                     def _send_welcome(_u):
@@ -131,6 +181,20 @@ class GoogleIdTokenLoginView(APIView):
             user.save(update_fields=['google_avatar'])
 
         if created:
+            ip = _get_client_ip(request)
+            if not _check_new_account_rate(ip):
+                user.delete()
+                return Response(
+                    {'detail': 'Too many accounts created from this IP. Please try again later.'},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS,
+                )
+            update_fields = []
+            if ip:
+                user.registration_ip = ip
+                update_fields.append('registration_ip')
+            if update_fields:
+                user.save(update_fields=update_fields)
+            _notify_admin_new_signup(user, ip)
             from core.emails import send_welcome_email
             import threading, logging as _log
             def _send_welcome(_u):
@@ -434,6 +498,24 @@ class ThrottledRegisterView(APIView):
         if response.status_code == 201 and email:
             try:
                 new_user = User.objects.get(email__iexact=email)
+                ip = _get_client_ip(request)
+                if not _check_new_account_rate(ip):
+                    new_user.delete()
+                    return Response(
+                        {'detail': 'Too many accounts created from this IP. Please try again later.'},
+                        status=status.HTTP_429_TOO_MANY_REQUESTS,
+                    )
+                update_fields = []
+                if ip:
+                    new_user.registration_ip = ip
+                    update_fields.append('registration_ip')
+                raw_body = _json.loads(request._request.body or b'{}')
+                source = str(raw_body.get('referral_source', '')).strip()[:20]
+                if source:
+                    new_user.referral_source = source
+                    update_fields.append('referral_source')
+                if update_fields:
+                    new_user.save(update_fields=update_fields)
                 new_user.award_points(10, 'signup', 'Welcome bonus for joining NepSaathi!')
                 if ref_code:
                     referrer = User.objects.filter(referral_code=ref_code).exclude(pk=new_user.pk).first()
@@ -441,6 +523,7 @@ class ThrottledRegisterView(APIView):
                         new_user.referred_by = referrer
                         new_user.save(update_fields=['referred_by'])
                         referrer.award_points(25, 'referral', f'Referral bonus — {new_user.full_name or email} joined!')
+                _notify_admin_new_signup(new_user, ip)
             except Exception:
                 pass
 

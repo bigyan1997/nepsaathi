@@ -1506,3 +1506,31 @@ def send_newsletter_welcome_email(email: str) -> None:
         import traceback
         print(f'[EMAIL ERROR] send_newsletter_welcome_email: {e}', flush=True)
         print(traceback.format_exc(), flush=True)
+
+def send_new_signup_admin_notification(user, ip=None):
+    """Notify admin when a new user registers."""
+    try:
+        from decouple import config as _config
+        admin_email = _config('ADMIN_NOTIFY_EMAIL', default='karkibigyan05@gmail.com')
+        auth = 'Google' if getattr(user, 'google_avatar', '') else 'Email'
+        source = getattr(user, 'referral_source', '') or '—'
+        ip_str = ip or getattr(user, 'registration_ip', None) or '—'
+        body = f"""
+<h1 {_H1}>New user registered</h1>
+<table cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;margin-bottom:20px;">
+  <tr><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#555;width:140px;">Name</td><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#111;">{_h(user.get_full_name() or '—')}</td></tr>
+  <tr><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#555;">Email</td><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#111;">{_h(user.email)}</td></tr>
+  <tr><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#555;">Auth method</td><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#111;">{auth}</td></tr>
+  <tr><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#555;">IP address</td><td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-family:Arial,sans-serif;font-size:14px;color:#111;">{_h(ip_str)}</td></tr>
+  <tr><td style="padding:8px 12px;font-family:Arial,sans-serif;font-size:14px;color:#555;">Heard via</td><td style="padding:8px 12px;font-family:Arial,sans-serif;font-size:14px;color:#111;">{_h(source)}</td></tr>
+</table>
+{_btn("View in admin &rarr;", f"{ADMIN_URL}/users/user/{user.pk}/change/")}"""
+        _fire({
+            'from':    'NepSaathi <noreply@nepsaathi.com>',
+            'to':      [admin_email],
+            'subject': f'New signup: {user.email}',
+            'html':    _wrap(body),
+        })
+    except Exception as e:
+        import logging as _log
+        _log.getLogger(__name__).warning('Admin signup notification failed: %s', e)
