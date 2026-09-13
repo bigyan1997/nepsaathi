@@ -1511,7 +1511,7 @@ def send_new_signup_admin_notification(user, ip=None):
     """Notify admin when a new user registers."""
     try:
         from decouple import config as _config
-        admin_email = _config('ADMIN_NOTIFY_EMAIL', default='karkibigyan05@gmail.com')
+        admin_email = _config('ADMIN_NOTIFY_EMAIL', default='admin@nepsaathi.com')
         auth = 'Google' if getattr(user, 'google_avatar', '') else 'Email'
         source = getattr(user, 'referral_source', '') or '—'
         ip_str = ip or getattr(user, 'registration_ip', None) or '—'
